@@ -1,1 +1,866 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" type="image/png" sizes="32x32" href="/Images/logo.jpg">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Parent Portal - Baobab Online Academy</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@300;400;700;900&family=Open+Sans:wght@300;400;600;700&family=Kalam:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --baobab-brown: #8D4004;
+            --canopy-green: #2E7D32;
+            --sunset-gold: #F57C00;
+            --trunk-gray: #5D4037;
+            --sky-blue: #1976D2;
+            --earth-cream: #FFF8E1;
+            --desert-orange: #FF5722;
+            --sage-green: #689F38;
+            --deep-charcoal: #263238;
+            --white: #FFFFFF;
+            --parent-purple: #7B1FA2;
+            --parent-light-purple: #E1BEE7;
+            
+            --transition-slow: all 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
+            --transition-medium: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+            --transition-fast: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+            
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
+            --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Open Sans', sans-serif;
+            color: var(--deep-charcoal);
+            line-height: 1.6;
+            overflow-x: hidden;
+            background-color: var(--white);
+        }
+        
+        h1, h2, h3, h4, h5 {
+            font-family: 'Merriweather', serif;
+            font-weight: 700;
+            line-height: 1.3;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            position: relative;
+        }
+        
+        .section {
+            padding: 60px 0;
+            position: relative;
+        }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 14px 32px;
+            border-radius: 30px;
+            font-weight: 600;
+            text-align: center;
+            transition: var(--transition-fast);
+            border: 2px solid transparent;
+            font-family: 'Open Sans', sans-serif;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        
+        .btn-primary {
+            background-color: var(--parent-purple);
+            color: var(--white);
+            border-color: var(--parent-purple);
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--baobab-brown);
+            border-color: var(--baobab-brown);
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .btn-secondary {
+            background-color: var(--sunset-gold);
+            color: var(--deep-charcoal);
+            border-color: var(--sunset-gold);
+        }
+        
+        .btn-secondary:hover {
+            background-color: var(--desert-orange);
+            border-color: var(--desert-orange);
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-md);
+        }
+        
+        /* Header */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+            background-color: var(--white);
+            box-shadow: var(--shadow-md);
+            padding: 10px 0;
+        }
+        
+        .nav-wrapper {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            background-color: var(--parent-purple);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            font-size: 20px;
+            color: var(--white);
+        }
+        
+        .logo-text {
+            font-weight: 700;
+            font-size: 20px;
+            color: var(--baobab-brown);
+        }
+        
+        .nav-menu {
+            display: flex;
+            gap: 30px;
+            list-style: none;
+        }
+        
+        .nav-link {
+            font-weight: 500;
+            color: var(--deep-charcoal);
+            text-decoration: none;
+            padding: 5px 0;
+            transition: var(--transition-fast);
+        }
+        
+        .nav-link:hover,
+        .nav-link.active {
+            color: var(--parent-purple);
+        }
+        
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            background: linear-gradient(135deg, var(--parent-purple), var(--baobab-brown));
+            display: flex;
+            align-items: center;
+            color: var(--white);
+            padding-top: 80px;
+        }
+        
+        .hero-content {
+            max-width: 800px;
+        }
+        
+        .hero-badge {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            display: inline-block;
+        }
+        
+        .hero-title {
+            font-size: 3rem;
+            margin-bottom: 20px;
+        }
+        
+        .hero-subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            margin-bottom: 40px;
+        }
+        
+        .hero-buttons {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        
+        /* Dashboard Preview */
+        .dashboard-preview {
+            background: var(--earth-cream);
+            padding: 80px 0;
+        }
+        
+        .preview-title {
+            text-align: center;
+            font-size: 2.5rem;
+            color: var(--parent-purple);
+            margin-bottom: 20px;
+        }
+        
+        .preview-subtitle {
+            text-align: center;
+            color: var(--trunk-gray);
+            margin-bottom: 50px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .dashboard-mockup {
+            background: var(--white);
+            border-radius: 20px;
+            box-shadow: var(--shadow-xl);
+            padding: 30px;
+            margin: 0 auto;
+            max-width: 1000px;
+        }
+        
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 20px;
+            border-bottom: 2px solid var(--earth-cream);
+            margin-bottom: 30px;
+        }
+        
+        .dashboard-title {
+            color: var(--parent-purple);
+            font-size: 1.8rem;
+        }
+        
+        .dashboard-date {
+            color: var(--trunk-gray);
+            font-size: 0.9rem;
+        }
+        
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        .dashboard-card {
+            background: linear-gradient(135deg, var(--parent-light-purple), var(--earth-cream));
+            padding: 25px;
+            border-radius: 15px;
+            border-left: 4px solid var(--parent-purple);
+        }
+        
+        .card-icon {
+            width: 50px;
+            height: 50px;
+            background: var(--parent-purple);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--white);
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+        }
+        
+        .card-title {
+            font-size: 1.1rem;
+            color: var(--deep-charcoal);
+            margin-bottom: 10px;
+        }
+        
+        .card-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--parent-purple);
+            margin-bottom: 5px;
+        }
+        
+        .card-description {
+            font-size: 0.9rem;
+            color: var(--trunk-gray);
+        }
+        
+        /* Features Section */
+        .features-section {
+            background: var(--white);
+            padding: 80px 0;
+        }
+        
+        .section-title {
+            text-align: center;
+            font-size: 2.5rem;
+            color: var(--parent-purple);
+            margin-bottom: 20px;
+        }
+        
+        .section-subtitle {
+            text-align: center;
+            color: var(--trunk-gray);
+            margin-bottom: 50px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+        }
+        
+        .feature-card {
+            background: var(--white);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: var(--shadow-md);
+            transition: var(--transition-medium);
+            border: 2px solid transparent;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: var(--shadow-lg);
+            border-color: var(--parent-purple);
+        }
+        
+        .feature-icon {
+            width: 70px;
+            height: 70px;
+            background: var(--parent-purple);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--white);
+            font-size: 2rem;
+            margin-bottom: 20px;
+        }
+        
+        .feature-title {
+            font-size: 1.5rem;
+            color: var(--deep-charcoal);
+            margin-bottom: 15px;
+        }
+        
+        .feature-description {
+            color: var(--trunk-gray);
+            line-height: 1.6;
+        }
+        
+        /* Quick Actions */
+        .quick-actions {
+            background: linear-gradient(135deg, var(--parent-purple), var(--baobab-brown));
+            padding: 60px 0;
+            color: var(--white);
+        }
+        
+        .actions-title {
+            text-align: center;
+            font-size: 2rem;
+            margin-bottom: 40px;
+        }
+        
+        .actions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        
+        .action-card {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            transition: var(--transition-fast);
+            backdrop-filter: blur(10px);
+        }
+        
+        .action-card:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-5px);
+        }
+        
+        .action-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            color: var(--sunset-gold);
+        }
+        
+        .action-title {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+        }
+        
+        .action-description {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+        
+        /* Login Section */
+        .login-section {
+            background: var(--earth-cream);
+            padding: 80px 0;
+        }
+        
+        .login-container {
+            max-width: 500px;
+            margin: 0 auto;
+            background: var(--white);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .login-title {
+            text-align: center;
+            color: var(--parent-purple);
+            margin-bottom: 30px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--deep-charcoal);
+            font-weight: 600;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid var(--earth-cream);
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: var(--transition-fast);
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: var(--parent-purple);
+        }
+        
+        /* Footer */
+        .footer {
+            background: var(--deep-charcoal);
+            color: var(--white);
+            padding: 40px 0 20px;
+        }
+        
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .footer-section h4 {
+            color: var(--parent-purple);
+            margin-bottom: 15px;
+        }
+        
+        .footer-link {
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            display: block;
+            padding: 5px 0;
+            transition: var(--transition-fast);
+        }
+        
+        .footer-link:hover {
+            color: var(--sunset-gold);
+        }
+        
+        .footer-bottom {
+            text-align: center;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.7);
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2.2rem;
+            }
+            
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .nav-menu {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="nav-wrapper">
+                <div class="logo">
+                    <div class="logo-icon"><i class="fas fa-users"></i></div>
+                    <div class="logo-text">Parent Portal</div>
+                </div>
+                
+                <ul class="nav-menu">
+                    <li><a href="#dashboard" class="nav-link active">Dashboard</a></li>
+                    <li><a href="#features" class="nav-link">Features</a></li>
+                    <li><a href="#login" class="nav-link">Login</a></li>
+                    <li><a href="/" class="nav-link">Main Site</a></li>
+                </ul>
+            </div>
+        </div>
+    </header>
 
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <div class="hero-badge">
+                    <i class="fas fa-heart"></i>
+                    Welcome to Your Family's Growth Journey
+                </div>
+                <h1 class="hero-title">Nurture Your Child's Academic Excellence</h1>
+                <p class="hero-subtitle">
+                    Stay connected to your child's educational journey with real-time progress tracking, 
+                    direct tutor communication, and insights that help you support their growth from strong roots to limitless potential.
+                </p>
+                <div class="hero-buttons">
+                    <a href="#login" class="btn btn-primary">
+                        <i class="fas fa-sign-in-alt"></i>
+                        Access Your Dashboard
+                    </a>
+                    <a href="#features" class="btn btn-secondary">
+                        <i class="fas fa-eye"></i>
+                        See What's Inside
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Dashboard Preview -->
+    <section class="dashboard-preview" id="dashboard">
+        <div class="container">
+            <h2 class="preview-title">Your Family Dashboard</h2>
+            <p class="preview-subtitle">
+                Like the Baobab tree's deep roots nourishing its mighty branches, 
+                our parent portal gives you the insights to support your child's flourishing growth.
+            </p>
+            
+            <div class="dashboard-mockup">
+                <div class="dashboard-header">
+                    <h3 class="dashboard-title">Welcome back, Sarah!</h3>
+                    <div class="dashboard-date">Today, January 15, 2025</div>
+                </div>
+                
+                <div class="dashboard-grid">
+                    <div class="dashboard-card">
+                        <div class="card-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <div class="card-title">Adunni's Progress</div>
+                        <div class="card-value">94%</div>
+                        <div class="card-description">Outstanding performance this month</div>
+                    </div>
+                    
+                    <div class="dashboard-card">
+                        <div class="card-icon">
+                            <i class="fas fa-calendar-check"></i>
+                        </div>
+                        <div class="card-title">Upcoming Sessions</div>
+                        <div class="card-value">3</div>
+                        <div class="card-description">This week • Next: Math Tomorrow</div>
+                    </div>
+                    
+                    <div class="dashboard-card">
+                        <div class="card-icon">
+                            <i class="fas fa-trophy"></i>
+                        </div>
+                        <div class="card-title">Achievements</div>
+                        <div class="card-value">12</div>
+                        <div class="card-description">Badges earned this term</div>
+                    </div>
+                    
+                    <div class="dashboard-card">
+                        <div class="card-icon">
+                            <i class="fas fa-comment-dots"></i>
+                        </div>
+                        <div class="card-title">Messages</div>
+                        <div class="card-value">2</div>
+                        <div class="card-description">New updates from tutors</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features-section" id="features">
+        <div class="container">
+            <h2 class="section-title">Empowering Parent Features</h2>
+            <p class="section-subtitle">
+                Everything you need to support your child's academic journey, 
+                all in one place designed with African family values at heart.
+            </p>
+            
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-analytics"></i>
+                    </div>
+                    <h3 class="feature-title">Real-Time Progress Tracking</h3>
+                    <p class="feature-description">
+                        Watch your child grow with detailed progress reports, grade tracking, 
+                        and milestone celebrations that honor both academic achievement and cultural pride.
+                    </p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-chalkboard-teacher"></i>
+                    </div>
+                    <h3 class="feature-title">Direct Tutor Communication</h3>
+                    <p class="feature-description">
+                        Connect directly with your child's Nigeria-based tutors through secure messaging, 
+                        video calls, and regular feedback sessions that keep you involved in every step.
+                    </p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-calendar-alt"></i>
+                    </div>
+                    <h3 class="feature-title">Smart Scheduling</h3>
+                    <p class="feature-description">
+                        Easily manage lessons, homework deadlines, and assessments with our intelligent 
+                        calendar that adapts to your family's rhythm and cultural observances.
+                    </p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-file-alt"></i>
+                    </div>
+                    <h3 class="feature-title">Learning Resources Hub</h3>
+                    <p class="feature-description">
+                        Access lesson materials, cultural stories, and supplementary resources that 
+                        extend learning beyond the classroom into your home environment.
+                    </p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h3 class="feature-title">Safe Learning Environment</h3>
+                    <p class="feature-description">
+                        Monitor your child's online safety with secure learning spaces, 
+                        controlled interactions, and complete transparency in all educational activities.
+                    </p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <h3 class="feature-title">Community Connection</h3>
+                    <p class="feature-description">
+                        Join a supportive community of like-minded parents who share your commitment 
+                        to academic excellence and cultural heritage preservation.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Quick Actions -->
+    <section class="quick-actions">
+        <div class="container">
+            <h2 class="actions-title">Quick Parent Actions</h2>
+            
+            <div class="actions-grid">
+                <div class="action-card">
+                    <div class="action-icon">
+                        <i class="fas fa-book-open"></i>
+                    </div>
+                    <h3 class="action-title">Review Homework</h3>
+                    <p class="action-description">Check completed assignments and provide encouragement</p>
+                </div>
+                
+                <div class="action-card">
+                    <div class="action-icon">
+                        <i class="fas fa-video"></i>
+                    </div>
+                    <h3 class="action-title">Watch Lessons</h3>
+                    <p class="action-description">Observe live or recorded sessions to stay engaged</p>
+                </div>
+                
+                <div class="action-card">
+                    <div class="action-icon">
+                        <i class="fas fa-comments"></i>
+                    </div>
+                    <h3 class="action-title">Message Tutors</h3>
+                    <p class="action-description">Communicate directly with your child's educators</p>
+                </div>
+                
+                <div class="action-card">
+                    <div class="action-icon">
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <h3 class="action-title">Celebrate Achievements</h3>
+                    <p class="action-description">Share in your child's academic milestones</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Login Section -->
+    <section class="login-section" id="login">
+        <div class="container">
+            <div class="login-container">
+                <h2 class="login-title">
+                    <i class="fas fa-tree"></i>
+                    Access Your Family Portal
+                </h2>
+                
+                <form>
+                    <div class="form-group">
+                        <label class="form-label">Email Address</label>
+                        <input type="email" class="form-input" placeholder="Enter your email">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Password</label>
+                        <input type="password" class="form-input" placeholder="Enter your password">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label style="display: flex; align-items: center; gap: 10px; font-size: 0.9rem;">
+                            <input type="checkbox">
+                            Remember me on this device
+                        </label>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center;">
+                        <i class="fas fa-sign-in-alt"></i>
+                        Sign In to Dashboard
+                    </button>
+                    
+                    <div style="text-align: center; margin-top: 20px;">
+                        <a href="#" style="color: var(--parent-purple); text-decoration: none;">Forgot your password?</a>
+                    </div>
+                    
+                    <div style="text-align: center; margin-top: 15px; font-size: 0.9rem; color: var(--trunk-gray);">
+                        Need access? Contact us at 
+                        <a href="mailto:parents@baobabacademy.com" style="color: var(--parent-purple);">parents@baobabacademy.com</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>Parent Resources</h4>
+                    <a href="#" class="footer-link">Progress Reports</a>
+                    <a href="#" class="footer-link">Homework Help</a>
+                    <a href="#" class="footer-link">Tutor Communication</a>
+                    <a href="#" class="footer-link">Learning Resources</a>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Support</h4>
+                    <a href="#" class="footer-link">Help Center</a>
+                    <a href="#" class="footer-link">Contact Support</a>
+                    <a href="#" class="footer-link">Technical Issues</a>
+                    <a href="#" class="footer-link">Account Settings</a>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Community</h4>
+                    <a href="#" class="footer-link">Parent Forum</a>
+                    <a href="#" class="footer-link">Success Stories</a>
+                    <a href="#" class="footer-link">Events & Workshops</a>
+                    <a href="#" class="footer-link">Cultural Activities</a>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Contact</h4>
+                    <p style="color: rgba(255, 255, 255, 0.7); margin-bottom: 10px;">
+                        <i class="fas fa-envelope"></i>
+                        parents@baobabacademy.com
+                    </p>
+                    <p style="color: rgba(255, 255, 255, 0.7); margin-bottom: 10px;">
+                        <i class="fas fa-phone"></i>
+                        +44 (0) 20 1234 5678
+                    </p>
+                    <p style="color: rgba(255, 255, 255, 0.7);">
+                        <i class="fas fa-clock"></i>
+                        Mon-Fri: 8AM-6PM GMT
+                    </p>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2025 Baobab Online Academy Parent Portal. Nurturing Growth Together.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Form submission
+        document.querySelector('form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            alert('🌳 Welcome to your family dashboard! In the full version, this would securely log you into your personalized parent portal.');
+        });
+    </script>
+</body>
+</html>
