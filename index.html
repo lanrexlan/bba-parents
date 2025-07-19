@@ -9,6 +9,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@300;400;700;900&family=Open+Sans:wght@300;400;600;700&family=Kalam:wght@400;700&display=swap" rel="stylesheet">
     <!-- Supabase -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- EmailJS -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
     <style>
         :root {
             /* Using main homepage colors */
@@ -739,6 +741,44 @@
         .form-toggle a:hover {
             text-decoration: underline;
         }
+
+        /* Email Verification Notice */
+        .verification-notice {
+            background: linear-gradient(135deg, var(--canopy-green), var(--sage-green));
+            color: var(--white);
+            padding: 30px;
+            border-radius: 20px;
+            margin: 20px 0;
+            text-align: center;
+            border: 3px solid var(--sunset-gold);
+        }
+
+        .verification-notice h4 {
+            margin-bottom: 15px;
+            font-size: 1.5rem;
+        }
+
+        .verification-notice p {
+            margin-bottom: 12px;
+            line-height: 1.6;
+        }
+
+        .verification-notice .email-icon {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            color: var(--sunset-gold);
+        }
+
+        .resend-link {
+            color: var(--sunset-gold);
+            text-decoration: underline;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .resend-link:hover {
+            color: var(--white);
+        }
         
         /* Responsive */
         @media (max-width: 992px) {
@@ -859,6 +899,20 @@
                 padding: 30px;
                 margin: 10px;
             }
+
+            .verification-notice {
+                padding: 25px;
+                margin: 15px 0;
+            }
+
+            .verification-notice .email-icon {
+                font-size: 3rem;
+                margin-bottom: 15px;
+            }
+
+            .verification-notice h4 {
+                font-size: 1.3rem;
+            }
         }
     </style>
 </head>
@@ -884,8 +938,8 @@
                 </ul>
                 
                 <div class="nav-buttons">
-                    <a href="#" class="btn btn-outlined" onclick="openLoginModal()">Login</a>
-                    <a href="#" class="btn btn-primary" onclick="openRegistrationModal()">Register</a>
+                    <a href="login" class="btn btn-outlined" onclick="openLoginModal()">Login</a>
+                    <a href="register" class="btn btn-primary" onclick="openRegistrationModal()">Register</a>
                 </div>
             </div>
         </div>
@@ -900,8 +954,8 @@
             <li><a href="/" class="mobile-link">Main Site</a></li>
         </ul>
         <div class="mobile-buttons">
-            <a href="#" class="btn btn-outlined" onclick="openLoginModal()">Login</a>
-            <a href="#" class="btn btn-primary" onclick="openRegistrationModal()">Register</a>
+            <a href="login" class="btn btn-outlined" onclick="openLoginModal()">Login</a>
+            <a href="register" class="btn btn-primary" onclick="openRegistrationModal()">Register</a>
         </div>
     </div>
     
@@ -1111,11 +1165,11 @@
                     rooted in cultural pride. Your child's journey to limitless growth starts here.
                 </p>
                 <div class="cta-buttons">
-                    <a href="#" class="btn btn-primary btn-hero" onclick="openRegistrationModal()">
+                    <a href="register" class="btn btn-primary btn-hero" onclick="openRegistrationModal()">
                         <i class="fas fa-user-plus"></i>
                         Create Your Parent Account
                     </a>
-                    <a href="#" class="btn btn-outlined btn-hero" onclick="openLoginModal()">
+                    <a href="login" class="btn btn-outlined btn-hero" onclick="openLoginModal()">
                         <i class="fas fa-sign-in-alt"></i>
                         Already Have an Account?
                     </a>
@@ -1264,60 +1318,55 @@
         </div>
     </div>
 
+    <!-- Email Verification Modal -->
+    <div class="modal" id="verificationModal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeVerificationModal()">
+                <i class="fas fa-times"></i>
+            </button>
+            
+            <div class="verification-notice">
+                <div class="email-icon">
+                    <i class="fas fa-envelope-open"></i>
+                </div>
+                <h4>📧 Check Your Email!</h4>
+                <p><strong>We've sent a verification link to your email address.</strong></p>
+                <p>Please check your inbox and click the verification link to activate your parent account.</p>
+                <p style="font-size: 0.95rem; opacity: 0.9; margin-top: 20px;">
+                    Don't see the email? Check your spam folder or 
+                    <span class="resend-link" onclick="resendVerificationEmail()">
+                        click here to resend
+                    </span>
+                </p>
+            </div>
+            
+            <div style="text-align: center; margin-top: 25px;">
+                <button class="btn btn-primary" onclick="closeVerificationModal()">
+                    <i class="fas fa-check"></i>
+                    I'll Check My Email
+                </button>
+            </div>
+        </div>
+    </div>
+
     <script>
-        // ===== SUPABASE CONFIGURATION =====
-        // Replace these with your actual Supabase credentials
-        const SUPABASE_URL = 'YOUR_SUPABASE_URL';
-        const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
+        // ===== CONFIGURATION SECTION =====
+        // Replace these with your actual credentials
+        const SUPABASE_URL = 'https://vcxdkacxbjsgaoxbhsip.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZjeGRrYWN4YmpzZ2FveGJoc2lwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI5MDQ5ODMsImV4cCI6MjA2ODQ4MDk4M30.T9KhHWzHZWyaZvyeFXtBu8tPLY9JOn6_wCHcH8B46FU';
         
-        // Initialize Supabase client
+        const EMAILJS_CONFIG = {
+            PUBLIC_KEY: 'axzjFvaj8oDzIdLHB',     // Replace with your EmailJS public key
+            SERVICE_ID: 'service_02brniu',     // Replace with your EmailJS service ID
+            TEMPLATE_ID: 'template_ijjrhov'    // Replace with your EmailJS template ID for verification emails
+        };
+        
+        // Initialize services
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        emailjs.init(EMAILJS_CONFIG.PUBLIC_KEY);
 
-        // ===== DATABASE SETUP INSTRUCTIONS =====
-        /*
-        Create these tables in your Supabase database:
-
-        1. authorised_emails table:
-        CREATE TABLE authorised_emails (
-            id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
-            email VARCHAR(255) UNIQUE NOT NULL,
-            is_used BOOLEAN DEFAULT FALSE,
-            created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-            used_at TIMESTAMP WITH TIME ZONE
-        );
-
-        2. parent_profiles table:
-        CREATE TABLE parent_profiles (
-            id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
-            user_id uuid REFERENCES auth.users(id) ON DELETE CASCADE,
-            full_name VARCHAR(255) NOT NULL,
-            phone VARCHAR(50),
-            email VARCHAR(255) UNIQUE NOT NULL,
-            created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-            updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-        );
-
-        3. Enable RLS (Row Level Security) policies:
-        ALTER TABLE authorised_emails ENABLE ROW LEVEL SECURITY;
-        ALTER TABLE parent_profiles ENABLE ROW LEVEL SECURITY;
-
-        4. Create policies for authorised_emails:
-        CREATE POLICY "Allow authenticated users to read authorised emails" ON authorised_emails
-            FOR SELECT USING (auth.role() = 'authenticated');
-
-        CREATE POLICY "Allow authenticated users to update authorised emails" ON authorised_emails
-            FOR UPDATE USING (auth.role() = 'authenticated');
-
-        5. Create policies for parent_profiles:
-        CREATE POLICY "Users can view own profile" ON parent_profiles
-            FOR SELECT USING (auth.uid() = user_id);
-
-        CREATE POLICY "Users can insert own profile" ON parent_profiles
-            FOR INSERT WITH CHECK (auth.uid() = user_id);
-
-        CREATE POLICY "Users can update own profile" ON parent_profiles
-            FOR UPDATE USING (auth.uid() = user_id);
-        */
+        // Store user data for verification email
+        let pendingUserData = null;
 
         // ===== MOBILE MENU FUNCTIONALITY =====
         const menuToggle = document.getElementById('menuToggle');
@@ -1376,6 +1425,16 @@
             clearMessages();
         }
 
+        function openVerificationModal() {
+            document.getElementById('verificationModal').style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeVerificationModal() {
+            document.getElementById('verificationModal').style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+
         function switchToLogin() {
             closeRegistrationModal();
             openLoginModal();
@@ -1411,6 +1470,61 @@
             const successElement = document.getElementById(elementId);
             successElement.textContent = message;
             successElement.style.display = 'block';
+        }
+
+        // ===== EMAIL VERIFICATION FUNCTIONS =====
+        async function sendVerificationEmail(userData) {
+            try {
+                // Generate verification token
+                const verificationToken = btoa(`${userData.email}-${Date.now()}-${Math.random()}`);
+                
+                // Create verification link
+                const verificationLink = `${window.location.origin}/verify-email.html?token=${verificationToken}&email=${encodeURIComponent(userData.email)}`;
+                
+                // Prepare email data
+                const emailData = {
+                    to_email: userData.email,
+                    to_name: userData.fullName,
+                    from_name: 'Baobab Online Academy Parent Portal',
+                    subject: 'Welcome to Baobab Parent Portal - Please Verify Your Email',
+                    parent_name: userData.fullName,
+                    verification_link: verificationLink,
+                    portal_url: window.location.origin,
+                    support_email: 'parents@baobabacademy.com',
+                    current_year: new Date().getFullYear()
+                };
+
+                // Send email via EmailJS
+                const response = await emailjs.send(
+                    EMAILJS_CONFIG.SERVICE_ID,
+                    EMAILJS_CONFIG.TEMPLATE_ID,
+                    emailData
+                );
+
+                console.log('Verification email sent successfully!', response);
+                return true;
+            } catch (error) {
+                console.error('Failed to send verification email:', error);
+                return false;
+            }
+        }
+
+        async function resendVerificationEmail() {
+            if (!pendingUserData) {
+                alert('No pending verification found. Please try registering again.');
+                return;
+            }
+
+            try {
+                const emailSent = await sendVerificationEmail(pendingUserData);
+                if (emailSent) {
+                    alert('Verification email resent successfully! Please check your inbox.');
+                } else {
+                    alert('Failed to resend verification email. Please try again.');
+                }
+            } catch (error) {
+                alert('Failed to resend verification email. Please try again.');
+            }
         }
 
         // ===== REGISTRATION FUNCTION =====
@@ -1449,7 +1563,7 @@
                     .single();
                 
                 if (authCheckError || !authorizedEmail) {
-                    throw new Error('This email is not authorized to create an account. Please contact support.');
+                    throw new Error('This email is not authorized to create an account. Please contact support at parents@baobabacademy.com');
                 }
                 
                 // Create user account
@@ -1457,6 +1571,7 @@
                     email: email,
                     password: password,
                     options: {
+                        emailRedirectTo: `${window.location.origin}/parent-dashboard.html`,
                         data: {
                             full_name: fullName,
                             phone: phone
@@ -1468,20 +1583,30 @@
                     throw new Error(signUpError.message);
                 }
                 
-                // Create parent profile
-                const { error: profileError } = await supabase
-                    .from('parent_profiles')
-                    .insert([
-                        {
-                            user_id: authData.user.id,
-                            full_name: fullName,
-                            phone: phone,
-                            email: email
-                        }
-                    ]);
+                // Store user data for potential resend
+                pendingUserData = {
+                    email: email,
+                    fullName: fullName,
+                    phone: phone,
+                    userId: authData.user?.id
+                };
                 
-                if (profileError) {
-                    throw new Error('Failed to create parent profile');
+                // Create parent profile
+                if (authData.user) {
+                    const { error: profileError } = await supabase
+                        .from('parent_profiles')
+                        .insert([
+                            {
+                                user_id: authData.user.id,
+                                full_name: fullName,
+                                phone: phone,
+                                email: email
+                            }
+                        ]);
+                    
+                    if (profileError) {
+                        console.error('Profile creation error:', profileError);
+                    }
                 }
                 
                 // Mark email as used
@@ -1497,14 +1622,17 @@
                     console.error('Failed to mark email as used:', updateError);
                 }
                 
-                showSuccess('regSuccessMessage', 'Account created successfully! Please check your email to verify your account.');
-                event.target.reset();
+                // Send verification email via EmailJS
+                const emailSent = await sendVerificationEmail(pendingUserData);
                 
-                // Redirect to dashboard after a delay
-                setTimeout(() => {
-                    closeRegistrationModal();
-                    window.location.href = '/parent-dashboard.html';
-                }, 3000);
+                // Reset form and show verification modal
+                event.target.reset();
+                closeRegistrationModal();
+                openVerificationModal();
+                
+                if (!emailSent) {
+                    console.warn('Verification email failed to send, but account was created');
+                }
                 
             } catch (error) {
                 console.error('Registration error:', error);
@@ -1546,6 +1674,12 @@
                     throw new Error(signInError.message);
                 }
                 
+                // Check if email is verified
+                if (!authData.user.email_confirmed_at) {
+                    showError('loginErrorMessage', 'Please verify your email address before logging in. Check your inbox for the verification link.');
+                    return;
+                }
+                
                 showSuccess('loginSuccessMessage', 'Login successful! Redirecting to your dashboard...');
                 event.target.reset();
                 
@@ -1570,10 +1704,8 @@
         async function checkAuthStatus() {
             const { data: { user } } = await supabase.auth.getUser();
             
-            if (user) {
-                // User is logged in, you might want to show different UI
-                console.log('User is logged in:', user);
-                // You could redirect to dashboard or show logout option
+            if (user && user.email_confirmed_at) {
+                console.log('User is logged in and verified:', user);
             }
         }
 
@@ -1618,6 +1750,12 @@
         document.getElementById('loginModal').addEventListener('click', (e) => {
             if (e.target === e.currentTarget) {
                 closeLoginModal();
+            }
+        });
+
+        document.getElementById('verificationModal').addEventListener('click', (e) => {
+            if (e.target === e.currentTarget) {
+                closeVerificationModal();
             }
         });
 
