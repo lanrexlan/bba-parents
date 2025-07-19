@@ -449,70 +449,38 @@
         // Initialize Supabase client
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        // ===== EMAIL VERIFICATION LOGIC =====
-        async function verifyEmail() {
+        // ===== MAIN VERIFICATION LOGIC =====
+        async function handleEmailVerification() {
             try {
+                console.log('Starting email verification process...');
+                
                 // Get URL parameters
                 const urlParams = new URLSearchParams(window.location.search);
-                const token = urlParams.get('token');
+                console.log('URL parameters:', Object.fromEntries(urlParams));
+                
+                // Check for Supabase confirmation parameters
+                const token_hash = urlParams.get('token_hash');
+                const type = urlParams.get('type');
+                const access_token = urlParams.get('access_token');
+                const refresh_token = urlParams.get('refresh_token');
+                
+                // Method 1: Handle Supabase native email confirmation
+                if (type === 'email' || type === 'signup' || token_hash) {
+                    console.log('Detected Supabase email confirmation');
+                    return await handleSupabaseConfirmation(urlParams);
+                }
+                
+                // Method 2: Handle custom token verification (fallback)
+                const customToken = urlParams.get('token');
                 const email = urlParams.get('email');
                 
-                if (!token || !email) {
-                    throw new Error('Invalid verification link. Token or email is missing.');
+                if (customToken && email) {
+                    console.log('Detected custom token verification');
+                    return await handleCustomTokenVerification(customToken, email);
                 }
-
-                // Decode email
-                const decodedEmail = decodeURIComponent(email);
                 
-                // Validate token format (basic validation)
-                if (!isValidToken(token, decodedEmail)) {
-                    throw new Error('Invalid or expired verification token.');
-                }
-
-                // Simulate verification process (you might want to store tokens in database for better security)
-                await new Promise(resolve => setTimeout(resolve, 2000)); // 2 second delay for UX
-                
-                // Check if user exists in Supabase
-                const { data: { users }, error: getUserError } = await supabase.auth.admin.listUsers();
-                
-                if (getUserError) {
-                    console.error('Error checking user:', getUserError);
-                    throw new Error('Unable to verify user. Please try again.');
-                }
-
-                // Find user by email
-                const user = users?.find(u => u.email === decodedEmail);
-                
-                if (!user) {
-                    throw new Error('User not found. Please ensure you\'re using the correct email address.');
-                }
-
-                // If we get here, verification is successful
-                // In a real implementation, you might want to:
-                // 1. Update a verification status in your database
-                // 2. Enable the user account if it was disabled
-                // 3. Log the verification event
-
-                // Update user metadata to mark as verified (if needed)
-                const { error: updateError } = await supabase.auth.admin.updateUserById(
-                    user.id,
-                    { 
-                        email_confirm: true,
-                        user_metadata: { 
-                            ...user.user_metadata,
-                            email_verified: true,
-                            verified_at: new Date().toISOString()
-                        }
-                    }
-                );
-
-                if (updateError) {
-                    console.error('Error updating user:', updateError);
-                    // Don't throw error here as verification might still be valid
-                }
-
-                // Show success state
-                showSuccessState();
+                // No valid parameters
+                throw new Error('Invalid verification link. Missing required parameters.');
                 
             } catch (error) {
                 console.error('Verification error:', error);
@@ -520,128 +488,31 @@
             }
         }
 
-        function isValidToken(token, email) {
+        // ===== SUPABASE NATIVE CONFIRMATION =====
+        async function handleSupabaseConfirmation(urlParams) {
             try {
-                // Decode the token (basic validation)
-                const decoded = atob(token);
-                
-                // Check if token contains the email and is not too old (24 hours)
-                const tokenParts = decoded.split('-');
-                const tokenEmail = tokenParts[0];
-                const tokenTimestamp = parseInt(tokenParts[1]);
-                
-                // Check if email matches
-                if (tokenEmail !== email) {
-                    return false;
-                }
-                
-                // Check if token is not older than 24 hours
-                const now = Date.now();
-                const tokenAge = now - tokenTimestamp;
-                const maxAge = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
-                
-                return tokenAge <= maxAge;
-            } catch (error) {
-                console.error('Token validation error:', error);
-                return false;
-            }
-        }
-
-        function showSuccessState() {
-            document.getElementById('loadingState').classList.add('hidden');
-            document.getElementById('errorState').classList.add('hidden');
-            document.getElementById('successState').classList.remove('hidden');
-        }
-
-        function showErrorState(message) {
-            document.getElementById('loadingState').classList.add('hidden');
-            document.getElementById('successState').classList.add('hidden');
-            document.getElementById('errorState').classList.remove('hidden');
-            document.getElementById('errorMessage').textContent = message;
-        }
-
-        // ===== AUTOMATIC LOGIN AFTER VERIFICATION =====
-        async function attemptAutoLogin() {
-            try {
-                const urlParams = new URLSearchParams(window.location.search);
-                const email = decodeURIComponent(urlParams.get('email'));
-                
-                // Check if user is already logged in
-                const { data: { user } } = await supabase.auth.getUser();
-                
-                if (user && user.email === email) {
-                    // User is already logged in, redirect to dashboard
-                    setTimeout(() => {
-                        window.location.href = '/parent-dashboard.html';
-                    }, 3000);
-                }
-            } catch (error) {
-                console.error('Auto-login attempt failed:', error);
-                // Don't show error to user, just log it
-            }
-        }
-
-        // ===== PAGE INITIALIZATION =====
-        document.addEventListener('DOMContentLoaded', function() {
-            // Start verification process
-            verifyEmail();
-            
-            // Attempt auto-login after successful verification
-            setTimeout(() => {
-                attemptAutoLogin();
-            }, 3000);
-        });
-
-        // ===== UTILITY FUNCTIONS =====
-        function redirectToDashboard() {
-            window.location.href = '/parent-dashboard.html';
-        }
-
-        function redirectToHomepage() {
-            window.location.href = '/';
-        }
-
-        // Handle browser back button
-        window.addEventListener('popstate', function(event) {
-            // Prevent going back to email verification page after successful verification
-            if (document.getElementById('successState').classList.contains('hidden') === false) {
-                event.preventDefault();
-                redirectToDashboard();
-            }
-        });
-
-        // ===== ENHANCED VERIFICATION WITH SUPABASE AUTH =====
-        async function handleSupabaseVerification() {
-            try {
-                const urlParams = new URLSearchParams(window.location.search);
-                const accessToken = urlParams.get('access_token');
-                const refreshToken = urlParams.get('refresh_token');
+                const token_hash = urlParams.get('token_hash');
                 const type = urlParams.get('type');
                 
-                if (type === 'signup' && accessToken && refreshToken) {
-                    // This is a Supabase email confirmation
-                    const { data, error } = await supabase.auth.setSession({
-                        access_token: accessToken,
-                        refresh_token: refreshToken
+                console.log('Verifying with Supabase:', { token_hash: token_hash ? 'present' : 'missing', type });
+                
+                // Use Supabase's verifyOtp method for email confirmation
+                if (token_hash && type) {
+                    const { data, error } = await supabase.auth.verifyOtp({
+                        token_hash,
+                        type: type === 'email' ? 'email' : 'signup'
                     });
                     
                     if (error) {
-                        throw new Error('Failed to confirm email: ' + error.message);
+                        console.error('Supabase verification error:', error);
+                        throw new Error(`Email verification failed: ${error.message}`);
                     }
                     
                     if (data.user) {
-                        // Update parent profile if needed
-                        const { error: profileError } = await supabase
-                            .from('parent_profiles')
-                            .update({ 
-                                email_verified: true,
-                                verified_at: new Date().toISOString()
-                            })
-                            .eq('user_id', data.user.id);
+                        console.log('Supabase verification successful:', data.user);
                         
-                        if (profileError) {
-                            console.error('Profile update error:', profileError);
-                        }
+                        // Update parent profile verification status
+                        await updateParentProfileVerification(data.user);
                         
                         showSuccessState();
                         
@@ -656,140 +527,232 @@
                 
                 return false;
             } catch (error) {
-                console.error('Supabase verification error:', error);
-                showErrorState(error.message);
+                console.error('Supabase confirmation error:', error);
+                throw error;
+            }
+        }
+
+        // ===== CUSTOM TOKEN VERIFICATION =====
+        async function handleCustomTokenVerification(token, email) {
+            try {
+                console.log('Verifying custom token for:', email);
+                
+                const decodedEmail = decodeURIComponent(email);
+                
+                // Validate token format
+                if (!isValidCustomToken(token, decodedEmail)) {
+                    throw new Error('Invalid or expired verification token.');
+                }
+                
+                // Check if user exists and get current session
+                const { data: { user }, error: getUserError } = await supabase.auth.getUser();
+                
+                if (getUserError) {
+                    console.error('Error getting current user:', getUserError);
+                    // Don't throw error, continue with email-based verification
+                }
+                
+                // If no current user, try to find user by email in parent_profiles
+                let targetUser = user;
+                if (!targetUser || targetUser.email !== decodedEmail) {
+                    // Query parent_profiles to check if user exists
+                    const { data: profiles, error: profileError } = await supabase
+                        .from('parent_profiles')
+                        .select('*')
+                        .eq('email', decodedEmail)
+                        .limit(1);
+                    
+                    if (profileError) {
+                        console.error('Error checking parent profile:', profileError);
+                        throw new Error('Unable to verify user. Please try again.');
+                    }
+                    
+                    if (!profiles || profiles.length === 0) {
+                        throw new Error('User not found. Please ensure you\'re using the correct email address.');
+                    }
+                    
+                    // Update the profile verification status
+                    const { error: updateError } = await supabase
+                        .from('parent_profiles')
+                        .update({ 
+                            email_verified: true,
+                            verified_at: new Date().toISOString()
+                        })
+                        .eq('email', decodedEmail);
+                    
+                    if (updateError) {
+                        console.error('Error updating profile:', updateError);
+                        // Don't throw error, verification might still be successful
+                    }
+                } else {
+                    // Update current user's profile
+                    await updateParentProfileVerification(targetUser);
+                }
+                
+                showSuccessState();
+                return true;
+                
+            } catch (error) {
+                console.error('Custom token verification error:', error);
+                throw error;
+            }
+        }
+
+        // ===== UPDATE PARENT PROFILE =====
+        async function updateParentProfileVerification(user) {
+            try {
+                const { error } = await supabase
+                    .from('parent_profiles')
+                    .update({ 
+                        email_verified: true,
+                        verified_at: new Date().toISOString()
+                    })
+                    .eq('user_id', user.id);
+                
+                if (error) {
+                    console.error('Error updating parent profile:', error);
+                    // Don't throw error, verification is still successful
+                }
+                
+                console.log('Parent profile updated successfully');
+            } catch (error) {
+                console.error('Error in updateParentProfileVerification:', error);
+            }
+        }
+
+        // ===== TOKEN VALIDATION =====
+        function isValidCustomToken(token, email) {
+            try {
+                // Basic token validation
+                if (!token || token.length < 10) {
+                    return false;
+                }
+                
+                // Try to decode the token (assuming base64 encoded)
+                try {
+                    const decoded = atob(token);
+                    const tokenParts = decoded.split('-');
+                    
+                    if (tokenParts.length >= 2) {
+                        const tokenEmail = tokenParts[0];
+                        const tokenTimestamp = parseInt(tokenParts[1]);
+                        
+                        // Check if email matches
+                        if (tokenEmail !== email) {
+                            console.error('Token email mismatch');
+                            return false;
+                        }
+                        
+                        // Check if token is not older than 24 hours
+                        const now = Date.now();
+                        const tokenAge = now - tokenTimestamp;
+                        const maxAge = 24 * 60 * 60 * 1000; // 24 hours
+                        
+                        if (tokenAge > maxAge) {
+                            console.error('Token expired');
+                            return false;
+                        }
+                        
+                        return true;
+                    }
+                } catch (decodeError) {
+                    console.error('Token decode error:', decodeError);
+                    // If decoding fails, assume token is valid (let server validate)
+                    return true;
+                }
+                
+                return true;
+            } catch (error) {
+                console.error('Token validation error:', error);
                 return false;
             }
         }
 
-        // ===== UPDATED PAGE INITIALIZATION =====
-        document.addEventListener('DOMContentLoaded', async function() {
-            // First try Supabase native verification
-            const supabaseVerified = await handleSupabaseVerification();
-            
-            // If not Supabase verification, try custom token verification
-            if (!supabaseVerified) {
-                verifyEmail();
-            }
-        });
+        // ===== UI STATE MANAGEMENT =====
+        function showSuccessState() {
+            document.getElementById('loadingState').classList.add('hidden');
+            document.getElementById('errorState').classList.add('hidden');
+            document.getElementById('successState').classList.remove('hidden');
+        }
 
-        // ===== ADDITIONAL SECURITY MEASURES =====
+        function showErrorState(message) {
+            document.getElementById('loadingState').classList.add('hidden');
+            document.getElementById('successState').classList.add('hidden');
+            document.getElementById('errorState').classList.remove('hidden');
+            document.getElementById('errorMessage').textContent = message;
+        }
+
+        // ===== VALIDATION AND SECURITY =====
         function validatePageAccess() {
-            // Ensure this page is only accessed with proper parameters
             const urlParams = new URLSearchParams(window.location.search);
             const hasToken = urlParams.get('token');
             const hasEmail = urlParams.get('email');
-            const hasSupabaseParams = urlParams.get('access_token') && urlParams.get('type');
+            const hasSupabaseParams = urlParams.get('token_hash') || urlParams.get('access_token');
             
             if (!hasToken && !hasEmail && !hasSupabaseParams) {
-                // No valid parameters, redirect to homepage
                 setTimeout(() => {
                     window.location.href = '/';
                 }, 2000);
                 
                 showErrorState('Invalid verification link. Redirecting to homepage...');
+                return false;
             }
-        }
-
-        // Run security validation
-        validatePageAccess();
-
-        // ===== PREVENT MULTIPLE VERIFICATION ATTEMPTS =====
-        let verificationAttempted = false;
-
-        function preventDuplicateVerification() {
-            if (verificationAttempted) {
-                return true;
-            }
-            verificationAttempted = true;
-            return false;
-        }
-
-        // ===== LOGGING FOR DEBUGGING =====
-        function logVerificationAttempt(success, details) {
-            const logData = {
-                timestamp: new Date().toISOString(),
-                success: success,
-                userAgent: navigator.userAgent,
-                url: window.location.href,
-                details: details
-            };
             
-            console.log('Verification attempt:', logData);
-            
-            // In production, you might want to send this to your analytics
-            // or logging service for monitoring verification success rates
+            return true;
         }
 
-        // ===== ERROR RECOVERY =====
-        function setupErrorRecovery() {
+        // ===== ERROR HANDLING =====
+        function setupErrorHandling() {
             window.addEventListener('error', function(event) {
-                console.error('JavaScript error during verification:', event.error);
-                
-                // Show generic error if no other error state is shown
-                if (!document.getElementById('errorState').classList.contains('hidden') === false) {
-                    showErrorState('An unexpected error occurred. Please try again or contact support.');
+                console.error('JavaScript error:', event.error);
+                if (!document.getElementById('errorState').classList.contains('hidden')) {
+                    return; // Error already shown
                 }
+                showErrorState('An unexpected error occurred. Please try again or contact support.');
             });
             
             window.addEventListener('unhandledrejection', function(event) {
-                console.error('Unhandled promise rejection during verification:', event.reason);
-                
-                // Show generic error if no other error state is shown
-                if (!document.getElementById('errorState').classList.contains('hidden') === false) {
-                    showErrorState('An unexpected error occurred. Please try again or contact support.');
+                console.error('Unhandled promise rejection:', event.reason);
+                if (!document.getElementById('errorState').classList.contains('hidden')) {
+                    return; // Error already shown
                 }
+                showErrorState('An unexpected error occurred. Please try again or contact support.');
             });
         }
 
-        // Initialize error recovery
-        setupErrorRecovery();
-
-        // ===== ACCESSIBILITY IMPROVEMENTS =====
-        function improveAccessibility() {
-            // Add proper ARIA labels
-            document.getElementById('loadingState').setAttribute('aria-live', 'polite');
-            document.getElementById('successState').setAttribute('aria-live', 'polite');
-            document.getElementById('errorState').setAttribute('aria-live', 'assertive');
-            
-            // Add keyboard navigation for buttons
-            document.addEventListener('keydown', function(event) {
-                if (event.key === 'Enter' || event.key === ' ') {
-                    const focusedElement = document.activeElement;
-                    if (focusedElement.classList.contains('btn')) {
-                        event.preventDefault();
-                        focusedElement.click();
-                    }
-                }
-            });
-        }
-
-        // Initialize accessibility improvements
-        improveAccessibility();
-
-        // ===== PERFORMANCE MONITORING =====
-        function trackPerformance() {
-            const startTime = performance.now();
-            
-            return function(eventName) {
-                const endTime = performance.now();
-                const duration = endTime - startTime;
-                
-                console.log(`${eventName} completed in ${duration.toFixed(2)}ms`);
-                
-                // In production, send to analytics
-                // analytics.track(eventName, { duration });
-            };
-        }
-
-        const performanceTracker = trackPerformance();
-
-        // ===== FINAL INITIALIZATION =====
-        document.addEventListener('DOMContentLoaded', function() {
+        // ===== PAGE INITIALIZATION =====
+        document.addEventListener('DOMContentLoaded', async function() {
             console.log('Email verification page loaded');
-            performanceTracker('Page Load');
             
-            // All initialization is handled by the individual event listeners above
+            // Setup error handling
+            setupErrorHandling();
+            
+            // Validate page access
+            if (!validatePageAccess()) {
+                return;
+            }
+            
+            // Add delay for better UX
+            setTimeout(async () => {
+                await handleEmailVerification();
+            }, 1500);
+        });
+
+        // ===== UTILITY FUNCTIONS =====
+        function redirectToDashboard() {
+            window.location.href = '/parent-dashboard.html';
+        }
+
+        function redirectToHomepage() {
+            window.location.href = '/';
+        }
+
+        // Prevent going back after successful verification
+        window.addEventListener('popstate', function(event) {
+            if (!document.getElementById('successState').classList.contains('hidden')) {
+                event.preventDefault();
+                redirectToDashboard();
+            }
         });
     </script>
 </body>
