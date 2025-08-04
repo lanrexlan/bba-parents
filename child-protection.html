@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" type="image/png" sizes="32x32" href="/Images/logo.jpg">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Child Protection Policy - Baobab Parent Portal</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@300;400;700;900&family=Open+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --baobab-brown: #8D4004;
+            --canopy-green: #2E7D32;
+            --sunset-gold: #F57C00;
+            --trunk-gray: #5D4037;
+            --sky-blue: #1976D2;
+            --earth-cream: #FFF8E1;
+            --deep-charcoal: #263238;
+            --white: #FFFFFF;
+            --light-gray: #f4f4f4;
+            --danger-red: #c62828;
+            
+            --transition-fast: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+            --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Open Sans', sans-serif;
+            color: var(--deep-charcoal);
+            line-height: 1.7;
+            background-color: var(--white);
+        }
+        
+        h1, h2, h3, h4, h5 {
+            font-family: 'Merriweather', serif;
+            font-weight: 700;
+            line-height: 1.4;
+            color: var(--trunk-gray);
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        /* Header */
+        .header {
+            position: sticky;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            background-color: var(--white);
+            box-shadow: var(--shadow-md);
+            padding: 10px 0;
+        }
+        
+        .nav-wrapper {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+        }
+        
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            background-color: var(--canopy-green);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            font-size: 20px;
+            color: var(--white);
+        }
+        
+        .logo-text {
+            font-weight: 700;
+            font-size: 20px;
+            color: var(--baobab-brown);
+        }
+        
+        /* Page Header */
+        .page-header {
+            background-color: var(--deep-charcoal);
+            padding: 60px 0;
+            text-align: left;
+            color: var(--white);
+            border-bottom: 5px solid var(--sunset-gold);
+        }
+
+        .page-header-title {
+            font-size: 2.8rem;
+            color: var(--white);
+        }
+
+        .page-header-subtitle {
+            font-size: 1.1rem;
+            margin-top: 10px;
+            opacity: 0.9;
+        }
+        
+        .policy-meta {
+            font-size: 0.9rem;
+            color: var(--earth-cream);
+            margin-top: 20px;
+        }
+        
+        .policy-meta span {
+            margin-right: 20px;
+        }
+        
+        /* Main Content - Policy Document */
+        .main-content {
+            padding: 60px 0;
+            background-color: var(--light-gray);
+        }
+
+        .policy-document {
+            background: var(--white);
+            padding: 50px;
+            border-radius: 8px;
+            box-shadow: var(--shadow-md);
+        }
+        
+        .policy-section {
+            margin-bottom: 40px;
+            padding-bottom: 30px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .policy-section:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+        
+        .policy-section h2 {
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--canopy-green);
+        }
+        
+        .policy-section h3 {
+            font-size: 1.4rem;
+            margin-top: 25px;
+            margin-bottom: 15px;
+            color: var(--baobab-brown);
+        }
+        
+        .policy-section p, .policy-section li {
+            margin-bottom: 15px;
+            color: #424242; /* Slightly softer black */
+        }
+        
+        .policy-section ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+        
+        .policy-section > ul > li::before {
+            content: '\f105'; /* Font Awesome angle-right */
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            color: var(--sunset-gold);
+            margin-right: 10px;
+        }
+
+        .policy-section ol {
+            padding-left: 20px;
+        }
+
+        .policy-section ol li {
+            margin-bottom: 10px;
+        }
+        
+        .contact-box {
+            background: var(--earth-cream);
+            border-left: 5px solid var(--danger-red);
+            padding: 25px;
+            margin-top: 20px;
+            border-radius: 0 8px 8px 0;
+        }
+        
+        .contact-box h3 {
+            color: var(--danger-red);
+            margin-top: 0;
+        }
+        
+        .contact-box p {
+            font-weight: 600;
+        }
+        
+        .contact-box a {
+            color: var(--baobab-brown);
+            text-decoration: none;
+            font-weight: 700;
+        }
+        
+        /* Footer */
+        .footer {
+            background: var(--deep-charcoal);
+            color: var(--white);
+            padding: 60px 0 30px;
+        }
+        
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        
+        .footer-section h4 {
+            color: var(--sunset-gold);
+            margin-bottom: 20px;
+        }
+        
+        .footer-link {
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            display: block;
+            padding: 8px 0;
+            transition: var(--transition-fast);
+        }
+        
+        .footer-link:hover {
+            color: var(--sunset-gold);
+            padding-left: 5px;
+        }
+        
+        .footer-bottom {
+            text-align: center;
+            padding-top: 30px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="nav-wrapper">
+                <a href="index.html" class="logo">
+                    <div class="logo-icon"><i class="fas fa-heart"></i></div>
+                    <div class="logo-text">Parent Portal</div>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <section class="page-header">
+        <div class="container">
+            <h1 class="page-header-title">Child Protection & Safeguarding Policy</h1>
+            <p class="page-header-subtitle">An unwavering commitment to creating a safe, secure, and nurturing online environment for every child.</p>
+            <div class="policy-meta">
+                <span>Version: 2.1</span>
+                <span>Last Updated: 1 August 2025</span>
+                <span>Next Review: 1 August 2026</span>
+            </div>
+        </div>
+    </section>
+
+    <main class="main-content">
+        <div class="container">
+            <div class="policy-document">
+                
+                <section class="policy-section">
+                    <h2>1. Overarching Commitment</h2>
+                    <p>Baobab Online Academy (hereafter "the Academy") fully accepts its responsibility to safeguard and promote the welfare of all children entrusted to its care. We believe that every child, regardless of age, disability, gender, racial heritage, religious belief, sexual orientation, or identity, has a right to equal protection from all types of harm or abuse. Our commitment is woven into every aspect of our operations, from tutor recruitment to our online platform's architecture.</p>
+                </section>
+                
+                <section class="policy-section">
+                    <h2>2. Purpose of this Policy</h2>
+                    <ul>
+                        <li>To protect children who engage with the Academy's services online.</li>
+                        <li>To provide parents, tutors, and staff with the overarching principles that guide our approach to child safeguarding.</li>
+                        <li>To ensure all stakeholders understand their roles and responsibilities in safeguarding children.</li>
+                        <li>To provide clear procedures for identifying and reporting concerns.</li>
+                    </ul>
+                </section>
+
+                <section class="policy-section">
+                    <h2>3. Personnel & Recruitment (Our 'Safe Recruitment' Promise)</h2>
+                    <h3>3.1. Designated Safeguarding Lead (DSL)</h3>
+                    <p>The Academy has a named Designated Safeguarding Lead (DSL) who is a senior member of staff. The DSL is the first point of contact for all safeguarding concerns. All staff and tutors are aware of the DSL's identity and how to contact them.</p>
+                    
+                    <h3>3.2. Tutor Vetting & Verification</h3>
+                    <p>We operate a rigorous, multi-stage vetting process for all Nigeria-based tutors, which includes, but is not limited to:</p>
+                    <ol>
+                        <li><strong>Identity Verification:</strong> Thorough checks of government-issued identification.</li>
+                        <li><strong>Criminal Background Checks:</strong> Mandatory, enhanced checks appropriate to their jurisdiction.</li>
+                        <li><strong>Reference Checks:</strong> Professional and character references are meticulously followed up.</li>
+                        <li><strong>Qualification Verification:</strong> All academic and teaching qualifications are verified at the source.</li>
+                        <li><strong>Safeguarding Interview:</strong> A specific, scenario-based interview to assess their understanding and commitment to child protection.</li>
+                    </ol>
+                    
+                    <h3>3.3. Continuous Training</h3>
+                    <p>All tutors and staff undergo mandatory safeguarding training upon induction and receive annual refresher courses. This training covers online safety, signs of abuse, reporting procedures, and the Academy's code of conduct.</p>
+                </section>
+
+                <section class="policy-section">
+                    <h2>4. Code of Conduct & Safe Practices</h2>
+                    <p>All tutors must adhere to a strict code of conduct designed for the online environment.</p>
+                    <ul>
+                        <li>All tutoring sessions must take place via the official, monitored Baobab Academy platform. Communication outside this platform is strictly forbidden.</li>
+                        <li>All one-on-one sessions are recorded for safeguarding and quality assurance purposes, accessible to the DSL and parents via the portal.</li>
+                        <li>Professional language and conduct are required at all times.</li>
+                        <li>Tutors must not request or share personal contact information (email, phone, social media) with students or parents.</li>
+                        <li>Tutors must maintain a professional appearance and ensure their teaching environment is appropriate and free from distractions.</li>
+                    </ul>
+                </section>
+                
+                <section class="policy-section">
+                    <h2>5. Reporting Concerns</h2>
+                    <p>We foster a culture of openness where any concern, no matter how small, is taken seriously.</p>
+                    
+                    <h3>5.1. Procedure for Parents & Students</h3>
+                    <p>If a parent or student has any concern about a tutor's conduct or any aspect of their online experience, they must report it immediately. Concerns can be raised through:</p>
+                    <ol>
+                        <li><strong>The 'Report Concern' button:</strong> A discreet button is available within the session interface and on the main portal dashboard. This sends an immediate, confidential alert to the DSL.</li>
+                        <li><strong>Direct Contact with the DSL:</strong> The DSL's contact details are made clearly available within this policy and in the 'Support' section of the portal.</li>
+                    </ol>
+                    
+                    <h3>5.2. Our Response</h3>
+                    <p>Upon receiving a concern, the DSL will immediately initiate a formal investigation. Actions may include session review, interviews with relevant parties, and temporary suspension of a tutor pending the outcome. We are committed to working with parents and, where necessary, statutory child protection agencies to ensure the child's welfare.</p>
+
+                    <div class="contact-box">
+                        <h3>Designated Safeguarding Lead Contact</h3>
+                        <p><strong>Name:</strong> [DSL Name To Be Inserted]</p>
+                        <p><strong>Email:</strong> <a href="mailto:safeguarding@baobabacademy.com">safeguarding@baobabacademy.com</a></p>
+                        <p><strong>Portal Reporting:</strong> Use the 'Report Concern' feature for immediate alerts.</p>
+                    </div>
+                </section>
+
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                 <div class="footer-section">
+                    <h4><i class="fas fa-heart"></i> Parent Resources</h4>
+                    <a href="getting-started.html" class="footer-link">Getting Started Guide</a>
+                    <a href="supporting-learning.html" class="footer-link">Supporting Your Child's Learning</a>
+                    <a href="cultural-integration.html" class="footer-link">Cultural Integration at Home</a>
+                </div>
+                
+                <div class="footer-section">
+                    <h4><i class="fas fa-shield-alt"></i> Safety & Security</h4>
+                    <a href="child-protection.html" class="footer-link">Child Protection Policy</a>
+                    <a href="#" class="footer-link">Tutor Verification Process</a>
+                    <a href="#" class="footer-link">Platform Security Features</a>
+                    <a href="#" class="footer-link">Privacy Policy</a>
+                </div>
+                <div class="footer-section">
+                    <h4><i class="fas fa-users"></i> Community</h4>
+                    </div>
+                <div class="footer-section">
+                    <h4><i class="fas fa-headset"></i> Support</h4>
+                    </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 Baobab Online Academy Parent Portal. Nurturing Growth, Honoring Heritage.</p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>
