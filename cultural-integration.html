@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" type="image/png" sizes="32x32" href="/Images/logo.jpg">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cultural Integration at Home - Baobab Parent Portal</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@300;400;700;900&family=Open+Sans:wght@300;400;600;700&family=Kalam:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --baobab-brown: #8D4004;
+            --canopy-green: #2E7D32;
+            --sunset-gold: #F57C00;
+            --trunk-gray: #5D4037;
+            --sky-blue: #1976D2;
+            --earth-cream: #FFF8E1;
+            --sage-green: #689F38;
+            --deep-charcoal: #263238;
+            --white: #FFFFFF;
+            
+            --transition-fast: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+            --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Open Sans', sans-serif;
+            color: var(--deep-charcoal);
+            line-height: 1.6;
+            background-color: #fdfcfa; /* Slightly off-white */
+        }
+        
+        h1, h2, h3, h4 {
+            font-family: 'Merriweather', serif;
+            font-weight: 700;
+            line-height: 1.3;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        /* Header */
+        .header {
+            position: sticky;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            background-color: var(--white);
+            box-shadow: var(--shadow-md);
+            padding: 10px 0;
+        }
+        
+        .nav-wrapper {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+        }
+        
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            background-color: var(--canopy-green);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            font-size: 20px;
+            color: var(--white);
+        }
+        
+        .logo-text {
+            font-weight: 700;
+            font-size: 20px;
+            color: var(--baobab-brown);
+        }
+        
+        .btn-primary {
+            background-color: var(--baobab-brown);
+            color: var(--white);
+            border: 2px solid var(--baobab-brown);
+            padding: 12px 28px;
+            border-radius: 30px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: var(--transition-fast);
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--trunk-gray);
+            border-color: var(--trunk-gray);
+            transform: translateY(-3px);
+        }
+        
+        /* Page Header */
+        .page-header {
+            background: url('https://images.unsplash.com/photo-1596736025688-3d6a4a132d75?q=80&w=2070&auto=format&fit=crop') no-repeat center center/cover;
+            padding: 100px 0;
+            text-align: center;
+            color: var(--white);
+            position: relative;
+        }
+        
+        .page-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 1;
+        }
+
+        .page-header .container {
+            position: relative;
+            z-index: 2;
+        }
+
+        .page-header-title {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .page-header-subtitle {
+            font-size: 1.2rem;
+            max-width: 700px;
+            margin: 0 auto;
+            opacity: 0.95;
+        }
+
+        /* Main Content */
+        .main-content {
+            padding: 80px 0;
+        }
+        
+        .activity-section {
+            display: flex;
+            gap: 50px;
+            align-items: center;
+            margin-bottom: 80px;
+        }
+
+        .activity-section:nth-child(even) {
+            flex-direction: row-reverse;
+        }
+
+        .activity-image {
+            flex: 1;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .activity-image img {
+            width: 100%;
+            height: auto;
+            display: block;
+            transition: transform 0.4s ease;
+        }
+
+        .activity-image:hover img {
+            transform: scale(1.05);
+        }
+
+        .activity-content {
+            flex: 1.2;
+        }
+        
+        .activity-content .icon {
+            font-size: 2rem;
+            color: var(--sunset-gold);
+            margin-bottom: 15px;
+        }
+        
+        .activity-content h3 {
+            font-size: 2.2rem;
+            color: var(--baobab-brown);
+            margin-bottom: 20px;
+        }
+        
+        .activity-content p {
+            color: var(--trunk-gray);
+            margin-bottom: 20px;
+            line-height: 1.7;
+        }
+        
+        .activity-content ul {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .activity-content li {
+            position: relative;
+            padding-left: 30px;
+            margin-bottom: 12px;
+        }
+        
+        .activity-content li::before {
+            content: '\f192'; /* Font Awesome dot circle */
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            color: var(--canopy-green);
+            position: absolute;
+            left: 0;
+            top: 4px;
+            font-size: 1.1rem;
+        }
+        
+        /* Footer */
+        .footer {
+            background: var(--deep-charcoal);
+            color: var(--white);
+            padding: 60px 0 30px;
+        }
+        
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+        
+        .footer-section h4 {
+            color: var(--sunset-gold);
+            margin-bottom: 20px;
+        }
+        
+        .footer-link {
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            display: block;
+            padding: 8px 0;
+            transition: var(--transition-fast);
+        }
+        
+        .footer-link:hover {
+            color: var(--sunset-gold);
+            padding-left: 5px;
+        }
+        
+        .footer-bottom {
+            text-align: center;
+            padding-top: 30px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        @media (max-width: 992px) {
+            .activity-section, .activity-section:nth-child(even) {
+                flex-direction: column;
+                text-align: center;
+            }
+            .activity-content li {
+                padding-left: 0;
+                text-align: left;
+            }
+            .activity-content li::before {
+                position: relative;
+                display: inline-block;
+                margin-right: 10px;
+                top: 0;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .page-header-title {
+                font-size: 2.5rem;
+            }
+            .activity-content h3 {
+                font-size: 1.8rem;
+            }
+        }
+
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="nav-wrapper">
+                <a href="index.html" class="logo">
+                    <div class="logo-icon"><i class="fas fa-heart"></i></div>
+                    <div class="logo-text">Parent Portal</div>
+                </a>
+                <a href="index.html#register" class="btn-primary">Register</a>
+            </div>
+        </div>
+    </header>
+
+    <section class="page-header">
+        <div class="container">
+            <h1 class="page-header-title">Bringing Heritage Home</h1>
+            <p class="page-header-subtitle">Turn your home into a living classroom where culture is celebrated daily. Here are some joyful ways to connect your family with your rich heritage.</p>
+        </div>
+    </section>
+
+    <main class="main-content">
+        <div class="container">
+
+            <div class="activity-section">
+                <div class="activity-image">
+                    <img src="https://images.unsplash.com/photo-1585521790695-a43152349733?q=80&w=1974&auto=format&fit=crop" alt="Family cooking together">
+                </div>
+                <div class="activity-content">
+                    <div class="icon"><i class="fas fa-utensils"></i></div>
+                    <h3>The Kitchen Classroom</h3>
+                    <p>The heart of the home is often the kitchen. Cooking together is a delicious way to pass down traditions, stories, and language.</p>
+                    <ul>
+                        <li><strong>Cook a Heritage Meal:</strong> Once a week, cook a dish from your culture. Discuss the ingredients and the story behind the meal.</li>
+                        <li><strong>Name in Native Tongue:</strong> Teach your child the names of ingredients and utensils in your native language.</li>
+                        <li><strong>Grandma's Recipe Book:</strong> Create a family recipe book, writing down recipes passed through generations.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="activity-section">
+                <div class="activity-image">
+                    <img src="https://images.unsplash.com/photo-1521714161819-15534968fc5f?q=80&w=2070&auto=format&fit=crop" alt="Parent reading to a child">
+                </div>
+                <div class="activity-content">
+                    <div class="icon"><i class="fas fa-book-open"></i></div>
+                    <h3>The Power of Stories</h3>
+                    <p>Stories and language are the threads that weave the fabric of our culture. Make them a central part of your family's routine.</p>
+                    <ul>
+                        <li><strong>Bedtime Folktales:</strong> Share folktales and legends from your heritage before bed.</li>
+                        <li><strong>"Word of the Day":</strong> Introduce a new word from your native language each day and try to use it in conversation.</li>
+                        <li><strong>Proverbial Wisdom:</strong> Discuss a proverb from your culture and what it means for your family today.</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="activity-section">
+                <div class="activity-image">
+                    <img src="https://images.unsplash.com/photo-1513364771691-d254b4535338?q=80&w=2070&auto=format&fit=crop" alt="Child painting colorful patterns">
+                </div>
+                <div class="activity-content">
+                    <div class="icon"><i class="fas fa-palette"></i></div>
+                    <h3>Create and Celebrate</h3>
+                    <p>Engage the senses through art, music, and dance. These activities build strong, positive connections to cultural identity.</p>
+                    <ul>
+                        <li><strong>Curate a Cultural Playlist:</strong> Create a family playlist of music from your heritage and have dance parties.</li>
+                        <li><strong>Crafting Traditions:</strong> Learn a traditional craft, like beadwork, weaving, or pottery.</li>
+                        <li><strong>Explore a Museum:</strong> Visit a local or online museum that features art from your culture, connecting it to their lessons.</li>
+                    </ul>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4><i class="fas fa-heart"></i> Parent Resources</h4>
+                    <a href="getting-started.html" class="footer-link">Getting Started Guide</a>
+                    <a href="supporting-learning.html" class="footer-link">Supporting Your Child's Learning</a>
+                    <a href="cultural-integration.html" class="footer-link">Cultural Integration at Home</a>
+                </div>
+                <div class="footer-section">
+                    <h4><i class="fas fa-shield-alt"></i> Safety & Security</h4>
+                    <a href="#" class="footer-link">Child Protection Policy</a>
+                    <a href="#" class="footer-link">Tutor Verification Process</a>
+                    <a href="#" class="footer-link">Platform Security Features</a>
+                    <a href="#" class="footer-link">Privacy Policy</a>
+                </div>
+                <div class="footer-section">
+                    <h4><i class="fas fa-users"></i> Community</h4>
+                    <a href="#" class="footer-link">Parent Forum</a>
+                    <a href="#" class="footer-link">Success Stories</a>
+                    <a href="#" class="footer-link">Cultural Events</a>
+                    <a href="#" class="footer-link">Family Workshops</a>
+                </div>
+                <div class="footer-section">
+                    <h4><i class="fas fa-headset"></i> Support</h4>
+                    <p style="color: rgba(255, 255, 255, 0.7); margin-bottom: 15px;"><i class="fas fa-envelope"></i> parents@baobabacademy.com</p>
+                    <p style="color: rgba(255, 255, 255, 0.7); margin-bottom: 15px;"><i class="fas fa-phone"></i> +44 (0) 20 1234 5678</p>
+                    <a href="#" class="footer-link">Help Center</a>
+                    <a href="#" class="footer-link">Live Chat Support</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 Baobab Online Academy Parent Portal. Nurturing Growth, Honoring Heritage.</p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>
