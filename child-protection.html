@@ -4,9 +4,9 @@
     <meta charset="UTF-8">
     <link rel="icon" type="image/png" sizes="32x32" href="/Images/logo.jpg">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Child Protection Policy - Baobab Parent Portal</title>
+    <title>Child Protection Policy - Baobab Online Academy Parent Portal</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@300;400;700;900&family=Open+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@300;400;700;900&family=Open+Sans:wght@300;400;600;700&family=Kalam:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root {
             --baobab-brown: #8D4004;
@@ -15,13 +15,25 @@
             --trunk-gray: #5D4037;
             --sky-blue: #1976D2;
             --earth-cream: #FFF8E1;
+            --desert-orange: #FF5722;
+            --sage-green: #689F38;
             --deep-charcoal: #263238;
             --white: #FFFFFF;
-            --light-gray: #f4f4f4;
-            --danger-red: #c62828;
+            --light-gray: #F5F5F5;
+            --border-light: #E0E0E0;
+            --security-blue: #0D47A1;
+            --safety-green: #1B5E20;
+            --alert-red: #B71C1C;
+            --warning-amber: #E65100;
             
+            --transition-slow: all 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
+            --transition-medium: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
             --transition-fast: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+            
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
             --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
         }
         
         * {
@@ -33,28 +45,75 @@
         body {
             font-family: 'Open Sans', sans-serif;
             color: var(--deep-charcoal);
-            line-height: 1.7;
+            line-height: 1.6;
+            overflow-x: hidden;
             background-color: var(--white);
         }
         
         h1, h2, h3, h4, h5 {
             font-family: 'Merriweather', serif;
             font-weight: 700;
-            line-height: 1.4;
-            color: var(--trunk-gray);
+            line-height: 1.3;
         }
         
         .container {
             width: 100%;
-            max-width: 960px;
+            max-width: 1200px;
             margin: 0 auto;
             padding: 0 20px;
+            position: relative;
+        }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 14px 32px;
+            border-radius: 30px;
+            font-weight: 600;
+            text-align: center;
+            transition: var(--transition-fast);
+            border: 2px solid transparent;
+            font-family: 'Open Sans', sans-serif;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        
+        .btn-primary {
+            background-color: var(--baobab-brown);
+            color: var(--white);
+            border-color: var(--baobab-brown);
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--trunk-gray);
+            border-color: var(--trunk-gray);
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .btn-secondary {
+            background-color: var(--sunset-gold);
+            color: var(--deep-charcoal);
+            border-color: var(--sunset-gold);
+        }
+        
+        .btn-outlined {
+            background-color: transparent;
+            color: var(--baobab-brown);
+            border-color: var(--baobab-brown);
+        }
+        
+        .btn-outlined:hover {
+            background-color: var(--baobab-brown);
+            color: var(--white);
         }
         
         /* Header */
         .header {
-            position: sticky;
+            position: fixed;
             top: 0;
+            left: 0;
             width: 100%;
             z-index: 1000;
             background-color: var(--white);
@@ -93,211 +152,653 @@
             color: var(--baobab-brown);
         }
         
-        /* Page Header */
-        .page-header {
-            background-color: var(--deep-charcoal);
-            padding: 60px 0;
-            text-align: left;
-            color: var(--white);
-            border-bottom: 5px solid var(--sunset-gold);
+        .nav-menu {
+            display: flex;
+            gap: 30px;
+            list-style: none;
         }
-
-        .page-header-title {
-            font-size: 2.8rem;
-            color: var(--white);
+        
+        .nav-link {
+            font-weight: 500;
+            color: var(--deep-charcoal);
+            text-decoration: none;
+            padding: 5px 0;
+            transition: var(--transition-fast);
         }
-
-        .page-header-subtitle {
-            font-size: 1.1rem;
-            margin-top: 10px;
+        
+        .nav-link:hover {
+            color: var(--sunset-gold);
+        }
+        
+        .menu-toggle {
+            display: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--baobab-brown);
+        }
+        
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, var(--security-blue), var(--sky-blue), var(--safety-green));
+            color: var(--white);
+            padding: 120px 0 80px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200"><path d="M50,50 L150,50 L150,150 L50,150 Z" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="2"/><circle cx="100" cy="100" r="30" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="2"/></svg>');
+            animation: shield-pulse 8s infinite ease-in-out;
+        }
+        
+        @keyframes shield-pulse {
+            0%, 100% { opacity: 0.3; transform: scale(1); }
+            50% { opacity: 0.6; transform: scale(1.05); }
+        }
+        
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            max-width: 800px;
+            text-align: center;
+            margin: 0 auto;
+        }
+        
+        .hero-badge {
+            background: rgba(255, 255, 255, 0.25);
+            padding: 12px 25px;
+            border-radius: 25px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            margin-bottom: 25px;
+            display: inline-block;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .hero-title {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            line-height: 1.2;
+        }
+        
+        .hero-subtitle {
+            font-size: 1.3rem;
             opacity: 0.9;
+            margin-bottom: 40px;
+            line-height: 1.6;
         }
         
-        .policy-meta {
+        /* Breadcrumbs */
+        .breadcrumbs {
+            background: var(--earth-cream);
+            padding: 20px 0;
+            border-bottom: 2px solid var(--border-light);
+        }
+        
+        .breadcrumb-nav {
+            display: flex;
+            align-items: center;
+            gap: 10px;
             font-size: 0.9rem;
-            color: var(--earth-cream);
-            margin-top: 20px;
         }
         
-        .policy-meta span {
-            margin-right: 20px;
+        .breadcrumb-link {
+            color: var(--trunk-gray);
+            text-decoration: none;
+            transition: var(--transition-fast);
         }
         
-        /* Main Content - Policy Document */
+        .breadcrumb-link:hover {
+            color: var(--sunset-gold);
+        }
+        
+        .breadcrumb-separator {
+            color: var(--trunk-gray);
+            opacity: 0.6;
+        }
+        
+        .breadcrumb-current {
+            color: var(--baobab-brown);
+            font-weight: 600;
+        }
+        
+        /* Main Content */
         .main-content {
-            padding: 60px 0;
-            background-color: var(--light-gray);
+            padding: 80px 0;
+            background: var(--white);
         }
-
+        
+        .content-layout {
+            display: grid;
+            grid-template-columns: 1fr 300px;
+            gap: 60px;
+            align-items: start;
+        }
+        
+        .content-main {
+            background: var(--white);
+        }
+        
+        .content-sidebar {
+            position: sticky;
+            top: 120px;
+            background: var(--light-gray);
+            border-radius: 20px;
+            padding: 30px;
+            border: 2px solid var(--border-light);
+        }
+        
+        .sidebar-title {
+            color: var(--baobab-brown);
+            font-size: 1.4rem;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .sidebar-nav {
+            list-style: none;
+        }
+        
+        .sidebar-nav li {
+            margin-bottom: 12px;
+        }
+        
+        .sidebar-nav a {
+            color: var(--trunk-gray);
+            text-decoration: none;
+            padding: 8px 12px;
+            border-radius: 10px;
+            display: block;
+            transition: var(--transition-fast);
+            font-size: 0.95rem;
+        }
+        
+        .sidebar-nav a:hover,
+        .sidebar-nav a.active {
+            background: var(--sunset-gold);
+            color: var(--deep-charcoal);
+            transform: translateX(5px);
+        }
+        
+        /* Policy Overview */
+        .policy-overview {
+            background: linear-gradient(135deg, var(--safety-green), var(--canopy-green));
+            color: var(--white);
+            padding: 50px;
+            border-radius: 25px;
+            margin-bottom: 60px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .policy-overview::before {
+            content: '';
+            position: absolute;
+            top: -50px;
+            right: -50px;
+            width: 200px;
+            height: 200px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+        }
+        
+        .overview-content {
+            position: relative;
+            z-index: 2;
+        }
+        
+        .overview-content h2 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+        }
+        
+        .overview-content p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            line-height: 1.7;
+            margin-bottom: 20px;
+        }
+        
+        .overview-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 25px;
+            margin-top: 40px;
+        }
+        
+        .stat-item {
+            background: rgba(255, 255, 255, 0.15);
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+        }
+        
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--sunset-gold);
+            display: block;
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            margin-top: 5px;
+        }
+        
+        /* Security Measures */
+        .security-measures {
+            margin-bottom: 60px;
+        }
+        
+        .section-header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+        
+        .section-header h2 {
+            font-size: 2.5rem;
+            color: var(--baobab-brown);
+            margin-bottom: 15px;
+        }
+        
+        .section-header p {
+            color: var(--trunk-gray);
+            font-size: 1.1rem;
+            max-width: 700px;
+            margin: 0 auto;
+            line-height: 1.7;
+        }
+        
+        .measures-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+        }
+        
+        .measure-card {
+            background: var(--white);
+            border-radius: 20px;
+            padding: 35px;
+            box-shadow: var(--shadow-lg);
+            border: 3px solid transparent;
+            transition: var(--transition-medium);
+            position: relative;
+        }
+        
+        .measure-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 6px;
+            background: var(--safety-green);
+            border-radius: 20px 20px 0 0;
+        }
+        
+        .measure-card:nth-child(2)::before {
+            background: var(--security-blue);
+        }
+        
+        .measure-card:nth-child(3)::before {
+            background: var(--sunset-gold);
+        }
+        
+        .measure-card:nth-child(4)::before {
+            background: var(--alert-red);
+        }
+        
+        .measure-card:hover {
+            transform: translateY(-10px);
+            border-color: var(--sunset-gold);
+            box-shadow: var(--shadow-xl);
+        }
+        
+        .measure-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--safety-green), var(--canopy-green));
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--white);
+            font-size: 2.5rem;
+            margin-bottom: 25px;
+        }
+        
+        .measure-card:nth-child(2) .measure-icon {
+            background: linear-gradient(135deg, var(--security-blue), var(--sky-blue));
+        }
+        
+        .measure-card:nth-child(3) .measure-icon {
+            background: linear-gradient(135deg, var(--sunset-gold), var(--warning-amber));
+            color: var(--deep-charcoal);
+        }
+        
+        .measure-card:nth-child(4) .measure-icon {
+            background: linear-gradient(135deg, var(--alert-red), var(--desert-orange));
+        }
+        
+        .measure-title {
+            font-size: 1.6rem;
+            color: var(--deep-charcoal);
+            margin-bottom: 15px;
+        }
+        
+        .measure-description {
+            color: var(--trunk-gray);
+            line-height: 1.7;
+            margin-bottom: 20px;
+        }
+        
+        .measure-details {
+            background: var(--earth-cream);
+            padding: 20px;
+            border-radius: 12px;
+            border-left: 4px solid var(--safety-green);
+        }
+        
+        .measure-card:nth-child(2) .measure-details {
+            border-left-color: var(--security-blue);
+        }
+        
+        .measure-card:nth-child(3) .measure-details {
+            border-left-color: var(--sunset-gold);
+        }
+        
+        .measure-card:nth-child(4) .measure-details {
+            border-left-color: var(--alert-red);
+        }
+        
+        .measure-details h4 {
+            color: var(--baobab-brown);
+            margin-bottom: 12px;
+            font-size: 1.1rem;
+        }
+        
+        .measure-details ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        .measure-details li {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 8px;
+            color: var(--trunk-gray);
+            font-size: 0.95rem;
+        }
+        
+        .measure-details i {
+            color: var(--canopy-green);
+            font-size: 1rem;
+            width: 16px;
+        }
+        
+        /* Reporting System */
+        .reporting-section {
+            background: var(--light-gray);
+            padding: 60px 0;
+            border-radius: 30px;
+            margin: 80px 0;
+        }
+        
+        .reporting-header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+        
+        .reporting-header h2 {
+            font-size: 2.5rem;
+            color: var(--baobab-brown);
+            margin-bottom: 15px;
+        }
+        
+        .reporting-process {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        .process-step {
+            background: var(--white);
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            box-shadow: var(--shadow-md);
+            transition: var(--transition-medium);
+            position: relative;
+        }
+        
+        .process-step:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .step-number {
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 40px;
+            height: 40px;
+            background: var(--alert-red);
+            color: var(--white);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.2rem;
+        }
+        
+        .step-icon {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, var(--alert-red), var(--desert-orange));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--white);
+            font-size: 2rem;
+            margin: 20px auto 20px;
+        }
+        
+        .step-title {
+            color: var(--deep-charcoal);
+            font-size: 1.3rem;
+            margin-bottom: 12px;
+        }
+        
+        .step-description {
+            color: var(--trunk-gray);
+            line-height: 1.6;
+            font-size: 0.95rem;
+        }
+        
+        /* Emergency Contacts */
+        .emergency-contacts {
+            background: linear-gradient(135deg, var(--alert-red), var(--desert-orange));
+            color: var(--white);
+            padding: 50px;
+            border-radius: 25px;
+            margin: 60px 0;
+            text-align: center;
+        }
+        
+        .emergency-contacts h2 {
+            font-size: 2.2rem;
+            margin-bottom: 20px;
+        }
+        
+        .emergency-contacts p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            margin-bottom: 30px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .contact-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 25px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .contact-item {
+            background: rgba(255, 255, 255, 0.15);
+            padding: 25px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .contact-item h4 {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+            color: var(--sunset-gold);
+        }
+        
+        .contact-item p {
+            margin: 5px 0;
+            font-size: 0.95rem;
+        }
+        
+        /* Policy Document */
         .policy-document {
             background: var(--white);
-            padding: 50px;
-            border-radius: 8px;
-            box-shadow: var(--shadow-md);
+            border: 2px solid var(--border-light);
+            border-radius: 20px;
+            padding: 40px;
+            margin: 60px 0;
+        }
+        
+        .document-header {
+            border-bottom: 2px solid var(--border-light);
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .document-header h2 {
+            color: var(--baobab-brown);
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+        
+        .document-header .date {
+            color: var(--trunk-gray);
+            font-size: 0.9rem;
         }
         
         .policy-section {
             margin-bottom: 40px;
-            padding-bottom: 30px;
-            border-bottom: 1px solid #e0e0e0;
-        }
-
-        .policy-section:last-child {
-            border-bottom: none;
-            margin-bottom: 0;
-            padding-bottom: 0;
-        }
-        
-        .policy-section h2 {
-            font-size: 1.8rem;
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid var(--canopy-green);
         }
         
         .policy-section h3 {
+            color: var(--deep-charcoal);
             font-size: 1.4rem;
-            margin-top: 25px;
             margin-bottom: 15px;
-            color: var(--baobab-brown);
+            padding-left: 20px;
+            border-left: 4px solid var(--sunset-gold);
         }
         
-        .policy-section p, .policy-section li {
+        .policy-section p {
+            color: var(--trunk-gray);
+            line-height: 1.8;
             margin-bottom: 15px;
-            color: #424242; /* Slightly softer black */
         }
         
         .policy-section ul {
-            list-style-type: none;
-            padding-left: 0;
-        }
-        
-        .policy-section > ul > li::before {
-            content: '\f105'; /* Font Awesome angle-right */
-            font-family: 'Font Awesome 6 Free';
-            font-weight: 900;
-            color: var(--sunset-gold);
-            margin-right: 10px;
-        }
-
-        .policy-section ol {
             padding-left: 20px;
-        }
-
-        .policy-section ol li {
-            margin-bottom: 10px;
+            margin-bottom: 15px;
         }
         
-        .contact-box {
-            background: var(--earth-cream);
-            border-left: 5px solid var(--danger-red);
-            padding: 25px;
-            margin-top: 20px;
-            border-radius: 0 8px 8px 0;
+        .policy-section li {
+            color: var(--trunk-gray);
+            margin-bottom: 8px;
+            line-height: 1.7;
         }
         
-        .contact-box h3 {
-            color: var(--danger-red);
-            margin-top: 0;
+        /* Call to Action */
+        .cta-section {
+            background: linear-gradient(135deg, var(--safety-green), var(--canopy-green));
+            color: var(--white);
+            padding: 60px 0;
+            text-align: center;
+            margin-top: 80px;
+            border-radius: 25px;
         }
         
-        .contact-box p {
-            font-weight: 600;
+        .cta-content h3 {
+            font-size: 2.2rem;
+            margin-bottom: 15px;
         }
         
-        .contact-box a {
-            color: var(--baobab-brown);
-            text-decoration: none;
-            font-weight: 700;
+        .cta-content p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            margin-bottom: 30px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
         }
         
-        /* Mobile Menu */
-        .mobile-menu-panel {
-            position: fixed;
-            top: 0;
-            right: -100%;
-            width: 300px;
-            height: 100vh;
+        .cta-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .btn-white {
             background-color: var(--white);
-            z-index: 1000;
-            padding: 80px 40px 40px;
-            transition: var(--transition-medium);
-            box-shadow: var(--shadow-xl);
-            overflow-y: auto;
+            color: var(--safety-green);
+            border-color: var(--white);
         }
         
-        .mobile-menu-panel.active {
-            right: 0;
+        .btn-white:hover {
+            background-color: transparent;
+            color: var(--white);
+            border-color: var(--white);
         }
         
-        .mobile-menu {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-        
-        .mobile-link {
-            font-weight: 500;
-            color: var(--deep-charcoal);
-            padding: 12px 0;
-            border-bottom: 1px solid var(--earth-cream);
-            display: block;
-            transition: var(--transition-fast);
-            text-decoration: none;
-        }
-        
-        .mobile-link:hover {
-            color: var(--sunset-gold);
-            padding-left: 10px;
-        }
-        
-        .mobile-link.active {
-            color: var(--sunset-gold);
-        }
-        
-        .mobile-buttons {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            margin-top: 30px;
-        }
-        
-        .menu-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.7);
-            z-index: 999;
-            opacity: 0;
-            visibility: hidden;
-            transition: var(--transition-medium);
-            backdrop-filter: blur(5px);
-        }
-        
-        .menu-overlay.active {
-            opacity: 1;
-            visibility: visible;
-        }
-
         /* Footer */
         .footer {
             background: var(--deep-charcoal);
             color: var(--white);
             padding: 60px 0 30px;
+            margin-top: 80px;
         }
         
         .footer-content {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 30px;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
             margin-bottom: 40px;
         }
         
         .footer-section h4 {
             color: var(--sunset-gold);
             margin-bottom: 20px;
+            font-size: 1.2rem;
         }
         
         .footer-link {
@@ -317,6 +818,93 @@
             text-align: center;
             padding-top: 30px;
             border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.7);
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 992px) {
+            .menu-toggle {
+                display: block;
+            }
+            
+            .nav-menu {
+                display: none;
+            }
+            
+            .content-layout {
+                grid-template-columns: 1fr;
+                gap: 40px;
+            }
+            
+            .content-sidebar {
+                position: static;
+                order: -1;
+            }
+            
+            .measures-grid {
+                grid-template-columns: 1fr;
+                gap: 25px;
+            }
+            
+            .reporting-process {
+                grid-template-columns: 1fr;
+                gap: 25px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2.5rem;
+            }
+            
+            .policy-overview {
+                padding: 30px;
+            }
+            
+            .overview-stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .emergency-contacts {
+                padding: 30px;
+            }
+            
+            .contact-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .policy-document {
+                padding: 25px;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .container {
+                padding: 0 15px;
+            }
+            
+            .hero-title {
+                font-size: 2rem;
+            }
+            
+            .measure-card {
+                padding: 25px;
+            }
+            
+            .measure-icon {
+                width: 70px;
+                height: 70px;
+                font-size: 2rem;
+            }
+            
+            .overview-stats {
+                grid-template-columns: 1fr;
+            }
+            
+            .cta-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
         }
     </style>
 </head>
@@ -325,156 +913,493 @@
     <header class="header">
         <div class="container">
             <div class="nav-wrapper">
-                <div class="logo">
+                <a href="index.html" class="logo">
                     <div class="logo-icon"><i class="fas fa-heart"></i></div>
                     <div class="logo-text">Parent Portal</div>
-                </div>
+                </a>
                 
                 <div class="menu-toggle" id="menuToggle">
                     <i class="fas fa-bars"></i>
                 </div>
                 
                 <ul class="nav-menu">
-                    <li><a href="baobabonlineacadmy.com" class="nav-link">Main Site</a></li>
+                    <li><a href="index.html#features" class="nav-link">Features</a></li>
+                    <li><a href="index.html#how-it-works" class="nav-link">How It Works</a></li>
+                    <li><a href="index.html#security" class="nav-link">Safety & Security</a></li>
+                    <li><a href="http://baobabonlineacademy.com" class="nav-link">Main Site</a></li>
                 </ul>
-                
-                <div class="nav-buttons">
-                    <a href="#" class="btn btn-outlined" onclick="openLoginModal()">Login</a>
-                    <a href="#" class="btn btn-primary" onclick="openRegistrationModal()">Register</a>
-                </div>
             </div>
         </div>
     </header>
 
-    <!-- Mobile Menu -->
-    <div class="mobile-menu-panel" id="mobileMenuPanel">
-        <ul class="mobile-menu">
-            <li><a href="baobabonlineacademy.com" class="mobile-link">Main Site</a></li>
-        </ul>
-        <div class="mobile-buttons">
-            <a href="#" class="btn btn-outlined" onclick="openLoginModal()">Login</a>
-            <a href="#" class="btn btn-primary" onclick="openRegistrationModal()">Register</a>
-        </div>
-    </div>
-    
-    <div class="menu-overlay" id="menuOverlay"></div>
-
-    <section class="page-header">
+    <!-- Hero Section -->
+    <section class="hero">
         <div class="container">
-            <h1 class="page-header-title">Child Protection & Safeguarding Policy</h1>
-            <p class="page-header-subtitle">An unwavering commitment to creating a safe, secure, and nurturing online environment for every child.</p>
-            <div class="policy-meta">
-                <span>Version: 2.1</span>
-                <span>Last Updated: 1 August 2025</span>
-                <span>Next Review: 1 August 2026</span>
+            <div class="hero-content">
+                <div class="hero-badge">
+                    <i class="fas fa-shield-alt"></i>
+                    Comprehensive Protection • Zero Tolerance
+                </div>
+                <h1 class="hero-title">Child Protection Policy</h1>
+                <p class="hero-subtitle">
+                    Your child's safety and wellbeing is our absolute priority. Our comprehensive protection 
+                    framework ensures a secure, nurturing environment where every child can learn and thrive.
+                </p>
             </div>
         </div>
     </section>
 
-    <main class="main-content">
+    <!-- Breadcrumbs -->
+    <section class="breadcrumbs">
         <div class="container">
-            <div class="policy-document">
-                
-                <section class="policy-section">
-                    <h2>1. Overarching Commitment</h2>
-                    <p>Baobab Online Academy (hereafter "the Academy") fully accepts its responsibility to safeguard and promote the welfare of all children entrusted to its care. We believe that every child, regardless of age, disability, gender, racial heritage, religious belief, sexual orientation, or identity, has a right to equal protection from all types of harm or abuse. Our commitment is woven into every aspect of our operations, from tutor recruitment to our online platform's architecture.</p>
-                </section>
-                
-                <section class="policy-section">
-                    <h2>2. Purpose of this Policy</h2>
-                    <ul>
-                        <li>To protect children who engage with the Academy's services online.</li>
-                        <li>To provide parents, tutors, and staff with the overarching principles that guide our approach to child safeguarding.</li>
-                        <li>To ensure all stakeholders understand their roles and responsibilities in safeguarding children.</li>
-                        <li>To provide clear procedures for identifying and reporting concerns.</li>
-                    </ul>
-                </section>
+            <nav class="breadcrumb-nav">
+                <a href="index.html" class="breadcrumb-link">
+                    <i class="fas fa-home"></i> Home
+                </a>
+                <span class="breadcrumb-separator">/</span>
+                <a href="#" class="breadcrumb-link">Safety & Security</a>
+                <span class="breadcrumb-separator">/</span>
+                <span class="breadcrumb-current">Child Protection Policy</span>
+            </nav>
+        </div>
+    </section>
 
-                <section class="policy-section">
-                    <h2>3. Personnel & Recruitment (Our 'Safe Recruitment' Promise)</h2>
-                    <h3>3.1. Designated Safeguarding Lead (DSL)</h3>
-                    <p>The Academy has a named Designated Safeguarding Lead (DSL) who is a senior member of staff. The DSL is the first point of contact for all safeguarding concerns. All staff and tutors are aware of the DSL's identity and how to contact them.</p>
-                    
-                    <h3>3.2. Tutor Vetting & Verification</h3>
-                    <p>We operate a rigorous, multi-stage vetting process for all Nigeria-based tutors, which includes, but is not limited to:</p>
-                    <ol>
-                        <li><strong>Identity Verification:</strong> Thorough checks of government-issued identification.</li>
-                        <li><strong>Criminal Background Checks:</strong> Mandatory, enhanced checks appropriate to their jurisdiction.</li>
-                        <li><strong>Reference Checks:</strong> Professional and character references are meticulously followed up.</li>
-                        <li><strong>Qualification Verification:</strong> All academic and teaching qualifications are verified at the source.</li>
-                        <li><strong>Safeguarding Interview:</strong> A specific, scenario-based interview to assess their understanding and commitment to child protection.</li>
-                    </ol>
-                    
-                    <h3>3.3. Continuous Training</h3>
-                    <p>All tutors and staff undergo mandatory safeguarding training upon induction and receive annual refresher courses. This training covers online safety, signs of abuse, reporting procedures, and the Academy's code of conduct.</p>
-                </section>
-
-                <section class="policy-section">
-                    <h2>4. Code of Conduct & Safe Practices</h2>
-                    <p>All tutors must adhere to a strict code of conduct designed for the online environment.</p>
-                    <ul>
-                        <li>All tutoring sessions must take place via the official, monitored Baobab Academy platform. Communication outside this platform is strictly forbidden.</li>
-                        <li>All one-on-one sessions are recorded for safeguarding and quality assurance purposes, accessible to the DSL and parents via the portal.</li>
-                        <li>Professional language and conduct are required at all times.</li>
-                        <li>Tutors must not request or share personal contact information (email, phone, social media) with students or parents.</li>
-                        <li>Tutors must maintain a professional appearance and ensure their teaching environment is appropriate and free from distractions.</li>
-                    </ul>
-                </section>
-                
-                <section class="policy-section">
-                    <h2>5. Reporting Concerns</h2>
-                    <p>We foster a culture of openness where any concern, no matter how small, is taken seriously.</p>
-                    
-                    <h3>5.1. Procedure for Parents & Students</h3>
-                    <p>If a parent or student has any concern about a tutor's conduct or any aspect of their online experience, they must report it immediately. Concerns can be raised through:</p>
-                    <ol>
-                        <li><strong>The 'Report Concern' button:</strong> A discreet button is available within the session interface and on the main portal dashboard. This sends an immediate, confidential alert to the DSL.</li>
-                        <li><strong>Direct Contact with the DSL:</strong> The DSL's contact details are made clearly available within this policy and in the 'Support' section of the portal.</li>
-                    </ol>
-                    
-                    <h3>5.2. Our Response</h3>
-                    <p>Upon receiving a concern, the DSL will immediately initiate a formal investigation. Actions may include session review, interviews with relevant parties, and temporary suspension of a tutor pending the outcome. We are committed to working with parents and, where necessary, statutory child protection agencies to ensure the child's welfare.</p>
-
-                    <div class="contact-box">
-                        <h3>Designated Safeguarding Lead Contact</h3>
-                        <p><strong>Name:</strong> [DSL Name To Be Inserted]</p>
-                        <p><strong>Email:</strong> <a href="mailto:safeguarding@baobabacademy.com">safeguarding@baobabacademy.com</a></p>
-                        <p><strong>Portal Reporting:</strong> Use the 'Report Concern' feature for immediate alerts.</p>
+    <!-- Main Content -->
+    <section class="main-content">
+        <div class="container">
+            <div class="content-layout">
+                <div class="content-main">
+                    <!-- Policy Overview -->
+                    <div class="policy-overview">
+                        <div class="overview-content">
+                            <h2><i class="fas fa-shield-alt"></i> Our Commitment to Safety</h2>
+                            <p>
+                                At Baobab Online Academy, child protection is not just a policy—it's the foundation 
+                                of everything we do. We maintain the highest standards of safety, transparency, and 
+                                accountability to ensure every child in our care is protected, respected, and empowered to learn.
+                            </p>
+                            <p>
+                                Our comprehensive approach combines rigorous tutor vetting, advanced technology safeguards, 
+                                continuous monitoring, and clear reporting mechanisms to create the safest possible learning environment.
+                            </p>
+                            
+                            <div class="overview-stats">
+                                <div class="stat-item">
+                                    <span class="stat-number">100%</span>
+                                    <div class="stat-label">Background Checked Tutors</div>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-number">24/7</span>
+                                    <div class="stat-label">Safety Monitoring</div>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-number">Zero</span>
+                                    <div class="stat-label">Tolerance Policy</div>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-number">Immediate</span>
+                                    <div class="stat-label">Response Protocol</div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                </section>
 
+                    <!-- Security Measures -->
+                    <div class="security-measures">
+                        <div class="section-header">
+                            <h2>Multi-Layered Protection Framework</h2>
+                            <p>
+                                Our child protection system operates on multiple levels, creating overlapping safeguards 
+                                that ensure comprehensive protection through prevention, monitoring, and immediate response protocols.
+                            </p>
+                        </div>
+                        
+                        <div class="measures-grid">
+                            <div class="measure-card">
+                                <div class="measure-icon">
+                                    <i class="fas fa-user-shield"></i>
+                                </div>
+                                <h3 class="measure-title">Rigorous Tutor Verification</h3>
+                                <p class="measure-description">
+                                    Every educator undergoes comprehensive background checks, professional verification, 
+                                    and ongoing monitoring to ensure they meet our highest standards for child safety and educational excellence.
+                                </p>
+                                <div class="measure-details">
+                                    <h4>Verification Process Includes:</h4>
+                                    <ul>
+                                        <li><i class="fas fa-check-circle"></i> Criminal background checks</li>
+                                        <li><i class="fas fa-check-circle"></i> Educational credential verification</li>
+                                        <li><i class="fas fa-check-circle"></i> Professional reference validation</li>
+                                        <li><i class="fas fa-check-circle"></i> Child protection training certification</li>
+                                        <li><i class="fas fa-check-circle"></i> Ongoing behavioral monitoring</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            
+                            <div class="measure-card">
+                                <div class="measure-icon">
+                                    <i class="fas fa-video"></i>
+                                </div>
+                                <h3 class="measure-title">Complete Session Monitoring</h3>
+                                <p class="measure-description">
+                                    All tutoring sessions are recorded and monitored in real-time with advanced AI systems 
+                                    that can detect inappropriate behavior and alert our safety team immediately.
+                                </p>
+                                <div class="measure-details">
+                                    <h4>Monitoring Features:</h4>
+                                    <ul>
+                                        <li><i class="fas fa-check-circle"></i> Full session recording and storage</li>
+                                        <li><i class="fas fa-check-circle"></i> Real-time AI behavior analysis</li>
+                                        <li><i class="fas fa-check-circle"></i> Immediate alert system</li>
+                                        <li><i class="fas fa-check-circle"></i> Parent access to session recordings</li>
+                                        <li><i class="fas fa-check-circle"></i> Automated flagging of concerns</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            
+                            <div class="measure-card">
+                                <div class="measure-icon">
+                                    <i class="fas fa-lock"></i>
+                                </div>
+                                <h3 class="measure-title">Secure Platform Technology</h3>
+                                <p class="measure-description">
+                                    Our platform uses bank-level encryption and security protocols to protect all 
+                                    communications, personal data, and learning materials from unauthorized access.
+                                </p>
+                                <div class="measure-details">
+                                    <h4>Security Technologies:</h4>
+                                    <ul>
+                                        <li><i class="fas fa-check-circle"></i> End-to-end encryption</li>
+                                        <li><i class="fas fa-check-circle"></i> Secure data storage and transmission</li>
+                                        <li><i class="fas fa-check-circle"></i> Multi-factor authentication</li>
+                                        <li><i class="fas fa-check-circle"></i> Regular security audits</li>
+                                        <li><i class="fas fa-check-circle"></i> GDPR and COPPA compliance</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            
+                            <div class="measure-card">
+                                <div class="measure-icon">
+                                    <i class="fas fa-exclamation-triangle"></i>
+                                </div>
+                                <h3 class="measure-title">Immediate Response Protocol</h3>
+                                <p class="measure-description">
+                                    Our dedicated safety team responds immediately to any concerns or incidents, 
+                                    with clear escalation procedures and direct communication with parents and authorities when needed.
+                                </p>
+                                <div class="measure-details">
+                                    <h4>Response Procedures:</h4>
+                                    <ul>
+                                        <li><i class="fas fa-check-circle"></i> 24/7 emergency response team</li>
+                                        <li><i class="fas fa-check-circle"></i> Immediate session termination capability</li>
+                                        <li><i class="fas fa-check-circle"></i> Direct parent notification system</li>
+                                        <li><i class="fas fa-check-circle"></i> Collaboration with local authorities</li>
+                                        <li><i class="fas fa-check-circle"></i> Comprehensive incident documentation</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Reporting System -->
+                    <div class="reporting-section">
+                        <div class="container">
+                            <div class="reporting-header">
+                                <h2>How to Report Concerns</h2>
+                                <p style="color: var(--trunk-gray); font-size: 1.1rem; max-width: 600px; margin: 0 auto;">
+                                    We encourage parents, children, and staff to report any concerns immediately. 
+                                    Our reporting system is designed to be accessible, confidential, and effective.
+                                </p>
+                            </div>
+                            
+                            <div class="reporting-process">
+                                <div class="process-step">
+                                    <div class="step-number">1</div>
+                                    <div class="step-icon">
+                                        <i class="fas fa-phone"></i>
+                                    </div>
+                                    <h3 class="step-title">Immediate Contact</h3>
+                                    <p class="step-description">
+                                        For urgent concerns, call our 24/7 emergency line or use the emergency button 
+                                        in the Parent Portal for immediate assistance.
+                                    </p>
+                                </div>
+                                
+                                <div class="process-step">
+                                    <div class="step-number">2</div>
+                                    <div class="step-icon">
+                                        <i class="fas fa-file-alt"></i>
+                                    </div>
+                                    <h3 class="step-title">Document Details</h3>
+                                    <p class="step-description">
+                                        Provide specific details about the incident, including dates, times, 
+                                        and any evidence such as screenshots or session recordings.
+                                    </p>
+                                </div>
+                                
+                                <div class="process-step">
+                                    <div class="step-number">3</div>
+                                    <div class="step-icon">
+                                        <i class="fas fa-shield-alt"></i>
+                                    </div>
+                                    <h3 class="step-title">Immediate Action</h3>
+                                    <p class="step-description">
+                                        Our safety team immediately investigates all reports and takes appropriate 
+                                        protective measures while maintaining confidentiality.
+                                    </p>
+                                </div>
+                                
+                                <div class="process-step">
+                                    <div class="step-number">4</div>
+                                    <div class="step-icon">
+                                        <i class="fas fa-clipboard-check"></i>
+                                    </div>
+                                    <h3 class="step-title">Follow-Up</h3>
+                                    <p class="step-description">
+                                        We provide regular updates on the investigation and resolution, 
+                                        ensuring you're informed throughout the entire process.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Emergency Contacts -->
+                    <div class="emergency-contacts">
+                        <h2><i class="fas fa-phone-alt"></i> Emergency Contact Information</h2>
+                        <p>
+                            These contacts are available 24/7 for immediate assistance with any child safety concerns. 
+                            Do not hesitate to reach out if you have any worries about your child's wellbeing.
+                        </p>
+                        
+                        <div class="contact-grid">
+                            <div class="contact-item">
+                                <h4>Emergency Hotline</h4>
+                                <p><i class="fas fa-phone"></i> +234 (0) 816 501 1291</p>
+                                <p><i class="fas fa-clock"></i> Available 24/7</p>
+                            </div>
+                            
+                            <div class="contact-item">
+                                <h4>Safety Team Email</h4>
+                                <p><i class="fas fa-envelope"></i> safety@baobabacademy.com</p>
+                                <p><i class="fas fa-clock"></i> Response within 1 hour</p>
+                            </div>
+                            
+                            <div class="contact-item">
+                                <h4>Parent Portal Alert</h4>
+                                <p><i class="fas fa-exclamation-triangle"></i> Emergency Button</p>
+                                <p><i class="fas fa-clock"></i> Immediate notification</p>
+                            </div>
+                            
+                            <div class="contact-item">
+                                <h4>WhatsApp Support</h4>
+                                <p><i class="fab fa-whatsapp"></i> +234 (0) 816 501 1291</p>
+                                <p><i class="fas fa-clock"></i> 24/7 response</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Policy Document -->
+                    <div class="policy-document">
+                        <div class="document-header">
+                            <h2>Complete Child Protection Policy</h2>
+                            <p class="date">Last Updated: January 2025 | Version 3.2</p>
+                        </div>
+                        
+                        <div class="policy-section">
+                            <h3>1. Policy Statement</h3>
+                            <p>
+                                Baobab Online Academy is committed to creating and maintaining a safe environment for all children 
+                                in our programs. We have zero tolerance for any form of abuse, neglect, or inappropriate behavior 
+                                towards children. This policy applies to all staff, tutors, volunteers, and anyone associated with our organization.
+                            </p>
+                        </div>
+                        
+                        <div class="policy-section">
+                            <h3>2. Definitions of Abuse</h3>
+                            <p>We recognize and respond to the following forms of abuse:</p>
+                            <ul>
+                                <li><strong>Physical Abuse:</strong> Any non-accidental physical injury to a child</li>
+                                <li><strong>Emotional Abuse:</strong> Persistent emotional maltreatment causing severe adverse effects</li>
+                                <li><strong>Sexual Abuse:</strong> Any sexual activity with a child, including online exploitation</li>
+                                <li><strong>Neglect:</strong> Persistent failure to meet a child's basic physical or psychological needs</li>
+                                <li><strong>Online Abuse:</strong> Any inappropriate behavior in digital environments</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="policy-section">
+                            <h3>3. Prevention Measures</h3>
+                            <p>Our prevention strategy includes:</p>
+                            <ul>
+                                <li>Comprehensive background checks for all staff and tutors</li>
+                                <li>Mandatory child protection training for all team members</li>
+                                <li>Clear codes of conduct for appropriate behavior</li>
+                                <li>Regular supervision and monitoring of all interactions</li>
+                                <li>Secure technology platforms with built-in safeguards</li>
+                                <li>Parent and child education about online safety</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="policy-section">
+                            <h3>4. Reporting and Response</h3>
+                            <p>
+                                All concerns must be reported immediately to our Child Protection Officer. We maintain 
+                                detailed records of all incidents and work closely with parents and relevant authorities 
+                                to ensure appropriate action is taken.
+                            </p>
+                        </div>
+                        
+                        <div class="policy-section">
+                            <h3>5. Support for Children and Families</h3>
+                            <p>
+                                We provide ongoing support to children and families affected by child protection concerns, 
+                                including access to professional counseling services and continued educational support 
+                                during any investigation or recovery process.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Call to Action -->
+                    <div class="cta-section">
+                        <div class="cta-content">
+                            <h3>Your Child's Safety is Our Priority</h3>
+                            <p>
+                                Trust Baobab Academy to provide the highest standards of child protection while 
+                                delivering exceptional educational experiences. Your peace of mind is priceless.
+                            </p>
+                            <div class="cta-buttons">
+                                <a href="index.html#register" class="btn btn-white">
+                                    <i class="fas fa-user-plus"></i>
+                                    Join Our Safe Learning Community
+                                </a>
+                                <a href="tutor-verification.html" class="btn btn-outlined">
+                                    <i class="fas fa-arrow-right"></i>
+                                    Next: Tutor Verification
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="content-sidebar">
+                    <h3 class="sidebar-title">
+                        <i class="fas fa-map"></i>
+                        Safety Resources
+                    </h3>
+                    <ul class="sidebar-nav">
+                        <li><a href="#" class="active">Child Protection Policy</a></li>
+                        <li><a href="tutor-verification.html">Tutor Verification Process</a></li>
+                        <li><a href="#platform-security">Platform Security Features</a></li>
+                        <li><a href="#privacy-policy">Privacy Policy</a></li>
+                        <li><a href="get-started.html">Getting Started Guide</a></li>
+                    </ul>
+                    
+                    <div style="margin-top: 30px; padding: 20px; background: linear-gradient(135deg, var(--alert-red), var(--desert-orange)); border-radius: 15px; color: var(--white); text-align: center;">
+                        <h4 style="margin-bottom: 15px;">
+                            <i class="fas fa-exclamation-triangle"></i> Report Concerns
+                        </h4>
+                        <p style="font-size: 0.9rem; margin-bottom: 15px; opacity: 0.9;">
+                            Immediate assistance available 24/7 for any safety concerns.
+                        </p>
+                        <a href="tel:+2348165011291" class="btn btn-white" style="width: 100%; justify-content: center;">
+                            <i class="fas fa-phone"></i>
+                            Emergency Hotline
+                        </a>
+                    </div>
+                </div>
             </div>
         </div>
-    </main>
+    </section>
 
+    <!-- Footer -->
     <footer class="footer">
         <div class="container">
             <div class="footer-content">
-                 <div class="footer-section">
+                <div class="footer-section">
                     <h4><i class="fas fa-heart"></i> Parent Resources</h4>
-                    <a href="getting-started.html" class="footer-link">Getting Started Guide</a>
-                    <a href="supporting-learning.html" class="footer-link">Supporting Your Child's Learning</a>
+                    <a href="get-started.html" class="footer-link">Getting Started Guide</a>
+                    <a href="supporting-child.html" class="footer-link">Supporting Your Child's Learning</a>
                     <a href="cultural-integration.html" class="footer-link">Cultural Integration at Home</a>
                 </div>
-
+                
                 <div class="footer-section">
                     <h4><i class="fas fa-shield-alt"></i> Safety & Security</h4>
                     <a href="child-protection.html" class="footer-link">Child Protection Policy</a>
-                    <a href="#" class="footer-link">Tutor Verification Process</a>
+                    <a href="tutor-verification.html" class="footer-link">Tutor Verification Process</a>
                     <a href="#" class="footer-link">Platform Security Features</a>
                     <a href="#" class="footer-link">Privacy Policy</a>
                 </div>
-                <div class="footer-section">
-                    <h4><i class="fas fa-users"></i> Community</h4>
-                    </div>
+                
                 <div class="footer-section">
                     <h4><i class="fas fa-headset"></i> Support</h4>
-                    </div>
+                    <p style="color: rgba(255, 255, 255, 0.7); margin-bottom: 15px;">
+                        <i class="fas fa-envelope"></i>
+                        parents@baobabonlineacademy.com
+                    </p>
+                    <p style="color: rgba(255, 255, 255, 0.7); margin-bottom: 15px;">
+                        <i class="fas fa-phone"></i>
+                        +234 (0) 816 501 1291
+                    </p>
+                    <a href="#" class="footer-link">Help Center</a>
+                    <a href="#" class="footer-link">Live Chat Support</a>
+                </div>
             </div>
+            
             <div class="footer-bottom">
                 <p>&copy; 2025 Baobab Online Academy Parent Portal. Nurturing Growth, Honoring Heritage.</p>
             </div>
         </div>
     </footer>
+
+    <script>
+        // Mobile menu functionality
+        const menuToggle = document.getElementById('menuToggle');
+        const navMenu = document.querySelector('.nav-menu');
+        
+        if (menuToggle) {
+            menuToggle.addEventListener('click', function() {
+                navMenu.classList.toggle('active');
+                this.innerHTML = navMenu.classList.contains('active') 
+                    ? '<i class="fas fa-times"></i>' 
+                    : '<i class="fas fa-bars"></i>';
+            });
+        }
+
+        // Measure card hover effects
+        document.querySelectorAll('.measure-card').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-15px) scale(1.02)';
+            });
+            
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0) scale(1)';
+            });
+        });
+
+        // Process step hover effects
+        document.querySelectorAll('.process-step').forEach(step => {
+            step.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-10px) scale(1.03)';
+            });
+            
+            step.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0) scale(1)';
+            });
+        });
+
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+    </script>
 </body>
 </html>
