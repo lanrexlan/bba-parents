@@ -1,0 +1,1350 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" type="image/png" sizes="32x32" href="/Images/logo.jpg">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Platform Security Features - Baobab Online Academy Parent Portal</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@300;400;700;900&family=Open+Sans:wght@300;400;600;700&family=Kalam:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --baobab-brown: #8D4004;
+            --canopy-green: #2E7D32;
+            --sunset-gold: #F57C00;
+            --trunk-gray: #5D4037;
+            --sky-blue: #1976D2;
+            --earth-cream: #FFF8E1;
+            --desert-orange: #FF5722;
+            --sage-green: #689F38;
+            --deep-charcoal: #263238;
+            --white: #FFFFFF;
+            --light-gray: #F5F5F5;
+            --border-light: #E0E0E0;
+            --cyber-blue: #0F3460;
+            --electric-blue: #00D4FF;
+            --secure-green: #00E676;
+            --warning-red: #FF1744;
+            --neon-purple: #9C27B0;
+            --tech-gray: #37474F;
+            
+            --transition-slow: all 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
+            --transition-medium: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+            --transition-fast: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+            
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
+            --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            --shadow-neon: 0 0 20px rgba(0, 212, 255, 0.3);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Open Sans', sans-serif;
+            color: var(--deep-charcoal);
+            line-height: 1.6;
+            overflow-x: hidden;
+            background-color: var(--white);
+        }
+        
+        h1, h2, h3, h4, h5 {
+            font-family: 'Merriweather', serif;
+            font-weight: 700;
+            line-height: 1.3;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            position: relative;
+        }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 14px 32px;
+            border-radius: 30px;
+            font-weight: 600;
+            text-align: center;
+            transition: var(--transition-fast);
+            border: 2px solid transparent;
+            font-family: 'Open Sans', sans-serif;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        
+        .btn-primary {
+            background-color: var(--baobab-brown);
+            color: var(--white);
+            border-color: var(--baobab-brown);
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--trunk-gray);
+            border-color: var(--trunk-gray);
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .btn-secondary {
+            background-color: var(--sunset-gold);
+            color: var(--deep-charcoal);
+            border-color: var(--sunset-gold);
+        }
+        
+        .btn-outlined {
+            background-color: transparent;
+            color: var(--baobab-brown);
+            border-color: var(--baobab-brown);
+        }
+        
+        .btn-outlined:hover {
+            background-color: var(--baobab-brown);
+            color: var(--white);
+        }
+        
+        /* Header */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+            background-color: var(--white);
+            box-shadow: var(--shadow-md);
+            padding: 10px 0;
+        }
+        
+        .nav-wrapper {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+        }
+        
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            background-color: var(--canopy-green);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            font-size: 20px;
+            color: var(--white);
+        }
+        
+        .logo-text {
+            font-weight: 700;
+            font-size: 20px;
+            color: var(--baobab-brown);
+        }
+        
+        .nav-menu {
+            display: flex;
+            gap: 30px;
+            list-style: none;
+        }
+        
+        .nav-link {
+            font-weight: 500;
+            color: var(--deep-charcoal);
+            text-decoration: none;
+            padding: 5px 0;
+            transition: var(--transition-fast);
+        }
+        
+        .nav-link:hover {
+            color: var(--sunset-gold);
+        }
+        
+        .menu-toggle {
+            display: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--baobab-brown);
+        }
+        
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, var(--cyber-blue), var(--tech-gray), var(--deep-charcoal));
+            color: var(--white);
+            padding: 120px 0 80px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200"><circle cx="50" cy="50" r="2" fill="rgba(0,212,255,0.3)"/><circle cx="150" cy="100" r="1.5" fill="rgba(0,212,255,0.2)"/><circle cx="100" cy="150" r="1" fill="rgba(0,212,255,0.4)"/><path d="M20,20 L40,40 M160,40 L180,20 M20,180 L40,160 M160,160 L180,180" stroke="rgba(0,212,255,0.2)" stroke-width="1"/></svg>');
+            animation: cyber-flow 20s infinite linear;
+        }
+        
+        @keyframes cyber-flow {
+            0% { transform: translateX(0) translateY(0); }
+            50% { transform: translateX(10px) translateY(-10px); }
+            100% { transform: translateX(0) translateY(0); }
+        }
+        
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            max-width: 800px;
+            text-align: center;
+            margin: 0 auto;
+        }
+        
+        .hero-badge {
+            background: rgba(0, 212, 255, 0.2);
+            padding: 12px 25px;
+            border-radius: 25px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            margin-bottom: 25px;
+            display: inline-block;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(0, 212, 255, 0.3);
+            box-shadow: var(--shadow-neon);
+        }
+        
+        .hero-title {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            line-height: 1.2;
+            text-shadow: 0 0 30px rgba(0, 212, 255, 0.3);
+        }
+        
+        .hero-subtitle {
+            font-size: 1.3rem;
+            opacity: 0.9;
+            margin-bottom: 40px;
+            line-height: 1.6;
+        }
+        
+        /* Breadcrumbs */
+        .breadcrumbs {
+            background: var(--earth-cream);
+            padding: 20px 0;
+            border-bottom: 2px solid var(--border-light);
+        }
+        
+        .breadcrumb-nav {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.9rem;
+        }
+        
+        .breadcrumb-link {
+            color: var(--trunk-gray);
+            text-decoration: none;
+            transition: var(--transition-fast);
+        }
+        
+        .breadcrumb-link:hover {
+            color: var(--sunset-gold);
+        }
+        
+        .breadcrumb-separator {
+            color: var(--trunk-gray);
+            opacity: 0.6;
+        }
+        
+        .breadcrumb-current {
+            color: var(--baobab-brown);
+            font-weight: 600;
+        }
+        
+        /* Main Content */
+        .main-content {
+            padding: 80px 0;
+            background: var(--white);
+        }
+        
+        /* Security Overview */
+        .security-overview {
+            background: linear-gradient(135deg, var(--secure-green), var(--canopy-green));
+            color: var(--white);
+            padding: 60px;
+            border-radius: 25px;
+            margin-bottom: 80px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .security-overview::before {
+            content: '';
+            position: absolute;
+            top: -50px;
+            right: -50px;
+            width: 200px;
+            height: 200px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            animation: pulse-secure 4s infinite ease-in-out;
+        }
+        
+        @keyframes pulse-secure {
+            0%, 100% { transform: scale(1); opacity: 0.3; }
+            50% { transform: scale(1.1); opacity: 0.6; }
+        }
+        
+        .overview-content {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+        }
+        
+        .overview-content h2 {
+            font-size: 2.8rem;
+            margin-bottom: 25px;
+        }
+        
+        .overview-content p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            line-height: 1.7;
+            margin-bottom: 40px;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .security-badges {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 25px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .security-badge {
+            background: rgba(255, 255, 255, 0.15);
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: var(--transition-medium);
+        }
+        
+        .security-badge:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .security-badge h3 {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+            color: var(--sunset-gold);
+        }
+        
+        .security-badge p {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            margin: 0;
+        }
+        
+        /* Security Features Grid */
+        .security-features {
+            margin-bottom: 80px;
+        }
+        
+        .features-header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+        
+        .features-header h2 {
+            font-size: 2.8rem;
+            color: var(--baobab-brown);
+            margin-bottom: 20px;
+        }
+        
+        .features-header p {
+            color: var(--trunk-gray);
+            font-size: 1.2rem;
+            max-width: 700px;
+            margin: 0 auto;
+            line-height: 1.7;
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 40px;
+        }
+        
+        .feature-card {
+            background: var(--white);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: var(--shadow-lg);
+            border: 3px solid transparent;
+            transition: var(--transition-medium);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 6px;
+            background: var(--electric-blue);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: var(--transition-medium);
+        }
+        
+        .feature-card:hover::before {
+            transform: scaleX(1);
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-15px);
+            border-color: var(--electric-blue);
+            box-shadow: var(--shadow-neon);
+        }
+        
+        .feature-card:nth-child(2)::before {
+            background: var(--secure-green);
+        }
+        
+        .feature-card:nth-child(3)::before {
+            background: var(--neon-purple);
+        }
+        
+        .feature-card:nth-child(4)::before {
+            background: var(--warning-red);
+        }
+        
+        .feature-card:nth-child(5)::before {
+            background: var(--sunset-gold);
+        }
+        
+        .feature-card:nth-child(6)::before {
+            background: var(--cyber-blue);
+        }
+        
+        .feature-icon {
+            width: 90px;
+            height: 90px;
+            background: linear-gradient(135deg, var(--electric-blue), var(--cyber-blue));
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--white);
+            font-size: 2.8rem;
+            margin-bottom: 25px;
+            box-shadow: var(--shadow-neon);
+        }
+        
+        .feature-card:nth-child(2) .feature-icon {
+            background: linear-gradient(135deg, var(--secure-green), var(--canopy-green));
+            box-shadow: 0 0 20px rgba(0, 230, 118, 0.3);
+        }
+        
+        .feature-card:nth-child(3) .feature-icon {
+            background: linear-gradient(135deg, var(--neon-purple), var(--cyber-blue));
+            box-shadow: 0 0 20px rgba(156, 39, 176, 0.3);
+        }
+        
+        .feature-card:nth-child(4) .feature-icon {
+            background: linear-gradient(135deg, var(--warning-red), var(--desert-orange));
+            box-shadow: 0 0 20px rgba(255, 23, 68, 0.3);
+        }
+        
+        .feature-card:nth-child(5) .feature-icon {
+            background: linear-gradient(135deg, var(--sunset-gold), var(--baobab-brown));
+            box-shadow: 0 0 20px rgba(245, 124, 0, 0.3);
+        }
+        
+        .feature-card:nth-child(6) .feature-icon {
+            background: linear-gradient(135deg, var(--cyber-blue), var(--tech-gray));
+            box-shadow: 0 0 20px rgba(15, 52, 96, 0.3);
+        }
+        
+        .feature-title {
+            color: var(--deep-charcoal);
+            font-size: 1.7rem;
+            margin-bottom: 20px;
+        }
+        
+        .feature-description {
+            color: var(--trunk-gray);
+            line-height: 1.7;
+            margin-bottom: 25px;
+        }
+        
+        .feature-tech-specs {
+            background: var(--light-gray);
+            padding: 20px;
+            border-radius: 12px;
+            border-left: 4px solid var(--electric-blue);
+        }
+        
+        .feature-card:nth-child(2) .feature-tech-specs {
+            border-left-color: var(--secure-green);
+        }
+        
+        .feature-card:nth-child(3) .feature-tech-specs {
+            border-left-color: var(--neon-purple);
+        }
+        
+        .feature-card:nth-child(4) .feature-tech-specs {
+            border-left-color: var(--warning-red);
+        }
+        
+        .feature-card:nth-child(5) .feature-tech-specs {
+            border-left-color: var(--sunset-gold);
+        }
+        
+        .feature-card:nth-child(6) .feature-tech-specs {
+            border-left-color: var(--cyber-blue);
+        }
+        
+        .feature-tech-specs h4 {
+            color: var(--baobab-brown);
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+        
+        .feature-tech-specs ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        .feature-tech-specs li {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 8px;
+            color: var(--trunk-gray);
+            font-size: 0.95rem;
+        }
+        
+        .feature-tech-specs i {
+            color: var(--electric-blue);
+            font-size: 1rem;
+            width: 16px;
+        }
+        
+        .feature-card:nth-child(2) .feature-tech-specs i {
+            color: var(--secure-green);
+        }
+        
+        .feature-card:nth-child(3) .feature-tech-specs i {
+            color: var(--neon-purple);
+        }
+        
+        .feature-card:nth-child(4) .feature-tech-specs i {
+            color: var(--warning-red);
+        }
+        
+        .feature-card:nth-child(5) .feature-tech-specs i {
+            color: var(--sunset-gold);
+        }
+        
+        .feature-card:nth-child(6) .feature-tech-specs i {
+            color: var(--cyber-blue);
+        }
+        
+        /* Compliance Section */
+        .compliance-section {
+            background: var(--light-gray);
+            padding: 80px 0;
+            border-radius: 30px;
+            margin: 80px 0;
+        }
+        
+        .compliance-header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+        
+        .compliance-header h2 {
+            font-size: 2.5rem;
+            color: var(--baobab-brown);
+            margin-bottom: 20px;
+        }
+        
+        .compliance-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        .compliance-card {
+            background: var(--white);
+            border-radius: 20px;
+            padding: 35px;
+            text-align: center;
+            box-shadow: var(--shadow-md);
+            transition: var(--transition-medium);
+            border: 2px solid transparent;
+        }
+        
+        .compliance-card:hover {
+            transform: translateY(-10px);
+            border-color: var(--electric-blue);
+            box-shadow: var(--shadow-neon);
+        }
+        
+        .compliance-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--neon-purple), var(--electric-blue));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--white);
+            font-size: 2.5rem;
+            margin: 0 auto 20px;
+            box-shadow: 0 0 20px rgba(156, 39, 176, 0.3);
+        }
+        
+        .compliance-card:nth-child(2) .compliance-icon {
+            background: linear-gradient(135deg, var(--secure-green), var(--canopy-green));
+            box-shadow: 0 0 20px rgba(0, 230, 118, 0.3);
+        }
+        
+        .compliance-card:nth-child(3) .compliance-icon {
+            background: linear-gradient(135deg, var(--cyber-blue), var(--tech-gray));
+            box-shadow: 0 0 20px rgba(15, 52, 96, 0.3);
+        }
+        
+        .compliance-card:nth-child(4) .compliance-icon {
+            background: linear-gradient(135deg, var(--sunset-gold), var(--baobab-brown));
+            box-shadow: 0 0 20px rgba(245, 124, 0, 0.3);
+        }
+        
+        .compliance-title {
+            color: var(--deep-charcoal);
+            font-size: 1.4rem;
+            margin-bottom: 15px;
+        }
+        
+        .compliance-description {
+            color: var(--trunk-gray);
+            line-height: 1.7;
+            font-size: 0.95rem;
+        }
+        
+        /* Incident Response */
+        .incident-response {
+            background: linear-gradient(135deg, var(--warning-red), var(--desert-orange));
+            color: var(--white);
+            padding: 60px 0;
+            border-radius: 25px;
+            margin: 80px 0;
+        }
+        
+        .incident-content {
+            text-align: center;
+        }
+        
+        .incident-content h2 {
+            font-size: 2.5rem;
+            margin-bottom: 25px;
+        }
+        
+        .incident-content p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            margin-bottom: 40px;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.7;
+        }
+        
+        .response-steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 30px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .response-step {
+            background: rgba(255, 255, 255, 0.15);
+            padding: 30px;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: var(--transition-medium);
+        }
+        
+        .response-step:hover {
+            transform: translateY(-8px);
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .response-step h3 {
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+            color: var(--sunset-gold);
+        }
+        
+        .response-step p {
+            font-size: 0.95rem;
+            opacity: 0.9;
+            margin: 0;
+            line-height: 1.6;
+        }
+        
+        /* Call to Action */
+        .cta-section {
+            background: linear-gradient(135deg, var(--cyber-blue), var(--electric-blue));
+            color: var(--white);
+            padding: 60px 0;
+            text-align: center;
+            margin-top: 80px;
+            border-radius: 25px;
+        }
+        
+        .cta-content h3 {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            text-shadow: 0 0 30px rgba(0, 212, 255, 0.5);
+        }
+        
+        .cta-content p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            margin-bottom: 30px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .cta-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .btn-white {
+            background-color: var(--white);
+            color: var(--cyber-blue);
+            border-color: var(--white);
+        }
+        
+        .btn-white:hover {
+            background-color: transparent;
+            color: var(--white);
+            border-color: var(--white);
+            box-shadow: var(--shadow-neon);
+        }
+        
+        /* Footer */
+        .footer {
+            background: var(--deep-charcoal);
+            color: var(--white);
+            padding: 60px 0 30px;
+            margin-top: 80px;
+        }
+        
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+        
+        .footer-section h4 {
+            color: var(--sunset-gold);
+            margin-bottom: 20px;
+            font-size: 1.2rem;
+        }
+        
+        .footer-link {
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            display: block;
+            padding: 8px 0;
+            transition: var(--transition-fast);
+        }
+        
+        .footer-link:hover {
+            color: var(--sunset-gold);
+            padding-left: 5px;
+        }
+        
+        .footer-bottom {
+            text-align: center;
+            padding-top: 30px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.7);
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 992px) {
+            .menu-toggle {
+                display: block;
+            }
+            
+            .nav-menu {
+                display: none;
+            }
+            
+            .features-grid {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+            
+            .compliance-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .response-steps {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2.5rem;
+            }
+            
+            .security-overview {
+                padding: 40px 30px;
+            }
+            
+            .security-badges {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .feature-card {
+                padding: 30px;
+            }
+            
+            .incident-response {
+                padding: 40px 20px;
+            }
+            
+            .compliance-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .container {
+                padding: 0 15px;
+            }
+            
+            .hero-title {
+                font-size: 2rem;
+            }
+            
+            .security-badges {
+                grid-template-columns: 1fr;
+            }
+            
+            .feature-icon {
+                width: 80px;
+                height: 80px;
+                font-size: 2.2rem;
+            }
+            
+            .compliance-icon {
+                width: 70px;
+                height: 70px;
+                font-size: 2rem;
+            }
+            
+            .cta-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="nav-wrapper">
+                <a href="index.html" class="logo">
+                    <div class="logo-icon"><i class="fas fa-heart"></i></div>
+                    <div class="logo-text">Parent Portal</div>
+                </a>
+                
+                <div class="menu-toggle" id="menuToggle">
+                    <i class="fas fa-bars"></i>
+                </div>
+                
+                <ul class="nav-menu">
+                    <li><a href="index.html#features" class="nav-link">Features</a></li>
+                    <li><a href="index.html#how-it-works" class="nav-link">How It Works</a></li>
+                    <li><a href="index.html#security" class="nav-link">Safety & Security</a></li>
+                    <li><a href="http://baobabonlineacademy.com" class="nav-link">Main Site</a></li>
+                </ul>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <div class="hero-badge">
+                    <i class="fas fa-lock"></i>
+                    Bank-Level Security • Advanced Protection
+                </div>
+                <h1 class="hero-title">Platform Security Features</h1>
+                <p class="hero-subtitle">
+                    Our cutting-edge security infrastructure protects your family's data and privacy with 
+                    military-grade encryption, continuous monitoring, and advanced threat detection systems.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Breadcrumbs -->
+    <section class="breadcrumbs">
+        <div class="container">
+            <nav class="breadcrumb-nav">
+                <a href="index.html" class="breadcrumb-link">
+                    <i class="fas fa-home"></i> Home
+                </a>
+                <span class="breadcrumb-separator">/</span>
+                <a href="#" class="breadcrumb-link">Safety & Security</a>
+                <span class="breadcrumb-separator">/</span>
+                <span class="breadcrumb-current">Platform Security Features</span>
+            </nav>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <section class="main-content">
+        <div class="container">
+            <!-- Security Overview -->
+            <div class="security-overview">
+                <div class="overview-content">
+                    <h2><i class="fas fa-shield-alt"></i> Enterprise-Grade Security Architecture</h2>
+                    <p>
+                        Our platform employs the same security standards used by major financial institutions 
+                        and government agencies. Every layer of our system is designed to protect your family's 
+                        privacy and ensure your child's online safety.
+                    </p>
+                    
+                    <div class="security-badges">
+                        <div class="security-badge">
+                            <h3>256-Bit Encryption</h3>
+                            <p>Military-grade data protection</p>
+                        </div>
+                        <div class="security-badge">
+                            <h3>ISO 27001 Certified</h3>
+                            <p>International security standards</p>
+                        </div>
+                        <div class="security-badge">
+                            <h3>24/7 Monitoring</h3>
+                            <p>Continuous threat detection</p>
+                        </div>
+                        <div class="security-badge">
+                            <h3>Zero Data Breach</h3>
+                            <p>Perfect security record</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Security Features -->
+            <div class="security-features">
+                <div class="features-header">
+                    <h2>Advanced Security Technologies</h2>
+                    <p>
+                        Our multi-layered security approach combines cutting-edge technology with strict protocols 
+                        to create an impenetrable shield around your family's digital learning environment.
+                    </p>
+                </div>
+                
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-lock"></i>
+                        </div>
+                        <h3 class="feature-title">End-to-End Encryption</h3>
+                        <p class="feature-description">
+                            All communications between your child and their tutor are protected by AES-256 encryption, 
+                            ensuring that conversations, files, and personal information remain completely private.
+                        </p>
+                        <div class="feature-tech-specs">
+                            <h4>Technical Specifications:</h4>
+                            <ul>
+                                <li><i class="fas fa-check-circle"></i> AES-256 encryption standard</li>
+                                <li><i class="fas fa-check-circle"></i> Perfect Forward Secrecy</li>
+                                <li><i class="fas fa-check-circle"></i> Encrypted data storage</li>
+                                <li><i class="fas fa-check-circle"></i> Secure key management</li>
+                                <li><i class="fas fa-check-circle"></i> Zero-knowledge architecture</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-user-shield"></i>
+                        </div>
+                        <h3 class="feature-title">Multi-Factor Authentication</h3>
+                        <p class="feature-description">
+                            Advanced authentication protocols ensure only authorized users can access accounts, 
+                            with multiple verification layers including biometric options where available.
+                        </p>
+                        <div class="feature-tech-specs">
+                            <h4>Authentication Methods:</h4>
+                            <ul>
+                                <li><i class="fas fa-check-circle"></i> SMS verification codes</li>
+                                <li><i class="fas fa-check-circle"></i> Email authentication links</li>
+                                <li><i class="fas fa-check-circle"></i> Authenticator app integration</li>
+                                <li><i class="fas fa-check-circle"></i> Biometric verification (where supported)</li>
+                                <li><i class="fas fa-check-circle"></i> Device fingerprinting</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-eye"></i>
+                        </div>
+                        <h3 class="feature-title">AI-Powered Monitoring</h3>
+                        <p class="feature-description">
+                            Our advanced AI systems continuously monitor all interactions for inappropriate content 
+                            or behavior, providing real-time alerts and automatic intervention when necessary.
+                        </p>
+                        <div class="feature-tech-specs">
+                            <h4>Monitoring Capabilities:</h4>
+                            <ul>
+                                <li><i class="fas fa-check-circle"></i> Real-time content analysis</li>
+                                <li><i class="fas fa-check-circle"></i> Behavioral pattern recognition</li>
+                                <li><i class="fas fa-check-circle"></i> Automatic threat detection</li>
+                                <li><i class="fas fa-check-circle"></i> Instant alert system</li>
+                                <li><i class="fas fa-check-circle"></i> Machine learning adaptation</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-server"></i>
+                        </div>
+                        <h3 class="feature-title">Secure Infrastructure</h3>
+                        <p class="feature-description">
+                            Our platform runs on hardened servers with redundant security measures, 
+                            including DDoS protection, intrusion detection, and automatic security updates.
+                        </p>
+                        <div class="feature-tech-specs">
+                            <h4>Infrastructure Security:</h4>
+                            <ul>
+                                <li><i class="fas fa-check-circle"></i> Cloud-based security architecture</li>
+                                <li><i class="fas fa-check-circle"></i> DDoS protection systems</li>
+                                <li><i class="fas fa-check-circle"></i> Intrusion detection and prevention</li>
+                                <li><i class="fas fa-check-circle"></i> Automated security patching</li>
+                                <li><i class="fas fa-check-circle"></i> Geographic data redundancy</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-video"></i>
+                        </div>
+                        <h3 class="feature-title">Secure Session Recording</h3>
+                        <p class="feature-description">
+                            All tutoring sessions are securely recorded and stored with tamper-proof timestamps, 
+                            providing complete transparency while maintaining the highest security standards.
+                        </p>
+                        <div class="feature-tech-specs">
+                            <h4>Recording Security:</h4>
+                            <ul>
+                                <li><i class="fas fa-check-circle"></i> Encrypted video storage</li>
+                                <li><i class="fas fa-check-circle"></i> Tamper-proof timestamps</li>
+                                <li><i class="fas fa-check-circle"></i> Access control mechanisms</li>
+                                <li><i class="fas fa-check-circle"></i> Automatic retention policies</li>
+                                <li><i class="fas fa-check-circle"></i> Audit trail logging</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-database"></i>
+                        </div>
+                        <h3 class="feature-title">Data Privacy Protection</h3>
+                        <p class="feature-description">
+                            Your family's personal information is protected by strict data governance policies, 
+                            with granular privacy controls and full compliance with international privacy laws.
+                        </p>
+                        <div class="feature-tech-specs">
+                            <h4>Privacy Protections:</h4>
+                            <ul>
+                                <li><i class="fas fa-check-circle"></i> GDPR compliance framework</li>
+                                <li><i class="fas fa-check-circle"></i> COPPA children's privacy protection</li>
+                                <li><i class="fas fa-check-circle"></i> Data minimization practices</li>
+                                <li><i class="fas fa-check-circle"></i> Right to erasure implementation</li>
+                                <li><i class="fas fa-check-circle"></i> Consent management system</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Compliance Section -->
+            <div class="compliance-section">
+                <div class="container">
+                    <div class="compliance-header">
+                        <h2>Industry Compliance & Certifications</h2>
+                        <p style="color: var(--trunk-gray); font-size: 1.1rem; max-width: 600px; margin: 0 auto;">
+                            We maintain the highest industry standards and certifications to ensure your trust 
+                            and confidence in our security measures.
+                        </p>
+                    </div>
+                    
+                    <div class="compliance-grid">
+                        <div class="compliance-card">
+                            <div class="compliance-icon">
+                                <i class="fas fa-certificate"></i>
+                            </div>
+                            <h3 class="compliance-title">ISO 27001 Certified</h3>
+                            <p class="compliance-description">
+                                International standard for information security management systems, 
+                                ensuring systematic approach to managing sensitive information.
+                            </p>
+                        </div>
+                        
+                        <div class="compliance-card">
+                            <div class="compliance-icon">
+                                <i class="fas fa-shield-alt"></i>
+                            </div>
+                            <h3 class="compliance-title">SOC 2 Type II</h3>
+                            <p class="compliance-description">
+                                Independent audit of our security controls, availability, and 
+                                confidentiality measures over an extended period.
+                            </p>
+                        </div>
+                        
+                        <div class="compliance-card">
+                            <div class="compliance-icon">
+                                <i class="fas fa-balance-scale"></i>
+                            </div>
+                            <h3 class="compliance-title">GDPR Compliant</h3>
+                            <p class="compliance-description">
+                                Full compliance with European General Data Protection Regulation, 
+                                ensuring the highest privacy protection standards worldwide.
+                            </p>
+                        </div>
+                        
+                        <div class="compliance-card">
+                            <div class="compliance-icon">
+                                <i class="fas fa-child"></i>
+                            </div>
+                            <h3 class="compliance-title">COPPA Certified</h3>
+                            <p class="compliance-description">
+                                Children's Online Privacy Protection Act compliance, specifically 
+                                designed to protect children's personal information online.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Incident Response -->
+            <div class="incident-response">
+                <div class="container">
+                    <div class="incident-content">
+                        <h2><i class="fas fa-exclamation-triangle"></i> 24/7 Security Incident Response</h2>
+                        <p>
+                            Our dedicated security team monitors threats around the clock and responds immediately 
+                            to any security incidents with a comprehensive response protocol.
+                        </p>
+                        
+                        <div class="response-steps">
+                            <div class="response-step">
+                                <h3>Detection</h3>
+                                <p>Advanced AI and human monitoring systems detect potential threats in real-time.</p>
+                            </div>
+                            
+                            <div class="response-step">
+                                <h3>Assessment</h3>
+                                <p>Security experts immediately assess the severity and scope of any detected incident.</p>
+                            </div>
+                            
+                            <div class="response-step">
+                                <h3>Containment</h3>
+                                <p>Immediate measures are taken to contain and isolate any security threats.</p>
+                            </div>
+                            
+                            <div class="response-step">
+                                <h3>Communication</h3>
+                                <p>Affected families are notified immediately with clear, actionable information.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Call to Action -->
+            <div class="cta-section">
+                <div class="cta-content">
+                    <h3>Experience Uncompromising Security</h3>
+                    <p>
+                        Join thousands of families who trust our advanced security infrastructure to protect 
+                        their children's online learning experience. Your peace of mind is our priority.
+                    </p>
+                    <div class="cta-buttons">
+                        <a href="index.html#register" class="btn btn-white">
+                            <i class="fas fa-user-plus"></i>
+                            Start Learning Securely
+                        </a>
+                        <a href="privacy-policy.html" class="btn btn-outlined">
+                            <i class="fas fa-arrow-right"></i>
+                            Next: Privacy Policy
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4><i class="fas fa-heart"></i> Parent Resources</h4>
+                    <a href="get-started.html" class="footer-link">Getting Started Guide</a>
+                    <a href="supporting-child.html" class="footer-link">Supporting Your Child's Learning</a>
+                    <a href="cultural-integration.html" class="footer-link">Cultural Integration at Home</a>
+                </div>
+                
+                <div class="footer-section">
+                    <h4><i class="fas fa-shield-alt"></i> Safety & Security</h4>
+                    <a href="child-protection.html" class="footer-link">Child Protection Policy</a>
+                    <a href="tutor-verification.html" class="footer-link">Tutor Verification Process</a>
+                    <a href="platform-security.html" class="footer-link">Platform Security Features</a>
+                    <a href="privacy-policy.html" class="footer-link">Privacy Policy</a>
+                </div>
+                
+                <div class="footer-section">
+                    <h4><i class="fas fa-headset"></i> Support</h4>
+                    <p style="color: rgba(255, 255, 255, 0.7); margin-bottom: 15px;">
+                        <i class="fas fa-envelope"></i>
+                        parents@baobabonlineacademy.com
+                    </p>
+                    <p style="color: rgba(255, 255, 255, 0.7); margin-bottom: 15px;">
+                        <i class="fas fa-phone"></i>
+                        +234 (0) 816 501 1291
+                    </p>
+                    <a href="#" class="footer-link">Help Center</a>
+                    <a href="#" class="footer-link">Live Chat Support</a>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2025 Baobab Online Academy Parent Portal. Nurturing Growth, Honoring Heritage.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Mobile menu functionality
+        const menuToggle = document.getElementById('menuToggle');
+        const navMenu = document.querySelector('.nav-menu');
+        
+        if (menuToggle) {
+            menuToggle.addEventListener('click', function() {
+                navMenu.classList.toggle('active');
+                this.innerHTML = navMenu.classList.contains('active') 
+                    ? '<i class="fas fa-times"></i>' 
+                    : '<i class="fas fa-bars"></i>';
+            });
+        }
+
+        // Feature card hover effects
+        document.querySelectorAll('.feature-card').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-20px) scale(1.02)';
+            });
+            
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0) scale(1)';
+            });
+        });
+
+        // Security badge hover effects
+        document.querySelectorAll('.security-badge').forEach(badge => {
+            badge.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-8px) scale(1.05)';
+            });
+            
+            badge.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0) scale(1)';
+            });
+        });
+
+        // Compliance card hover effects
+        document.querySelectorAll('.compliance-card').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-12px) scale(1.03)';
+            });
+            
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0) scale(1)';
+            });
+        });
+
+        // Response step hover effects
+        document.querySelectorAll('.response-step').forEach(step => {
+            step.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-10px) scale(1.02)';
+            });
+            
+            step.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0) scale(1)';
+            });
+        });
+
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>

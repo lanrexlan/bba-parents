@@ -4,9 +4,9 @@
     <meta charset="UTF-8">
     <link rel="icon" type="image/png" sizes="32x32" href="/Images/logo.jpg">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tutor Verification Process - Baobab Parent Portal</title>
+    <title>Tutor Verification Process - Baobab Online Academy Parent Portal</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@300;400;700;900&family=Open+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@300;400;700;900&family=Open+Sans:wght@300;400;600;700&family=Kalam:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root {
             --baobab-brown: #8D4004;
@@ -15,13 +15,26 @@
             --trunk-gray: #5D4037;
             --sky-blue: #1976D2;
             --earth-cream: #FFF8E1;
+            --desert-orange: #FF5722;
+            --sage-green: #689F38;
             --deep-charcoal: #263238;
             --white: #FFFFFF;
-            --light-gray: #f7f9fc;
+            --light-gray: #F5F5F5;
+            --border-light: #E0E0E0;
+            --verified-green: #4CAF50;
+            --pending-orange: #FF9800;
+            --rejected-red: #F44336;
+            --excellence-purple: #673AB7;
+            --trust-blue: #2196F3;
             
+            --transition-slow: all 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
+            --transition-medium: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
             --transition-fast: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+            
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
             --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
             --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
         }
         
         * {
@@ -34,10 +47,11 @@
             font-family: 'Open Sans', sans-serif;
             color: var(--deep-charcoal);
             line-height: 1.6;
-            background-color: var(--light-gray);
+            overflow-x: hidden;
+            background-color: var(--white);
         }
         
-        h1, h2, h3, h4 {
+        h1, h2, h3, h4, h5 {
             font-family: 'Merriweather', serif;
             font-weight: 700;
             line-height: 1.3;
@@ -48,12 +62,59 @@
             max-width: 1200px;
             margin: 0 auto;
             padding: 0 20px;
+            position: relative;
+        }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 14px 32px;
+            border-radius: 30px;
+            font-weight: 600;
+            text-align: center;
+            transition: var(--transition-fast);
+            border: 2px solid transparent;
+            font-family: 'Open Sans', sans-serif;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        
+        .btn-primary {
+            background-color: var(--baobab-brown);
+            color: var(--white);
+            border-color: var(--baobab-brown);
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--trunk-gray);
+            border-color: var(--trunk-gray);
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .btn-secondary {
+            background-color: var(--sunset-gold);
+            color: var(--deep-charcoal);
+            border-color: var(--sunset-gold);
+        }
+        
+        .btn-outlined {
+            background-color: transparent;
+            color: var(--baobab-brown);
+            border-color: var(--baobab-brown);
+        }
+        
+        .btn-outlined:hover {
+            background-color: var(--baobab-brown);
+            color: var(--white);
         }
         
         /* Header */
         .header {
-            position: sticky;
+            position: fixed;
             top: 0;
+            left: 0;
             width: 100%;
             z-index: 1000;
             background-color: var(--white);
@@ -92,273 +153,770 @@
             color: var(--baobab-brown);
         }
         
-        /* Page Header */
-        .page-header {
-            background: linear-gradient(135deg, var(--baobab-brown), var(--trunk-gray));
-            padding: 80px 0;
-            text-align: center;
+        .nav-menu {
+            display: flex;
+            gap: 30px;
+            list-style: none;
+        }
+        
+        .nav-link {
+            font-weight: 500;
+            color: var(--deep-charcoal);
+            text-decoration: none;
+            padding: 5px 0;
+            transition: var(--transition-fast);
+        }
+        
+        .nav-link:hover {
+            color: var(--sunset-gold);
+        }
+        
+        .menu-toggle {
+            display: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--baobab-brown);
+        }
+        
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, var(--excellence-purple), var(--trust-blue), var(--verified-green));
             color: var(--white);
-        }
-
-        .page-header-title {
-            font-size: 3rem;
-            margin-bottom: 15px;
-        }
-
-        .page-header-subtitle {
-            font-size: 1.2rem;
-            max-width: 800px;
-            margin: 0 auto;
-            opacity: 0.9;
-        }
-
-        /* Verification Process Timeline */
-        .timeline-section {
-            padding: 80px 0;
-            background-color: var(--white);
-        }
-
-        .timeline-container {
+            padding: 120px 0 80px;
             position: relative;
-            max-width: 900px;
-            margin: 0 auto;
+            overflow: hidden;
         }
-
-        .timeline-container::after {
+        
+        .hero::before {
             content: '';
             position: absolute;
-            width: 4px;
-            background-color: var(--canopy-green);
             top: 0;
-            bottom: 0;
-            left: 50%;
-            margin-left: -2px;
-            z-index: 1;
-        }
-
-        .timeline-item {
-            padding: 10px 40px;
-            position: relative;
-            background-color: inherit;
-            width: 50%;
-        }
-
-        /* Left-aligned items */
-        .timeline-item.left {
             left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200"><path d="M50,100 Q75,75 100,100 T150,100" stroke="rgba(255,255,255,0.1)" fill="none" stroke-width="3"/><circle cx="100" cy="100" r="40" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="2"/><path d="M85,100 L95,110 L115,90" stroke="rgba(255,255,255,0.2)" fill="none" stroke-width="3" stroke-linecap="round"/></svg>');
+            animation: verification-flow 12s infinite ease-in-out;
         }
-
-        /* Right-aligned items */
-        .timeline-item.right {
-            left: 50%;
+        
+        @keyframes verification-flow {
+            0%, 100% { opacity: 0.3; transform: translateX(0) scale(1); }
+            50% { opacity: 0.6; transform: translateX(20px) scale(1.1); }
         }
-
-        /* The circle on the timeline */
-        .timeline-item::after {
-            content: '';
-            position: absolute;
-            width: 40px;
-            height: 40px;
-            right: -20px;
-            background-color: var(--white);
-            border: 4px solid var(--sunset-gold);
-            top: 15px;
-            border-radius: 50%;
+        
+        .hero-content {
+            position: relative;
             z-index: 2;
+            max-width: 800px;
+            text-align: center;
+            margin: 0 auto;
+        }
+        
+        .hero-badge {
+            background: rgba(255, 255, 255, 0.25);
+            padding: 12px 25px;
+            border-radius: 25px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            margin-bottom: 25px;
+            display: inline-block;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .hero-title {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            line-height: 1.2;
+        }
+        
+        .hero-subtitle {
+            font-size: 1.3rem;
+            opacity: 0.9;
+            margin-bottom: 40px;
+            line-height: 1.6;
+        }
+        
+        /* Breadcrumbs */
+        .breadcrumbs {
+            background: var(--earth-cream);
+            padding: 20px 0;
+            border-bottom: 2px solid var(--border-light);
+        }
+        
+        .breadcrumb-nav {
             display: flex;
             align-items: center;
-            justify-content: center;
-            font-family: 'Font Awesome 6 Free';
-            font-weight: 900;
-            font-size: 1.2rem;
-            color: var(--baobab-brown);
-        }
-
-        .timeline-item.right::after {
-            left: -20px;
+            gap: 10px;
+            font-size: 0.9rem;
         }
         
-        /* Step icons */
-        .timeline-item.step-1::after { content: '\f2bb'; } /* Address Card */
-        .timeline-item.step-2::after { content: '\f0a3'; } /* Certificate */
-        .timeline-item.step-3::after { content: '\f0c0'; } /* Users */
-        .timeline-item.step-4::after { content: '\f13e'; } /* Life Ring */
-        .timeline-item.step-5::after { content: '\f501'; } /* Chalkboard Teacher */
-
-        .timeline-content {
-            padding: 20px 30px;
-            background-color: var(--light-gray);
+        .breadcrumb-link {
+            color: var(--trunk-gray);
+            text-decoration: none;
+            transition: var(--transition-fast);
+        }
+        
+        .breadcrumb-link:hover {
+            color: var(--sunset-gold);
+        }
+        
+        .breadcrumb-separator {
+            color: var(--trunk-gray);
+            opacity: 0.6;
+        }
+        
+        .breadcrumb-current {
+            color: var(--baobab-brown);
+            font-weight: 600;
+        }
+        
+        /* Main Content */
+        .main-content {
+            padding: 80px 0;
+            background: var(--white);
+        }
+        
+        /* Verification Overview */
+        .verification-overview {
+            background: linear-gradient(135deg, var(--verified-green), var(--canopy-green));
+            color: var(--white);
+            padding: 60px;
+            border-radius: 25px;
+            margin-bottom: 80px;
             position: relative;
-            border-radius: 8px;
-            box-shadow: var(--shadow-md);
-            border-left: 5px solid var(--canopy-green);
+            overflow: hidden;
         }
         
-        .timeline-item.right .timeline-content {
-            border-left: none;
-            border-right: 5px solid var(--canopy-green);
-        }
-
-        .timeline-content h3 {
-            font-size: 1.6rem;
-            color: var(--baobab-brown);
-            margin-bottom: 10px;
-        }
-
-        .timeline-content p {
-            font-size: 0.95rem;
-            line-height: 1.6;
-            color: var(--trunk-gray);
+        .verification-overview::before {
+            content: '';
+            position: absolute;
+            top: -100px;
+            right: -100px;
+            width: 300px;
+            height: 300px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
         }
         
-        /* Final Commitment Section */
-        .commitment-section {
-            padding: 60px 0;
-            background: var(--earth-cream);
-            text-align: center;
+        .overview-content {
+            position: relative;
+            z-index: 2;
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 50px;
+            align-items: center;
         }
-
-        .commitment-section h2 {
-            font-size: 2.2rem;
-            color: var(--trunk-gray);
+        
+        .overview-text h2 {
+            font-size: 2.8rem;
+            margin-bottom: 25px;
+        }
+        
+        .overview-text p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            line-height: 1.7;
             margin-bottom: 20px;
         }
         
-        .commitment-section p {
-            max-width: 800px;
-            margin: 0 auto 30px;
-        }
-
-        .btn-link {
-            display: inline-block;
-            background-color: var(--canopy-green);
-            color: var(--white);
-            padding: 14px 32px;
-            border-radius: 30px;
-            text-decoration: none;
-            font-weight: 600;
-            transition: var(--transition-fast);
+        .verification-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 25px;
         }
         
-        .btn-link:hover {
-            background-color: #256a28;
-            transform: translateY(-3px);
+        .stat-card {
+            background: rgba(255, 255, 255, 0.15);
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--sunset-gold);
+            display: block;
+            margin-bottom: 8px;
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+        
+        /* Verification Process Timeline */
+        .verification-process {
+            margin-bottom: 80px;
+        }
+        
+        .process-header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+        
+        .process-header h2 {
+            font-size: 2.8rem;
+            color: var(--baobab-brown);
+            margin-bottom: 20px;
+        }
+        
+        .process-header p {
+            color: var(--trunk-gray);
+            font-size: 1.2rem;
+            max-width: 700px;
+            margin: 0 auto;
+            line-height: 1.7;
+        }
+        
+        .process-timeline {
+            position: relative;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        .timeline-line {
+            position: absolute;
+            left: 50%;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: linear-gradient(to bottom, var(--sunset-gold), var(--verified-green));
+            transform: translateX(-50%);
+            z-index: 1;
+        }
+        
+        .timeline-step {
+            position: relative;
+            margin-bottom: 60px;
+            display: flex;
+            align-items: center;
+            z-index: 2;
+        }
+        
+        .timeline-step:nth-child(even) {
+            flex-direction: row-reverse;
+        }
+        
+        .step-content {
+            background: var(--white);
+            border-radius: 20px;
+            padding: 35px;
+            box-shadow: var(--shadow-lg);
+            border: 3px solid transparent;
+            width: 45%;
+            transition: var(--transition-medium);
+        }
+        
+        .timeline-step:hover .step-content {
+            border-color: var(--sunset-gold);
+            transform: scale(1.02);
+            box-shadow: var(--shadow-xl);
+        }
+        
+        .step-number {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 60px;
+            background: var(--sunset-gold);
+            color: var(--deep-charcoal);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+            border: 6px solid var(--white);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .step-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--excellence-purple), var(--trust-blue));
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--white);
+            font-size: 2.2rem;
+            margin-bottom: 20px;
+        }
+        
+        .timeline-step:nth-child(2) .step-icon {
+            background: linear-gradient(135deg, var(--verified-green), var(--canopy-green));
+        }
+        
+        .timeline-step:nth-child(3) .step-icon {
+            background: linear-gradient(135deg, var(--sunset-gold), var(--pending-orange));
+            color: var(--deep-charcoal);
+        }
+        
+        .timeline-step:nth-child(4) .step-icon {
+            background: linear-gradient(135deg, var(--trust-blue), var(--sky-blue));
+        }
+        
+        .timeline-step:nth-child(5) .step-icon {
+            background: linear-gradient(135deg, var(--verified-green), var(--sage-green));
+        }
+        
+        .step-title {
+            color: var(--deep-charcoal);
+            font-size: 1.6rem;
+            margin-bottom: 15px;
+        }
+        
+        .step-description {
+            color: var(--trunk-gray);
+            line-height: 1.7;
+            margin-bottom: 20px;
+        }
+        
+        .step-details {
+            background: var(--earth-cream);
+            padding: 20px;
+            border-radius: 12px;
+            border-left: 4px solid var(--sunset-gold);
+        }
+        
+        .step-details h4 {
+            color: var(--baobab-brown);
+            margin-bottom: 12px;
+            font-size: 1.1rem;
+        }
+        
+        .step-details ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        .step-details li {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 8px;
+            color: var(--trunk-gray);
+            font-size: 0.95rem;
+        }
+        
+        .step-details i {
+            color: var(--verified-green);
+            font-size: 1rem;
+            width: 16px;
+        }
+        
+        .duration-badge {
+            background: var(--pending-orange);
+            color: var(--white);
+            padding: 6px 15px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-top: 15px;
+            display: inline-block;
+        }
+        
+        /* Verification Criteria */
+        .verification-criteria {
+            background: var(--light-gray);
+            padding: 80px 0;
+            border-radius: 30px;
+            margin: 80px 0;
+        }
+        
+        .criteria-header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+        
+        .criteria-header h2 {
+            font-size: 2.5rem;
+            color: var(--baobab-brown);
+            margin-bottom: 20px;
+        }
+        
+        .criteria-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        .criteria-card {
+            background: var(--white);
+            border-radius: 20px;
+            padding: 35px;
+            box-shadow: var(--shadow-md);
+            transition: var(--transition-medium);
+            border: 2px solid transparent;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .criteria-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 6px;
+            background: var(--verified-green);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: var(--transition-medium);
+        }
+        
+        .criteria-card:hover::before {
+            transform: scaleX(1);
+        }
+        
+        .criteria-card:hover {
+            transform: translateY(-10px);
+            border-color: var(--sunset-gold);
             box-shadow: var(--shadow-lg);
         }
         
-        /* Mobile Menu */
-        .mobile-menu-panel {
-            position: fixed;
-            top: 0;
-            right: -100%;
-            width: 300px;
-            height: 100vh;
-            background-color: var(--white);
-            z-index: 1000;
-            padding: 80px 40px 40px;
-            transition: var(--transition-medium);
-            box-shadow: var(--shadow-xl);
-            overflow-y: auto;
+        .criteria-card:nth-child(2)::before {
+            background: var(--trust-blue);
         }
         
-        .mobile-menu-panel.active {
-            right: 0;
+        .criteria-card:nth-child(3)::before {
+            background: var(--excellence-purple);
         }
         
-        .mobile-menu {
+        .criteria-card:nth-child(4)::before {
+            background: var(--sunset-gold);
+        }
+        
+        .criteria-icon {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, var(--verified-green), var(--canopy-green));
+            border-radius: 50%;
             display: flex;
-            flex-direction: column;
-            gap: 15px;
+            align-items: center;
+            justify-content: center;
+            color: var(--white);
+            font-size: 2rem;
+            margin-bottom: 20px;
         }
         
-        .mobile-link {
-            font-weight: 500;
+        .criteria-card:nth-child(2) .criteria-icon {
+            background: linear-gradient(135deg, var(--trust-blue), var(--sky-blue));
+        }
+        
+        .criteria-card:nth-child(3) .criteria-icon {
+            background: linear-gradient(135deg, var(--excellence-purple), var(--trust-blue));
+        }
+        
+        .criteria-card:nth-child(4) .criteria-icon {
+            background: linear-gradient(135deg, var(--sunset-gold), var(--pending-orange));
             color: var(--deep-charcoal);
-            padding: 12px 0;
-            border-bottom: 1px solid var(--earth-cream);
-            display: block;
-            transition: var(--transition-fast);
-            text-decoration: none;
         }
         
-        .mobile-link:hover {
-            color: var(--sunset-gold);
-            padding-left: 10px;
+        .criteria-title {
+            color: var(--deep-charcoal);
+            font-size: 1.4rem;
+            margin-bottom: 15px;
         }
         
-        .mobile-link.active {
-            color: var(--sunset-gold);
+        .criteria-description {
+            color: var(--trunk-gray);
+            line-height: 1.7;
+            margin-bottom: 20px;
         }
         
-        .mobile-buttons {
+        .criteria-checklist {
+            background: var(--earth-cream);
+            padding: 20px;
+            border-radius: 12px;
+        }
+        
+        .criteria-checklist h4 {
+            color: var(--baobab-brown);
+            margin-bottom: 15px;
+            font-size: 1rem;
+        }
+        
+        .criteria-checklist ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        .criteria-checklist li {
             display: flex;
-            flex-direction: column;
-            gap: 15px;
-            margin-top: 30px;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 8px;
+            color: var(--trunk-gray);
+            font-size: 0.9rem;
         }
         
-        .menu-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.7);
-            z-index: 999;
-            opacity: 0;
-            visibility: hidden;
+        .criteria-checklist i {
+            color: var(--verified-green);
+            font-size: 1rem;
+        }
+        
+        /* Ongoing Monitoring */
+        .ongoing-monitoring {
+            background: linear-gradient(135deg, var(--excellence-purple), var(--trust-blue));
+            color: var(--white);
+            padding: 60px 0;
+            border-radius: 25px;
+            margin: 80px 0;
+        }
+        
+        .monitoring-content {
+            text-align: center;
+        }
+        
+        .monitoring-content h2 {
+            font-size: 2.5rem;
+            margin-bottom: 25px;
+        }
+        
+        .monitoring-content p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            margin-bottom: 40px;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.7;
+        }
+        
+        .monitoring-features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        
+        .feature-item {
+            background: rgba(255, 255, 255, 0.15);
+            padding: 30px;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
             transition: var(--transition-medium);
-            backdrop-filter: blur(5px);
         }
         
-        .menu-overlay.active {
-            opacity: 1;
-            visibility: visible;
+        .feature-item:hover {
+            transform: translateY(-8px);
+            background: rgba(255, 255, 255, 0.2);
         }
-
+        
+        .feature-item h3 {
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+            color: var(--sunset-gold);
+        }
+        
+        .feature-item p {
+            font-size: 0.95rem;
+            opacity: 0.9;
+            margin: 0;
+            line-height: 1.6;
+        }
+        
+        /* Call to Action */
+        .cta-section {
+            background: linear-gradient(135deg, var(--verified-green), var(--canopy-green));
+            color: var(--white);
+            padding: 60px 0;
+            text-align: center;
+            margin-top: 80px;
+            border-radius: 25px;
+        }
+        
+        .cta-content h3 {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+        }
+        
+        .cta-content p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            margin-bottom: 30px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .cta-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .btn-white {
+            background-color: var(--white);
+            color: var(--verified-green);
+            border-color: var(--white);
+        }
+        
+        .btn-white:hover {
+            background-color: transparent;
+            color: var(--white);
+            border-color: var(--white);
+        }
+        
         /* Footer */
         .footer {
             background: var(--deep-charcoal);
             color: var(--white);
             padding: 60px 0 30px;
+            margin-top: 80px;
         }
         
         .footer-content {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 30px;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
             margin-bottom: 40px;
         }
         
-        /* Responsive */
-        @media screen and (max-width: 768px) {
-            .timeline-container::after {
-                left: 31px;
+        .footer-section h4 {
+            color: var(--sunset-gold);
+            margin-bottom: 20px;
+            font-size: 1.2rem;
+        }
+        
+        .footer-link {
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            display: block;
+            padding: 8px 0;
+            transition: var(--transition-fast);
+        }
+        
+        .footer-link:hover {
+            color: var(--sunset-gold);
+            padding-left: 5px;
+        }
+        
+        .footer-bottom {
+            text-align: center;
+            padding-top: 30px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.7);
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 992px) {
+            .menu-toggle {
+                display: block;
             }
-            .timeline-item {
+            
+            .nav-menu {
+                display: none;
+            }
+            
+            .overview-content {
+                grid-template-columns: 1fr;
+                gap: 30px;
+                text-align: center;
+            }
+            
+            .verification-stats {
+                grid-template-columns: repeat(4, 1fr);
+            }
+            
+            .timeline-line {
+                display: none;
+            }
+            
+            .timeline-step {
+                flex-direction: column !important;
+                margin-bottom: 40px;
+            }
+            
+            .step-content {
                 width: 100%;
-                padding-left: 70px;
-                padding-right: 25px;
             }
-            .timeline-item.left::before, .timeline-item.right::before {
-                left: 60px;
-                border: medium solid white;
-                border-width: 10px 10px 10px 0;
-                border-color: transparent white transparent transparent;
+            
+            .step-number {
+                position: static;
+                transform: none;
+                margin-bottom: 20px;
             }
-            .timeline-item.left, .timeline-item.right {
-                left: 0%;
+            
+            .criteria-grid {
+                grid-template-columns: 1fr;
             }
-            .timeline-item.right::after {
-                left: 11px;
+            
+            .monitoring-features {
+                grid-template-columns: 1fr;
             }
-            .timeline-item.left::after {
-                left: 11px;
+        }
+        
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2.5rem;
+            }
+            
+            .verification-overview {
+                padding: 40px 30px;
+            }
+            
+            .overview-text h2 {
+                font-size: 2.2rem;
+            }
+            
+            .verification-stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .step-content {
+                padding: 25px;
+            }
+            
+            .ongoing-monitoring {
+                padding: 40px 20px;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .container {
+                padding: 0 15px;
+            }
+            
+            .hero-title {
+                font-size: 2rem;
+            }
+            
+            .verification-stats {
+                grid-template-columns: 1fr;
+            }
+            
+            .step-icon {
+                width: 70px;
+                height: 70px;
+                font-size: 1.8rem;
+            }
+            
+            .step-number {
+                width: 50px;
+                height: 50px;
+                font-size: 1.2rem;
+            }
+            
+            .cta-buttons {
+                flex-direction: column;
+                align-items: center;
             }
         }
     </style>
 </head>
 <body>
+    <!-- Header -->
     <header class="header">
         <div class="container">
             <div class="nav-wrapper">
@@ -366,90 +924,488 @@
                     <div class="logo-icon"><i class="fas fa-heart"></i></div>
                     <div class="logo-text">Parent Portal</div>
                 </a>
+                
+                <div class="menu-toggle" id="menuToggle">
+                    <i class="fas fa-bars"></i>
+                </div>
+                
+                <ul class="nav-menu">
+                    <li><a href="index.html#features" class="nav-link">Features</a></li>
+                    <li><a href="index.html#how-it-works" class="nav-link">How It Works</a></li>
+                    <li><a href="index.html#security" class="nav-link">Safety & Security</a></li>
+                    <li><a href="http://baobabonlineacademy.com" class="nav-link">Main Site</a></li>
+                </ul>
             </div>
         </div>
     </header>
 
-    <section class="page-header">
+    <!-- Hero Section -->
+    <section class="hero">
         <div class="container">
-            <h1 class="page-header-title">Our Tutor Verification Promise</h1>
-            <p class="page-header-subtitle">Only the most qualified, passionate, and trustworthy educators become Baobab tutors. This is our non-negotiable commitment to your child's safety and success. Follow our rigorous 5-step process below.</p>
+            <div class="hero-content">
+                <div class="hero-badge">
+                    <i class="fas fa-user-check"></i>
+                    Rigorous Standards • Verified Excellence
+                </div>
+                <h1 class="hero-title">Tutor Verification Process</h1>
+                <p class="hero-subtitle">
+                    Every educator in our network undergoes comprehensive verification to ensure they meet 
+                    our highest standards for child safety, educational excellence, and cultural authenticity.
+                </p>
+            </div>
         </div>
     </section>
 
-    <section class="timeline-section">
-        <div class="timeline-container">
-            
-            <div class="timeline-item left step-1">
-                <div class="timeline-content">
-                    <h3>Step 1: Application & Initial Screening</h3>
-                    <p>The journey begins with a comprehensive application. We review each candidate's background, teaching philosophy, and cultural competence. Only those who demonstrate a genuine passion for education and heritage proceed.</p>
-                </div>
-            </div>
-
-            <div class="timeline-item right step-2">
-                <div class="timeline-content">
-                    <h3>Step 2: Document & Qualification Verification</h3>
-                    <p>We leave no stone unturned. Our team meticulously verifies every document, including government-issued IDs, educational degrees, and teaching certifications, checking them against official databases in Nigeria.</p>
-                </div>
-            </div>
-
-            <div class="timeline-item left step-3">
-                <div class="timeline-content">
-                    <h3>Step 3: Background & Reference Checks</h3>
-                    <p>Safety is paramount. We conduct thorough background checks and contact multiple professional references to build a complete picture of the candidate's character, work ethic, and reliability.</p>
-                </div>
-            </div>
-
-            <div class="timeline-item right step-4">
-                <div class="timeline-content">
-                    <h3>Step 4: The Safeguarding Interview</h3>
-                    <p>A crucial, in-depth interview focuses entirely on child protection. We use scenario-based questions to assess a candidate's understanding of online safety, professional boundaries, and our strict code of conduct.</p>
-                </div>
-            </div>
-            
-            <div class="timeline-item left step-5">
-                <div class="timeline-content">
-                    <h3>Step 5: The Live Teaching Audition</h3>
-                    <p>The final step is a live, observed teaching session. We evaluate their ability to engage, inspire, and effectively manage an online classroom, ensuring they meet the high standards your child deserves.</p>
-                </div>
-            </div>
-
-        </div>
-    </section>
-    
-    <section class="commitment-section">
+    <!-- Breadcrumbs -->
+    <section class="breadcrumbs">
         <div class="container">
-            <h2>Our Promise is Our Foundation</h2>
-            <p>This exhaustive process ensures that when your child logs in for a lesson, they are met by a tutor who is not only an expert in their field but is also a safe, trusted, and inspiring mentor. Your peace of mind is the benchmark of our success.</p>
-            <a href="child-protection.html" class="btn-link">
-                <i class="fas fa-shield-alt"></i> Read Our Full Child Protection Policy
-            </a>
+            <nav class="breadcrumb-nav">
+                <a href="index.html" class="breadcrumb-link">
+                    <i class="fas fa-home"></i> Home
+                </a>
+                <span class="breadcrumb-separator">/</span>
+                <a href="#" class="breadcrumb-link">Safety & Security</a>
+                <span class="breadcrumb-separator">/</span>
+                <span class="breadcrumb-current">Tutor Verification Process</span>
+            </nav>
         </div>
     </section>
 
+    <!-- Main Content -->
+    <section class="main-content">
+        <div class="container">
+            <!-- Verification Overview -->
+            <div class="verification-overview">
+                <div class="overview-content">
+                    <div class="overview-text">
+                        <h2><i class="fas fa-certificate"></i> Excellence Through Verification</h2>
+                        <p>
+                            Our comprehensive verification process ensures that every tutor who works with 
+                            your child meets the highest standards of professional competence, cultural 
+                            authenticity, and child safety protocols.
+                        </p>
+                        <p>
+                            We believe that exceptional education requires exceptional educators. That's why 
+                            we invest heavily in finding, vetting, and continuously monitoring the best 
+                            Nigeria-based tutors for our students.
+                        </p>
+                    </div>
+                    <div class="verification-stats">
+                        <div class="stat-card">
+                            <span class="stat-number">98%</span>
+                            <div class="stat-label">Rejection Rate</div>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-number">15+</span>
+                            <div class="stat-label">Verification Steps</div>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-number">100%</span>
+                            <div class="stat-label">Background Checked</div>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-number">30</span>
+                            <div class="stat-label">Days Average Process</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Verification Process Timeline -->
+            <div class="verification-process">
+                <div class="process-header">
+                    <h2>5-Stage Verification Journey</h2>
+                    <p>
+                        Our thorough verification process takes an average of 30 days to complete, 
+                        ensuring only the most qualified and trustworthy educators join our team.
+                    </p>
+                </div>
+                
+                <div class="process-timeline">
+                    <div class="timeline-line"></div>
+                    
+                    <div class="timeline-step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <div class="step-icon">
+                                <i class="fas fa-file-alt"></i>
+                            </div>
+                            <h3 class="step-title">Initial Application Review</h3>
+                            <p class="step-description">
+                                Comprehensive review of educational qualifications, teaching experience, 
+                                and cultural background to ensure alignment with our standards.
+                            </p>
+                            <div class="step-details">
+                                <h4>Application Requirements:</h4>
+                                <ul>
+                                    <li><i class="fas fa-check-circle"></i> University degree verification</li>
+                                    <li><i class="fas fa-check-circle"></i> Teaching certification documents</li>
+                                    <li><i class="fas fa-check-circle"></i> Minimum 3 years teaching experience</li>
+                                    <li><i class="fas fa-check-circle"></i> Cultural heritage verification</li>
+                                    <li><i class="fas fa-check-circle"></i> English proficiency certification</li>
+                                </ul>
+                            </div>
+                            <div class="duration-badge">3-5 Business Days</div>
+                        </div>
+                    </div>
+                    
+                    <div class="timeline-step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <div class="step-icon">
+                                <i class="fas fa-search"></i>
+                            </div>
+                            <h3 class="step-title">Background & Security Checks</h3>
+                            <p class="step-description">
+                                Thorough criminal background checks, identity verification, and security 
+                                clearance through official Nigerian and international databases.
+                            </p>
+                            <div class="step-details">
+                                <h4>Security Verification Includes:</h4>
+                                <ul>
+                                    <li><i class="fas fa-check-circle"></i> Criminal record verification</li>
+                                    <li><i class="fas fa-check-circle"></i> Identity document authentication</li>
+                                    <li><i class="fas fa-check-circle"></i> Child protection record check</li>
+                                    <li><i class="fas fa-check-circle"></i> Employment history verification</li>
+                                    <li><i class="fas fa-check-circle"></i> Reference contact validation</li>
+                                </ul>
+                            </div>
+                            <div class="duration-badge">7-10 Business Days</div>
+                        </div>
+                    </div>
+                    
+                    <div class="timeline-step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <div class="step-icon">
+                                <i class="fas fa-video"></i>
+                            </div>
+                            <h3 class="step-title">Professional Interview Assessment</h3>
+                            <p class="step-description">
+                                Multi-stage video interviews assessing teaching methodology, cultural knowledge, 
+                                child interaction skills, and alignment with our educational philosophy.
+                            </p>
+                            <div class="step-details">
+                                <h4>Interview Components:</h4>
+                                <ul>
+                                    <li><i class="fas fa-check-circle"></i> Teaching methodology demonstration</li>
+                                    <li><i class="fas fa-check-circle"></i> Cultural knowledge assessment</li>
+                                    <li><i class="fas fa-check-circle"></i> Child psychology understanding</li>
+                                    <li><i class="fas fa-check-circle"></i> Technology proficiency test</li>
+                                    <li><i class="fas fa-check-circle"></i> Communication skills evaluation</li>
+                                </ul>
+                            </div>
+                            <div class="duration-badge">5-7 Business Days</div>
+                        </div>
+                    </div>
+                    
+                    <div class="timeline-step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <div class="step-icon">
+                                <i class="fas fa-chalkboard-teacher"></i>
+                            </div>
+                            <h3 class="step-title">Teaching Demonstration & Trial</h3>
+                            <p class="step-description">
+                                Live teaching demonstration with our assessment team followed by supervised 
+                                trial sessions to evaluate real-world teaching effectiveness.
+                            </p>
+                            <div class="step-details">
+                                <h4>Demonstration Requirements:</h4>
+                                <ul>
+                                    <li><i class="fas fa-check-circle"></i> Live lesson delivery</li>
+                                    <li><i class="fas fa-check-circle"></i> Student engagement techniques</li>
+                                    <li><i class="fas fa-check-circle"></i> Cultural integration methods</li>
+                                    <li><i class="fas fa-check-circle"></i> Assessment and feedback skills</li>
+                                    <li><i class="fas fa-check-circle"></i> Technology platform mastery</li>
+                                </ul>
+                            </div>
+                            <div class="duration-badge">10-14 Business Days</div>
+                        </div>
+                    </div>
+                    
+                    <div class="timeline-step">
+                        <div class="step-number">5</div>
+                        <div class="step-content">
+                            <div class="step-icon">
+                                <i class="fas fa-graduation-cap"></i>
+                            </div>
+                            <h3 class="step-title">Training & Certification</h3>
+                            <p class="step-description">
+                                Comprehensive training program covering child protection protocols, 
+                                platform usage, cultural sensitivity, and ongoing professional development.
+                            </p>
+                            <div class="step-details">
+                                <h4>Training Modules:</h4>
+                                <ul>
+                                    <li><i class="fas fa-check-circle"></i> Child protection certification</li>
+                                    <li><i class="fas fa-check-circle"></i> Platform technology training</li>
+                                    <li><i class="fas fa-check-circle"></i> Cultural sensitivity workshop</li>
+                                    <li><i class="fas fa-check-circle"></i> Parent communication protocols</li>
+                                    <li><i class="fas fa-check-circle"></i> Emergency response procedures</li>
+                                </ul>
+                            </div>
+                            <div class="duration-badge">5-7 Business Days</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Verification Criteria -->
+            <div class="verification-criteria">
+                <div class="container">
+                    <div class="criteria-header">
+                        <h2>What We Look For in Our Tutors</h2>
+                        <p style="color: var(--trunk-gray); font-size: 1.1rem; max-width: 600px; margin: 0 auto;">
+                            Our verification criteria ensure every tutor brings the perfect combination of 
+                            academic excellence, cultural authenticity, and child-centered teaching approaches.
+                        </p>
+                    </div>
+                    
+                    <div class="criteria-grid">
+                        <div class="criteria-card">
+                            <div class="criteria-icon">
+                                <i class="fas fa-certificate"></i>
+                            </div>
+                            <h3 class="criteria-title">Academic Excellence</h3>
+                            <p class="criteria-description">
+                                We require verified university degrees, teaching certifications, and proven 
+                                track records of academic achievement and student success.
+                            </p>
+                            <div class="criteria-checklist">
+                                <h4>Requirements:</h4>
+                                <ul>
+                                    <li><i class="fas fa-graduation-cap"></i> University degree in relevant field</li>
+                                    <li><i class="fas fa-certificate"></i> Teaching qualification/certification</li>
+                                    <li><i class="fas fa-trophy"></i> Demonstrated student success record</li>
+                                    <li><i class="fas fa-book"></i> Subject matter expertise</li>
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <div class="criteria-card">
+                            <div class="criteria-icon">
+                                <i class="fas fa-globe-africa"></i>
+                            </div>
+                            <h3 class="criteria-title">Cultural Authenticity</h3>
+                            <p class="criteria-description">
+                                Our tutors are native Nigerians who can authentically share cultural knowledge, 
+                                languages, and values while connecting academic learning to heritage.
+                            </p>
+                            <div class="criteria-checklist">
+                                <h4>Cultural Qualifications:</h4>
+                                <ul>
+                                    <li><i class="fas fa-flag"></i> Nigerian nationality and residence</li>
+                                    <li><i class="fas fa-language"></i> Native language fluency</li>
+                                    <li><i class="fas fa-heart"></i> Deep cultural knowledge</li>
+                                    <li><i class="fas fa-users"></i> Community connection and respect</li>
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <div class="criteria-card">
+                            <div class="criteria-icon">
+                                <i class="fas fa-child"></i>
+                            </div>
+                            <h3 class="criteria-title">Child-Centered Approach</h3>
+                            <p class="criteria-description">
+                                We prioritize educators who demonstrate genuine care for children, age-appropriate 
+                                teaching methods, and the ability to create safe, nurturing learning environments.
+                            </p>
+                            <div class="criteria-checklist">
+                                <h4>Child Focus Areas:</h4>
+                                <ul>
+                                    <li><i class="fas fa-smile"></i> Child psychology understanding</li>
+                                    <li><i class="fas fa-shield-alt"></i> Child protection training</li>
+                                    <li><i class="fas fa-puzzle-piece"></i> Age-appropriate methodologies</li>
+                                    <li><i class="fas fa-heart"></i> Patience and empathy</li>
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <div class="criteria-card">
+                            <div class="criteria-icon">
+                                <i class="fas fa-laptop"></i>
+                            </div>
+                            <h3 class="criteria-title">Technology Proficiency</h3>
+                            <p class="criteria-description">
+                                Modern online education requires technical competency. Our tutors master our 
+                                platform and demonstrate reliable internet connectivity and equipment.
+                            </p>
+                            <div class="criteria-checklist">
+                                <h4>Technical Standards:</h4>
+                                <ul>
+                                    <li><i class="fas fa-wifi"></i> Reliable high-speed internet</li>
+                                    <li><i class="fas fa-desktop"></i> Professional equipment setup</li>
+                                    <li><i class="fas fa-cog"></i> Platform proficiency</li>
+                                    <li><i class="fas fa-tools"></i> Technical troubleshooting skills</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Ongoing Monitoring -->
+            <div class="ongoing-monitoring">
+                <div class="container">
+                    <div class="monitoring-content">
+                        <h2><i class="fas fa-eye"></i> Continuous Excellence Monitoring</h2>
+                        <p>
+                            Verification doesn't end with initial approval. We continuously monitor and evaluate 
+                            our tutors to ensure they maintain the highest standards throughout their time with us.
+                        </p>
+                        
+                        <div class="monitoring-features">
+                            <div class="feature-item">
+                                <h3>Session Monitoring</h3>
+                                <p>All tutoring sessions are recorded and regularly reviewed by our quality assurance team to ensure consistent excellence.</p>
+                            </div>
+                            
+                            <div class="feature-item">
+                                <h3>Parent Feedback</h3>
+                                <p>We collect and analyze parent and student feedback to identify areas for improvement and celebrate successes.</p>
+                            </div>
+                            
+                            <div class="feature-item">
+                                <h3>Professional Development</h3>
+                                <p>Mandatory ongoing training ensures tutors stay current with best practices in education and child protection.</p>
+                            </div>
+                            
+                            <div class="feature-item">
+                                <h3>Performance Reviews</h3>
+                                <p>Regular performance evaluations ensure tutors continue to meet our high standards and provide growth opportunities.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Call to Action -->
+            <div class="cta-section">
+                <div class="cta-content">
+                    <h3>Trust in Verified Excellence</h3>
+                    <p>
+                        When you choose Baobab Academy, you're choosing peace of mind. Every tutor has been 
+                        thoroughly vetted to ensure your child receives the highest quality education in a safe environment.
+                    </p>
+                    <div class="cta-buttons">
+                        <a href="index.html#register" class="btn btn-white">
+                            <i class="fas fa-user-plus"></i>
+                            Meet Our Verified Tutors
+                        </a>
+                        <a href="platform-security.html" class="btn btn-outlined">
+                            <i class="fas fa-arrow-right"></i>
+                            Next: Platform Security
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
     <footer class="footer">
         <div class="container">
             <div class="footer-content">
-                 <div class="footer-section">
+                <div class="footer-section">
                     <h4><i class="fas fa-heart"></i> Parent Resources</h4>
-                    <a href="getting-started.html" class="footer-link">Getting Started Guide</a>
-                    <a href="#" class="footer-link">Portal Tutorial Videos</a>
-                    <a href="supporting-learning.html" class="footer-link">Supporting Your Child's Learning</a>
+                    <a href="get-started.html" class="footer-link">Getting Started Guide</a>
+                    <a href="supporting-child.html" class="footer-link">Supporting Your Child's Learning</a>
                     <a href="cultural-integration.html" class="footer-link">Cultural Integration at Home</a>
                 </div>
+                
                 <div class="footer-section">
                     <h4><i class="fas fa-shield-alt"></i> Safety & Security</h4>
                     <a href="child-protection.html" class="footer-link">Child Protection Policy</a>
                     <a href="tutor-verification.html" class="footer-link">Tutor Verification Process</a>
-                    <a href="#" class="footer-link">Platform Security Features</a>
-                    <a href="#" class="footer-link">Privacy Policy</a>
+                    <a href="platform-security.html" class="footer-link">Platform Security Features</a>
+                    <a href="privacy-policy.html" class="footer-link">Privacy Policy</a>
                 </div>
+                
+                <div class="footer-section">
+                    <h4><i class="fas fa-headset"></i> Support</h4>
+                    <p style="color: rgba(255, 255, 255, 0.7); margin-bottom: 15px;">
+                        <i class="fas fa-envelope"></i>
+                        parents@baobabonlineacademy.com
+                    </p>
+                    <p style="color: rgba(255, 255, 255, 0.7); margin-bottom: 15px;">
+                        <i class="fas fa-phone"></i>
+                        +234 (0) 816 501 1291
+                    </p>
+                    <a href="#" class="footer-link">Help Center</a>
+                    <a href="#" class="footer-link">Live Chat Support</a>
                 </div>
+            </div>
+            
             <div class="footer-bottom">
                 <p>&copy; 2025 Baobab Online Academy Parent Portal. Nurturing Growth, Honoring Heritage.</p>
             </div>
         </div>
     </footer>
+
+    <script>
+        // Mobile menu functionality
+        const menuToggle = document.getElementById('menuToggle');
+        const navMenu = document.querySelector('.nav-menu');
+        
+        if (menuToggle) {
+            menuToggle.addEventListener('click', function() {
+                navMenu.classList.toggle('active');
+                this.innerHTML = navMenu.classList.contains('active') 
+                    ? '<i class="fas fa-times"></i>' 
+                    : '<i class="fas fa-bars"></i>';
+            });
+        }
+
+        // Timeline step hover effects
+        document.querySelectorAll('.timeline-step').forEach(step => {
+            step.addEventListener('mouseenter', function() {
+                const content = this.querySelector('.step-content');
+                content.style.transform = 'scale(1.03)';
+            });
+            
+            step.addEventListener('mouseleave', function() {
+                const content = this.querySelector('.step-content');
+                content.style.transform = 'scale(1)';
+            });
+        });
+
+        // Criteria card hover effects
+        document.querySelectorAll('.criteria-card').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-12px) scale(1.02)';
+            });
+            
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0) scale(1)';
+            });
+        });
+
+        // Feature item hover effects
+        document.querySelectorAll('.feature-item').forEach(item => {
+            item.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-10px) scale(1.03)';
+            });
+            
+            item.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0) scale(1)';
+            });
+        });
+
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+    </script>
 </body>
 </html>
