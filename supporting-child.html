@@ -4,25 +4,34 @@
     <meta charset="UTF-8">
     <link rel="icon" type="image/png" sizes="32x32" href="/Images/logo.jpg">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Supporting Your Child's Learning - Baobab Parent Portal</title>
+    <title>Supporting Your Child's Learning - Baobab Online Academy Parent Portal</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@300;400;700;900&family=Open+Sans:wght@300;400;600;700&family=Kalam:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            /* Using main homepage colors */
             --baobab-brown: #8D4004;
             --canopy-green: #2E7D32;
             --sunset-gold: #F57C00;
             --trunk-gray: #5D4037;
             --sky-blue: #1976D2;
             --earth-cream: #FFF8E1;
+            --desert-orange: #FF5722;
             --sage-green: #689F38;
             --deep-charcoal: #263238;
             --white: #FFFFFF;
+            --light-gray: #F5F5F5;
+            --border-light: #E0E0E0;
+            --soft-purple: #7B1FA2;
+            --warm-coral: #FF7043;
             
+            --transition-slow: all 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
+            --transition-medium: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
             --transition-fast: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+            
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
             --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
             --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
         }
         
         * {
@@ -35,10 +44,11 @@
             font-family: 'Open Sans', sans-serif;
             color: var(--deep-charcoal);
             line-height: 1.6;
+            overflow-x: hidden;
             background-color: var(--white);
         }
         
-        h1, h2, h3, h4 {
+        h1, h2, h3, h4, h5 {
             font-family: 'Merriweather', serif;
             font-weight: 700;
             line-height: 1.3;
@@ -49,6 +59,7 @@
             max-width: 1200px;
             margin: 0 auto;
             padding: 0 20px;
+            position: relative;
         }
         
         .btn {
@@ -61,6 +72,7 @@
             text-align: center;
             transition: var(--transition-fast);
             border: 2px solid transparent;
+            font-family: 'Open Sans', sans-serif;
             text-decoration: none;
             cursor: pointer;
         }
@@ -78,10 +90,28 @@
             box-shadow: var(--shadow-md);
         }
         
+        .btn-secondary {
+            background-color: var(--sunset-gold);
+            color: var(--deep-charcoal);
+            border-color: var(--sunset-gold);
+        }
+        
+        .btn-outlined {
+            background-color: transparent;
+            color: var(--baobab-brown);
+            border-color: var(--baobab-brown);
+        }
+        
+        .btn-outlined:hover {
+            background-color: var(--baobab-brown);
+            color: var(--white);
+        }
+        
         /* Header */
         .header {
-            position: sticky;
+            position: fixed;
             top: 0;
+            left: 0;
             width: 100%;
             z-index: 1000;
             background-color: var(--white);
@@ -120,216 +150,516 @@
             color: var(--baobab-brown);
         }
         
-        /* Page Header */
-        .page-header {
-            background: linear-gradient(to right, var(--canopy-green), var(--sage-green));
-            padding: 80px 0;
-            text-align: center;
-            color: var(--white);
-        }
-
-        .page-header-title {
-            font-size: 3rem;
-            margin-bottom: 15px;
-        }
-
-        .page-header-subtitle {
-            font-size: 1.2rem;
-            max-width: 700px;
-            margin: 0 auto;
-            opacity: 0.9;
-        }
-
-        /* Main Content Area */
-        .main-content {
-            padding: 80px 0;
-            background-color: var(--earth-cream);
-        }
-
-        .support-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 40px;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .support-card {
-            background: var(--white);
-            border-radius: 15px;
-            overflow: hidden;
-            box-shadow: var(--shadow-lg);
-            transition: var(--transition-fast);
+        .nav-menu {
             display: flex;
-            flex-direction: column;
-        }
-        
-        .support-card:hover {
-            transform: translateY(-10px);
-        }
-        
-        .support-card-icon {
-            text-align: center;
-            padding: 30px;
-            font-size: 3rem;
-            background: var(--baobab-brown);
-            color: var(--white);
-        }
-        
-        .support-card-icon.bg-green { background: var(--canopy-green); }
-        .support-card-icon.bg-gold { background: var(--sunset-gold); }
-        .support-card-icon.bg-blue { background: var(--sky-blue); }
-        .support-card-icon.bg-gray { background: var(--trunk-gray); }
-        .support-card-icon.bg-orange { background: var(--desert-orange); }
-
-
-        .support-card-content {
-            padding: 30px;
-            flex-grow: 1;
-        }
-
-        .support-card-content h3 {
-            font-size: 1.5rem;
-            color: var(--baobab-brown);
-            margin-bottom: 15px;
-        }
-
-        .support-card-content p {
-            margin-bottom: 15px;
-            color: var(--trunk-gray);
-            font-size: 0.95rem;
-        }
-        
-        .support-card-content ul {
+            gap: 30px;
             list-style: none;
-            padding: 0;
         }
         
-        .support-card-content li {
-            position: relative;
-            padding-left: 25px;
-            margin-bottom: 10px;
-            font-size: 0.95rem;
-        }
-        
-        .support-card-content li::before {
-            content: '\f058'; /* Font Awesome circle check */
-            font-family: 'Font Awesome 6 Free';
-            font-weight: 900;
-            color: var(--canopy-green);
-            position: absolute;
-            left: 0;
-            top: 2px;
-        }
-        
-        /* Quote Section */
-        .quote-section {
-            padding: 60px 0;
-            background-color: var(--trunk-gray);
-            color: var(--white);
-        }
-        
-        .quote-wrapper {
-            text-align: center;
-            max-width: 800px;
-            margin: 0 auto;
-        }
-        
-        .quote-icon {
-            font-size: 2.5rem;
-            color: var(--sunset-gold);
-            opacity: 0.5;
-        }
-        
-        .quote-text {
-            font-family: 'Merriweather', serif;
-            font-size: 1.8rem;
-            font-style: italic;
-            margin: 20px 0;
-            line-height: 1.5;
-        }
-        
-        .quote-author {
-            font-weight: 600;
-            font-size: 1.1rem;
-            color: var(--earth-cream);
-        }
-        
-        /* Mobile Menu */
-        .mobile-menu-panel {
-            position: fixed;
-            top: 0;
-            right: -100%;
-            width: 300px;
-            height: 100vh;
-            background-color: var(--white);
-            z-index: 1000;
-            padding: 80px 40px 40px;
-            transition: var(--transition-medium);
-            box-shadow: var(--shadow-xl);
-            overflow-y: auto;
-        }
-        
-        .mobile-menu-panel.active {
-            right: 0;
-        }
-        
-        .mobile-menu {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-        
-        .mobile-link {
+        .nav-link {
             font-weight: 500;
             color: var(--deep-charcoal);
-            padding: 12px 0;
-            border-bottom: 1px solid var(--earth-cream);
-            display: block;
-            transition: var(--transition-fast);
             text-decoration: none;
+            padding: 5px 0;
+            transition: var(--transition-fast);
         }
         
-        .mobile-link:hover {
-            color: var(--sunset-gold);
-            padding-left: 10px;
-        }
-        
-        .mobile-link.active {
+        .nav-link:hover {
             color: var(--sunset-gold);
         }
         
-        .mobile-buttons {
+        .menu-toggle {
+            display: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--baobab-brown);
+        }
+        
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, var(--soft-purple), var(--sky-blue));
+            color: var(--white);
+            padding: 120px 0 80px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path d="M20,20 Q30,10 40,20 T60,20" stroke="rgba(255,255,255,0.1)" fill="none" stroke-width="2"/><path d="M10,50 Q20,40 30,50 T50,50" stroke="rgba(255,255,255,0.1)" fill="none" stroke-width="1.5"/></svg>');
+            animation: drift 15s infinite ease-in-out;
+        }
+        
+        @keyframes drift {
+            0%, 100% { transform: translateX(0) translateY(0); }
+            50% { transform: translateX(20px) translateY(-10px); }
+        }
+        
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            max-width: 800px;
+            text-align: center;
+            margin: 0 auto;
+        }
+        
+        .hero-badge {
+            background: rgba(255, 255, 255, 0.25);
+            padding: 12px 25px;
+            border-radius: 25px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            margin-bottom: 25px;
+            display: inline-block;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .hero-title {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            line-height: 1.2;
+        }
+        
+        .hero-subtitle {
+            font-size: 1.3rem;
+            opacity: 0.9;
+            margin-bottom: 40px;
+            line-height: 1.6;
+        }
+        
+        /* Breadcrumbs */
+        .breadcrumbs {
+            background: var(--earth-cream);
+            padding: 20px 0;
+            border-bottom: 2px solid var(--border-light);
+        }
+        
+        .breadcrumb-nav {
             display: flex;
-            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.9rem;
+        }
+        
+        .breadcrumb-link {
+            color: var(--trunk-gray);
+            text-decoration: none;
+            transition: var(--transition-fast);
+        }
+        
+        .breadcrumb-link:hover {
+            color: var(--sunset-gold);
+        }
+        
+        .breadcrumb-separator {
+            color: var(--trunk-gray);
+            opacity: 0.6;
+        }
+        
+        .breadcrumb-current {
+            color: var(--baobab-brown);
+            font-weight: 600;
+        }
+        
+        /* Main Content */
+        .main-content {
+            padding: 80px 0;
+            background: var(--white);
+        }
+        
+        .content-layout {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 60px;
+        }
+        
+        /* Interactive Cards Section */
+        .support-categories {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin-bottom: 80px;
+        }
+        
+        .category-card {
+            background: var(--white);
+            border-radius: 25px;
+            padding: 35px;
+            box-shadow: var(--shadow-lg);
+            border: 3px solid transparent;
+            transition: var(--transition-medium);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .category-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 6px;
+            background: linear-gradient(90deg, var(--sunset-gold), var(--warm-coral));
+            transform: translateX(-100%);
+            transition: var(--transition-medium);
+        }
+        
+        .category-card:hover::before {
+            transform: translateX(0);
+        }
+        
+        .category-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            border-color: var(--sunset-gold);
+            box-shadow: var(--shadow-xl);
+        }
+        
+        .category-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--canopy-green), var(--sage-green));
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--white);
+            font-size: 2.5rem;
+            margin-bottom: 25px;
+            transition: var(--transition-medium);
+        }
+        
+        .category-card:nth-child(2) .category-icon {
+            background: linear-gradient(135deg, var(--sunset-gold), var(--warm-coral));
+            color: var(--deep-charcoal);
+        }
+        
+        .category-card:nth-child(3) .category-icon {
+            background: linear-gradient(135deg, var(--soft-purple), var(--sky-blue));
+            color: var(--white);
+        }
+        
+        .category-card:nth-child(4) .category-icon {
+            background: linear-gradient(135deg, var(--desert-orange), var(--sunset-gold));
+            color: var(--white);
+        }
+        
+        .category-card:hover .category-icon {
+            transform: scale(1.1) rotate(5deg);
+        }
+        
+        .category-title {
+            font-size: 1.8rem;
+            color: var(--deep-charcoal);
+            margin-bottom: 15px;
+        }
+        
+        .category-description {
+            color: var(--trunk-gray);
+            line-height: 1.7;
+            margin-bottom: 20px;
+        }
+        
+        .category-features {
+            list-style: none;
+        }
+        
+        .category-features li {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 10px;
+            font-size: 0.95rem;
+            color: var(--trunk-gray);
+        }
+        
+        .category-features i {
+            color: var(--canopy-green);
+            font-size: 1.1rem;
+            width: 20px;
+        }
+        
+        /* Expandable Content Sections */
+        .expandable-section {
+            background: var(--light-gray);
+            border-radius: 20px;
+            margin-bottom: 30px;
+            overflow: hidden;
+            border: 2px solid var(--border-light);
+            transition: var(--transition-medium);
+        }
+        
+        .expandable-section.active {
+            border-color: var(--sunset-gold);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .section-header {
+            background: linear-gradient(135deg, var(--baobab-brown), var(--trunk-gray));
+            color: var(--white);
+            padding: 25px 30px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: var(--transition-fast);
+        }
+        
+        .section-header:hover {
+            background: linear-gradient(135deg, var(--trunk-gray), var(--baobab-brown));
+        }
+        
+        .section-header-content {
+            display: flex;
+            align-items: center;
             gap: 15px;
+        }
+        
+        .section-icon {
+            width: 50px;
+            height: 50px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+        
+        .section-title {
+            font-size: 1.6rem;
+            margin: 0;
+        }
+        
+        .expand-icon {
+            font-size: 1.5rem;
+            transition: var(--transition-fast);
+        }
+        
+        .expandable-section.active .expand-icon {
+            transform: rotate(180deg);
+        }
+        
+        .section-content {
+            padding: 0 30px;
+            max-height: 0;
+            overflow: hidden;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .expandable-section.active .section-content {
+            padding: 30px;
+            max-height: 2000px;
+        }
+        
+        .section-content-inner {
+            background: var(--white);
+            border-radius: 15px;
+            padding: 30px;
+            border: 1px solid var(--border-light);
+        }
+        
+        /* Strategy Cards */
+        .strategy-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin-top: 25px;
+        }
+        
+        .strategy-card {
+            background: var(--earth-cream);
+            border-radius: 15px;
+            padding: 25px;
+            border-left: 5px solid var(--sunset-gold);
+            transition: var(--transition-fast);
+        }
+        
+        .strategy-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .strategy-card h4 {
+            color: var(--baobab-brown);
+            margin-bottom: 12px;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .strategy-card p {
+            color: var(--trunk-gray);
+            line-height: 1.6;
+            font-size: 0.95rem;
+        }
+        
+        /* Interactive Checklist */
+        .interactive-checklist {
+            background: var(--white);
+            border-radius: 20px;
+            padding: 30px;
+            border: 2px solid var(--border-light);
             margin-top: 30px;
         }
         
-        .menu-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.7);
-            z-index: 999;
-            opacity: 0;
-            visibility: hidden;
-            transition: var(--transition-medium);
-            backdrop-filter: blur(5px);
+        .checklist-header {
+            text-align: center;
+            margin-bottom: 30px;
         }
         
-        .menu-overlay.active {
-            opacity: 1;
-            visibility: visible;
+        .checklist-header h3 {
+            color: var(--baobab-brown);
+            font-size: 1.8rem;
+            margin-bottom: 10px;
         }
-
+        
+        .checklist-items {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        .checklist-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 20px;
+            background: var(--light-gray);
+            border-radius: 15px;
+            transition: var(--transition-fast);
+            cursor: pointer;
+        }
+        
+        .checklist-item:hover {
+            background: var(--earth-cream);
+            transform: scale(1.02);
+        }
+        
+        .checklist-item.checked {
+            background: linear-gradient(135deg, var(--canopy-green), var(--sage-green));
+            color: var(--white);
+        }
+        
+        .checklist-checkbox {
+            width: 25px;
+            height: 25px;
+            border: 3px solid var(--sunset-gold);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition-fast);
+        }
+        
+        .checklist-item.checked .checklist-checkbox {
+            background: var(--sunset-gold);
+            border-color: var(--sunset-gold);
+        }
+        
+        .checklist-text {
+            font-weight: 500;
+            flex: 1;
+        }
+        
+        /* Progress Tracker */
+        .progress-section {
+            background: linear-gradient(135deg, var(--baobab-brown), var(--trunk-gray));
+            color: var(--white);
+            padding: 50px;
+            border-radius: 25px;
+            text-align: center;
+            margin: 60px 0;
+        }
+        
+        .progress-content h3 {
+            font-size: 2.2rem;
+            margin-bottom: 20px;
+        }
+        
+        .progress-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+        
+        .stat-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 25px;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--sunset-gold);
+            display: block;
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            margin-top: 8px;
+        }
+        
+        /* Call to Action */
+        .cta-section {
+            background: linear-gradient(135deg, var(--canopy-green), var(--sage-green));
+            color: var(--white);
+            padding: 60px 0;
+            text-align: center;
+            margin-top: 80px;
+            border-radius: 25px;
+        }
+        
+        .cta-content h3 {
+            font-size: 2.2rem;
+            margin-bottom: 15px;
+        }
+        
+        .cta-content p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            margin-bottom: 30px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .cta-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .btn-white {
+            background-color: var(--white);
+            color: var(--canopy-green);
+            border-color: var(--white);
+        }
+        
+        .btn-white:hover {
+            background-color: transparent;
+            color: var(--white);
+            border-color: var(--white);
+        }
+        
         /* Footer */
         .footer {
             background: var(--deep-charcoal);
             color: var(--white);
             padding: 60px 0 30px;
+            margin-top: 80px;
         }
         
         .footer-content {
@@ -342,6 +672,7 @@
         .footer-section h4 {
             color: var(--sunset-gold);
             margin-bottom: 20px;
+            font-size: 1.2rem;
         }
         
         .footer-link {
@@ -363,9 +694,86 @@
             border-top: 1px solid rgba(255, 255, 255, 0.1);
             color: rgba(255, 255, 255, 0.7);
         }
+        
+        /* Responsive Design */
+        @media (max-width: 992px) {
+            .menu-toggle {
+                display: block;
+            }
+            
+            .nav-menu {
+                display: none;
+            }
+            
+            .support-categories {
+                grid-template-columns: 1fr;
+                gap: 25px;
+            }
+            
+            .strategy-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .checklist-items {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2.5rem;
+            }
+            
+            .category-card {
+                padding: 25px;
+            }
+            
+            .section-header {
+                padding: 20px;
+            }
+            
+            .expandable-section.active .section-content {
+                padding: 20px;
+            }
+            
+            .progress-section {
+                padding: 30px 20px;
+            }
+            
+            .progress-stats {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 20px;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .container {
+                padding: 0 15px;
+            }
+            
+            .hero-title {
+                font-size: 2rem;
+            }
+            
+            .category-icon {
+                width: 70px;
+                height: 70px;
+                font-size: 2rem;
+            }
+            
+            .progress-stats {
+                grid-template-columns: 1fr;
+            }
+            
+            .cta-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
     </style>
 </head>
 <body>
+    <!-- Header -->
     <header class="header">
         <div class="container">
             <div class="nav-wrapper">
@@ -373,162 +781,568 @@
                     <div class="logo-icon"><i class="fas fa-heart"></i></div>
                     <div class="logo-text">Parent Portal</div>
                 </a>
-                <a href="index.html#register" class="btn btn-primary">
-                    <i class="fas fa-user-plus"></i>
-                    Register
-                </a>
+                
+                <div class="menu-toggle" id="menuToggle">
+                    <i class="fas fa-bars"></i>
+                </div>
+                
+                <ul class="nav-menu">
+                    <li><a href="index.html#features" class="nav-link">Features</a></li>
+                    <li><a href="index.html#how-it-works" class="nav-link">How It Works</a></li>
+                    <li><a href="index.html#security" class="nav-link">Safety & Security</a></li>
+                    <li><a href="http://baobabonlineacademy.com" class="nav-link">Main Site</a></li>
+                </ul>
             </div>
         </div>
     </header>
 
-    <section class="page-header">
+    <!-- Hero Section -->
+    <section class="hero">
         <div class="container">
-            <h1 class="page-header-title">Supporting Your Child's Learning</h1>
-            <p class="page-header-subtitle">Your partnership is the soil in which your child's education grows. Discover how you can create a nurturing environment for academic success and cultural pride.</p>
-        </div>
-    </section>
-
-    <main class="main-content">
-        <div class="container">
-            <div class="support-grid">
-                
-                <div class="support-card">
-                    <div class="support-card-icon bg-green">
-                        <i class="fas fa-home"></i>
-                    </div>
-                    <div class="support-card-content">
-                        <h3>Create a Conducive Learning Space</h3>
-                        <p>A dedicated, quiet space can significantly improve focus and retention. It signals that it's time to learn.</p>
-                        <ul>
-                            <li>Choose a well-lit, quiet area.</li>
-                            <li>Ensure it's free from distractions like TV or toys.</li>
-                            <li>Organize supplies (notebooks, pens, headset) for easy access.</li>
-                            <li>Establish this space as a "learning zone" used consistently.</li>
-                        </ul>
-                    </div>
+            <div class="hero-content">
+                <div class="hero-badge">
+                    <i class="fas fa-hands-helping"></i>
+                    Empowering Parents • Supporting Growth
                 </div>
-
-                <div class="support-card">
-                    <div class="support-card-icon bg-gold">
-                        <i class="fas fa-chart-line"></i>
-                    </div>
-                    <div class="support-card-content">
-                        <h3>Engage Actively with the Portal</h3>
-                        <p>The portal is your window into their world. Regular check-ins help you stay informed and proactive.</p>
-                        <ul>
-                            <li>Log in daily to view announcements.</li>
-                            <li>Review progress reports with your child weekly.</li>
-                            <li>Celebrate achievements and discuss areas for improvement.</li>
-                            <li>Use feedback from tutors to guide conversations.</li>
-                        </ul>
-                    </div>
-                </div>
-                
-                <div class="support-card">
-                    <div class="support-card-icon bg-orange">
-                        <i class="fas fa-comments"></i>
-                    </div>
-                    <div class="support-card-content">
-                        <h3>Practice Positive Communication</h3>
-                        <p>Your words have power. Focus on effort and growth, not just grades, to build resilience and a love for learning.</p>
-                        <ul>
-                            <li>Ask open-ended questions about their day.</li>
-                            <li>Praise their hard work and perseverance.</li>
-                            <li>Frame challenges as opportunities to learn.</li>
-                            <li>Listen to their concerns and celebrate their curiosity.</li>
-                        </ul>
-                    </div>
-                </div>
-                
-                <div class="support-card">
-                    <div class="support-card-icon">
-                        <i class="fas fa-globe-africa"></i>
-                    </div>
-                    <div class="support-card-content">
-                        <h3>Extend Cultural Learning</h3>
-                        <p>Connect what they learn online to your family's daily life. This makes heritage tangible and meaningful.</p>
-                        <ul>
-                            <li>Cook traditional meals together.</li>
-                            <li>Share family stories and histories.</li>
-                            <li>Listen to music or watch films from your heritage.</li>
-                            <li>Practice speaking your native language at home.</li>
-                        </ul>
-                    </div>
-                </div>
-                
-                <div class="support-card">
-                    <div class="support-card-icon bg-blue">
-                        <i class="fas fa-handshake-angle"></i>
-                    </div>
-                    <div class="support-card-content">
-                        <h3>Build a Partnership with Tutors</h3>
-                        <p>Think of tutors as your partners. Proactive, respectful communication builds a strong support system.</p>
-                        <ul>
-                            <li>Prepare for scheduled tutor calls.</li>
-                            <li>Share insights about your child's learning style.</li>
-                            <li>Ask for specific ways you can help at home.</li>
-                            <li>Provide constructive feedback respectfully.</li>
-                        </ul>
-                    </div>
-                </div>
-
-                <div class="support-card">
-                    <div class="support-card-icon bg-gray">
-                        <i class="fas fa-leaf"></i>
-                    </div>
-                    <div class="support-card-content">
-                        <h3>Promote Digital Wellbeing</h3>
-                        <p>Balance is crucial. Help your child develop healthy habits for their time both on and off the screen.</p>
-                        <ul>
-                            <li>Establish clear start and end times for online learning.</li>
-                            <li>Encourage physical activity and outdoor play.</li>
-                            <li>Ensure they take regular breaks to rest their eyes.</li>
-                            <li>Engage in offline family activities.</li>
-                        </ul>
-                    </div>
-                </div>
-
+                <h1 class="hero-title">Supporting Your Child's Learning Journey</h1>
+                <p class="hero-subtitle">
+                    Discover proven strategies, practical tools, and expert guidance to become your child's 
+                    most powerful advocate and learning partner. Every child thrives with the right support.
+                </p>
             </div>
         </div>
-    </main>
-    
-    <section class="quote-section">
-        <div class="container quote-wrapper">
-            <i class="fas fa-quote-left quote-icon"></i>
-            <p class="quote-text">Education is the most powerful weapon which you can use to change the world. It is the passport to the future, for tomorrow belongs to those who prepare for it today.</p>
-            <p class="quote-author">- Nelson Mandela & Malcolm X (paraphrased combination)</p>
+    </section>
+
+    <!-- Breadcrumbs -->
+    <section class="breadcrumbs">
+        <div class="container">
+            <nav class="breadcrumb-nav">
+                <a href="index.html" class="breadcrumb-link">
+                    <i class="fas fa-home"></i> Home
+                </a>
+                <span class="breadcrumb-separator">/</span>
+                <a href="#" class="breadcrumb-link">Parent Resources</a>
+                <span class="breadcrumb-separator">/</span>
+                <span class="breadcrumb-current">Supporting Your Child's Learning</span>
+            </nav>
         </div>
     </section>
 
+    <!-- Main Content -->
+    <section class="main-content">
+        <div class="container">
+            <div class="content-layout">
+                <!-- Support Categories Overview -->
+                <div class="support-categories">
+                    <div class="category-card" onclick="scrollToSection('academic-support')">
+                        <div class="category-icon">
+                            <i class="fas fa-graduation-cap"></i>
+                        </div>
+                        <h3 class="category-title">Academic Support</h3>
+                        <p class="category-description">
+                            Learn effective strategies to support your child's academic progress, from homework help 
+                            to creating optimal study environments.
+                        </p>
+                        <ul class="category-features">
+                            <li><i class="fas fa-check-circle"></i> Study space optimization</li>
+                            <li><i class="fas fa-check-circle"></i> Homework assistance techniques</li>
+                            <li><i class="fas fa-check-circle"></i> Progress monitoring tools</li>
+                            <li><i class="fas fa-check-circle"></i> Academic goal setting</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="category-card" onclick="scrollToSection('emotional-support')">
+                        <div class="category-icon">
+                            <i class="fas fa-heart"></i>
+                        </div>
+                        <h3 class="category-title">Emotional Wellbeing</h3>
+                        <p class="category-description">
+                            Build your child's confidence, resilience, and emotional intelligence through supportive 
+                            parenting practices and mindful communication.
+                        </p>
+                        <ul class="category-features">
+                            <li><i class="fas fa-check-circle"></i> Building confidence and self-esteem</li>
+                            <li><i class="fas fa-check-circle"></i> Managing learning anxiety</li>
+                            <li><i class="fas fa-check-circle"></i> Celebrating achievements</li>
+                            <li><i class="fas fa-check-circle"></i> Developing resilience</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="category-card" onclick="scrollToSection('communication-support')">
+                        <div class="category-icon">
+                            <i class="fas fa-comments"></i>
+                        </div>
+                        <h3 class="category-title">Communication</h3>
+                        <p class="category-description">
+                            Master effective communication with your child's tutors and create strong partnerships 
+                            that accelerate learning outcomes.
+                        </p>
+                        <ul class="category-features">
+                            <li><i class="fas fa-check-circle"></i> Tutor collaboration strategies</li>
+                            <li><i class="fas fa-check-circle"></i> Regular feedback sessions</li>
+                            <li><i class="fas fa-check-circle"></i> Parent-child discussions</li>
+                            <li><i class="fas fa-check-circle"></i> Progress reporting</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="category-card" onclick="scrollToSection('cultural-support')">
+                        <div class="category-icon">
+                            <i class="fas fa-globe-africa"></i>
+                        </div>
+                        <h3 class="category-title">Cultural Connection</h3>
+                        <p class="category-description">
+                            Strengthen your child's cultural identity while supporting their academic journey 
+                            through heritage-rich learning experiences.
+                        </p>
+                        <ul class="category-features">
+                            <li><i class="fas fa-check-circle"></i> Heritage storytelling</li>
+                            <li><i class="fas fa-check-circle"></i> Cultural celebrations</li>
+                            <li><i class="fas fa-check-circle"></i> Language preservation</li>
+                            <li><i class="fas fa-check-circle"></i> Identity building activities</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Academic Support Section -->
+                <div class="expandable-section" id="academic-support">
+                    <div class="section-header" onclick="toggleSection('academic-support')">
+                        <div class="section-header-content">
+                            <div class="section-icon">
+                                <i class="fas fa-graduation-cap"></i>
+                            </div>
+                            <h2 class="section-title">Academic Support Strategies</h2>
+                        </div>
+                        <i class="fas fa-chevron-down expand-icon"></i>
+                    </div>
+                    <div class="section-content">
+                        <div class="section-content-inner">
+                            <p style="font-size: 1.1rem; color: var(--trunk-gray); margin-bottom: 30px; line-height: 1.7;">
+                                Creating the right academic environment and support system is crucial for your child's success. 
+                                These proven strategies will help you become an effective academic partner.
+                            </p>
+                            
+                            <div class="strategy-grid">
+                                <div class="strategy-card">
+                                    <h4><i class="fas fa-home"></i> Optimal Study Environment</h4>
+                                    <p>Create a dedicated, distraction-free learning space with good lighting, comfortable seating, and all necessary materials within reach. Include cultural elements like Nigerian art or books.</p>
+                                </div>
+                                
+                                <div class="strategy-card">
+                                    <h4><i class="fas fa-clock"></i> Consistent Routines</h4>
+                                    <p>Establish regular study times that align with your child's natural energy levels. Consistency helps build strong learning habits and reduces resistance to academic work.</p>
+                                </div>
+                                
+                                <div class="strategy-card">
+                                    <h4><i class="fas fa-target"></i> Goal Setting Together</h4>
+                                    <p>Work with your child to set achievable academic goals. Break larger objectives into smaller, manageable steps and celebrate progress along the way.</p>
+                                </div>
+                                
+                                <div class="strategy-card">
+                                    <h4><i class="fas fa-chart-line"></i> Progress Monitoring</h4>
+                                    <p>Use the Parent Portal to track daily progress and identify patterns. Regular monitoring helps you intervene early when challenges arise.</p>
+                                </div>
+                                
+                                <div class="strategy-card">
+                                    <h4><i class="fas fa-question-circle"></i> Effective Questioning</h4>
+                                    <p>Ask open-ended questions about lessons to encourage critical thinking. "What was interesting about today's lesson?" works better than "Did you understand?"</p>
+                                </div>
+                                
+                                <div class="strategy-card">
+                                    <h4><i class="fas fa-book"></i> Extended Learning</h4>
+                                    <p>Connect lessons to real-world experiences and family activities. Visit museums, read related books, or explore topics through cultural stories and traditions.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Emotional Support Section -->
+                <div class="expandable-section" id="emotional-support">
+                    <div class="section-header" onclick="toggleSection('emotional-support')">
+                        <div class="section-header-content">
+                            <div class="section-icon">
+                                <i class="fas fa-heart"></i>
+                            </div>
+                            <h2 class="section-title">Emotional Wellbeing & Confidence</h2>
+                        </div>
+                        <i class="fas fa-chevron-down expand-icon"></i>
+                    </div>
+                    <div class="section-content">
+                        <div class="section-content-inner">
+                            <p style="font-size: 1.1rem; color: var(--trunk-gray); margin-bottom: 30px; line-height: 1.7;">
+                                Your child's emotional wellbeing directly impacts their learning capacity. Building confidence, 
+                                resilience, and emotional intelligence creates a strong foundation for academic success.
+                            </p>
+                            
+                            <div class="strategy-grid">
+                                <div class="strategy-card">
+                                    <h4><i class="fas fa-trophy"></i> Celebrate Small Wins</h4>
+                                    <p>Acknowledge effort over results. Celebrate completing assignments, asking good questions, or showing improvement, not just perfect scores.</p>
+                                </div>
+                                
+                                <div class="strategy-card">
+                                    <h4><i class="fas fa-comments"></i> Active Listening</h4>
+                                    <p>Create safe spaces for your child to express frustrations or concerns about learning. Validate their feelings before offering solutions.</p>
+                                </div>
+                                
+                                <div class="strategy-card">
+                                    <h4><i class="fas fa-seedling"></i> Growth Mindset</h4>
+                                    <p>Teach that intelligence grows with effort. Replace "I can't do this" with "I can't do this yet" to build resilience and persistence.</p>
+                                </div>
+                                
+                                <div class="strategy-card">
+                                    <h4><i class="fas fa-shield-alt"></i> Managing Anxiety</h4>
+                                    <p>Help your child develop coping strategies for learning anxiety. Deep breathing, positive self-talk, and breaking tasks into smaller steps all help.</p>
+                                </div>
+                                
+                                <div class="strategy-card">
+                                    <h4><i class="fas fa-star"></i> Identity Affirmation</h4>
+                                    <p>Regularly affirm your child's cultural identity and heritage. Connect their Nigerian roots to their learning journey to build cultural pride.</p>
+                                </div>
+                                
+                                <div class="strategy-card">
+                                    <h4><i class="fas fa-balance-scale"></i> Work-Life Balance</h4>
+                                    <p>Ensure adequate time for play, family activities, and rest. A balanced child is better equipped to handle academic challenges.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Communication Section -->
+                <div class="expandable-section" id="communication-support">
+                    <div class="section-header" onclick="toggleSection('communication-support')">
+                        <div class="section-header-content">
+                            <div class="section-icon">
+                                <i class="fas fa-comments"></i>
+                            </div>
+                            <h2 class="section-title">Effective Communication Strategies</h2>
+                        </div>
+                        <i class="fas fa-chevron-down expand-icon"></i>
+                    </div>
+                    <div class="section-content">
+                        <div class="section-content-inner">
+                            <p style="font-size: 1.1rem; color: var(--trunk-gray); margin-bottom: 30px; line-height: 1.7;">
+                                Strong communication between you, your child, and their tutors creates a powerful support network. 
+                                Learn how to foster open dialogue and collaborative partnerships.
+                            </p>
+                            
+                            <div class="strategy-grid">
+                                <div class="strategy-card">
+                                    <h4><i class="fas fa-handshake"></i> Tutor Partnership</h4>
+                                    <p>Establish regular check-ins with tutors. Share insights about your child's learning style, interests, and any challenges they face at home.</p>
+                                </div>
+                                
+                                <div class="strategy-card">
+                                    <h4><i class="fas fa-calendar-check"></i> Weekly Reviews</h4>
+                                    <p>Schedule weekly family discussions about learning progress. Ask about favorite lessons, challenges faced, and goals for the upcoming week.</p>
+                                </div>
+                                
+                                <div class="strategy-card">
+                                    <h4><i class="fas fa-envelope-open"></i> Portal Messaging</h4>
+                                    <p>Use the Parent Portal messaging system regularly. Don't wait for problems - share positive observations and ask proactive questions.</p>
+                                </div>
+                                
+                                <div class="strategy-card">
+                                    <h4><i class="fas fa-lightbulb"></i> Solution-Focused Approach</h4>
+                                    <p>When discussing challenges, focus on solutions rather than problems. Collaborate with tutors to develop strategies that work for your child.</p>
+                                </div>
+                                
+                                <div class="strategy-card">
+                                    <h4><i class="fas fa-video"></i> Virtual Meetings</h4>
+                                    <p>Take advantage of video call opportunities with tutors. Face-to-face conversations build stronger relationships and understanding.</p>
+                                </div>
+                                
+                                <div class="strategy-card">
+                                    <h4><i class="fas fa-clipboard-list"></i> Progress Documentation</h4>
+                                    <p>Keep notes about your child's learning journey. Document breakthroughs, challenges, and strategies that work for future reference.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Cultural Support Section -->
+                <div class="expandable-section" id="cultural-support">
+                    <div class="section-header" onclick="toggleSection('cultural-support')">
+                        <div class="section-header-content">
+                            <div class="section-icon">
+                                <i class="fas fa-globe-africa"></i>
+                            </div>
+                            <h2 class="section-title">Cultural Connection & Identity</h2>
+                        </div>
+                        <i class="fas fa-chevron-down expand-icon"></i>
+                    </div>
+                    <div class="section-content">
+                        <div class="section-content-inner">
+                            <p style="font-size: 1.1rem; color: var(--trunk-gray); margin-bottom: 30px; line-height: 1.7;">
+                                Maintaining strong cultural connections while pursuing academic excellence gives your child a unique 
+                                advantage. Learn how to weave Nigerian heritage into their learning journey.
+                            </p>
+                            
+                            <div class="strategy-grid">
+                                <div class="strategy-card">
+                                    <h4><i class="fas fa-book-open"></i> Heritage Storytelling</h4>
+                                    <p>Share Nigerian folktales, family histories, and cultural stories that relate to their lessons. This builds cultural pride and memory retention.</p>
+                                </div>
+                                
+                                <div class="strategy-card">
+                                    <h4><i class="fas fa-calendar-alt"></i> Cultural Celebrations</h4>
+                                    <p>Incorporate Nigerian holidays and traditions into your learning calendar. Connect academic concepts to cultural celebrations and practices.</p>
+                                </div>
+                                
+                                <div class="strategy-card">
+                                    <h4><i class="fas fa-language"></i> Language Integration</h4>
+                                    <p>Encourage the use of Nigerian languages alongside English. Bilingual children often show enhanced cognitive abilities and cultural confidence.</p>
+                                </div>
+                                
+                                <div class="strategy-card">
+                                    <h4><i class="fas fa-utensils"></i> Cultural Learning Activities</h4>
+                                    <p>Cook traditional Nigerian meals together while discussing math (measurements) or science (chemical reactions). Learning becomes memorable and meaningful.</p>
+                                </div>
+                                
+                                <div class="strategy-card">
+                                    <h4><i class="fas fa-music"></i> Arts & Expression</h4>
+                                    <p>Incorporate Nigerian music, art, and dance into learning breaks. Creative expression enhances cognitive function and cultural connection.</p>
+                                </div>
+                                
+                                <div class="strategy-card">
+                                    <h4><i class="fas fa-users"></i> Community Connection</h4>
+                                    <p>Connect with other Nigerian families in your area. Cultural community support strengthens identity and provides peer learning opportunities.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Interactive Checklist -->
+                <div class="interactive-checklist">
+                    <div class="checklist-header">
+                        <h3><i class="fas fa-tasks"></i> Daily Support Checklist</h3>
+                        <p style="color: var(--trunk-gray);">Track your daily actions supporting your child's learning journey. Click items as you complete them!</p>
+                    </div>
+                    <div class="checklist-items">
+                        <div class="checklist-item" onclick="toggleChecklist(this)">
+                            <div class="checklist-checkbox">
+                                <i class="fas fa-check" style="display: none;"></i>
+                            </div>
+                            <div class="checklist-text">Check Portal for lesson updates and progress</div>
+                        </div>
+                        <div class="checklist-item" onclick="toggleChecklist(this)">
+                            <div class="checklist-checkbox">
+                                <i class="fas fa-check" style="display: none;"></i>
+                            </div>
+                            <div class="checklist-text">Ask about today's learning highlights</div>
+                        </div>
+                        <div class="checklist-item" onclick="toggleChecklist(this)">
+                            <div class="checklist-checkbox">
+                                <i class="fas fa-check" style="display: none;"></i>
+                            </div>
+                            <div class="checklist-text">Provide encouragement and positive feedback</div>
+                        </div>
+                        <div class="checklist-item" onclick="toggleChecklist(this)">
+                            <div class="checklist-checkbox">
+                                <i class="fas fa-check" style="display: none;"></i>
+                            </div>
+                            <div class="checklist-text">Ensure proper study environment is ready</div>
+                        </div>
+                        <div class="checklist-item" onclick="toggleChecklist(this)">
+                            <div class="checklist-checkbox">
+                                <i class="fas fa-check" style="display: none;"></i>
+                            </div>
+                            <div class="checklist-text">Connect learning to cultural heritage</div>
+                        </div>
+                        <div class="checklist-item" onclick="toggleChecklist(this)">
+                            <div class="checklist-checkbox">
+                                <i class="fas fa-check" style="display: none;"></i>
+                            </div>
+                            <div class="checklist-text">Communicate with tutor if needed</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Progress Section -->
+                <div class="progress-section">
+                    <div class="progress-content">
+                        <h3><i class="fas fa-chart-line"></i> Supporting Success Stories</h3>
+                        <p>Real results from families who actively support their children's learning journey with Baobab Academy.</p>
+                        
+                        <div class="progress-stats">
+                            <div class="stat-item">
+                                <span class="stat-number">94%</span>
+                                <div class="stat-label">of children show improved confidence</div>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-number">87%</span>
+                                <div class="stat-label">report stronger cultural identity</div>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-number">91%</span>
+                                <div class="stat-label">exceed academic expectations</div>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-number">96%</span>
+                                <div class="stat-label">of parents feel empowered to help</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Call to Action -->
+                <div class="cta-section">
+                    <div class="cta-content">
+                        <h3>Ready to Become Your Child's Learning Champion?</h3>
+                        <p>
+                            Join our community of supportive parents who are actively shaping their children's 
+                            educational success while honoring their cultural heritage.
+                        </p>
+                        <div class="cta-buttons">
+                            <a href="index.html#register" class="btn btn-white">
+                                <i class="fas fa-user-plus"></i>
+                                Join Our Parent Community
+                            </a>
+                            <a href="cultural-integration.html" class="btn btn-outlined">
+                                <i class="fas fa-arrow-right"></i>
+                                Next: Cultural Integration
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
     <footer class="footer">
         <div class="container">
             <div class="footer-content">
                 <div class="footer-section">
                     <h4><i class="fas fa-heart"></i> Parent Resources</h4>
-                    <a href="getting-started.html" class="footer-link">Getting Started Guide</a>
-                    <a href="supporting-learning.html" class="footer-link">Supporting Your Child's Learning</a>
+                    <a href="get-started.html" class="footer-link">Getting Started Guide</a>
+                    <a href="supporting-child.html" class="footer-link">Supporting Your Child's Learning</a>
                     <a href="cultural-integration.html" class="footer-link">Cultural Integration at Home</a>
                 </div>
+                
                 <div class="footer-section">
                     <h4><i class="fas fa-shield-alt"></i> Safety & Security</h4>
-                    <a href="#" class="footer-link">Child Protection Policy</a>
-                    <a href="#" class="footer-link">Tutor Verification Process</a>
+                    <a href="child-protection.html" class="footer-link">Child Protection Policy</a>
+                    <a href="tutor-verification.html" class="footer-link">Tutor Verification Process</a>
                     <a href="#" class="footer-link">Platform Security Features</a>
                     <a href="#" class="footer-link">Privacy Policy</a>
                 </div>
                 
                 <div class="footer-section">
                     <h4><i class="fas fa-headset"></i> Support</h4>
-                    <p style="color: rgba(255, 255, 255, 0.7); margin-bottom: 15px;"><i class="fas fa-envelope"></i> parents@baobabonlineacademy.com</p>
-                    <p style="color: rgba(255, 255, 255, 0.7); margin-bottom: 15px;"><i class="fas fa-phone"></i> +234 (0) 816 501 1291</p>
+                    <p style="color: rgba(255, 255, 255, 0.7); margin-bottom: 15px;">
+                        <i class="fas fa-envelope"></i>
+                        parents@baobabonlineacademy.com
+                    </p>
+                    <p style="color: rgba(255, 255, 255, 0.7); margin-bottom: 15px;">
+                        <i class="fas fa-phone"></i>
+                        +234 (0) 816 501 1291
+                    </p>
                     <a href="#" class="footer-link">Help Center</a>
                     <a href="#" class="footer-link">Live Chat Support</a>
                 </div>
             </div>
+            
             <div class="footer-bottom">
                 <p>&copy; 2025 Baobab Online Academy Parent Portal. Nurturing Growth, Honoring Heritage.</p>
             </div>
         </div>
     </footer>
+
+    <script>
+        // Mobile menu functionality
+        const menuToggle = document.getElementById('menuToggle');
+        const navMenu = document.querySelector('.nav-menu');
+        
+        if (menuToggle) {
+            menuToggle.addEventListener('click', function() {
+                navMenu.classList.toggle('active');
+                this.innerHTML = navMenu.classList.contains('active') 
+                    ? '<i class="fas fa-times"></i>' 
+                    : '<i class="fas fa-bars"></i>';
+            });
+        }
+
+        // Expandable sections functionality
+        function toggleSection(sectionId) {
+            const section = document.getElementById(sectionId);
+            section.classList.toggle('active');
+        }
+
+        // Scroll to section functionality
+        function scrollToSection(sectionId) {
+            const section = document.getElementById(sectionId);
+            if (section) {
+                section.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+                // Auto-expand the section
+                setTimeout(() => {
+                    if (!section.classList.contains('active')) {
+                        section.classList.add('active');
+                    }
+                }, 600);
+            }
+        }
+
+        // Interactive checklist functionality
+        function toggleChecklist(item) {
+            item.classList.toggle('checked');
+            const checkIcon = item.querySelector('.checklist-checkbox i');
+            if (item.classList.contains('checked')) {
+                checkIcon.style.display = 'block';
+            } else {
+                checkIcon.style.display = 'none';
+            }
+        }
+
+        // Category card hover effects
+        document.querySelectorAll('.category-card').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-15px) scale(1.03)';
+            });
+            
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0) scale(1)';
+            });
+        });
+
+        // Strategy card hover effects
+        document.querySelectorAll('.strategy-card').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-5px) scale(1.02)';
+            });
+            
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0) scale(1)';
+            });
+        });
+
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Auto-expand first section on load
+        document.addEventListener('DOMContentLoaded', function() {
+            const firstSection = document.querySelector('.expandable-section');
+            if (firstSection) {
+                firstSection.classList.add('active');
+            }
+        });
+    </script>
 </body>
 </html>
