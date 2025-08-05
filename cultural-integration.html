@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <link rel="icon" type="image/png" sizes="32x32" href="/Images/logo.jpg">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cultural Integration at Home - Baobab Parent Portal</title>
+    <title>Cultural Integration at Home - Baobab Online Academy Parent Portal</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@300;400;700;900&family=Open+Sans:wght@300;400;600;700&family=Kalam:wght@400;700&display=swap" rel="stylesheet">
     <style>
@@ -15,13 +15,25 @@
             --trunk-gray: #5D4037;
             --sky-blue: #1976D2;
             --earth-cream: #FFF8E1;
+            --desert-orange: #FF5722;
             --sage-green: #689F38;
             --deep-charcoal: #263238;
             --white: #FFFFFF;
+            --light-gray: #F5F5F5;
+            --border-light: #E0E0E0;
+            --emerald-green: #00695C;
+            --golden-yellow: #FFB300;
+            --rich-red: #C62828;
+            --royal-blue: #1565C0;
             
+            --transition-slow: all 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
+            --transition-medium: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
             --transition-fast: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+            
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
             --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
             --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
         }
         
         * {
@@ -34,10 +46,11 @@
             font-family: 'Open Sans', sans-serif;
             color: var(--deep-charcoal);
             line-height: 1.6;
-            background-color: #fdfcfa; /* Slightly off-white */
+            overflow-x: hidden;
+            background-color: var(--white);
         }
         
-        h1, h2, h3, h4 {
+        h1, h2, h3, h4, h5 {
             font-family: 'Merriweather', serif;
             font-weight: 700;
             line-height: 1.3;
@@ -45,15 +58,62 @@
         
         .container {
             width: 100%;
-            max-width: 1100px;
+            max-width: 1200px;
             margin: 0 auto;
             padding: 0 20px;
+            position: relative;
+        }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 14px 32px;
+            border-radius: 30px;
+            font-weight: 600;
+            text-align: center;
+            transition: var(--transition-fast);
+            border: 2px solid transparent;
+            font-family: 'Open Sans', sans-serif;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        
+        .btn-primary {
+            background-color: var(--baobab-brown);
+            color: var(--white);
+            border-color: var(--baobab-brown);
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--trunk-gray);
+            border-color: var(--trunk-gray);
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .btn-secondary {
+            background-color: var(--sunset-gold);
+            color: var(--deep-charcoal);
+            border-color: var(--sunset-gold);
+        }
+        
+        .btn-outlined {
+            background-color: transparent;
+            color: var(--baobab-brown);
+            border-color: var(--baobab-brown);
+        }
+        
+        .btn-outlined:hover {
+            background-color: var(--baobab-brown);
+            color: var(--white);
         }
         
         /* Header */
         .header {
-            position: sticky;
+            position: fixed;
             top: 0;
+            left: 0;
             width: 100%;
             z-index: 1000;
             background-color: var(--white);
@@ -92,214 +152,646 @@
             color: var(--baobab-brown);
         }
         
-        .btn-primary {
-            background-color: var(--baobab-brown);
-            color: var(--white);
-            border: 2px solid var(--baobab-brown);
-            padding: 12px 28px;
-            border-radius: 30px;
-            font-weight: 600;
+        .nav-menu {
+            display: flex;
+            gap: 30px;
+            list-style: none;
+        }
+        
+        .nav-link {
+            font-weight: 500;
+            color: var(--deep-charcoal);
             text-decoration: none;
+            padding: 5px 0;
             transition: var(--transition-fast);
         }
         
-        .btn-primary:hover {
-            background-color: var(--trunk-gray);
-            border-color: var(--trunk-gray);
-            transform: translateY(-3px);
+        .nav-link:hover {
+            color: var(--sunset-gold);
         }
         
-        /* Page Header */
-        .page-header {
-            background: url('https://images.unsplash.com/photo-1596736025688-3d6a4a132d75?q=80&w=2070&auto=format&fit=crop') no-repeat center center/cover;
-            padding: 100px 0;
-            text-align: center;
+        .menu-toggle {
+            display: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--baobab-brown);
+        }
+        
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, var(--emerald-green), var(--canopy-green), var(--sage-green));
             color: var(--white);
+            padding: 120px 0 80px;
             position: relative;
+            overflow: hidden;
         }
         
-        .page-header::before {
+        .hero::before {
             content: '';
             position: absolute;
             top: 0;
             left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.6);
-            z-index: 1;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200"><circle cx="40" cy="40" r="15" fill="rgba(255,255,255,0.1)"/><circle cx="160" cy="80" r="8" fill="rgba(255,255,255,0.1)"/><circle cx="80" cy="160" r="12" fill="rgba(255,255,255,0.1)"/><circle cx="120" cy="30" r="6" fill="rgba(255,255,255,0.1)"/></svg>');
+            animation: float-cultural 25s infinite linear;
         }
-
-        .page-header .container {
+        
+        @keyframes float-cultural {
+            0% { transform: translateY(0px) translateX(0px) rotate(0deg); }
+            25% { transform: translateY(-20px) translateX(10px) rotate(90deg); }
+            50% { transform: translateY(-10px) translateX(-15px) rotate(180deg); }
+            75% { transform: translateY(-30px) translateX(5px) rotate(270deg); }
+            100% { transform: translateY(0px) translateX(0px) rotate(360deg); }
+        }
+        
+        .hero-content {
             position: relative;
             z-index: 2;
-        }
-
-        .page-header-title {
-            font-size: 3rem;
-            margin-bottom: 15px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
-        }
-
-        .page-header-subtitle {
-            font-size: 1.2rem;
-            max-width: 700px;
+            max-width: 800px;
+            text-align: center;
             margin: 0 auto;
-            opacity: 0.95;
         }
-
+        
+        .hero-badge {
+            background: rgba(255, 255, 255, 0.25);
+            padding: 12px 25px;
+            border-radius: 25px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            margin-bottom: 25px;
+            display: inline-block;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .hero-title {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            line-height: 1.2;
+            font-family: 'Kalam', cursive;
+        }
+        
+        .hero-subtitle {
+            font-size: 1.3rem;
+            opacity: 0.9;
+            margin-bottom: 40px;
+            line-height: 1.6;
+        }
+        
+        /* Breadcrumbs */
+        .breadcrumbs {
+            background: var(--earth-cream);
+            padding: 20px 0;
+            border-bottom: 2px solid var(--border-light);
+        }
+        
+        .breadcrumb-nav {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.9rem;
+        }
+        
+        .breadcrumb-link {
+            color: var(--trunk-gray);
+            text-decoration: none;
+            transition: var(--transition-fast);
+        }
+        
+        .breadcrumb-link:hover {
+            color: var(--sunset-gold);
+        }
+        
+        .breadcrumb-separator {
+            color: var(--trunk-gray);
+            opacity: 0.6;
+        }
+        
+        .breadcrumb-current {
+            color: var(--baobab-brown);
+            font-weight: 600;
+        }
+        
         /* Main Content */
         .main-content {
             padding: 80px 0;
+            background: var(--white);
         }
         
-        .activity-section {
-            display: flex;
-            gap: 50px;
-            align-items: center;
+        /* Cultural Pillars Section */
+        .cultural-pillars {
             margin-bottom: 80px;
         }
-
-        .activity-section:nth-child(even) {
-            flex-direction: row-reverse;
-        }
-
-        .activity-image {
-            flex: 1;
-            border-radius: 15px;
-            overflow: hidden;
-            box-shadow: var(--shadow-lg);
+        
+        .pillars-header {
+            text-align: center;
+            margin-bottom: 60px;
         }
         
-        .activity-image img {
-            width: 100%;
-            height: auto;
-            display: block;
-            transition: transform 0.4s ease;
-        }
-
-        .activity-image:hover img {
-            transform: scale(1.05);
-        }
-
-        .activity-content {
-            flex: 1.2;
-        }
-        
-        .activity-content .icon {
-            font-size: 2rem;
-            color: var(--sunset-gold);
-            margin-bottom: 15px;
-        }
-        
-        .activity-content h3 {
-            font-size: 2.2rem;
+        .pillars-header h2 {
+            font-size: 2.8rem;
             color: var(--baobab-brown);
             margin-bottom: 20px;
+            font-family: 'Kalam', cursive;
         }
         
-        .activity-content p {
+        .pillars-header p {
+            font-size: 1.2rem;
             color: var(--trunk-gray);
-            margin-bottom: 20px;
+            max-width: 700px;
+            margin: 0 auto;
             line-height: 1.7;
         }
         
-        .activity-content ul {
-            list-style: none;
-            padding: 0;
+        .pillars-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 40px;
         }
         
-        .activity-content li {
+        .pillar-card {
+            background: var(--white);
+            border-radius: 25px;
+            padding: 40px;
+            box-shadow: var(--shadow-lg);
+            border: 3px solid transparent;
+            transition: var(--transition-medium);
             position: relative;
-            padding-left: 30px;
-            margin-bottom: 12px;
+            overflow: hidden;
         }
         
-        .activity-content li::before {
-            content: '\f192'; /* Font Awesome dot circle */
-            font-family: 'Font Awesome 6 Free';
-            font-weight: 900;
-            color: var(--canopy-green);
+        .pillar-card::before {
+            content: '';
             position: absolute;
+            top: 0;
             left: 0;
-            top: 4px;
+            right: 0;
+            height: 8px;
+            background: var(--sunset-gold);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: var(--transition-medium);
+        }
+        
+        .pillar-card:hover::before {
+            transform: scaleX(1);
+        }
+        
+        .pillar-card:hover {
+            transform: translateY(-15px) scale(1.03);
+            border-color: var(--sunset-gold);
+            box-shadow: var(--shadow-xl);
+        }
+        
+        .pillar-card:nth-child(1) {
+            border-top: 8px solid var(--emerald-green);
+        }
+        
+        .pillar-card:nth-child(2) {
+            border-top: 8px solid var(--golden-yellow);
+        }
+        
+        .pillar-card:nth-child(3) {
+            border-top: 8px solid var(--rich-red);
+        }
+        
+        .pillar-card:nth-child(4) {
+            border-top: 8px solid var(--royal-blue);
+        }
+        
+        .pillar-icon {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--white);
+            font-size: 2.8rem;
+            margin-bottom: 25px;
+            transition: var(--transition-medium);
+        }
+        
+        .pillar-card:nth-child(1) .pillar-icon {
+            background: linear-gradient(135deg, var(--emerald-green), var(--canopy-green));
+        }
+        
+        .pillar-card:nth-child(2) .pillar-icon {
+            background: linear-gradient(135deg, var(--golden-yellow), var(--sunset-gold));
+            color: var(--deep-charcoal);
+        }
+        
+        .pillar-card:nth-child(3) .pillar-icon {
+            background: linear-gradient(135deg, var(--rich-red), var(--desert-orange));
+        }
+        
+        .pillar-card:nth-child(4) .pillar-icon {
+            background: linear-gradient(135deg, var(--royal-blue), var(--sky-blue));
+        }
+        
+        .pillar-card:hover .pillar-icon {
+            transform: scale(1.1) rotate(10deg);
+        }
+        
+        .pillar-title {
+            font-size: 1.8rem;
+            color: var(--deep-charcoal);
+            margin-bottom: 15px;
+            font-family: 'Kalam', cursive;
+        }
+        
+        .pillar-description {
+            color: var(--trunk-gray);
+            line-height: 1.7;
+            margin-bottom: 25px;
+        }
+        
+        .pillar-activities {
+            background: var(--earth-cream);
+            padding: 20px;
+            border-radius: 15px;
+            border-left: 4px solid var(--sunset-gold);
+        }
+        
+        .pillar-activities h4 {
+            color: var(--baobab-brown);
+            margin-bottom: 15px;
             font-size: 1.1rem;
         }
         
-        /* Mobile Menu */
-        .mobile-menu-panel {
-            position: fixed;
-            top: 0;
-            right: -100%;
-            width: 300px;
-            height: 100vh;
-            background-color: var(--white);
-            z-index: 1000;
-            padding: 80px 40px 40px;
-            transition: var(--transition-medium);
-            box-shadow: var(--shadow-xl);
-            overflow-y: auto;
+        .pillar-activities ul {
+            list-style: none;
+            padding-left: 0;
         }
         
-        .mobile-menu-panel.active {
-            right: 0;
-        }
-        
-        .mobile-menu {
+        .pillar-activities li {
             display: flex;
-            flex-direction: column;
-            gap: 15px;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 8px;
+            color: var(--trunk-gray);
+            font-size: 0.95rem;
         }
         
-        .mobile-link {
-            font-weight: 500;
+        .pillar-activities i {
+            color: var(--canopy-green);
+            font-size: 1rem;
+            width: 16px;
+        }
+        
+        /* Activity Calendar Section */
+        .activity-calendar {
+            background: var(--light-gray);
+            padding: 60px 0;
+            border-radius: 30px;
+            margin: 80px 0;
+        }
+        
+        .calendar-header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+        
+        .calendar-header h2 {
+            font-size: 2.5rem;
+            color: var(--baobab-brown);
+            margin-bottom: 15px;
+            font-family: 'Kalam', cursive;
+        }
+        
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        .month-card {
+            background: var(--white);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: var(--shadow-md);
+            transition: var(--transition-medium);
+            border: 2px solid transparent;
+        }
+        
+        .month-card:hover {
+            transform: translateY(-8px);
+            border-color: var(--sunset-gold);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .month-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .month-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, var(--canopy-green), var(--sage-green));
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--white);
+            font-size: 1.5rem;
+        }
+        
+        .month-title {
             color: var(--deep-charcoal);
-            padding: 12px 0;
-            border-bottom: 1px solid var(--earth-cream);
-            display: block;
-            transition: var(--transition-fast);
-            text-decoration: none;
+            font-size: 1.4rem;
+            font-weight: 600;
         }
         
-        .mobile-link:hover {
-            color: var(--sunset-gold);
-            padding-left: 10px;
+        .month-activities {
+            list-style: none;
         }
         
-        .mobile-link.active {
-            color: var(--sunset-gold);
-        }
-        
-        .mobile-buttons {
+        .month-activities li {
             display: flex;
-            flex-direction: column;
-            gap: 15px;
-            margin-top: 30px;
+            align-items: flex-start;
+            gap: 12px;
+            margin-bottom: 12px;
+            padding: 10px;
+            background: var(--earth-cream);
+            border-radius: 10px;
         }
         
-        .menu-overlay {
-            position: fixed;
+        .month-activities i {
+            color: var(--sunset-gold);
+            font-size: 1.1rem;
+            margin-top: 2px;
+            width: 18px;
+        }
+        
+        .activity-content {
+            flex: 1;
+        }
+        
+        .activity-title {
+            font-weight: 600;
+            color: var(--deep-charcoal);
+            font-size: 0.95rem;
+            margin-bottom: 4px;
+        }
+        
+        .activity-description {
+            color: var(--trunk-gray);
+            font-size: 0.85rem;
+            line-height: 1.5;
+        }
+        
+        /* Language Immersion Section */
+        .language-section {
+            background: linear-gradient(135deg, var(--baobab-brown), var(--trunk-gray));
+            color: var(--white);
+            padding: 80px 0;
+            border-radius: 30px;
+            margin: 80px 0;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .language-section::before {
+            content: '';
+            position: absolute;
             top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.7);
-            z-index: 999;
-            opacity: 0;
-            visibility: hidden;
-            transition: var(--transition-medium);
-            backdrop-filter: blur(5px);
+            right: 0;
+            width: 300px;
+            height: 300px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            transform: translate(100px, -100px);
         }
         
-        .menu-overlay.active {
-            opacity: 1;
-            visibility: visible;
+        .language-content {
+            position: relative;
+            z-index: 2;
+            text-align: center;
         }
-
+        
+        .language-content h2 {
+            font-size: 2.8rem;
+            margin-bottom: 20px;
+            font-family: 'Kalam', cursive;
+        }
+        
+        .language-content p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            margin-bottom: 50px;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.7;
+        }
+        
+        .language-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        
+        .language-card {
+            background: rgba(255, 255, 255, 0.15);
+            padding: 30px;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: var(--transition-medium);
+        }
+        
+        .language-card:hover {
+            transform: translateY(-10px);
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .language-card h3 {
+            font-size: 1.4rem;
+            margin-bottom: 15px;
+            color: var(--sunset-gold);
+        }
+        
+        .language-card p {
+            font-size: 0.95rem;
+            opacity: 0.9;
+            margin: 0;
+            line-height: 1.6;
+        }
+        
+        /* Stories & Traditions Section */
+        .stories-section {
+            margin: 80px 0;
+        }
+        
+        .stories-header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+        
+        .stories-header h2 {
+            font-size: 2.8rem;
+            color: var(--baobab-brown);
+            margin-bottom: 20px;
+            font-family: 'Kalam', cursive;
+        }
+        
+        .stories-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+        }
+        
+        .tab-button {
+            padding: 12px 25px;
+            border: 2px solid var(--sunset-gold);
+            background: transparent;
+            color: var(--sunset-gold);
+            border-radius: 25px;
+            cursor: pointer;
+            transition: var(--transition-fast);
+            font-weight: 600;
+        }
+        
+        .tab-button.active,
+        .tab-button:hover {
+            background: var(--sunset-gold);
+            color: var(--deep-charcoal);
+        }
+        
+        .stories-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .story-panel {
+            display: none;
+            background: var(--earth-cream);
+            padding: 40px;
+            border-radius: 25px;
+            border: 3px solid var(--border-light);
+        }
+        
+        .story-panel.active {
+            display: block;
+            animation: fadeInUp 0.5s ease-out;
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .story-panel h3 {
+            color: var(--baobab-brown);
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            font-family: 'Kalam', cursive;
+        }
+        
+        .story-panel p {
+            color: var(--trunk-gray);
+            line-height: 1.8;
+            margin-bottom: 20px;
+            font-size: 1.05rem;
+        }
+        
+        .story-activities {
+            background: var(--white);
+            padding: 25px;
+            border-radius: 15px;
+            margin-top: 25px;
+        }
+        
+        .story-activities h4 {
+            color: var(--baobab-brown);
+            margin-bottom: 15px;
+        }
+        
+        .story-activities ul {
+            list-style: none;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+        }
+        
+        .story-activities li {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--trunk-gray);
+            font-size: 0.95rem;
+        }
+        
+        .story-activities i {
+            color: var(--canopy-green);
+        }
+        
+        /* Call to Action */
+        .cta-section {
+            background: linear-gradient(135deg, var(--emerald-green), var(--canopy-green));
+            color: var(--white);
+            padding: 60px 0;
+            text-align: center;
+            margin-top: 80px;
+            border-radius: 25px;
+        }
+        
+        .cta-content h3 {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            font-family: 'Kalam', cursive;
+        }
+        
+        .cta-content p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            margin-bottom: 30px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .cta-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .btn-white {
+            background-color: var(--white);
+            color: var(--emerald-green);
+            border-color: var(--white);
+        }
+        
+        .btn-white:hover {
+            background-color: transparent;
+            color: var(--white);
+            border-color: var(--white);
+        }
+        
         /* Footer */
         .footer {
             background: var(--deep-charcoal);
             color: var(--white);
             padding: 60px 0 30px;
+            margin-top: 80px;
         }
         
         .footer-content {
@@ -312,6 +804,7 @@
         .footer-section h4 {
             color: var(--sunset-gold);
             margin-bottom: 20px;
+            font-size: 1.2rem;
         }
         
         .footer-link {
@@ -333,33 +826,85 @@
             border-top: 1px solid rgba(255, 255, 255, 0.1);
             color: rgba(255, 255, 255, 0.7);
         }
-
+        
+        /* Responsive Design */
         @media (max-width: 992px) {
-            .activity-section, .activity-section:nth-child(even) {
-                flex-direction: column;
-                text-align: center;
+            .menu-toggle {
+                display: block;
             }
-            .activity-content li {
-                padding-left: 0;
-                text-align: left;
+            
+            .nav-menu {
+                display: none;
             }
-            .activity-content li::before {
-                position: relative;
-                display: inline-block;
-                margin-right: 10px;
-                top: 0;
+            
+            .pillars-grid {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+            
+            .calendar-grid {
+                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            }
+            
+            .language-grid {
+                grid-template-columns: 1fr;
             }
         }
-
+        
         @media (max-width: 768px) {
-            .page-header-title {
+            .hero-title {
                 font-size: 2.5rem;
             }
-            .activity-content h3 {
-                font-size: 1.8rem;
+            
+            .pillars-header h2,
+            .calendar-header h2,
+            .stories-header h2 {
+                font-size: 2.2rem;
+            }
+            
+            .language-content h2,
+            .cta-content h3 {
+                font-size: 2.2rem;
+            }
+            
+            .pillar-card {
+                padding: 30px;
+            }
+            
+            .language-section {
+                padding: 50px 0;
+            }
+            
+            .story-panel {
+                padding: 30px;
             }
         }
-
+        
+        @media (max-width: 576px) {
+            .container {
+                padding: 0 15px;
+            }
+            
+            .hero-title {
+                font-size: 2rem;
+            }
+            
+            .pillar-icon {
+                width: 80px;
+                height: 80px;
+                font-size: 2.2rem;
+            }
+            
+            .stories-tabs {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .cta-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
     </style>
 </head>
 <body>
@@ -367,130 +912,576 @@
     <header class="header">
         <div class="container">
             <div class="nav-wrapper">
-                <div class="logo">
+                <a href="index.html" class="logo">
                     <div class="logo-icon"><i class="fas fa-heart"></i></div>
                     <div class="logo-text">Parent Portal</div>
-                </div>
+                </a>
                 
                 <div class="menu-toggle" id="menuToggle">
                     <i class="fas fa-bars"></i>
                 </div>
                 
                 <ul class="nav-menu">
-                    <li><a href="baobabonlineacadmy.com" class="nav-link">Main Site</a></li>
+                    <li><a href="index.html#features" class="nav-link">Features</a></li>
+                    <li><a href="index.html#how-it-works" class="nav-link">How It Works</a></li>
+                    <li><a href="index.html#security" class="nav-link">Safety & Security</a></li>
+                    <li><a href="http://baobabonlineacademy.com" class="nav-link">Main Site</a></li>
                 </ul>
-                
-                <div class="nav-buttons">
-                    <a href="#" class="btn btn-outlined" onclick="openLoginModal()">Login</a>
-                    <a href="#" class="btn btn-primary" onclick="openRegistrationModal()">Register</a>
-                </div>
             </div>
         </div>
     </header>
 
-    <!-- Mobile Menu -->
-    <div class="mobile-menu-panel" id="mobileMenuPanel">
-        <ul class="mobile-menu">
-            <li><a href="baobabonlineacademy.com" class="mobile-link">Main Site</a></li>
-        </ul>
-        <div class="mobile-buttons">
-            <a href="#" class="btn btn-outlined" onclick="openLoginModal()">Login</a>
-            <a href="#" class="btn btn-primary" onclick="openRegistrationModal()">Register</a>
-        </div>
-    </div>
-    
-    <div class="menu-overlay" id="menuOverlay"></div>
-
-    <section class="page-header">
+    <!-- Hero Section -->
+    <section class="hero">
         <div class="container">
-            <h1 class="page-header-title">Bringing Heritage Home</h1>
-            <p class="page-header-subtitle">Turn your home into a living classroom where culture is celebrated daily. Here are some joyful ways to connect your family with your rich heritage.</p>
+            <div class="hero-content">
+                <div class="hero-badge">
+                    <i class="fas fa-globe-africa"></i>
+                    Heritage • Identity • Pride
+                </div>
+                <h1 class="hero-title">Cultural Integration at Home</h1>
+                <p class="hero-subtitle">
+                    Discover beautiful ways to weave Nigerian heritage into your child's daily learning experience. 
+                    Build cultural pride, strengthen identity, and create lasting connections to ancestral roots.
+                </p>
+            </div>
         </div>
     </section>
 
-    <main class="main-content">
+    <!-- Breadcrumbs -->
+    <section class="breadcrumbs">
         <div class="container">
-
-            <div class="activity-section">
-                <div class="activity-image">
-                    <img src="https://images.unsplash.com/photo-1585521790695-a43152349733?q=80&w=1974&auto=format&fit=crop" alt="Family cooking together">
-                </div>
-                <div class="activity-content">
-                    <div class="icon"><i class="fas fa-utensils"></i></div>
-                    <h3>The Kitchen Classroom</h3>
-                    <p>The heart of the home is often the kitchen. Cooking together is a delicious way to pass down traditions, stories, and language.</p>
-                    <ul>
-                        <li><strong>Cook a Heritage Meal:</strong> Once a week, cook a dish from your culture. Discuss the ingredients and the story behind the meal.</li>
-                        <li><strong>Name in Native Tongue:</strong> Teach your child the names of ingredients and utensils in your native language.</li>
-                        <li><strong>Grandma's Recipe Book:</strong> Create a family recipe book, writing down recipes passed through generations.</li>
-                    </ul>
-                </div>
-            </div>
-
-            <div class="activity-section">
-                <div class="activity-image">
-                    <img src="https://images.unsplash.com/photo-1521714161819-15534968fc5f?q=80&w=2070&auto=format&fit=crop" alt="Parent reading to a child">
-                </div>
-                <div class="activity-content">
-                    <div class="icon"><i class="fas fa-book-open"></i></div>
-                    <h3>The Power of Stories</h3>
-                    <p>Stories and language are the threads that weave the fabric of our culture. Make them a central part of your family's routine.</p>
-                    <ul>
-                        <li><strong>Bedtime Folktales:</strong> Share folktales and legends from your heritage before bed.</li>
-                        <li><strong>"Word of the Day":</strong> Introduce a new word from your native language each day and try to use it in conversation.</li>
-                        <li><strong>Proverbial Wisdom:</strong> Discuss a proverb from your culture and what it means for your family today.</li>
-                    </ul>
-                </div>
-            </div>
-            
-            <div class="activity-section">
-                <div class="activity-image">
-                    <img src="https://images.unsplash.com/photo-1513364771691-d254b4535338?q=80&w=2070&auto=format&fit=crop" alt="Child painting colorful patterns">
-                </div>
-                <div class="activity-content">
-                    <div class="icon"><i class="fas fa-palette"></i></div>
-                    <h3>Create and Celebrate</h3>
-                    <p>Engage the senses through art, music, and dance. These activities build strong, positive connections to cultural identity.</p>
-                    <ul>
-                        <li><strong>Curate a Cultural Playlist:</strong> Create a family playlist of music from your heritage and have dance parties.</li>
-                        <li><strong>Crafting Traditions:</strong> Learn a traditional craft, like beadwork, weaving, or pottery.</li>
-                        <li><strong>Explore a Museum:</strong> Visit a local or online museum that features art from your culture, connecting it to their lessons.</li>
-                    </ul>
-                </div>
-            </div>
-
+            <nav class="breadcrumb-nav">
+                <a href="index.html" class="breadcrumb-link">
+                    <i class="fas fa-home"></i> Home
+                </a>
+                <span class="breadcrumb-separator">/</span>
+                <a href="#" class="breadcrumb-link">Parent Resources</a>
+                <span class="breadcrumb-separator">/</span>
+                <span class="breadcrumb-current">Cultural Integration at Home</span>
+            </nav>
         </div>
-    </main>
+    </section>
 
+    <!-- Main Content -->
+    <section class="main-content">
+        <div class="container">
+            <!-- Cultural Pillars -->
+            <div class="cultural-pillars">
+                <div class="pillars-header">
+                    <h2>The Four Pillars of Cultural Integration</h2>
+                    <p>
+                        Building a strong cultural foundation requires intentional practice across four key areas. 
+                        Each pillar strengthens your child's connection to their Nigerian heritage while enhancing their academic journey.
+                    </p>
+                </div>
+                
+                <div class="pillars-grid">
+                    <div class="pillar-card">
+                        <div class="pillar-icon">
+                            <i class="fas fa-language"></i>
+                        </div>
+                        <h3 class="pillar-title">Language & Communication</h3>
+                        <p class="pillar-description">
+                            Preserve and celebrate Nigerian languages alongside English. Bilingual children develop 
+                            stronger cognitive abilities and deeper cultural connections.
+                        </p>
+                        <div class="pillar-activities">
+                            <h4>Daily Practices:</h4>
+                            <ul>
+                                <li><i class="fas fa-comments"></i> Morning greetings in native language</li>
+                                <li><i class="fas fa-book"></i> Bedtime stories in Igbo, Yoruba, or Hausa</li>
+                                <li><i class="fas fa-music"></i> Nigerian songs during activities</li>
+                                <li><i class="fas fa-phone"></i> Video calls with extended family</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="pillar-card">
+                        <div class="pillar-icon">
+                            <i class="fas fa-utensils"></i>
+                        </div>
+                        <h3 class="pillar-title">Food & Traditions</h3>
+                        <p class="pillar-description">
+                            Connect learning to Nigerian cuisine and culinary traditions. Cooking together creates 
+                            memories while teaching math, science, and cultural appreciation.
+                        </p>
+                        <div class="pillar-activities">
+                            <h4>Kitchen Learning:</h4>
+                            <ul>
+                                <li><i class="fas fa-calculator"></i> Math through recipe measurements</li>
+                                <li><i class="fas fa-flask"></i> Science of fermentation and cooking</li>
+                                <li><i class="fas fa-map-marker-alt"></i> Geography of spice origins</li>
+                                <li><i class="fas fa-clock"></i> History through traditional recipes</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="pillar-card">
+                        <div class="pillar-icon">
+                            <i class="fas fa-palette"></i>
+                        </div>
+                        <h3 class="pillar-title">Arts & Expression</h3>
+                        <p class="pillar-description">
+                            Explore Nigerian arts, crafts, music, and dance as creative learning tools. 
+                            Artistic expression enhances cognitive development and cultural pride.
+                        </p>
+                        <div class="pillar-activities">
+                            <h4>Creative Activities:</h4>
+                            <ul>
+                                <li><i class="fas fa-paint-brush"></i> Traditional Nigerian art projects</li>
+                                <li><i class="fas fa-drum"></i> Learning traditional instruments</li>
+                                <li><i class="fas fa-theater-masks"></i> Cultural storytelling performances</li>
+                                <li><i class="fas fa-tshirt"></i> Designing traditional clothing patterns</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="pillar-card">
+                        <div class="pillar-icon">
+                            <i class="fas fa-book-open"></i>
+                        </div>
+                        <h3 class="pillar-title">Stories & Values</h3>
+                        <p class="pillar-description">
+                            Share Nigerian folktales, proverbs, and moral stories that teach life lessons 
+                            while connecting academic concepts to cultural wisdom.
+                        </p>
+                        <div class="pillar-activities">
+                            <h4>Storytelling Elements:</h4>
+                            <ul>
+                                <li><i class="fas fa-heart"></i> Moral lessons through folktales</li>
+                                <li><i class="fas fa-brain"></i> Critical thinking via proverbs</li>
+                                <li><i class="fas fa-users"></i> Family history narratives</li>
+                                <li><i class="fas fa-star"></i> Hero stories from Nigerian history</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Activity Calendar -->
+            <div class="activity-calendar">
+                <div class="container">
+                    <div class="calendar-header">
+                        <h2>Year-Round Cultural Activities</h2>
+                        <p style="color: var(--trunk-gray); font-size: 1.1rem; max-width: 600px; margin: 0 auto;">
+                            A month-by-month guide to integrating Nigerian culture into your child's learning journey throughout the year.
+                        </p>
+                    </div>
+                    
+                    <div class="calendar-grid">
+                        <div class="month-card">
+                            <div class="month-header">
+                                <div class="month-icon"><i class="fas fa-calendar-day"></i></div>
+                                <div class="month-title">January - March</div>
+                            </div>
+                            <ul class="month-activities">
+                                <li>
+                                    <i class="fas fa-book"></i>
+                                    <div class="activity-content">
+                                        <div class="activity-title">New Year Resolutions in Native Language</div>
+                                        <div class="activity-description">Practice goal-setting while learning cultural values</div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <i class="fas fa-heart"></i>
+                                    <div class="activity-content">
+                                        <div class="activity-title">Family History Project</div>
+                                        <div class="activity-description">Research and document family genealogy and migration stories</div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <i class="fas fa-palette"></i>
+                                    <div class="activity-content">
+                                        <div class="activity-title">Traditional Art Exploration</div>
+                                        <div class="activity-description">Create artwork inspired by Nigerian traditional patterns</div>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                        
+                        <div class="month-card">
+                            <div class="month-header">
+                                <div class="month-icon"><i class="fas fa-seedling"></i></div>
+                                <div class="month-title">April - June</div>
+                            </div>
+                            <ul class="month-activities">
+                                <li>
+                                    <i class="fas fa-leaf"></i>
+                                    <div class="activity-content">
+                                        <div class="activity-title">Garden of Nigerian Plants</div>
+                                        <div class="activity-description">Grow traditional Nigerian vegetables and learn about agriculture</div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <i class="fas fa-music"></i>
+                                    <div class="activity-content">
+                                        <div class="activity-title">Independence Day Celebrations</div>
+                                        <div class="activity-description">Learn Nigerian history through songs and cultural performances</div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <i class="fas fa-globe"></i>
+                                    <div class="activity-content">
+                                        <div class="activity-title">Geography Through Culture</div>
+                                        <div class="activity-description">Explore Nigerian states through food, music, and traditions</div>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                        
+                        <div class="month-card">
+                            <div class="month-header">
+                                <div class="month-icon"><i class="fas fa-sun"></i></div>
+                                <div class="month-title">July - September</div>
+                            </div>
+                            <ul class="month-activities">
+                                <li>
+                                    <i class="fas fa-utensils"></i>
+                                    <div class="activity-content">
+                                        <div class="activity-title">Summer Cooking Adventures</div>
+                                        <div class="activity-description">Master traditional recipes while learning measurements and science</div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <i class="fas fa-theater-masks"></i>
+                                    <div class="activity-content">
+                                        <div class="activity-title">Storytelling Festival</div>
+                                        <div class="activity-description">Host family gatherings featuring Nigerian folktales</div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <i class="fas fa-language"></i>
+                                    <div class="activity-content">
+                                        <div class="activity-title">Language Immersion Weeks</div>
+                                        <div class="activity-description">Dedicate weeks to speaking only in native languages</div>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                        
+                        <div class="month-card">
+                            <div class="month-header">
+                                <div class="month-icon"><i class="fas fa-star"></i></div>
+                                <div class="month-title">October - December</div>
+                            </div>
+                            <ul class="month-activities">
+                                <li>
+                                    <i class="fas fa-gifts"></i>
+                                    <div class="activity-content">
+                                        <div class="activity-title">Cultural Gift Making</div>
+                                        <div class="activity-description">Create handmade gifts using traditional Nigerian crafts</div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <i class="fas fa-drum"></i>
+                                    <div class="activity-content">
+                                        <div class="activity-title">Harvest Festival Celebrations</div>
+                                        <div class="activity-description">Learn about traditional harvest customs and thanksgiving</div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <i class="fas fa-book-reader"></i>
+                                    <div class="activity-content">
+                                        <div class="activity-title">Year-End Reflection</div>
+                                        <div class="activity-description">Journal about cultural learning journey and growth</div>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Language Immersion -->
+            <div class="language-section">
+                <div class="container">
+                    <div class="language-content">
+                        <h2>Language Immersion at Home</h2>
+                        <p>
+                            Creating a multilingual environment strengthens your child's cognitive abilities while 
+                            preserving precious cultural connections. Start small and build consistently.
+                        </p>
+                        
+                        <div class="language-grid">
+                            <div class="language-card">
+                                <h3>Morning Routines</h3>
+                                <p>Begin each day with greetings, prayers, or affirmations in your native language. This sets a cultural tone and reinforces identity from the start of each day.</p>
+                            </div>
+                            
+                            <div class="language-card">
+                                <h3>Mealtime Conversations</h3>
+                                <p>Discuss the day's events, share stories, and ask questions in Nigerian languages during family meals. Food and language create powerful memory associations.</p>
+                            </div>
+                            
+                            <div class="language-card">
+                                <h3>Bedtime Stories</h3>
+                                <p>Read traditional Nigerian folktales in native languages. This combines language practice with cultural storytelling and creates peaceful bedtime routines.</p>
+                            </div>
+                            
+                            <div class="language-card">
+                                <h3>Cultural Media</h3>
+                                <p>Watch Nigerian movies, listen to traditional music, and explore content in native languages. Modern media makes language learning engaging and relevant.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stories & Traditions -->
+            <div class="stories-section">
+                <div class="stories-header">
+                    <h2>Stories That Shape Character</h2>
+                    <p style="color: var(--trunk-gray); font-size: 1.1rem; max-width: 600px; margin: 0 auto;">
+                        Nigerian folklore and traditions offer rich teaching moments that build character while connecting 
+                        academic lessons to cultural wisdom.
+                    </p>
+                </div>
+                
+                <div class="stories-tabs">
+                    <button class="tab-button active" onclick="showStoryPanel('folktales')">Folktales</button>
+                    <button class="tab-button" onclick="showStoryPanel('proverbs')">Proverbs</button>
+                    <button class="tab-button" onclick="showStoryPanel('history')">Historical Stories</button>
+                    <button class="tab-button" onclick="showStoryPanel('family')">Family Traditions</button>
+                </div>
+                
+                <div class="stories-content">
+                    <div class="story-panel active" id="folktales">
+                        <h3>The Wisdom of Anansi and Nigerian Folktales</h3>
+                        <p>
+                            Nigerian folktales featuring clever characters like Anansi the spider, the tortoise, and various 
+                            animals teach problem-solving, moral reasoning, and cultural values. These stories often contain 
+                            mathematical concepts, scientific observations, and social lessons that enhance academic learning.
+                        </p>
+                        <p>
+                            Use these stories as springboards for discussions about honesty, perseverance, community cooperation, 
+                            and respect for elders. Children learn that wisdom comes in many forms and that their cultural 
+                            heritage is filled with valuable teachings.
+                        </p>
+                        <div class="story-activities">
+                            <h4>Folktale Learning Activities:</h4>
+                            <ul>
+                                <li><i class="fas fa-theater-masks"></i> Act out stories with family members</li>
+                                <li><i class="fas fa-paint-brush"></i> Create illustrations for favorite tales</li>
+                                <li><i class="fas fa-pen"></i> Write modern versions of classic stories</li>
+                                <li><i class="fas fa-lightbulb"></i> Discuss moral lessons and life applications</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="story-panel" id="proverbs">
+                        <h3>Proverbs: Condensed Wisdom for Daily Life</h3>
+                        <p>
+                            Nigerian proverbs pack centuries of wisdom into memorable phrases that guide decision-making 
+                            and character development. Incorporate these into daily conversations to help your child develop 
+                            critical thinking skills and cultural understanding.
+                        </p>
+                        <p>
+                            Examples like "The child who washes his hands well eats with kings" teach the value of preparation 
+                            and good habits. "It takes a village to raise a child" reinforces community values and collective 
+                            responsibility that enhance your child's social development.
+                        </p>
+                        <div class="story-activities">
+                            <h4>Proverb Integration Ideas:</h4>
+                            <ul>
+                                <li><i class="fas fa-calendar"></i> Weekly proverb discussions</li>
+                                <li><i class="fas fa-puzzle-piece"></i> Connect proverbs to daily situations</li>
+                                <li><i class="fas fa-book"></i> Create a family proverb journal</li>
+                                <li><i class="fas fa-comments"></i> Use proverbs in problem-solving discussions</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="story-panel" id="history">
+                        <h3>Heroes and Historical Narratives</h3>
+                        <p>
+                            Share stories of Nigerian heroes, leaders, and historical events that demonstrate courage, 
+                            intelligence, and perseverance. These narratives build cultural pride while teaching history, 
+                            geography, and social studies concepts.
+                        </p>
+                        <p>
+                            Stories of figures like Queen Amina of Zaria, Nnamdi Azikiwe, or Wole Soyinka show your child 
+                            that their heritage includes brilliant leaders, innovators, and changemakers. This builds 
+                            confidence and expands their vision of what's possible.
+                        </p>
+                        <div class="story-activities">
+                            <h4>Historical Learning Projects:</h4>
+                            <ul>
+                                <li><i class="fas fa-map"></i> Create timelines of Nigerian history</li>
+                                <li><i class="fas fa-user-tie"></i> Research and present on Nigerian heroes</li>
+                                <li><i class="fas fa-flag"></i> Learn about independence movements</li>
+                                <li><i class="fas fa-trophy"></i> Celebrate Nigerian achievements</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="story-panel" id="family">
+                        <h3>Personal Family Traditions</h3>
+                        <p>
+                            Your family's unique migration story, traditions, and customs are powerful teaching tools that 
+                            connect your child to their personal heritage. Share stories of grandparents, family traditions, 
+                            and the journey that brought your family to where you are today.
+                        </p>
+                        <p>
+                            These personal narratives help children understand their place in a larger story while building 
+                            resilience, gratitude, and appreciation for the sacrifices and dreams that shaped their lives. 
+                            They learn that they are part of something greater than themselves.
+                        </p>
+                        <div class="story-activities">
+                            <h4>Family Story Projects:</h4>
+                            <ul>
+                                <li><i class="fas fa-camera"></i> Create photo storytelling albums</li>
+                                <li><i class="fas fa-microphone"></i> Record elder family members sharing stories</li>
+                                <li><i class="fas fa-tree"></i> Build family trees with stories</li>
+                                <li><i class="fas fa-heart"></i> Document family traditions and customs</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Call to Action -->
+            <div class="cta-section">
+                <div class="cta-content">
+                    <h3>Start Your Cultural Integration Journey</h3>
+                    <p>
+                        Join families worldwide who are successfully blending academic excellence with cultural pride. 
+                        Your child's heritage is their superpower – let's help them discover it together.
+                    </p>
+                    <div class="cta-buttons">
+                        <a href="index.html#register" class="btn btn-white">
+                            <i class="fas fa-user-plus"></i>
+                            Begin Your Family's Journey
+                        </a>
+                        <a href="child-protection.html" class="btn btn-outlined">
+                            <i class="fas fa-arrow-right"></i>
+                            Next: Child Protection
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
     <footer class="footer">
         <div class="container">
             <div class="footer-content">
                 <div class="footer-section">
                     <h4><i class="fas fa-heart"></i> Parent Resources</h4>
-                    <a href="getting-started.html" class="footer-link">Getting Started Guide</a>
-                    <a href="supporting-learning.html" class="footer-link">Supporting Your Child's Learning</a>
+                    <a href="get-started.html" class="footer-link">Getting Started Guide</a>
+                    <a href="supporting-child.html" class="footer-link">Supporting Your Child's Learning</a>
                     <a href="cultural-integration.html" class="footer-link">Cultural Integration at Home</a>
                 </div>
+                
                 <div class="footer-section">
                     <h4><i class="fas fa-shield-alt"></i> Safety & Security</h4>
-                    <a href="#" class="footer-link">Child Protection Policy</a>
-                    <a href="#" class="footer-link">Tutor Verification Process</a>
+                    <a href="child-protection.html" class="footer-link">Child Protection Policy</a>
+                    <a href="tutor-verification.html" class="footer-link">Tutor Verification Process</a>
                     <a href="#" class="footer-link">Platform Security Features</a>
                     <a href="#" class="footer-link">Privacy Policy</a>
                 </div>
                 
                 <div class="footer-section">
                     <h4><i class="fas fa-headset"></i> Support</h4>
-                    <p style="color: rgba(255, 255, 255, 0.7); margin-bottom: 15px;"><i class="fas fa-envelope"></i> parents@baobabacademy.com</p>
-                    <p style="color: rgba(255, 255, 255, 0.7); margin-bottom: 15px;"><i class="fas fa-phone"></i> +44 (0) 20 1234 5678</p>
+                    <p style="color: rgba(255, 255, 255, 0.7); margin-bottom: 15px;">
+                        <i class="fas fa-envelope"></i>
+                        parents@baobabonlineacademy.com
+                    </p>
+                    <p style="color: rgba(255, 255, 255, 0.7); margin-bottom: 15px;">
+                        <i class="fas fa-phone"></i>
+                        +234 (0) 816 501 1291
+                    </p>
                     <a href="#" class="footer-link">Help Center</a>
                     <a href="#" class="footer-link">Live Chat Support</a>
                 </div>
             </div>
+            
             <div class="footer-bottom">
                 <p>&copy; 2025 Baobab Online Academy Parent Portal. Nurturing Growth, Honoring Heritage.</p>
             </div>
         </div>
     </footer>
+
+    <script>
+        // Mobile menu functionality
+        const menuToggle = document.getElementById('menuToggle');
+        const navMenu = document.querySelector('.nav-menu');
+        
+        if (menuToggle) {
+            menuToggle.addEventListener('click', function() {
+                navMenu.classList.toggle('active');
+                this.innerHTML = navMenu.classList.contains('active') 
+                    ? '<i class="fas fa-times"></i>' 
+                    : '<i class="fas fa-bars"></i>';
+            });
+        }
+
+        // Story panel functionality
+        function showStoryPanel(panelId) {
+            // Hide all panels
+            document.querySelectorAll('.story-panel').forEach(panel => {
+                panel.classList.remove('active');
+            });
+            
+            // Remove active class from all buttons
+            document.querySelectorAll('.tab-button').forEach(button => {
+                button.classList.remove('active');
+            });
+            
+            // Show selected panel
+            document.getElementById(panelId).classList.add('active');
+            
+            // Add active class to clicked button
+            event.target.classList.add('active');
+        }
+
+        // Pillar card hover effects
+        document.querySelectorAll('.pillar-card').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-20px) scale(1.05)';
+            });
+            
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0) scale(1)';
+            });
+        });
+
+        // Month card hover effects
+        document.querySelectorAll('.month-card').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-10px) scale(1.02)';
+            });
+            
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0) scale(1)';
+            });
+        });
+
+        // Language card hover effects
+        document.querySelectorAll('.language-card').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-15px) scale(1.03)';
+            });
+            
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0) scale(1)';
+            });
+        });
+
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+    </script>
 </body>
 </html>
