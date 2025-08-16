@@ -7,743 +7,1784 @@
   <title>Parent Dashboard - Baobab Online Academy</title>
 
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
-  <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@300;400;700;900&family=Open+Sans:wght@300;400;600;700&family=Kalam:wght@400;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <style>
-    :root{
-      --baobab-brown:#8D4004;
-      --canopy-green:#2E7D32;
-      --sunset-gold:#F57C00;
-      --trunk-gray:#5D4037;
-      --sky-blue:#1976D2;
-      --earth-cream:#FFF8E1;
-      --desert-orange:#FF5722;
-      --sage-green:#689F38;
-      --deep-charcoal:#263238;
-      --white:#FFFFFF;
-      --light-gray:#F8FAFC;
-      --border-color:#E2E8F0;
-      --text-light:#64748B;
+    :root {
+      --primary: #0066FF;
+      --primary-hover: #0052CC;
+      --primary-light: #E6F2FF;
+      --secondary: #1DB584;
+      --secondary-hover: #16A076;
+      --secondary-light: #E6F9F4;
+      --accent: #FF6B35;
+      --accent-hover: #E55A2B;
+      --accent-light: #FFF0ED;
+      --warning: #FFB800;
+      --warning-light: #FFF8E1;
+      --success: #00C851;
+      --success-light: #E8F5E8;
+      --danger: #FF4444;
+      --danger-light: #FFEBEE;
+      
+      --gray-50: #F8FAFC;
+      --gray-100: #F1F5F9;
+      --gray-200: #E2E8F0;
+      --gray-300: #CBD5E1;
+      --gray-400: #94A3B8;
+      --gray-500: #64748B;
+      --gray-600: #475569;
+      --gray-700: #334155;
+      --gray-800: #1E293B;
+      --gray-900: #0F172A;
+      
+      --white: #FFFFFF;
+      --black: #000000;
+      
+      --shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+      --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+      --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+      --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+      --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+      --shadow-2xl: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+      
+      --border-radius: 12px;
+      --border-radius-lg: 16px;
+      --border-radius-xl: 20px;
+      
+      --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      --transition-slow: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
 
-      --fast:0.22s ease;
-      --med:0.4s cubic-bezier(0.165,0.84,0.44,1);
-      --slow:0.6s cubic-bezier(0.165,0.84,0.44,1);
-
-      --shadow-1:0 1px 2px rgba(0,0,0,0.06);
-      --shadow-2:0 6px 14px rgba(0,0,0,0.08);
-      --shadow-3:0 12px 30px rgba(0,0,0,0.12);
-    }
-    *{box-sizing:border-box;margin:0;padding:0}
-    html,body{height:100%}
-    body{
-      font-family:'Open Sans',sans-serif;color:var(--deep-charcoal);line-height:1.6;
-      background:
-        radial-gradient(900px 500px at -20% -10%, rgba(245,124,0,0.08), transparent 60%),
-        radial-gradient(700px 450px at 120% 0%, rgba(46,125,50,0.08), transparent 60%),
-        linear-gradient(135deg,#F5F7FB 0%,#EAEFF7 100%);
-      min-height:100vh;overflow-x:hidden;padding-bottom:76px;
-      -webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
     }
 
-    /* App Header (web + mobile) */
-    .app-header{
-      position:sticky;top:0;z-index:1000;
-      background:rgba(255,255,255,0.9);backdrop-filter:blur(14px);
-      border-bottom:1px solid rgba(226,232,240,0.7);box-shadow:var(--shadow-1);
+    html, body {
+      height: 100%;
     }
-    .appbar{
-      max-width:1200px;margin:0 auto;padding:10px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px;
-    }
-    .brand{
-      display:flex;align-items:center;gap:10px;text-decoration:none;
-    }
-    .brand-badge{
-      width:40px;height:40px;border-radius:12px;display:grid;place-items:center;color:#fff;font-size:18px;
-      background:linear-gradient(135deg,var(--canopy-green),var(--sage-green));box-shadow:var(--shadow-2);
-    }
-    .brand-title{
-      font-family:'Merriweather',serif;font-weight:900;font-size:18px;letter-spacing:0.2px;
-      background:linear-gradient(135deg,var(--baobab-brown),var(--sunset-gold));
-      -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
-    }
-    .app-actions{display:flex;align-items:center;gap:8px}
-    .icon-btn{
-      width:40px;height:40px;border:1px solid var(--border-color);border-radius:12px;background:#fff;color:var(--deep-charcoal);
-      display:grid;place-items:center;box-shadow:var(--shadow-1);cursor:pointer;transition:transform var(--fast),box-shadow var(--fast),color var(--fast),background var(--fast);
-    }
-    .icon-btn:hover{transform:translateY(-1px);box-shadow:var(--shadow-2);background:var(--earth-cream);color:var(--sunset-gold)}
-    .notif-badge{position:absolute;top:-4px;right:-4px;background:linear-gradient(135deg,var(--desert-orange),#FF6B35);color:#fff;border-radius:999px;font-size:10px;line-height:1;padding:4px 6px;border:2px solid #fff;font-weight:800}
-    .user-pod{
-      display:flex;align-items:center;gap:10px;padding:6px 10px;border:1px solid var(--border-color);border-radius:14px;background:#fff;box-shadow:var(--shadow-1);cursor:pointer;
-      transition:transform var(--fast),box-shadow var(--fast),background var(--fast);
-    }
-    .user-pod:hover{transform:translateY(-1px);box-shadow:var(--shadow-2);background:var(--earth-cream)}
-    .avatar{
-      width:34px;height:34px;border-radius:10px;display:grid;place-items:center;color:#fff;font-weight:800;font-size:13px;
-      background:linear-gradient(135deg,var(--sunset-gold),var(--desert-orange));
-    }
-    .user-meta{display:flex;flex-direction:column}
-    .user-meta h4{font-size:13px;font-weight:800}
-    .user-meta small{font-size:11px;color:var(--text-light)}
 
-    /* Search (desktop) */
-    .search-wrap{flex:1;display:flex;align-items:center;gap:8px;max-width:520px;margin:0 10px}
-    .search{flex:1;display:flex;align-items:center;gap:8px;background:#fff;border:1px solid var(--border-color);border-radius:12px;padding:8px 10px;box-shadow:var(--shadow-1)}
-    .search i{color:var(--text-light)}
-    .search input{width:100%;border:none;outline:none;font-size:14px;background:transparent}
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: var(--gray-800);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    /* Header */
+    .header {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--gray-200);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .header-content {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 72px;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .menu-toggle {
+      display: none;
+      width: 44px;
+      height: 44px;
+      border: none;
+      background: var(--gray-100);
+      border-radius: var(--border-radius);
+      color: var(--gray-600);
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .menu-toggle:hover {
+      background: var(--gray-200);
+      color: var(--gray-800);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      text-decoration: none;
+    }
+
+    .brand-icon {
+      width: 44px;
+      height: 44px;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      border-radius: var(--border-radius);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 1.25rem;
+      box-shadow: var(--shadow-md);
+    }
+
+    .brand-text {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 1.5rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .search-container {
+      flex: 1;
+      max-width: 600px;
+      margin: 0 2rem;
+    }
+
+    .search-wrapper {
+      position: relative;
+    }
+
+    .search-input {
+      width: 100%;
+      height: 48px;
+      padding: 0 1rem 0 3rem;
+      border: 2px solid var(--gray-200);
+      border-radius: var(--border-radius-lg);
+      background: var(--white);
+      font-size: 0.95rem;
+      transition: var(--transition);
+      outline: none;
+    }
+
+    .search-input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px var(--primary-light);
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--gray-400);
+      font-size: 1.125rem;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .notification-btn {
+      position: relative;
+      width: 48px;
+      height: 48px;
+      border: none;
+      background: var(--gray-100);
+      border-radius: var(--border-radius);
+      color: var(--gray-600);
+      cursor: pointer;
+      transition: var(--transition);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .notification-btn:hover {
+      background: var(--gray-200);
+      color: var(--gray-800);
+    }
+
+    .notification-badge {
+      position: absolute;
+      top: -2px;
+      right: -2px;
+      width: 20px;
+      height: 20px;
+      background: var(--danger);
+      color: white;
+      border-radius: 50%;
+      font-size: 0.75rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid white;
+    }
+
+    .user-menu {
+      position: relative;
+      cursor: pointer;
+    }
+
+    .user-profile {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.5rem;
+      border-radius: var(--border-radius-lg);
+      transition: var(--transition);
+    }
+
+    .user-profile:hover {
+      background: var(--gray-100);
+    }
+
+    .user-avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: var(--border-radius);
+      background: linear-gradient(135deg, var(--accent), var(--warning));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 700;
+      font-size: 1rem;
+      box-shadow: var(--shadow-sm);
+      overflow: hidden;
+    }
+
+    .user-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .user-info {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .user-name {
+      font-weight: 600;
+      font-size: 0.95rem;
+      color: var(--gray-800);
+    }
+
+    .user-role {
+      font-size: 0.8rem;
+      color: var(--gray-500);
+    }
 
     /* Layout */
-    .container{
-      max-width:1200px;margin:0 auto;padding:18px 16px 0;display:grid;grid-template-columns:280px 1fr;gap:18px;
+    .app-layout {
+      display: flex;
+      min-height: calc(100vh - 72px);
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 1.5rem;
+      gap: 2rem;
     }
 
     /* Sidebar */
-    .sidebar{
-      position:sticky;top:76px;height:max-content;background:rgba(255,255,255,0.92);backdrop-filter:blur(14px);
-      border:1px solid rgba(226,232,240,0.8);border-radius:16px;box-shadow:var(--shadow-2);padding:14px;z-index:1000;
-    }
-    .nav-list{list-style:none;display:flex;flex-direction:column;gap:6px}
-    .nav-link{
-      display:flex;align-items:center;gap:10px;padding:12px;border-radius:12px;color:var(--deep-charcoal);text-decoration:none;font-weight:700;font-size:14px;
-      transition:background var(--fast),transform var(--fast),box-shadow var(--fast);
-    }
-    .nav-link i{width:20px;text-align:center;color:var(--text-light)}
-    .nav-link:hover{background:rgba(248,250,252,0.8);transform:translateX(2px)}
-    .nav-link.active{background:linear-gradient(135deg,rgba(46,125,50,0.12),rgba(245,124,0,0.12));box-shadow:var(--shadow-1)}
-
-    /* Welcome banner */
-    .banner{
-      background:linear-gradient(135deg,#1f7a38 0%,#8D4004 100%);color:#fff;border-radius:16px;padding:22px;position:relative;overflow:hidden;box-shadow:var(--shadow-3);
-    }
-    .banner::before{
-      content:'';position:absolute;inset:-60% -60% auto auto;width:200%;height:200%;
-      background:linear-gradient(45deg,transparent,rgba(255,255,255,0.14),transparent);animation:shine 6s infinite;
-    }
-    @keyframes shine{0%{transform:translate(-100%,-100%) rotate(45deg)}100%{transform:translate(100%,100%) rotate(45deg)}}
-    .banner h1{font-family:'Merriweather',serif;font-size:1.6rem;margin-bottom:6px;font-weight:900}
-    .banner p{font-size:0.95rem;opacity:.95}
-    .stats{display:grid;grid-template-columns:repeat(4,minmax(120px,1fr));gap:10px;margin-top:12px}
-    .stat{
-      background:rgba(255,255,255,0.18);backdrop-filter:blur(14px);border:1px solid rgba(255,255,255,0.25);
-      border-radius:12px;padding:14px;text-align:center;transition:transform var(--fast),background var(--fast);
-    }
-    .stat:hover{transform:translateY(-3px);background:rgba(255,255,255,0.24)}
-    .stat .num{font-weight:900;font-size:1.4rem;color:var(--earth-cream)}
-    .stat .lbl{font-weight:700;font-size:0.9rem}
-
-    /* Section shell */
-    .section{display:none}
-    .section.active{display:block}
-    .panel{
-      background:rgba(255,255,255,0.96);backdrop-filter:blur(14px);
-      border:1px solid rgba(226,232,240,0.8);border-radius:16px;box-shadow:var(--shadow-2);padding:16px;margin-top:14px;
-    }
-    .panel-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}
-    .panel-title{
-      display:flex;align-items:center;gap:10px;font-weight:900;font-size:1.05rem;
-    }
-    .panel-title .icon{
-      width:42px;height:42px;border-radius:12px;display:grid;place-items:center;color:#fff;box-shadow:var(--shadow-1);
-    }
-    .tools{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-
-    .btn{
-      display:inline-flex;align-items:center;gap:8px;padding:10px 12px;border-radius:12px;border:1px solid var(--border-color);
-      background:#fff;color:var(--deep-charcoal);cursor:pointer;font-weight:800;font-size:13px;box-shadow:var(--shadow-1);text-decoration:none;
-      transition:transform var(--fast),box-shadow var(--fast),background var(--fast),color var(--fast);
-    }
-    .btn:hover{transform:translateY(-1px);box-shadow:var(--shadow-2);background:var(--earth-cream)}
-    .btn-primary{background:linear-gradient(135deg,var(--baobab-brown),var(--trunk-gray));color:#fff;border:none}
-    .btn-primary:hover{background:linear-gradient(135deg,#7b3603,#4a2f29)}
-    .btn-success{background:linear-gradient(135deg,var(--canopy-green),var(--sage-green));color:#fff;border:none}
-    .btn-warning{background:linear-gradient(135deg,var(--sunset-gold),var(--desert-orange));color:#fff;border:none}
-
-    /* Search + Export toolbar */
-    .toolbar{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-    .input{
-      height:40px;display:flex;align-items:center;gap:8px;background:#fff;border:1px solid var(--border-color);border-radius:12px;padding:0 12px;box-shadow:var(--shadow-1);
-    }
-    .input input{border:none;outline:none;font-size:14px;background:transparent;min-width:220px}
-    .badge{
-      display:inline-flex;align-items:center;justify-content:center;padding:4px 8px;border-radius:999px;font-size:12px;font-weight:800;
-    }
-    .badge.success{background:rgba(46,125,50,0.1);color:var(--canopy-green)}
-    .badge.warn{background:rgba(245,124,0,0.12);color:var(--sunset-gold)}
-    .badge.muted{background:rgba(38,50,56,0.08);color:var(--deep-charcoal)}
-    .badge.danger{background:rgba(255,87,34,0.12);color:var(--desert-orange)}
-
-    /* Data table */
-    .table-wrap{width:100%;overflow:auto;border-radius:12px;border:1px solid var(--border-color)}
-    table.data-table{width:100%;border-collapse:separate;border-spacing:0;background:#fff}
-    .data-table thead th{
-      position:sticky;top:0;background:#F8FAFE;border-bottom:1px solid var(--border-color);text-align:left;font-size:12px;letter-spacing:.3px;color:var(--text-light);
-      padding:10px 12px;font-weight:900;z-index:1;
-    }
-    .data-table tbody td{border-bottom:1px solid var(--border-color);padding:12px;font-size:14px}
-    .data-table tbody tr:hover{background:#FBFDF7}
-    .cell-actions{display:flex;gap:6px;flex-wrap:wrap}
-    .muted{color:var(--text-light)}
-
-    /* Responsive stacked table on small screens */
-    @media (max-width: 720px){
-      .table-wrap{border:none}
-      .data-table thead{display:none}
-      .data-table, .data-table tbody, .data-table tr, .data-table td{display:block;width:100%}
-      .data-table tr{background:#fff;border:1px solid var(--border-color);border-radius:12px;margin-bottom:10px;box-shadow:var(--shadow-1)}
-      .data-table td{
-        border-bottom:1px dashed var(--border-color);padding:10px 12px;display:flex;justify-content:space-between;gap:12px;
-      }
-      .data-table td:last-child{border-bottom:none}
-      .data-table td::before{
-        content:attr(data-label);font-weight:800;color:var(--text-light);flex:0 0 50%;
-      }
+    .sidebar {
+      width: 280px;
+      flex-shrink: 0;
+      padding: 2rem 0;
     }
 
-    /* Empty and Loading */
-    .empty{
-      text-align:center;padding:30px 18px;border:1px dashed var(--border-color);border-radius:12px;background:#fff;color:var(--text-light)
+    .sidebar-nav {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(20px);
+      border-radius: var(--border-radius-xl);
+      box-shadow: var(--shadow-lg);
+      padding: 1.5rem;
+      border: 1px solid rgba(255, 255, 255, 0.2);
     }
-    .loading{display:flex;align-items:center;justify-content:center;gap:10px;padding:28px;color:var(--text-light)}
-    .spinner{width:36px;height:36px;border:3px solid var(--border-color);border-top:3px solid var(--sunset-gold);border-radius:50%;animation:spin 1s linear infinite}
-    @keyframes spin{to{transform:rotate(360deg)}}
+
+    .nav-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .nav-item {
+      position: relative;
+    }
+
+    .nav-link {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 1rem 1.25rem;
+      border-radius: var(--border-radius);
+      color: var(--gray-600);
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 0.95rem;
+      transition: var(--transition);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .nav-link::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 0;
+      height: 100%;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      transition: var(--transition);
+      z-index: -1;
+    }
+
+    .nav-link:hover {
+      color: var(--primary);
+      background: var(--primary-light);
+      transform: translateX(4px);
+    }
+
+    .nav-link.active {
+      color: white;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      box-shadow: var(--shadow-md);
+    }
+
+    .nav-link.active::before {
+      width: 100%;
+    }
+
+    .nav-icon {
+      font-size: 1.125rem;
+      width: 20px;
+      text-align: center;
+    }
+
+    /* Main Content */
+    .main-content {
+      flex: 1;
+      padding: 2rem 0;
+      min-width: 0;
+    }
+
+    .section {
+      display: none;
+      animation: fadeIn 0.3s ease-in-out;
+    }
+
+    .section.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Welcome Banner */
+    .welcome-banner {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border-radius: var(--border-radius-xl);
+      padding: 2.5rem;
+      color: white;
+      margin-bottom: 2rem;
+      position: relative;
+      overflow: hidden;
+      box-shadow: var(--shadow-xl);
+    }
+
+    .welcome-banner::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      right: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+      animation: pulse 4s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1) rotate(0deg); }
+      50% { transform: scale(1.1) rotate(180deg); }
+    }
+
+    .welcome-content {
+      position: relative;
+      z-index: 1;
+    }
+
+    .welcome-title {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 2.25rem;
+      font-weight: 800;
+      margin-bottom: 0.5rem;
+      line-height: 1.2;
+    }
+
+    .welcome-subtitle {
+      font-size: 1.125rem;
+      opacity: 0.9;
+      margin-bottom: 2rem;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .stat-card {
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: var(--border-radius-lg);
+      padding: 1.5rem;
+      text-align: center;
+      transition: var(--transition);
+    }
+
+    .stat-card:hover {
+      background: rgba(255, 255, 255, 0.2);
+      transform: translateY(-2px);
+    }
+
+    .stat-number {
+      font-size: 2.5rem;
+      font-weight: 800;
+      margin-bottom: 0.5rem;
+      line-height: 1;
+    }
+
+    .stat-label {
+      font-size: 0.95rem;
+      opacity: 0.9;
+      font-weight: 500;
+    }
+
+    /* Cards */
+    .card {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: var(--border-radius-xl);
+      box-shadow: var(--shadow-lg);
+      margin-bottom: 2rem;
+      overflow: hidden;
+    }
+
+    .card-header {
+      padding: 1.5rem 2rem;
+      border-bottom: 1px solid var(--gray-200);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .card-title {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--gray-800);
+    }
+
+    .card-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: var(--border-radius);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 1.25rem;
+      box-shadow: var(--shadow-md);
+    }
+
+    .card-actions {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .card-content {
+      padding: 2rem;
+    }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.75rem 1.5rem;
+      border: none;
+      border-radius: var(--border-radius);
+      font-weight: 600;
+      font-size: 0.9rem;
+      text-decoration: none;
+      cursor: pointer;
+      transition: var(--transition);
+      white-space: nowrap;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary), var(--primary-hover));
+      color: white;
+      box-shadow: var(--shadow-md);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .btn-secondary {
+      background: var(--gray-100);
+      color: var(--gray-700);
+      border: 1px solid var(--gray-200);
+    }
+
+    .btn-secondary:hover {
+      background: var(--gray-200);
+      color: var(--gray-800);
+    }
+
+    .btn-success {
+      background: linear-gradient(135deg, var(--secondary), var(--secondary-hover));
+      color: white;
+      box-shadow: var(--shadow-md);
+    }
+
+    .btn-warning {
+      background: linear-gradient(135deg, var(--warning), #FF9800);
+      color: white;
+      box-shadow: var(--shadow-md);
+    }
+
+    .btn-sm {
+      padding: 0.5rem 1rem;
+      font-size: 0.85rem;
+    }
+
+    /* Forms */
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+
+    .form-label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      color: var(--gray-700);
+      font-size: 0.95rem;
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 0.875rem 1rem;
+      border: 2px solid var(--gray-200);
+      border-radius: var(--border-radius);
+      font-size: 0.95rem;
+      transition: var(--transition);
+      background: var(--white);
+    }
+
+    .form-input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px var(--primary-light);
+    }
+
+    textarea.form-input {
+      min-height: 120px;
+      resize: vertical;
+    }
+
+    /* File Upload */
+    .file-upload {
+      position: relative;
+      display: inline-block;
+    }
+
+    .file-upload-input {
+      position: absolute;
+      opacity: 0;
+      width: 100%;
+      height: 100%;
+      cursor: pointer;
+    }
+
+    .file-upload-btn {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.75rem 1.5rem;
+      background: var(--gray-100);
+      border: 2px dashed var(--gray-300);
+      border-radius: var(--border-radius);
+      color: var(--gray-600);
+      font-weight: 500;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .file-upload-btn:hover {
+      background: var(--gray-200);
+      border-color: var(--gray-400);
+    }
+
+    /* Tables */
+    .table-container {
+      overflow: auto;
+      border-radius: var(--border-radius-lg);
+      border: 1px solid var(--gray-200);
+      background: var(--white);
+    }
+
+    .table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+    }
+
+    .table th {
+      background: var(--gray-50);
+      padding: 1rem 1.25rem;
+      text-align: left;
+      font-weight: 600;
+      font-size: 0.85rem;
+      color: var(--gray-600);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      border-bottom: 1px solid var(--gray-200);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .table td {
+      padding: 1rem 1.25rem;
+      border-bottom: 1px solid var(--gray-100);
+      vertical-align: middle;
+    }
+
+    .table tbody tr {
+      transition: var(--transition);
+    }
+
+    .table tbody tr:hover {
+      background: var(--gray-50);
+    }
+
+    /* Badges */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.375rem 0.75rem;
+      border-radius: 50px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.25px;
+    }
+
+    .badge-success {
+      background: var(--success-light);
+      color: var(--success);
+    }
+
+    .badge-warning {
+      background: var(--warning-light);
+      color: var(--warning);
+    }
+
+    .badge-danger {
+      background: var(--danger-light);
+      color: var(--danger);
+    }
+
+    .badge-primary {
+      background: var(--primary-light);
+      color: var(--primary);
+    }
+
+    .badge-secondary {
+      background: var(--gray-100);
+      color: var(--gray-600);
+    }
+
+    /* Progress bars for overview */
+    .progress-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.25rem;
+      background: var(--white);
+      border: 1px solid var(--gray-200);
+      border-radius: var(--border-radius);
+      margin-bottom: 1rem;
+      transition: var(--transition);
+    }
+
+    .progress-item:hover {
+      box-shadow: var(--shadow-md);
+      transform: translateY(-1px);
+    }
+
+    .progress-info {
+      flex: 1;
+    }
+
+    .progress-title {
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+    }
+
+    .progress-subtitle {
+      font-size: 0.85rem;
+      color: var(--gray-500);
+    }
+
+    .progress-visual {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .progress-bar {
+      width: 120px;
+      height: 8px;
+      background: var(--gray-200);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--secondary), var(--primary));
+      border-radius: 4px;
+      transition: width 0.6s ease;
+    }
 
     /* Modal */
-    .modal{position:fixed;inset:0;background:rgba(0,0,0,0.55);backdrop-filter:blur(6px);display:none;align-items:center;justify-content:center;z-index:1200}
-    .modal.active{display:flex}
-    .modal-card{
-      width:min(96vw,560px);max-height:90vh;overflow:auto;background:#fff;border-radius:16px;border:1px solid var(--border-color);
-      box-shadow:var(--shadow-3);padding:18px;position:relative;
-    }
-    .modal-close{position:absolute;top:10px;right:12px;background:none;border:none;color:var(--text-light);font-size:20px;cursor:pointer}
-    .form-group{margin-bottom:12px}
-    .label{display:block;font-weight:800;margin-bottom:6px}
-    .field{width:100%;height:44px;border:1.5px solid var(--border-color);border-radius:12px;padding:0 12px;font-size:14px}
-    .field:focus{outline:none;border-color:var(--sunset-gold);box-shadow:0 0 0 3px rgba(245,124,0,0.12)}
-    textarea.field{height:auto;padding:10px 12px;min-height:90px}
-
-    /* Footer (redesigned) */
-    .site-footer{
-      margin-top:36px;background:radial-gradient(800px 300px at 20% 0%, rgba(245,124,0,0.12), transparent 50%), linear-gradient(180deg,#111827,#0F172A);
-      color:#E5E7EB;padding:28px 0 22px;box-shadow:0 -6px 24px rgba(0,0,0,0.2);
-    }
-    .footer-inner{max-width:1200px;margin:0 auto;padding:0 16px}
-    .footer-top{
-      display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px;margin-bottom:16px;
-    }
-    .footer-brand{
-      display:flex;align-items:center;gap:10px;font-weight:900
-    }
-    .footer-brand .badge{
-      width:36px;height:36px;display:grid;place-items:center;border-radius:10px;color:#fff;background:linear-gradient(135deg,var(--canopy-green),var(--sage-green))
-    }
-    .footer-col h4{color:#FBBF24;margin-bottom:8px;font-size:1rem}
-    .footer-link{color:#CBD5E1;text-decoration:none;display:inline-flex;align-items:center;gap:8px;padding:6px 0}
-    .footer-link:hover{color:#FBBF24}
-    .footer-bottom{
-      border-top:1px solid rgba(148,163,184,0.2);padding-top:12px;color:#9CA3AF;text-align:center;font-size:13px
+    .modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(8px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1500;
+      padding: 1rem;
     }
 
-    /* Bottom navigation (mobile) */
-    .bottom-nav{
-      position:fixed;left:0;right:0;bottom:0;z-index:1100;display:none;
-      background:rgba(255,255,255,0.96);backdrop-filter:blur(14px);border-top:1px solid var(--border-color);
+    .modal.active {
+      display: flex;
     }
-    .bottom-nav-inner{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:repeat(5,1fr)}
-    .tab-btn{display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px 2px;color:var(--text-light);text-decoration:none;font-weight:800;font-size:11px}
-    .tab-btn i{font-size:18px}
-    .tab-btn.active{color:var(--canopy-green)}
 
-    /* Mobile adjustments */
-    .menu-toggle{display:none}
-    @media (max-width: 992px){
-      .container{grid-template-columns:1fr;gap:14px}
-      .sidebar{
-        position:fixed;left:-310px;top:0;height:100vh;width:280px;padding:82px 14px 14px;border-radius:0;transition:left var(--med);z-index:1100
+    .modal-content {
+      background: var(--white);
+      border-radius: var(--border-radius-xl);
+      box-shadow: var(--shadow-2xl);
+      width: 100%;
+      max-width: 600px;
+      max-height: 90vh;
+      overflow: auto;
+      position: relative;
+    }
+
+    .modal-header {
+      padding: 2rem 2rem 1rem;
+      border-bottom: 1px solid var(--gray-200);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .modal-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--gray-800);
+    }
+
+    .modal-close {
+      width: 40px;
+      height: 40px;
+      border: none;
+      background: var(--gray-100);
+      border-radius: var(--border-radius);
+      color: var(--gray-500);
+      cursor: pointer;
+      transition: var(--transition);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-close:hover {
+      background: var(--gray-200);
+      color: var(--gray-700);
+    }
+
+    .modal-body {
+      padding: 2rem;
+    }
+
+    /* Loading states */
+    .loading {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      padding: 2rem;
+      color: var(--gray-500);
+    }
+
+    .spinner {
+      width: 32px;
+      height: 32px;
+      border: 3px solid var(--gray-200);
+      border-top: 3px solid var(--primary);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 3rem 2rem;
+      color: var(--gray-500);
+    }
+
+    .empty-state i {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+      color: var(--gray-300);
+    }
+
+    /* Bottom Navigation */
+    .bottom-nav {
+      display: none;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(20px);
+      border-top: 1px solid var(--gray-200);
+      padding: 1rem 0;
+      z-index: 1000;
+    }
+
+    .bottom-nav-container {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      max-width: 500px;
+      margin: 0 auto;
+    }
+
+    .bottom-nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.25rem;
+      padding: 0.5rem;
+      text-decoration: none;
+      color: var(--gray-500);
+      font-size: 0.75rem;
+      font-weight: 500;
+      transition: var(--transition);
+    }
+
+    .bottom-nav-item.active {
+      color: var(--primary);
+    }
+
+    .bottom-nav-item i {
+      font-size: 1.25rem;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 1024px) {
+      .app-layout {
+        padding: 0 1rem;
+        gap: 1.5rem;
       }
-      .sidebar.active{left:0}
-      .menu-toggle{display:block}
-      .search-wrap{display:none}
-      .stats{grid-template-columns:repeat(2,1fr)}
-      .bottom-nav{display:block}
+
+      .sidebar {
+        width: 260px;
+      }
+
+      .search-container {
+        margin: 0 1rem;
+      }
     }
-    @media (max-width: 560px){
-      .stats{grid-template-columns:1fr}
-      .banner h1{font-size:1.3rem}
-      .brand-title{font-size:16px}
-      .avatar{width:30px;height:30px;font-size:12px}
+
+    @media (max-width: 768px) {
+      .header-content {
+        padding: 0 1rem;
+      }
+
+      .search-container {
+        display: none;
+      }
+
+      .menu-toggle {
+        display: flex;
+      }
+
+      .app-layout {
+        flex-direction: column;
+        padding: 0 1rem;
+      }
+
+      .sidebar {
+        position: fixed;
+        top: 72px;
+        left: -300px;
+        height: calc(100vh - 72px);
+        width: 280px;
+        background: rgba(255, 255, 255, 0.98);
+        backdrop-filter: blur(20px);
+        z-index: 1200;
+        transition: var(--transition-slow);
+        padding: 1rem;
+        overflow-y: auto;
+      }
+
+      .sidebar.active {
+        left: 0;
+      }
+
+      .sidebar-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(4px);
+        z-index: 1100;
+        display: none;
+      }
+
+      .sidebar-overlay.active {
+        display: block;
+      }
+
+      .main-content {
+        padding: 1rem 0 6rem;
+      }
+
+      .welcome-title {
+        font-size: 1.75rem;
+      }
+
+      .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+      }
+
+      .card-header {
+        padding: 1rem 1.5rem;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 1rem;
+      }
+
+      .card-content {
+        padding: 1.5rem;
+      }
+
+      .bottom-nav {
+        display: block;
+      }
+
+      /* Mobile table view */
+      .table-container {
+        border: none;
+        background: transparent;
+      }
+
+      .table,
+      .table thead,
+      .table tbody,
+      .table th,
+      .table td,
+      .table tr {
+        display: block;
+      }
+
+      .table thead tr {
+        position: absolute;
+        top: -9999px;
+        left: -9999px;
+      }
+
+      .table tr {
+        background: var(--white);
+        border: 1px solid var(--gray-200);
+        border-radius: var(--border-radius);
+        margin-bottom: 1rem;
+        box-shadow: var(--shadow-sm);
+        padding: 1rem;
+      }
+
+      .table td {
+        border: none;
+        padding: 0.5rem 0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .table td::before {
+        content: attr(data-label);
+        font-weight: 600;
+        color: var(--gray-600);
+        text-transform: uppercase;
+        font-size: 0.75rem;
+        letter-spacing: 0.5px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .welcome-banner {
+        padding: 1.5rem;
+      }
+
+      .card-header {
+        padding: 1rem;
+      }
+
+      .card-content {
+        padding: 1rem;
+      }
+    }
+
+    /* Profile image upload styles */
+    .avatar-upload {
+      position: relative;
+      display: inline-block;
+    }
+
+    .avatar-upload .user-avatar {
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .avatar-upload:hover .user-avatar {
+      transform: scale(1.05);
+    }
+
+    .avatar-upload .upload-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.5);
+      border-radius: var(--border-radius);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: var(--transition);
+      cursor: pointer;
+    }
+
+    .avatar-upload:hover .upload-overlay {
+      opacity: 1;
+    }
+
+    .upload-overlay i {
+      color: white;
+      font-size: 1.25rem;
+    }
+
+    /* Tab navigation for reports */
+    .tab-nav {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+      border-bottom: 1px solid var(--gray-200);
+      padding-bottom: 1rem;
+    }
+
+    .tab-btn {
+      padding: 0.75rem 1.5rem;
+      border: none;
+      background: transparent;
+      color: var(--gray-600);
+      font-weight: 500;
+      border-radius: var(--border-radius);
+      cursor: pointer;
+      transition: var(--transition);
+      position: relative;
+    }
+
+    .tab-btn.active {
+      color: var(--primary);
+      background: var(--primary-light);
+    }
+
+    .tab-btn:hover:not(.active) {
+      color: var(--gray-800);
+      background: var(--gray-100);
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    /* Chart containers */
+    .chart-container {
+      background: var(--white);
+      border: 1px solid var(--gray-200);
+      border-radius: var(--border-radius);
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      height: 300px;
     }
   </style>
 </head>
 <body>
   <!-- Header -->
-  <header class="app-header" role="banner">
-    <div class="appbar">
-      <div style="display:flex;align-items:center;gap:8px">
-        <button class="icon-btn menu-toggle" id="menuToggle" aria-label="Open menu">
+  <header class="header">
+    <div class="header-content">
+      <div class="header-left">
+        <button class="menu-toggle" id="menuToggle">
           <i class="fas fa-bars"></i>
         </button>
-        <a class="brand" href="#">
-          <div class="brand-badge" aria-hidden="true"><i class="fas fa-tree"></i></div>
-          <div class="brand-title">Baobab Parent Portal</div>
+        <a href="#overview" class="brand">
+          <div class="brand-icon">
+            <i class="fas fa-tree"></i>
+          </div>
+          <div class="brand-text">Baobab Parent Portal</div>
         </a>
       </div>
 
-      <div class="search-wrap" role="search">
-        <div class="search">
-          <i class="fas fa-search"></i>
-          <input id="globalSearch" type="search" placeholder="Search children, lessons, reports..." />
+      <div class="search-container">
+        <div class="search-wrapper">
+          <i class="fas fa-search search-icon"></i>
+          <input type="search" class="search-input" id="globalSearch" placeholder="Search children, lessons, reports...">
         </div>
       </div>
 
-      <div class="app-actions">
-        <div style="position:relative">
-          <button class="icon-btn" id="notifBtn" aria-label="Notifications"><i class="fas fa-bell"></i></button>
-          <span class="notif-badge" id="notificationCount" style="display:none">0</span>
-        </div>
-        <div class="user-pod" id="userMenu" role="button" aria-label="User menu">
-          <div class="avatar" id="userAvatar">P</div>
-          <div class="user-meta">
-            <h4 id="userName">Loading...</h4>
-            <small>Parent</small>
+      <div class="header-right">
+        <button class="notification-btn" id="notificationBtn">
+          <i class="fas fa-bell"></i>
+          <span class="notification-badge" id="notificationCount" style="display: none;">0</span>
+        </button>
+        
+        <div class="user-menu" id="userMenu">
+          <div class="user-profile">
+            <div class="user-avatar" id="userAvatar">
+              <span id="userInitials">P</span>
+            </div>
+            <div class="user-info">
+              <div class="user-name" id="userName">Loading...</div>
+              <div class="user-role">Parent</div>
+            </div>
+            <i class="fas fa-chevron-down" style="color: var(--gray-400); font-size: 0.8rem;"></i>
           </div>
-          <i class="fas fa-chevron-down" style="color:var(--text-light)"></i>
         </div>
       </div>
     </div>
   </header>
 
-  <!-- Sidebar overlay -->
-  <div id="sidebarOverlay" style="position:fixed;inset:0;background:rgba(0,0,0,0.45);backdrop-filter:blur(4px);display:none;z-index:1090"></div>
+  <!-- Sidebar Overlay -->
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
-  <!-- Main Layout -->
-  <div class="container">
+  <!-- App Layout -->
+  <div class="app-layout">
     <!-- Sidebar -->
-    <aside class="sidebar" id="sidebar" aria-label="Sidebar">
-      <ul class="nav-list">
-        <li><a class="nav-link active" href="#overview" data-section="overview"><i class="fas fa-home"></i>Dashboard Overview</a></li>
-        <li><a class="nav-link" href="#children" data-section="children"><i class="fas fa-child"></i>Children Management</a></li>
-        <li><a class="nav-link" href="#lessons" data-section="lessons"><i class="fas fa-calendar-alt"></i>Upcoming Lessons</a></li>
-        <li><a class="nav-link" href="#tutors" data-section="tutors"><i class="fas fa-chalkboard-teacher"></i>Tutor Communication</a></li>
-        <li><a class="nav-link" href="#recordings" data-section="recordings"><i class="fas fa-video"></i>Lesson Recordings</a></li>
-        <li><a class="nav-link" href="#reports" data-section="reports"><i class="fas fa-file-alt"></i>Reports & Assessments</a></li>
-        <li><a class="nav-link" href="#billing" data-section="billing"><i class="fas fa-credit-card"></i>Billing & Payments</a></li>
-        <li><a class="nav-link" href="#profile" data-section="profile"><i class="fas fa-user-edit"></i>My Profile</a></li>
-        <li><a class="nav-link" href="#" id="logoutLink"><i class="fas fa-sign-out-alt"></i>Logout</a></li>
-      </ul>
+    <aside class="sidebar" id="sidebar">
+      <nav class="sidebar-nav">
+        <ul class="nav-list">
+          <li class="nav-item">
+            <a href="#overview" class="nav-link active" data-section="overview">
+              <i class="fas fa-home nav-icon"></i>
+              Dashboard Overview
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="#children" class="nav-link" data-section="children">
+              <i class="fas fa-child nav-icon"></i>
+              Children Management
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="#lessons" class="nav-link" data-section="lessons">
+              <i class="fas fa-calendar-alt nav-icon"></i>
+              Upcoming Lessons
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="#tutors" class="nav-link" data-section="tutors">
+              <i class="fas fa-chalkboard-teacher nav-icon"></i>
+              Tutor Communication
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="#recordings" class="nav-link" data-section="recordings">
+              <i class="fas fa-video nav-icon"></i>
+              Lesson Recordings
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="#reports" class="nav-link" data-section="reports">
+              <i class="fas fa-chart-bar nav-icon"></i>
+              Reports & Assessments
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="#billing" class="nav-link" data-section="billing">
+              <i class="fas fa-credit-card nav-icon"></i>
+              Billing & Payments
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="#profile" class="nav-link" data-section="profile">
+              <i class="fas fa-user-edit nav-icon"></i>
+              My Profile
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="#" class="nav-link" id="logoutLink">
+              <i class="fas fa-sign-out-alt nav-icon"></i>
+              Logout
+            </a>
+          </li>
+        </ul>
+      </nav>
     </aside>
 
-    <!-- Content -->
-    <main>
-      <!-- Overview -->
-      <section id="overview" class="section active" aria-label="Overview">
-        <div class="banner">
-          <h1>Welcome back, <span id="parentName">Parent</span>! 👋</h1>
-          <p>Your child is making amazing progress. Here’s a quick snapshot of today.</p>
-          <div class="stats">
-            <div class="stat">
-              <div class="num" id="totalLessons">0</div>
-              <div class="lbl">Lessons Completed</div>
-            </div>
-            <div class="stat">
-              <div class="num" id="averageGrade">0%</div>
-              <div class="lbl">Average Grade</div>
-            </div>
-            <div class="stat">
-              <div class="num" id="culturalMilestones">0</div>
-              <div class="lbl">Cultural Milestones</div>
-            </div>
-            <div class="stat">
-              <div class="num" id="activeTutors">0</div>
-              <div class="lbl">Active Tutors</div>
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Overview Section -->
+      <section id="overview" class="section active">
+        <div class="welcome-banner">
+          <div class="welcome-content">
+            <h1 class="welcome-title">Welcome back, <span id="parentName">Parent</span>! 👋</h1>
+            <p class="welcome-subtitle">Your children are making amazing progress. Here's a quick snapshot of today.</p>
+            
+            <div class="stats-grid">
+              <div class="stat-card">
+                <div class="stat-number" id="totalLessons">0</div>
+                <div class="stat-label">Lessons Completed</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-number" id="averageGrade">0%</div>
+                <div class="stat-label">Average Grade</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-number" id="culturalMilestones">0</div>
+                <div class="stat-label">Cultural Milestones</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-number" id="activeTutors">0</div>
+                <div class="stat-label">Active Tutors</div>
+              </div>
             </div>
           </div>
         </div>
 
-        <div class="panel">
-          <div class="panel-head">
-            <div class="panel-title">
-              <div class="icon" style="background:linear-gradient(135deg,var(--canopy-green),var(--sage-green))"><i class="fas fa-chart-line"></i></div>
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">
+              <div class="card-icon" style="background: linear-gradient(135deg, var(--secondary), #16A076);">
+                <i class="fas fa-chart-line"></i>
+              </div>
               Recent Progress
             </div>
-            <div class="tools">
-              <a class="btn" href="#reports" data-section="reports"><i class="fas fa-arrow-right"></i> View full reports</a>
+            <div class="card-actions">
+              <a href="#reports" class="btn btn-secondary" data-section="reports">
+                <i class="fas fa-arrow-right"></i>
+                View Full Reports
+              </a>
             </div>
           </div>
-          <div id="overviewProgress">
-            <div class="loading"><div class="spinner"></div>Loading progress...</div>
+          <div class="card-content">
+            <div id="overviewProgress">
+              <div class="loading">
+                <div class="spinner"></div>
+                Loading progress...
+              </div>
+            </div>
           </div>
         </div>
 
-        <div class="panel">
-          <div class="panel-head">
-            <div class="panel-title">
-              <div class="icon" style="background:linear-gradient(135deg,var(--sunset-gold),var(--desert-orange))"><i class="fas fa-calendar-alt"></i></div>
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">
+              <div class="card-icon" style="background: linear-gradient(135deg, var(--warning), #FF9800);">
+                <i class="fas fa-calendar-alt"></i>
+              </div>
               Upcoming Lessons
             </div>
           </div>
-          <div id="overviewLessons">
-            <div class="loading"><div class="spinner"></div>Loading lessons...</div>
+          <div class="card-content">
+            <div id="overviewLessons">
+              <div class="loading">
+                <div class="spinner"></div>
+                Loading lessons...
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
-      <!-- Children -->
-      <section id="children" class="section" aria-label="Children Management">
-        <div class="panel">
-          <div class="panel-head">
-            <div class="panel-title">
-              <div class="icon" style="background:linear-gradient(135deg,var(--sky-blue),#4FC3F7)"><i class="fas fa-children"></i></div>
-              Children
+      <!-- Children Section -->
+      <section id="children" class="section">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">
+              <div class="card-icon" style="background: linear-gradient(135deg, var(--primary), #0052CC);">
+                <i class="fas fa-children"></i>
+              </div>
+              Children Management
             </div>
-            <div class="toolbar">
-              <div class="input"><i class="fas fa-search"></i><input id="childrenSearch" type="search" placeholder="Search children..." /></div>
-              <button class="btn" id="childrenExport"><i class="fas fa-file-export"></i>Export CSV</button>
+            <div class="card-actions">
+              <div class="search-wrapper" style="min-width: 250px;">
+                <i class="fas fa-search search-icon"></i>
+                <input type="search" class="search-input" id="childrenSearch" placeholder="Search children...">
+              </div>
+              <button class="btn btn-secondary" id="childrenExport">
+                <i class="fas fa-download"></i>
+                Export CSV
+              </button>
             </div>
           </div>
-          <div id="childrenTableWrap" class="table-wrap">
-            <table class="data-table" id="childrenTable">
-              <thead>
-                <tr>
-                  <th>Name</th>
-                  <th>DOB</th>
-                  <th>Age</th>
-                  <th>Grade</th>
-                  <th>Status</th>
-                  <th>Enrolled</th>
-                  <th>Emergency Contact</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody id="childrenTbody"></tbody>
-            </table>
+          <div class="card-content">
+            <div class="table-container">
+              <table class="table" id="childrenTable">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>DOB</th>
+                    <th>Age</th>
+                    <th>Grade</th>
+                    <th>Status</th>
+                    <th>Enrolled</th>
+                    <th>Emergency Contact</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="childrenTbody"></tbody>
+              </table>
+            </div>
           </div>
         </div>
       </section>
 
-      <!-- Lessons -->
-      <section id="lessons" class="section" aria-label="Lessons">
-        <div class="panel">
-          <div class="panel-head">
-            <div class="panel-title">
-              <div class="icon" style="background:linear-gradient(135deg,var(--sunset-gold),var(--desert-orange))"><i class="fas fa-calendar-days"></i></div>
-              Lessons
+      <!-- Lessons Section -->
+      <section id="lessons" class="section">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">
+              <div class="card-icon" style="background: linear-gradient(135deg, var(--warning), #FF9800);">
+                <i class="fas fa-calendar-days"></i>
+              </div>
+              Upcoming Lessons
             </div>
-            <div class="toolbar">
-              <div class="input"><i class="fas fa-search"></i><input id="lessonsSearch" type="search" placeholder="Search lessons..." /></div>
-              <button class="btn" id="lessonsExport"><i class="fas fa-file-export"></i>Export CSV</button>
+            <div class="card-actions">
+              <div class="search-wrapper" style="min-width: 250px;">
+                <i class="fas fa-search search-icon"></i>
+                <input type="search" class="search-input" id="lessonsSearch" placeholder="Search lessons...">
+              </div>
+              <button class="btn btn-secondary" id="lessonsExport">
+                <i class="fas fa-download"></i>
+                Export CSV
+              </button>
             </div>
           </div>
-          <div id="lessonsTableWrap" class="table-wrap">
-            <table class="data-table" id="lessonsTable">
-              <thead>
-                <tr>
-                  <th>Date</th>
-                  <th>Time</th>
-                  <th>Child</th>
-                  <th>Subject</th>
-                  <th>Tutor</th>
-                  <th>Status</th>
-                  <th>Join</th>
-                </tr>
-              </thead>
-              <tbody id="lessonsTbody"></tbody>
-            </table>
+          <div class="card-content">
+            <div class="table-container">
+              <table class="table" id="lessonsTable">
+                <thead>
+                  <tr>
+                    <th>Date</th>
+                    <th>Time</th>
+                    <th>Child</th>
+                    <th>Subject</th>
+                    <th>Tutor</th>
+                    <th>Status</th>
+                    <th>Join</th>
+                  </tr>
+                </thead>
+                <tbody id="lessonsTbody"></tbody>
+              </table>
+            </div>
           </div>
         </div>
       </section>
 
-      <!-- Tutors -->
-      <section id="tutors" class="section" aria-label="Tutors">
-        <div class="panel">
-          <div class="panel-head">
-            <div class="panel-title">
-              <div class="icon" style="background:linear-gradient(135deg,var(--canopy-green),var(--sage-green))"><i class="fas fa-user-tie"></i></div>
+      <!-- Tutors Section -->
+      <section id="tutors" class="section">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">
+              <div class="card-icon" style="background: linear-gradient(135deg, var(--secondary), #16A076);">
+                <i class="fas fa-user-tie"></i>
+              </div>
               Assigned Tutors
             </div>
-            <div class="toolbar">
-              <div class="input"><i class="fas fa-search"></i><input id="tutorsSearch" type="search" placeholder="Search tutors..." /></div>
-              <button class="btn" id="tutorsExport"><i class="fas fa-file-export"></i>Export CSV</button>
+            <div class="card-actions">
+              <div class="search-wrapper" style="min-width: 250px;">
+                <i class="fas fa-search search-icon"></i>
+                <input type="search" class="search-input" id="tutorsSearch" placeholder="Search tutors...">
+              </div>
+              <button class="btn btn-secondary" id="tutorsExport">
+                <i class="fas fa-download"></i>
+                Export CSV
+              </button>
             </div>
           </div>
-          <div id="tutorsTableWrap" class="table-wrap">
-            <table class="data-table" id="tutorsTable">
-              <thead>
-                <tr>
-                  <th>Tutor</th>
-                  <th>Child</th>
-                  <th>Subject</th>
-                  <th>Status</th>
-                </tr>
-              </thead>
-              <tbody id="tutorsTbody"></tbody>
-            </table>
+          <div class="card-content">
+            <div class="table-container">
+              <table class="table" id="tutorsTable">
+                <thead>
+                  <tr>
+                    <th>Tutor</th>
+                    <th>Child</th>
+                    <th>Subject</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody id="tutorsTbody"></tbody>
+              </table>
+            </div>
           </div>
         </div>
       </section>
 
-      <!-- Recordings -->
-      <section id="recordings" class="section" aria-label="Lesson Recordings">
-        <div class="panel">
-          <div class="panel-head">
-            <div class="panel-title">
-              <div class="icon" style="background:linear-gradient(135deg,#6D28D9,#9333EA)"><i class="fas fa-video"></i></div>
+      <!-- Recordings Section -->
+      <section id="recordings" class="section">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">
+              <div class="card-icon" style="background: linear-gradient(135deg, #6D28D9, #9333EA);">
+                <i class="fas fa-video"></i>
+              </div>
               Lesson Recordings
             </div>
-            <div class="toolbar">
-              <div class="input"><i class="fas fa-search"></i><input id="recordingsSearch" type="search" placeholder="Search recordings..." /></div>
-              <button class="btn" id="recordingsExport"><i class="fas fa-file-export"></i>Export CSV</button>
+            <div class="card-actions">
+              <div class="search-wrapper" style="min-width: 250px;">
+                <i class="fas fa-search search-icon"></i>
+                <input type="search" class="search-input" id="recordingsSearch" placeholder="Search recordings...">
+              </div>
+              <button class="btn btn-secondary" id="recordingsExport">
+                <i class="fas fa-download"></i>
+                Export CSV
+              </button>
             </div>
           </div>
-          <div id="recordingsTableWrap" class="table-wrap">
-            <table class="data-table" id="recordingsTable">
-              <thead>
-                <tr>
-                  <th>Date</th>
-                  <th>Child</th>
-                  <th>Subject</th>
-                  <th>Duration</th>
-                  <th>Recording</th>
-                </tr>
-              </thead>
-              <tbody id="recordingsTbody"></tbody>
-            </table>
+          <div class="card-content">
+            <div class="table-container">
+              <table class="table" id="recordingsTable">
+                <thead>
+                  <tr>
+                    <th>Date</th>
+                    <th>Child</th>
+                    <th>Subject</th>
+                    <th>Duration</th>
+                    <th>Recording</th>
+                  </tr>
+                </thead>
+                <tbody id="recordingsTbody"></tbody>
+              </table>
+            </div>
           </div>
         </div>
       </section>
 
-      <!-- Reports & Assessments -->
-      <section id="reports" class="section" aria-label="Reports">
-        <div class="panel">
-          <div class="panel-head">
-            <div class="panel-title">
-              <div class="icon" style="background:linear-gradient(135deg,var(--sky-blue),#4FC3F7)"><i class="fas fa-chart-bar"></i></div>
+      <!-- Reports Section -->
+      <section id="reports" class="section">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">
+              <div class="card-icon" style="background: linear-gradient(135deg, var(--primary), #0052CC);">
+                <i class="fas fa-chart-bar"></i>
+              </div>
               Reports & Assessments
             </div>
-            <div class="tools">
-              <button class="btn" id="refreshReports"><i class="fas fa-rotate"></i>Refresh</button>
+            <div class="card-actions">
+              <button class="btn btn-secondary" id="refreshReports">
+                <i class="fas fa-refresh"></i>
+                Refresh
+              </button>
             </div>
           </div>
-
-          <div class="panel" style="margin-top:8px">
-            <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px">
-              <button class="btn btn-success" data-tab="tab-assessments">Assessments</button>
-              <button class="btn" data-tab="tab-progress">Progress Records</button>
+          <div class="card-content">
+            <div class="tab-nav">
+              <button class="tab-btn active" data-tab="assessments">Assessments</button>
+              <button class="tab-btn" data-tab="progress">Progress Records</button>
             </div>
 
-            <div id="tab-assessments" class="tab-pane">
-              <div class="panel-head" style="padding:0;margin-bottom:10px">
-                <div class="toolbar">
-                  <div class="input"><i class="fas fa-search"></i><input id="assessmentsSearch" type="search" placeholder="Search assessments..." /></div>
-                  <button class="btn" id="assessmentsExport"><i class="fas fa-file-export"></i>Export CSV</button>
+            <div id="assessments" class="tab-content active">
+              <div class="card-actions" style="margin-bottom: 1.5rem;">
+                <div class="search-wrapper" style="min-width: 250px;">
+                  <i class="fas fa-search search-icon"></i>
+                  <input type="search" class="search-input" id="assessmentsSearch" placeholder="Search assessments...">
+                </div>
+                <button class="btn btn-secondary" id="assessmentsExport">
+                  <i class="fas fa-download"></i>
+                  Export CSV
+                </button>
+              </div>
+
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 2rem;">
+                <div class="chart-container">
+                  <canvas id="avgBySubjectChart"></canvas>
+                </div>
+                <div class="chart-container">
+                  <canvas id="trendChart"></canvas>
                 </div>
               </div>
-              <div class="panel" style="margin-top:8px">
-                <div style="display:grid;grid-template-columns:1fr;gap:16px">
-                  <div style="min-height:220px">
-                    <canvas id="avgBySubjectChart" height="160"></canvas>
-                  </div>
-                  <div style="min-height:220px">
-                    <canvas id="trendChart" height="160"></canvas>
-                  </div>
-                </div>
-              </div>
-              <div class="panel" style="margin-top:12px">
-                <div class="table-wrap">
-                  <table class="data-table" id="assessmentsTable">
-                    <thead>
-                      <tr>
-                        <th>Date</th>
-                        <th>Child</th>
-                        <th>Subject</th>
-                        <th>Title</th>
-                        <th>Type</th>
-                        <th>Score</th>
-                        <th>Feedback</th>
-                      </tr>
-                    </thead>
-                    <tbody id="assessmentsTbody"></tbody>
-                  </table>
-                </div>
+
+              <div class="table-container">
+                <table class="table" id="assessmentsTable">
+                  <thead>
+                    <tr>
+                      <th>Date</th>
+                      <th>Child</th>
+                      <th>Subject</th>
+                      <th>Title</th>
+                      <th>Type</th>
+                      <th>Score</th>
+                      <th>Feedback</th>
+                    </tr>
+                  </thead>
+                  <tbody id="assessmentsTbody"></tbody>
+                </table>
               </div>
             </div>
 
-            <div id="tab-progress" class="tab-pane" style="display:none">
-              <div class="panel-head" style="padding:0;margin-bottom:10px">
-                <div class="toolbar">
-                  <div class="input"><i class="fas fa-search"></i><input id="progressSearch" type="search" placeholder="Search progress records..." /></div>
-                  <button class="btn" id="progressExport"><i class="fas fa-file-export"></i>Export CSV</button>
+            <div id="progress" class="tab-content">
+              <div class="card-actions" style="margin-bottom: 1.5rem;">
+                <div class="search-wrapper" style="min-width: 250px;">
+                  <i class="fas fa-search search-icon"></i>
+                  <input type="search" class="search-input" id="progressSearch" placeholder="Search progress records...">
                 </div>
+                <button class="btn btn-secondary" id="progressExport">
+                  <i class="fas fa-download"></i>
+                  Export CSV
+                </button>
               </div>
-              <div class="panel">
-                <div class="table-wrap">
-                  <table class="data-table" id="progressTable">
-                    <thead>
-                      <tr>
-                        <th>Date</th>
-                        <th>Child</th>
-                        <th>Subject</th>
-                        <th>Score</th>
-                        <th>Strengths</th>
-                        <th>Improvement</th>
-                        <th>Recorded By</th>
-                      </tr>
-                    </thead>
-                    <tbody id="progressTbody"></tbody>
-                  </table>
-                </div>
+
+              <div class="table-container">
+                <table class="table" id="progressTable">
+                  <thead>
+                    <tr>
+                      <th>Date</th>
+                      <th>Child</th>
+                      <th>Subject</th>
+                      <th>Score</th>
+                      <th>Strengths</th>
+                      <th>Improvement</th>
+                      <th>Recorded By</th>
+                    </tr>
+                  </thead>
+                  <tbody id="progressTbody"></tbody>
+                </table>
               </div>
             </div>
           </div>
-
         </div>
       </section>
 
-      <!-- Billing -->
-      <section id="billing" class="section" aria-label="Billing">
-        <div class="panel">
-          <div class="panel-head">
-            <div class="panel-title">
-              <div class="icon" style="background:linear-gradient(135deg,var(--baobab-brown),var(--trunk-gray))"><i class="fas fa-file-invoice-dollar"></i></div>
+      <!-- Billing Section -->
+      <section id="billing" class="section">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">
+              <div class="card-icon" style="background: linear-gradient(135deg, var(--accent), #E55A2B);">
+                <i class="fas fa-file-invoice-dollar"></i>
+              </div>
               Billing & Payments
             </div>
-            <div class="toolbar">
-              <div class="input"><i class="fas fa-search"></i><input id="billingSearch" type="search" placeholder="Search billing..." /></div>
-              <button class="btn" id="billingExport"><i class="fas fa-file-export"></i>Export CSV</button>
+            <div class="card-actions">
+              <div class="search-wrapper" style="min-width: 250px;">
+                <i class="fas fa-search search-icon"></i>
+                <input type="search" class="search-input" id="billingSearch" placeholder="Search billing...">
+              </div>
+              <button class="btn btn-secondary" id="billingExport">
+                <i class="fas fa-download"></i>
+                Export CSV
+              </button>
             </div>
           </div>
-          <div class="table-wrap">
-            <table class="data-table" id="billingTable">
-              <thead>
-                <tr>
-                  <th>Created</th>
-                  <th>Description</th>
-                  <th>Amount</th>
-                  <th>Status</th>
-                  <th>Due</th>
-                  <th>Paid At</th>
-                  <th>Method</th>
-                  <th>Txn ID</th>
-                </tr>
-              </thead>
-              <tbody id="billingTbody"></tbody>
-            </table>
+          <div class="card-content">
+            <div class="table-container">
+              <table class="table" id="billingTable">
+                <thead>
+                  <tr>
+                    <th>Created</th>
+                    <th>Description</th>
+                    <th>Amount</th>
+                    <th>Status</th>
+                    <th>Due</th>
+                    <th>Paid At</th>
+                    <th>Method</th>
+                    <th>Txn ID</th>
+                  </tr>
+                </thead>
+                <tbody id="billingTbody"></tbody>
+              </table>
+            </div>
           </div>
         </div>
       </section>
 
-      <!-- Profile -->
-      <section id="profile" class="section" aria-label="Profile">
-        <div class="panel">
-          <div class="panel-head">
-            <div class="panel-title">
-              <div class="icon" style="background:linear-gradient(135deg,var(--baobab-brown),var(--trunk-gray))"><i class="fas fa-user-cog"></i></div>
+      <!-- Profile Section -->
+      <section id="profile" class="section">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">
+              <div class="card-icon" style="background: linear-gradient(135deg, var(--accent), #E55A2B);">
+                <i class="fas fa-user-cog"></i>
+              </div>
               My Profile
             </div>
           </div>
-          <div class="panel">
-            <form id="profileForm">
-              <div class="form-group">
-                <label class="label" for="profileFullName">Full Name</label>
-                <input class="field" id="profileFullName" name="full_name" type="text" placeholder="Enter your full name" />
+          <div class="card-content">
+            <div style="display: grid; grid-template-columns: auto 1fr; gap: 2rem; align-items: start;">
+              <div class="avatar-upload">
+                <div class="user-avatar" style="width: 120px; height: 120px; font-size: 2.5rem;" id="profileAvatar">
+                  <span id="profileInitials">P</span>
+                  <img id="profileImage" style="display: none;" alt="Profile">
+                </div>
+                <div class="upload-overlay">
+                  <i class="fas fa-camera"></i>
+                </div>
+                <input type="file" id="avatarInput" accept="image/*" style="display: none;">
               </div>
-              <div class="form-group">
-                <label class="label" for="profileEmail">Email</label>
-                <input class="field" id="profileEmail" type="email" readonly />
-              </div>
-              <div class="form-group">
-                <label class="label" for="profilePhone">Phone</label>
-                <input class="field" id="profilePhone" name="phone" type="tel" placeholder="Enter your phone number" />
-              </div>
-              <div class="form-group">
-                <label class="label" for="profileAddress">Address</label>
-                <input class="field" id="profileAddress" name="address" type="text" placeholder="Enter your address" />
-              </div>
-              <button class="btn btn-primary" type="submit"><i class="fas fa-save"></i> Update Profile</button>
-            </form>
+              
+              <form id="profileForm">
+                <div class="form-group">
+                  <label class="form-label" for="profileFullName">Full Name</label>
+                  <input class="form-input" id="profileFullName" name="full_name" type="text" placeholder="Enter your full name">
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="profileEmail">Email</label>
+                  <input class="form-input" id="profileEmail" type="email" readonly>
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="profilePhone">Phone</label>
+                  <input class="form-input" id="profilePhone" name="phone" type="tel" placeholder="Enter your phone number">
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="profileAddress">Address</label>
+                  <input class="form-input" id="profileAddress" name="address" type="text" placeholder="Enter your address">
+                </div>
+                <button class="btn btn-primary" type="submit">
+                  <i class="fas fa-save"></i>
+                  Update Profile
+                </button>
+              </form>
+            </div>
           </div>
         </div>
       </section>
     </main>
   </div>
 
-  <!-- Bottom Nav (mobile) -->
-  <nav class="bottom-nav" aria-label="Bottom navigation">
-    <div class="bottom-nav-inner">
-      <a href="#overview" class="tab-btn active" data-section="overview"><i class="fas fa-home"></i><span>Home</span></a>
-      <a href="#children" class="tab-btn" data-section="children"><i class="fas fa-child"></i><span>Children</span></a>
-      <a href="#lessons" class="tab-btn" data-section="lessons"><i class="fas fa-calendar-alt"></i><span>Lessons</span></a>
-      <a href="#reports" class="tab-btn" data-section="reports"><i class="fas fa-file-alt"></i><span>Reports</span></a>
-      <a href="#profile" class="tab-btn" data-section="profile"><i class="fas fa-user"></i><span>Profile</span></a>
+  <!-- Bottom Navigation -->
+  <nav class="bottom-nav">
+    <div class="bottom-nav-container">
+      <a href="#overview" class="bottom-nav-item active" data-section="overview">
+        <i class="fas fa-home"></i>
+        <span>Home</span>
+      </a>
+      <a href="#children" class="bottom-nav-item" data-section="children">
+        <i class="fas fa-child"></i>
+        <span>Children</span>
+      </a>
+      <a href="#lessons" class="bottom-nav-item" data-section="lessons">
+        <i class="fas fa-calendar-alt"></i>
+        <span>Lessons</span>
+      </a>
+      <a href="#reports" class="bottom-nav-item" data-section="reports">
+        <i class="fas fa-file-alt"></i>
+        <span>Reports</span>
+      </a>
+      <a href="#profile" class="bottom-nav-item" data-section="profile">
+        <i class="fas fa-user"></i>
+        <span>Profile</span>
+      </a>
     </div>
   </nav>
 
   <!-- Child Edit Modal -->
-  <div class="modal" id="childEditModal" role="dialog" aria-labelledby="childEditTitle" aria-modal="true">
-    <div class="modal-card">
-      <button class="modal-close" onclick="closeChildEditModal()" aria-label="Close"><i class="fas fa-times"></i></button>
-      <h3 id="childEditTitle" style="font-weight:900;font-size:1.1rem;margin-bottom:10px">Edit Child Information</h3>
-      <form id="childEditForm">
-        <input type="hidden" id="editChildId" />
-        <div class="form-group">
-          <label class="label" for="editChildName">Full Name</label>
-          <input class="field" id="editChildName" name="name" type="text" required />
-        </div>
-        <div class="form-group">
-          <label class="label" for="editChildDOB">Date of Birth</label>
-          <input class="field" id="editChildDOB" name="date_of_birth" type="date" />
-        </div>
-        <div class="form-group">
-          <label class="label" for="editChildGrade">Grade Level</label>
-          <input class="field" id="editChildGrade" name="grade_level" type="text" />
-        </div>
-        <div class="form-group">
-          <label class="label" for="editChildEmergency">Emergency Contact</label>
-          <input class="field" id="editChildEmergency" name="emergency_contact" type="text" />
-        </div>
-        <div class="form-group">
-          <label class="label" for="editChildMedical">Medical Information</label>
-          <textarea class="field" id="editChildMedical" name="medical_info"></textarea>
-        </div>
-        <div class="form-group">
-          <label class="label" for="editChildPreferences">Learning Preferences</label>
-          <textarea class="field" id="editChildPreferences" name="learning_preferences"></textarea>
-        </div>
-        <button class="btn btn-primary" type="submit"><i class="fas fa-save"></i> Update</button>
-      </form>
+  <div class="modal" id="childEditModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title">Edit Child Information</h3>
+        <button class="modal-close" onclick="closeChildEditModal()">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form id="childEditForm">
+          <input type="hidden" id="editChildId">
+          <div class="form-group">
+            <label class="form-label" for="editChildName">Full Name</label>
+            <input class="form-input" id="editChildName" name="name" type="text" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="editChildDOB">Date of Birth</label>
+            <input class="form-input" id="editChildDOB" name="date_of_birth" type="date">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="editChildGrade">Grade Level</label>
+            <input class="form-input" id="editChildGrade" name="grade_level" type="text">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="editChildEmergency">Emergency Contact</label>
+            <input class="form-input" id="editChildEmergency" name="emergency_contact" type="text">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="editChildMedical">Medical Information</label>
+            <textarea class="form-input" id="editChildMedical" name="medical_info"></textarea>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="editChildPreferences">Learning Preferences</label>
+            <textarea class="form-input" id="editChildPreferences" name="learning_preferences"></textarea>
+          </div>
+          <button class="btn btn-primary" type="submit">
+            <i class="fas fa-save"></i>
+            Update Child
+          </button>
+        </form>
+      </div>
     </div>
   </div>
 
-  <!-- Footer -->
-  <footer class="site-footer">
-    <div class="footer-inner">
-      <div class="footer-top">
-        <div>
-          <div class="footer-brand">
-            <div class="badge"><i class="fas fa-tree"></i></div>
-            <div>Baobab Online Academy</div>
-          </div>
-          <p style="margin-top:8px;color:#CBD5E1">Nurturing Growth, Honoring Heritage. A modern learning experience for every family.</p>
-        </div>
-        <div class="footer-col">
-          <h4>Links</h4>
-          <a class="footer-link" href="/parent-portal.html"><i class="fas fa-link"></i> Parent Portal</a>
-          <a class="footer-link" href="/"><i class="fas fa-globe"></i> Main Site</a>
-        </div>
-        <div class="footer-col">
-          <h4>Support</h4>
-          <a class="footer-link" href="mailto:parents@baobabacademy.com"><i class="fas fa-envelope"></i> parents@baobabacademy.com</a>
-          <a class="footer-link" href="tel:+442012345678"><i class="fas fa-phone"></i> +44 (0) 20 1234 5678</a>
-        </div>
-      </div>
-      <div class="footer-bottom">
-        &copy; 2025 Baobab Online Academy. All rights reserved.
-      </div>
-    </div>
-  </footer>
-
   <script>
+    // All the existing JavaScript code remains the same, just updating the DOM selectors and adding new functionality
+    
     // Supabase setup
     const SUPABASE_URL = 'https://vcxdkacxbjsgaoxbhsip.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZjeGRrYWN4YmpzZ2FveGJoc2lwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI5MDQ5ODMsImV4cCI6MjA2ODQ4MDk4M30.T9KhHWzHZWyaZvyeFXtBu8tPLY9JOn6_wCHcH8B46FU';
@@ -769,112 +1810,318 @@
     const sidebar = document.getElementById('sidebar');
     const sidebarOverlay = document.getElementById('sidebarOverlay');
 
+    // Mobile menu functionality
     function toggleSidebar(open) {
       const show = open ?? !sidebar.classList.contains('active');
       sidebar.classList.toggle('active', show);
-      sidebarOverlay.style.display = show ? 'block' : 'none';
-      document.body.style.overflow = show ? 'hidden' : 'auto';
+      sidebarOverlay.classList.toggle('active', show);
+      document.body.style.overflow = show ? 'hidden' : '';
       menuToggle.innerHTML = show ? '<i class="fas fa-times"></i>' : '<i class="fas fa-bars"></i>';
     }
+
     menuToggle?.addEventListener('click', () => toggleSidebar());
     sidebarOverlay?.addEventListener('click', () => toggleSidebar(false));
 
-    // Hash routing
-    function setActive(sectionId){
-      document.querySelectorAll('.section').forEach(s => s.classList.toggle('active', s.id === sectionId));
-      document.querySelectorAll('.nav-link').forEach(a => a.classList.toggle('active', a.dataset.section === sectionId));
-      document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.section === sectionId));
+    // Navigation functionality
+    function setActive(sectionId) {
+      // Update sections
+      document.querySelectorAll('.section').forEach(s => 
+        s.classList.toggle('active', s.id === sectionId)
+      );
+      
+      // Update nav links
+      document.querySelectorAll('.nav-link').forEach(a => 
+        a.classList.toggle('active', a.dataset.section === sectionId)
+      );
+      
+      // Update bottom nav
+      document.querySelectorAll('.bottom-nav-item').forEach(b => 
+        b.classList.toggle('active', b.dataset.section === sectionId)
+      );
+      
       loadSection(sectionId);
       toggleSidebar(false);
     }
-    function routeFromHash(){
-      const id = (location.hash || '#overview').replace('#','');
+
+    function routeFromHash() {
+      const id = (location.hash || '#overview').replace('#', '');
       setActive(id);
     }
+
     window.addEventListener('hashchange', routeFromHash);
 
-    // Helpers
-    function initialsOf(str){
-      if(!str) return 'P';
+    // Add click handlers for navigation
+    document.querySelectorAll('[data-section]').forEach(link => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        const section = link.dataset.section;
+        location.hash = '#' + section;
+      });
+    });
+
+    // User menu click handler
+    document.getElementById('userMenu').addEventListener('click', () => {
+      location.hash = '#profile';
+    });
+
+    // Tab functionality for reports
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        // Update tab buttons
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        
+        // Update tab content
+        const target = btn.dataset.tab;
+        document.querySelectorAll('.tab-content').forEach(content => {
+          content.classList.toggle('active', content.id === target);
+        });
+      });
+    });
+
+    // Helper functions (keeping existing ones and adding new ones)
+    function initialsOf(str) {
+      if (!str) return 'P';
       const base = str.includes('@') ? str.split('@')[0] : str;
       const parts = base.trim().split(/\s+/).filter(Boolean);
       return (parts[0]?.[0] || base[0] || 'P').toUpperCase() + (parts[1]?.[0] || '').toUpperCase();
     }
-    function fmtDate(d){ if(!d) return ''; const dt = new Date(d); return dt.toLocaleDateString(); }
-    function fmtTime(d){ if(!d) return ''; const dt = new Date(d); return dt.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}); }
-    function yearsFrom(d){
-      if(!d) return '';
-      const ms = Date.now() - new Date(d).getTime();
-      return Math.floor(ms / (365.25*24*60*60*1000));
-    }
-    function toPercent(grade,max){ if(!grade && grade!==0) return ''; const denom = max || 100; const pct = Math.round((Number(grade)/Number(denom))*100); return pct + '%'; }
-    function statusBadge(status){
-      const s = (status||'').toLowerCase();
-      const cls = s.includes('paid')||s.includes('active') ? 'success' : s.includes('pending')||s.includes('scheduled') ? 'warn' : s.includes('failed')||s.includes('overdue') ? 'danger' : 'muted';
-      return `<span class="badge ${cls}">${status || '—'}</span>`;
-    }
-    function escapeCSV(val){
-      if(val == null) return '';
-      const s = String(val);
-      return /[",\n]/.test(s) ? '"' + s.replace(/"/g,'""') + '"' : s;
-    }
-    function exportCSV(filename, rows, columns){
-      const header = columns.map(c => c.label).join(',');
-      const body = rows.map(r => columns.map(c => escapeCSV(c.get ? c.get(r) : r[c.key])).join(',')).join('\n');
-      const csv = header + '\n' + body;
-      const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url; a.download = filename;
-      document.body.appendChild(a); a.click();
-      document.body.removeChild(a); URL.revokeObjectURL(url);
+
+    function fmtDate(d) { 
+      if (!d) return ''; 
+      const dt = new Date(d); 
+      return dt.toLocaleDateString(); 
     }
 
-    // Auth
-    async function ensureAuth(){
+    function fmtTime(d) { 
+      if (!d) return ''; 
+      const dt = new Date(d); 
+      return dt.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}); 
+    }
+
+    function yearsFrom(d) {
+      if (!d) return '';
+      const ms = Date.now() - new Date(d).getTime();
+      return Math.floor(ms / (365.25 * 24 * 60 * 60 * 1000));
+    }
+
+    function toPercent(grade, max) { 
+      if (!grade && grade !== 0) return ''; 
+      const denom = max || 100; 
+      const pct = Math.round((Number(grade) / Number(denom)) * 100); 
+      return pct + '%'; 
+    }
+
+    function statusBadge(status) {
+      const s = (status || '').toLowerCase();
+      let className = 'badge-secondary';
+      if (s.includes('paid') || s.includes('active') || s.includes('completed')) {
+        className = 'badge-success';
+      } else if (s.includes('pending') || s.includes('scheduled')) {
+        className = 'badge-warning';
+      } else if (s.includes('failed') || s.includes('overdue') || s.includes('cancelled')) {
+        className = 'badge-danger';
+      }
+      return `<span class="badge ${className}">${status || '—'}</span>`;
+    }
+
+    function escapeCSV(val) {
+      if (val == null) return '';
+      const s = String(val);
+      return /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+    }
+
+    function exportCSV(filename, rows, columns) {
+      const header = columns.map(c => c.label).join(',');
+      const body = rows.map(r => 
+        columns.map(c => escapeCSV(c.get ? c.get(r) : r[c.key])).join(',')
+      ).join('\n');
+      const csv = header + '\n' + body;
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; 
+      a.download = filename;
+      document.body.appendChild(a); 
+      a.click();
+      document.body.removeChild(a); 
+      URL.revokeObjectURL(url);
+    }
+
+    // Auth functions
+    async function ensureAuth() {
       const { data: { session } } = await supabase.auth.getSession();
-      if(!session){ location.href='/parent-portal.html'; return null; }
-      if(!session.user.email_confirmed_at){ alert('Please verify your email.'); location.href='/parent-portal.html'; return null; }
+      if (!session) { 
+        location.href = '/parent-portal.html'; 
+        return null; 
+      }
+      if (!session.user.email_confirmed_at) { 
+        alert('Please verify your email.'); 
+        location.href = '/parent-portal.html'; 
+        return null; 
+      }
       currentUser = session.user;
       return currentUser;
     }
 
-    async function loadProfile(){
-      const { data: profile } = await supabase.from('parent_profiles').select('*').eq('user_id', currentUser.id).maybeSingle();
-      if(!profile){
+    async function loadProfile() {
+      const { data: profile } = await supabase
+        .from('parent_profiles')
+        .select('*')
+        .eq('user_id', currentUser.id)
+        .maybeSingle();
+        
+      if (!profile) {
         const fallback = {
           user_id: currentUser.id,
           full_name: currentUser.user_metadata?.full_name || '',
           email: currentUser.email,
           phone: currentUser.user_metadata?.phone || ''
         };
-        const { data: created } = await supabase.from('parent_profiles').insert([fallback]).select().single();
+        const { data: created } = await supabase
+          .from('parent_profiles')
+          .insert([fallback])
+          .select()
+          .single();
         parentProfile = created || fallback;
-      }else{
+      } else {
         parentProfile = profile;
       }
-      const displayName = (parentProfile.full_name?.trim()) || (currentUser.user_metadata?.full_name?.trim()) || (currentUser.email?.split('@')[0]) || 'Parent';
+      
+      const displayName = (parentProfile.full_name?.trim()) || 
+                          (currentUser.user_metadata?.full_name?.trim()) || 
+                          (currentUser.email?.split('@')[0]) || 'Parent';
       const firstName = displayName.split(' ')[0];
+      
+      // Update UI elements
       document.getElementById('userName').textContent = displayName;
       document.getElementById('parentName').textContent = firstName;
-      document.getElementById('userAvatar').textContent = initialsOf(parentProfile.full_name || currentUser.email);
+      
+      const initials = initialsOf(parentProfile.full_name || currentUser.email);
+      document.getElementById('userInitials').textContent = initials;
+      document.getElementById('profileInitials').textContent = initials;
 
-      // form
+      // Update profile form
       document.getElementById('profileFullName').value = parentProfile.full_name || '';
       document.getElementById('profileEmail').value = currentUser.email || '';
       document.getElementById('profilePhone').value = parentProfile.phone || '';
       document.getElementById('profileAddress').value = parentProfile.address || '';
+
+      // Load profile image if exists
+      if (parentProfile.profile_image_url) {
+        const profileImg = document.getElementById('profileImage');
+        const userAvatarImg = document.querySelector('#userAvatar img');
+        
+        profileImg.src = parentProfile.profile_image_url;
+        profileImg.style.display = 'block';
+        document.getElementById('profileInitials').style.display = 'none';
+        
+        if (userAvatarImg) {
+          userAvatarImg.src = parentProfile.profile_image_url;
+          userAvatarImg.style.display = 'block';
+          document.getElementById('userInitials').style.display = 'none';
+        } else {
+          // Create img element for header avatar
+          const headerAvatar = document.getElementById('userAvatar');
+          const newImg = document.createElement('img');
+          newImg.src = parentProfile.profile_image_url;
+          newImg.alt = 'Profile';
+          headerAvatar.appendChild(newImg);
+          document.getElementById('userInitials').style.display = 'none';
+        }
+      }
     }
 
-    async function loadChildren(){
-      const { data, error } = await supabase.from('children').select('*').eq('parent_id', currentUser.id).order('created_at', { ascending: true });
-      if(error){ console.error(error); children = []; return; }
+    // Profile image upload functionality
+    document.querySelector('.avatar-upload').addEventListener('click', () => {
+      document.getElementById('avatarInput').click();
+    });
+
+    document.getElementById('avatarInput').addEventListener('change', async (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      // Validate file type
+      if (!file.type.startsWith('image/')) {
+        alert('Please select an image file.');
+        return;
+      }
+
+      // Validate file size (max 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        alert('File size must be less than 5MB.');
+        return;
+      }
+
+      try {
+        // Upload to Supabase Storage
+        const fileExt = file.name.split('.').pop();
+        const fileName = `${currentUser.id}-${Date.now()}.${fileExt}`;
+        
+        const { data, error } = await supabase.storage
+          .from('profile-images')
+          .upload(fileName, file);
+
+        if (error) throw error;
+
+        // Get public URL
+        const { data: { publicUrl } } = supabase.storage
+          .from('profile-images')
+          .getPublicUrl(fileName);
+
+        // Update profile in database
+        const { error: updateError } = await supabase
+          .from('parent_profiles')
+          .update({ 
+            profile_image_url: publicUrl,
+            updated_at: new Date().toISOString()
+          })
+          .eq('user_id', currentUser.id);
+
+        if (updateError) throw updateError;
+
+        // Update UI
+        const profileImg = document.getElementById('profileImage');
+        profileImg.src = publicUrl;
+        profileImg.style.display = 'block';
+        document.getElementById('profileInitials').style.display = 'none';
+
+        // Update header avatar
+        const headerAvatar = document.getElementById('userAvatar');
+        let headerImg = headerAvatar.querySelector('img');
+        if (!headerImg) {
+          headerImg = document.createElement('img');
+          headerImg.alt = 'Profile';
+          headerAvatar.appendChild(headerImg);
+        }
+        headerImg.src = publicUrl;
+        headerImg.style.display = 'block';
+        document.getElementById('userInitials').style.display = 'none';
+
+        alert('Profile image updated successfully!');
+      } catch (error) {
+        console.error('Error uploading image:', error);
+        alert('Failed to upload image. Please try again.');
+      }
+    });
+
+    async function loadChildren() {
+      const { data, error } = await supabase
+        .from('children')
+        .select('*')
+        .eq('parent_id', currentUser.id)
+        .order('created_at', { ascending: true });
+      if (error) { 
+        console.error(error); 
+        children = []; 
+        return; 
+      }
       children = data || [];
       cache.children = children;
     }
 
-    async function loadDashboardStats(){
-      if(!children.length){
+    async function loadDashboardStats() {
+      if (!children.length) {
         document.getElementById('totalLessons').textContent = 0;
         document.getElementById('averageGrade').textContent = '0%';
         document.getElementById('culturalMilestones').textContent = 0;
@@ -883,51 +2130,67 @@
       }
       const ids = children.map(c => c.id);
 
-      const { data: lessons } = await supabase.from('lessons').select('id').in('child_id', ids).eq('status','completed');
+      const { data: lessons } = await supabase
+        .from('lessons')
+        .select('id')
+        .in('child_id', ids)
+        .eq('status', 'completed');
       document.getElementById('totalLessons').textContent = lessons?.length || 0;
 
-      const { data: grades } = await supabase.from('assessments').select('grade,max_grade').in('child_id', ids);
-      if(grades?.length){
-        const avg = grades.reduce((s,g)=> s + (Number(g.grade)/(Number(g.max_grade)||100))*100, 0) / grades.length;
+      const { data: grades } = await supabase
+        .from('assessments')
+        .select('grade,max_grade')
+        .in('child_id', ids);
+      if (grades?.length) {
+        const avg = grades.reduce((s, g) => s + (Number(g.grade) / (Number(g.max_grade) || 100)) * 100, 0) / grades.length;
         document.getElementById('averageGrade').textContent = Math.round(avg) + '%';
-      }else{
+      } else {
         document.getElementById('averageGrade').textContent = '0%';
       }
 
-      const { data: milestones } = await supabase.from('cultural_milestones').select('id').in('child_id', ids).eq('achieved', true);
+      const { data: milestones } = await supabase
+        .from('cultural_milestones')
+        .select('id')
+        .in('child_id', ids)
+        .eq('achieved', true);
       document.getElementById('culturalMilestones').textContent = milestones?.length || 0;
 
-      const { data: tutors } = await supabase.from('tutor_assignments').select('tutor_id').in('child_id', ids).eq('status','active');
-      const uniqueTutors = [...new Set((tutors||[]).map(t => t.tutor_id))];
+      const { data: tutors } = await supabase
+        .from('tutor_assignments')
+        .select('tutor_id')
+        .in('child_id', ids)
+        .eq('status', 'active');
+      const uniqueTutors = [...new Set((tutors || []).map(t => t.tutor_id))];
       document.getElementById('activeTutors').textContent = uniqueTutors.length;
     }
 
     // Overview widgets
-    async function loadOverviewCards(){
+    async function loadOverviewCards() {
       const cids = children.map(c => c.id);
-      // Recent progress (progress_records)
+      
+      // Recent progress
       const { data: recent } = await supabase
         .from('progress_records')
         .select('score, recorded_at, children:child_id(name), subjects:subject_id(name)')
         .in('child_id', cids)
-        .order('recorded_at', { ascending:false })
+        .order('recorded_at', { ascending: false })
         .limit(5);
 
       const progWrap = document.getElementById('overviewProgress');
-      if(!recent?.length){
-        progWrap.innerHTML = '<div class="empty">No progress records yet.</div>';
-      }else{
+      if (!recent?.length) {
+        progWrap.innerHTML = '<div class="empty-state"><i class="fas fa-chart-line"></i><div>No progress records yet.</div></div>';
+      } else {
         progWrap.innerHTML = recent.map(p => `
-          <div style="display:flex;align-items:center;justify-content:space-between;border:1px solid var(--border-color);border-radius:12px;padding:10px;margin-bottom:8px;background:#fff">
-            <div style="min-width:0">
-              <div style="font-weight:900">${p.subjects?.name || 'Subject'}</div>
-              <div class="muted" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${p.children?.name || 'Child'} • ${fmtDate(p.recorded_at)}</div>
+          <div class="progress-item">
+            <div class="progress-info">
+              <div class="progress-title">${p.subjects?.name || 'Subject'}</div>
+              <div class="progress-subtitle">${p.children?.name || 'Child'} • ${fmtDate(p.recorded_at)}</div>
             </div>
-            <div style="display:flex;align-items:center;gap:10px">
-              <div style="width:120px;height:10px;background:var(--border-color);border-radius:999px;overflow:hidden">
-                <div style="height:100%;width:${Number(p.score)||0}%;background:linear-gradient(90deg,var(--canopy-green),var(--sage-green))"></div>
+            <div class="progress-visual">
+              <div class="progress-bar">
+                <div class="progress-fill" style="width: ${Number(p.score) || 0}%"></div>
               </div>
-              <div class="badge success">${Number(p.score)||0}%</div>
+              <div class="badge badge-success">${Number(p.score) || 0}%</div>
             </div>
           </div>
         `).join('');
@@ -939,36 +2202,44 @@
         .from('lessons')
         .select('id, scheduled_at, status, meeting_url, children:child_id(name), tutors:tutor_id(full_name), subjects:subject_id(name)')
         .in('child_id', cids)
-        .eq('status','scheduled')
+        .eq('status', 'scheduled')
         .gte('scheduled_at', nowIso)
-        .order('scheduled_at', { ascending:true })
+        .order('scheduled_at', { ascending: true })
         .limit(5);
 
       const lessonsWrap = document.getElementById('overviewLessons');
-      if(!upcoming?.length){
-        lessonsWrap.innerHTML = '<div class="empty">No upcoming lessons scheduled.</div>';
-      }else{
+      if (!upcoming?.length) {
+        lessonsWrap.innerHTML = '<div class="empty-state"><i class="fas fa-calendar-alt"></i><div>No upcoming lessons scheduled.</div></div>';
+      } else {
         lessonsWrap.innerHTML = upcoming.map(l => {
           const dt = new Date(l.scheduled_at);
           const isToday = dt.toDateString() === new Date().toDateString();
           return `
-            <div style="display:flex;align-items:center;gap:10px;border:1px solid var(--border-color);border-radius:12px;padding:10px;margin-bottom:8px;background:#fff">
-              <div class="badge warn" style="min-width:86px;justify-content:center">${isToday ? 'Today' : fmtDate(l.scheduled_at)} ${fmtTime(l.scheduled_at)}</div>
-              <div style="flex:1;min-width:0">
-                <div style="font-weight:900">${l.subjects?.name || 'Subject'}</div>
-                <div class="muted" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">with ${l.tutors?.full_name || 'Tutor'} • ${l.children?.name || ''}</div>
+            <div class="progress-item">
+              <div class="progress-info">
+                <div class="progress-title">${l.subjects?.name || 'Subject'}</div>
+                <div class="progress-subtitle">with ${l.tutors?.full_name || 'Tutor'} • ${l.children?.name || ''}</div>
               </div>
-              ${isToday && l.meeting_url ? `<a class="btn btn-success" href="${l.meeting_url}" target="_blank" rel="noopener"><i class="fas fa-video"></i> Join</a>` : `<span class="badge muted">${l.status || 'Scheduled'}</span>`}
+              <div class="progress-visual" style="gap: 1rem;">
+                <div class="badge badge-warning">${isToday ? 'Today' : fmtDate(l.scheduled_at)} ${fmtTime(l.scheduled_at)}</div>
+                ${isToday && l.meeting_url ? 
+                  `<a class="btn btn-success btn-sm" href="${l.meeting_url}" target="_blank" rel="noopener"><i class="fas fa-video"></i> Join</a>` : 
+                  `<span class="badge badge-secondary">${l.status || 'Scheduled'}</span>`
+                }
+              </div>
             </div>
           `;
         }).join('');
       }
     }
 
-    // Tables: renderers
-    function renderChildrenTable(rows){
+    // Table renderers (updated for new styling)
+    function renderChildrenTable(rows) {
       const tb = document.getElementById('childrenTbody');
-      if(!rows?.length){ tb.innerHTML = `<tr><td data-label="Info" colspan="8"><div class="empty">No children found.</div></td></tr>`; return; }
+      if (!rows?.length) { 
+        tb.innerHTML = `<tr><td colspan="8"><div class="empty-state"><i class="fas fa-child"></i><div>No children found.</div></div></td></tr>`; 
+        return; 
+      }
       tb.innerHTML = rows.map(r => `
         <tr>
           <td data-label="Name">${r.name || ''}</td>
@@ -977,19 +2248,22 @@
           <td data-label="Grade">${r.grade_level || ''}</td>
           <td data-label="Status">${statusBadge(r.status || 'Active')}</td>
           <td data-label="Enrolled">${fmtDate(r.enrollment_date)}</td>
-          <td data-label="Emergency Contact"><span class="muted">${r.emergency_contact || '—'}</span></td>
+          <td data-label="Emergency Contact">${r.emergency_contact || '—'}</td>
           <td data-label="Actions">
-            <div class="cell-actions">
-              <button class="btn btn-warning" onclick="openChildEditModal('${r.id}')"><i class="fas fa-edit"></i> Edit</button>
-            </div>
+            <button class="btn btn-warning btn-sm" onclick="openChildEditModal('${r.id}')">
+              <i class="fas fa-edit"></i> Edit
+            </button>
           </td>
         </tr>
       `).join('');
     }
 
-    function renderLessonsTable(rows){
+    function renderLessonsTable(rows) {
       const tb = document.getElementById('lessonsTbody');
-      if(!rows?.length){ tb.innerHTML = `<tr><td data-label="Info" colspan="7"><div class="empty">No lessons found.</div></td></tr>`; return; }
+      if (!rows?.length) { 
+        tb.innerHTML = `<tr><td colspan="7"><div class="empty-state"><i class="fas fa-calendar-alt"></i><div>No lessons found.</div></div></td></tr>`; 
+        return; 
+      }
       tb.innerHTML = rows.map(r => `
         <tr>
           <td data-label="Date">${fmtDate(r.scheduled_at)}</td>
@@ -999,15 +2273,21 @@
           <td data-label="Tutor">${r.tutors?.full_name || ''}</td>
           <td data-label="Status">${statusBadge(r.status)}</td>
           <td data-label="Join">
-            ${r.meeting_url ? `<a class="btn btn-success" href="${r.meeting_url}" target="_blank" rel="noopener"><i class="fas fa-video"></i> Join</a>` : '<span class="muted">—</span>'}
+            ${r.meeting_url ? 
+              `<a class="btn btn-success btn-sm" href="${r.meeting_url}" target="_blank" rel="noopener"><i class="fas fa-video"></i> Join</a>` : 
+              '<span class="badge badge-secondary">—</span>'
+            }
           </td>
         </tr>
       `).join('');
     }
 
-    function renderTutorsTable(rows){
+    function renderTutorsTable(rows) {
       const tb = document.getElementById('tutorsTbody');
-      if(!rows?.length){ tb.innerHTML = `<tr><td data-label="Info" colspan="4"><div class="empty">No tutor assignments found.</div></td></tr>`; return; }
+      if (!rows?.length) { 
+        tb.innerHTML = `<tr><td colspan="4"><div class="empty-state"><i class="fas fa-chalkboard-teacher"></i><div>No tutor assignments found.</div></div></td></tr>`; 
+        return; 
+      }
       tb.innerHTML = rows.map(r => `
         <tr>
           <td data-label="Tutor">${r.tutors?.full_name || ''}</td>
@@ -1018,61 +2298,76 @@
       `).join('');
     }
 
-    function renderRecordingsTable(rows){
+    function renderRecordingsTable(rows) {
       const tb = document.getElementById('recordingsTbody');
-      if(!rows?.length){ tb.innerHTML = `<tr><td data-label="Info" colspan="5"><div class="empty">No recordings available.</div></td></tr>`; return; }
+      if (!rows?.length) { 
+        tb.innerHTML = `<tr><td colspan="5"><div class="empty-state"><i class="fas fa-video"></i><div>No recordings available.</div></div></td></tr>`; 
+        return; 
+      }
       tb.innerHTML = rows.map(r => `
         <tr>
           <td data-label="Date">${fmtDate(r.recorded_at)}</td>
           <td data-label="Child">${r.children?.name || ''}</td>
           <td data-label="Subject">${r.subjects?.name || ''}</td>
-          <td data-label="Duration"><span class="muted">${r.duration || '—'}</span></td>
+          <td data-label="Duration">${r.duration || '—'}</td>
           <td data-label="Recording">
-            ${r.recording_url ? `<a class="btn btn-success" href="${r.recording_url}" target="_blank" rel="noopener"><i class="fas fa-play"></i> Watch</a>` : '<span class="muted">—</span>'}
+            ${r.recording_url ? 
+              `<a class="btn btn-success btn-sm" href="${r.recording_url}" target="_blank" rel="noopener"><i class="fas fa-play"></i> Watch</a>` : 
+              '<span class="badge badge-secondary">—</span>'
+            }
           </td>
         </tr>
       `).join('');
     }
 
-    function renderAssessmentsTable(rows){
+    function renderAssessmentsTable(rows) {
       const tb = document.getElementById('assessmentsTbody');
-      if(!rows?.length){ tb.innerHTML = `<tr><td data-label="Info" colspan="7"><div class="empty">No assessments recorded.</div></td></tr>`; return; }
+      if (!rows?.length) { 
+        tb.innerHTML = `<tr><td colspan="7"><div class="empty-state"><i class="fas fa-chart-bar"></i><div>No assessments recorded.</div></div></td></tr>`; 
+        return; 
+      }
       tb.innerHTML = rows.map(a => {
         const pct = toPercent(a.grade, a.max_grade);
-        const scoreStr = (a.grade!=null ? a.grade : '—') + (a.max_grade ? ` / ${a.max_grade}` : '') + (pct ? ` (${pct})` : '');
+        const scoreStr = (a.grade != null ? a.grade : '—') + (a.max_grade ? ` / ${a.max_grade}` : '') + (pct ? ` (${pct})` : '');
         return `
           <tr>
             <td data-label="Date">${fmtDate(a.conducted_at)}</td>
             <td data-label="Child">${a.children?.name || ''}</td>
             <td data-label="Subject">${a.subjects?.name || ''}</td>
             <td data-label="Title">${a.title || ''}</td>
-            <td data-label="Type"><span class="badge muted">${a.type || 'quiz'}</span></td>
+            <td data-label="Type"><span class="badge badge-secondary">${a.type || 'quiz'}</span></td>
             <td data-label="Score">${scoreStr}</td>
-            <td data-label="Feedback"><span class="muted">${a.feedback ? String(a.feedback).slice(0,80) : '—'}</span></td>
+            <td data-label="Feedback">${a.feedback ? String(a.feedback).slice(0, 80) + '...' : '—'}</td>
           </tr>
         `;
       }).join('');
     }
 
-    function renderProgressTable(rows){
+    function renderProgressTable(rows) {
       const tb = document.getElementById('progressTbody');
-      if(!rows?.length){ tb.innerHTML = `<tr><td data-label="Info" colspan="7"><div class="empty">No progress records yet.</div></td></tr>`; return; }
+      if (!rows?.length) { 
+        tb.innerHTML = `<tr><td colspan="7"><div class="empty-state"><i class="fas fa-chart-line"></i><div>No progress records yet.</div></div></td></tr>`; 
+        return; 
+      }
       tb.innerHTML = rows.map(p => `
         <tr>
           <td data-label="Date">${fmtDate(p.recorded_at)}</td>
           <td data-label="Child">${p.children?.name || ''}</td>
           <td data-label="Subject">${p.subjects?.name || ''}</td>
-          <td data-label="Score">${p.score!=null ? p.score + '%' : '—'}</td>
-          <td data-label="Strengths"><span class="muted">${p.strengths ? String(p.strengths).slice(0,60) : '—'}</span></td>
-          <td data-label="Improvement"><span class="muted">${p.areas_of_improvement ? String(p.areas_of_improvement).slice(0,60) : '—'}</span></td>
-          <td data-label="Recorded By"><span class="muted">${p.tutors?.full_name || '—'}</span></td>
+          <td data-label="Score">${p.score != null ? p.score + '%' : '—'}</td>
+          <td data-label="Strengths">${p.strengths ? String(p.strengths).slice(0, 60) + '...' : '—'}</td>
+          <td data-label="Improvement">${p.areas_of_improvement ? String(p.areas_of_improvement).slice(0, 60) + '...' : '—'}</td>
+          <td data-label="Recorded By">${p.tutors?.full_name || '—'}</td>
         </tr>
       `).join('');
     }
 
-    function renderBillingTable(rows){
+    function renderBillingTable(rows) {
       const tb = document.getElementById('billingTbody');
-      if(!rows?.length){ tb.innerHTML = `<tr><td data-label="Info" colspan="8"><div class="empty">No billing records yet.</div></td></tr>`; return; }
+      if (!rows?.length) { 
+        tb.innerHTML = `<tr><td colspan="8"><div class="empty-state"><i class="fas fa-file-invoice-dollar"></i><div>No billing records yet.</div></div></td></tr>`; 
+        return; 
+      }
       tb.innerHTML = rows.map(b => `
         <tr>
           <td data-label="Created">${fmtDate(b.created_at)}</td>
@@ -1081,99 +2376,208 @@
           <td data-label="Status">${statusBadge(b.status || 'pending')}</td>
           <td data-label="Due">${fmtDate(b.due_date)}</td>
           <td data-label="Paid At">${fmtDate(b.paid_at)}</td>
-          <td data-label="Method"><span class="muted">${b.payment_method || '—'}</span></td>
-          <td data-label="Txn ID"><span class="muted">${b.transaction_id || '—'}</span></td>
+          <td data-label="Method">${b.payment_method || '—'}</td>
+          <td data-label="Txn ID">${b.transaction_id || '—'}</td>
         </tr>
       `).join('');
     }
 
-    // Loaders per section
-    async function loadChildrenSection(){
+    // Section loaders (keeping the same logic with updated rendering)
+    async function loadChildrenSection() {
       renderChildrenTable(cache.children);
     }
 
-    async function loadLessonsSection(){
-      if(!children.length){ renderLessonsTable([]); return; }
-      const ids = children.map(c=>c.id);
+    async function loadLessonsSection() {
+      if (!children.length) { 
+        renderLessonsTable([]); 
+        return; 
+      }
+      const ids = children.map(c => c.id);
       const { data, error } = await supabase
         .from('lessons')
         .select('id, scheduled_at, status, meeting_url, children:child_id(name), tutors:tutor_id(full_name), subjects:subject_id(name)')
         .in('child_id', ids)
         .order('scheduled_at', { ascending: true });
-      if(error){ console.error(error); renderLessonsTable([]); return; }
+      if (error) { 
+        console.error(error); 
+        renderLessonsTable([]); 
+        return; 
+      }
       cache.lessons = data || [];
       renderLessonsTable(cache.lessons);
     }
 
-    async function loadTutorsSection(){
-      if(!children.length){ renderTutorsTable([]); return; }
-      const ids = children.map(c=>c.id);
+    async function loadTutorsSection() {
+      if (!children.length) { 
+        renderTutorsTable([]); 
+        return; 
+      }
+      const ids = children.map(c => c.id);
       const { data, error } = await supabase
         .from('tutor_assignments')
         .select('status, children:child_id(name), tutors:tutor_id(full_name,email), subjects:subject_id(name)')
         .in('child_id', ids)
         .order('created_at', { ascending: false });
-      if(error){ console.error(error); renderTutorsTable([]); return; }
+      if (error) { 
+        console.error(error); 
+        renderTutorsTable([]); 
+        return; 
+      }
       cache.tutors = data || [];
       renderTutorsTable(cache.tutors);
     }
 
-    async function loadRecordingsSection(){
-      if(!children.length){ renderRecordingsTable([]); return; }
-      const ids = children.map(c=>c.id);
+    async function loadRecordingsSection() {
+      if (!children.length) { 
+        renderRecordingsTable([]); 
+        return; 
+      }
+      const ids = children.map(c => c.id);
       const { data, error } = await supabase
         .from('lesson_recordings')
         .select('recorded_at, duration, recording_url, children:child_id(name), subjects:subject_id(name)')
         .in('child_id', ids)
         .order('recorded_at', { ascending: false });
-      if(error){ console.error(error); renderRecordingsTable([]); return; }
+      if (error) { 
+        console.error(error); 
+        renderRecordingsTable([]); 
+        return; 
+      }
       cache.recordings = data || [];
       renderRecordingsTable(cache.recordings);
     }
 
-    async function loadReportsSection(){
-      if(!children.length){
-        renderAssessmentsTable([]); renderProgressTable([]);
-        if(charts.avgBySubject){ charts.avgBySubject.destroy(); charts.avgBySubject = null; }
-        if(charts.trend){ charts.trend.destroy(); charts.trend = null; }
+    async function loadReportsSection() {
+      if (!children.length) {
+        renderAssessmentsTable([]); 
+        renderProgressTable([]);
+        if (charts.avgBySubject) { 
+          charts.avgBySubject.destroy(); 
+          charts.avgBySubject = null; 
+        }
+        if (charts.trend) { 
+          charts.trend.destroy(); 
+          charts.trend = null; 
+        }
         return;
       }
-      const ids = children.map(c=>c.id);
+      const ids = children.map(c => c.id);
+      
       // Assessments
       const { data: assessments } = await supabase
         .from('assessments')
         .select('id, grade, max_grade, title, type, feedback, conducted_at, children:child_id(name), subjects:subject_id(name)')
         .in('child_id', ids)
-        .order('conducted_at', { ascending:false });
+        .order('conducted_at', { ascending: false });
       cache.assessments = assessments || [];
       renderAssessmentsTable(cache.assessments);
 
       // Charts: averages by subject
       const bySubject = {};
-      (cache.assessments).forEach(a=>{
+      (cache.assessments).forEach(a => {
         const s = a.subjects?.name || 'Subject';
-        const pct = a.max_grade ? (Number(a.grade||0)/Number(a.max_grade))*100 : Number(a.grade||0);
-        if(!bySubject[s]) bySubject[s] = {sum:0,count:0};
-        bySubject[s].sum += pct; bySubject[s].count += 1;
+        const pct = a.max_grade ? (Number(a.grade || 0) / Number(a.max_grade)) * 100 : Number(a.grade || 0);
+        if (!bySubject[s]) bySubject[s] = { sum: 0, count: 0 };
+        bySubject[s].sum += pct; 
+        bySubject[s].count += 1;
       });
-      const subjectAverages = Object.entries(bySubject).map(([subject,agg]) => ({ subject, avg: Math.round(agg.sum/agg.count) }));
+      const subjectAverages = Object.entries(bySubject).map(([subject, agg]) => ({ 
+        subject, 
+        avg: Math.round(agg.sum / agg.count) 
+      }));
+      
       const ctx1 = document.getElementById('avgBySubjectChart').getContext('2d');
-      if(charts.avgBySubject) charts.avgBySubject.destroy();
+      if (charts.avgBySubject) charts.avgBySubject.destroy();
       charts.avgBySubject = new Chart(ctx1, {
-        type:'bar',
-        data:{ labels:subjectAverages.map(s=>s.subject), datasets:[{ data:subjectAverages.map(s=>s.avg), label:'Average %', backgroundColor:'rgba(46,125,50,.6)', borderColor:'rgba(46,125,50,1)', borderWidth:1.5, borderRadius:6 }] },
-        options:{ responsive:true, maintainAspectRatio:false, scales:{ y:{ beginAtZero:true, max:100, ticks:{ callback:v=>v+'%'} } }, plugins:{ legend:{ display:false } } }
+        type: 'bar',
+        data: { 
+          labels: subjectAverages.map(s => s.subject), 
+          datasets: [{ 
+            data: subjectAverages.map(s => s.avg), 
+            label: 'Average %', 
+            backgroundColor: 'rgba(29, 181, 132, 0.8)', 
+            borderColor: 'rgba(29, 181, 132, 1)', 
+            borderWidth: 2, 
+            borderRadius: 8,
+            borderSkipped: false,
+          }] 
+        },
+        options: { 
+          responsive: true, 
+          maintainAspectRatio: false, 
+          scales: { 
+            y: { 
+              beginAtZero: true, 
+              max: 100, 
+              ticks: { callback: v => v + '%' },
+              grid: { color: 'rgba(226, 232, 240, 0.5)' }
+            },
+            x: {
+              grid: { display: false }
+            }
+          }, 
+          plugins: { 
+            legend: { display: false },
+            title: {
+              display: true,
+              text: 'Average Scores by Subject',
+              font: { size: 16, weight: '600' },
+              color: '#1E293B'
+            }
+          }
+        }
       });
 
       // Trend: last 12
-      const last = (cache.assessments).slice(0,12).reverse();
-      const trend = last.map(a => ({ label: fmtDate(a.conducted_at), value: Math.round((Number(a.grade||0) / (Number(a.max_grade)||100))*100) }));
+      const last = (cache.assessments).slice(0, 12).reverse();
+      const trend = last.map(a => ({ 
+        label: fmtDate(a.conducted_at), 
+        value: Math.round((Number(a.grade || 0) / (Number(a.max_grade) || 100)) * 100) 
+      }));
+      
       const ctx2 = document.getElementById('trendChart').getContext('2d');
-      if(charts.trend) charts.trend.destroy();
+      if (charts.trend) charts.trend.destroy();
       charts.trend = new Chart(ctx2, {
-        type:'line',
-        data:{ labels:trend.map(t=>t.label), datasets:[{ data:trend.map(t=>t.value), label:'Score %', borderColor:'rgba(245,124,0,1)', backgroundColor:'rgba(245,124,0,0.15)', tension:0.25, fill:true, pointRadius:3 }] },
-        options:{ responsive:true, maintainAspectRatio:false, scales:{ y:{ beginAtZero:true, max:100, ticks:{ callback:v=>v+'%'} } }, plugins:{ legend:{ display:false } } }
+        type: 'line',
+        data: { 
+          labels: trend.map(t => t.label), 
+          datasets: [{ 
+            data: trend.map(t => t.value), 
+            label: 'Score %', 
+            borderColor: '#0066FF', 
+            backgroundColor: 'rgba(0, 102, 255, 0.1)', 
+            tension: 0.4, 
+            fill: true, 
+            pointRadius: 4,
+            pointBackgroundColor: '#0066FF',
+            pointBorderColor: '#ffffff',
+            pointBorderWidth: 2
+          }] 
+        },
+        options: { 
+          responsive: true, 
+          maintainAspectRatio: false, 
+          scales: { 
+            y: { 
+              beginAtZero: true, 
+              max: 100, 
+              ticks: { callback: v => v + '%' },
+              grid: { color: 'rgba(226, 232, 240, 0.5)' }
+            },
+            x: {
+              grid: { display: false }
+            }
+          }, 
+          plugins: { 
+            legend: { display: false },
+            title: {
+              display: true,
+              text: 'Recent Assessment Trend',
+              font: { size: 16, weight: '600' },
+              color: '#1E293B'
+            }
+          }
+        }
       });
 
       // Progress records
@@ -1181,25 +2585,29 @@
         .from('progress_records')
         .select('score, strengths, areas_of_improvement, recorded_at, children:child_id(name), subjects:subject_id(name), tutors:recorded_by(full_name)')
         .in('child_id', ids)
-        .order('recorded_at', { ascending:false });
+        .order('recorded_at', { ascending: false });
       cache.progress = progress || [];
       renderProgressTable(cache.progress);
     }
 
-    async function loadBillingSection(){
+    async function loadBillingSection() {
       const { data, error } = await supabase
         .from('billing_records')
         .select('*')
         .eq('parent_id', currentUser.id)
-        .order('created_at', { ascending:false });
-      if(error){ console.error(error); renderBillingTable([]); return; }
+        .order('created_at', { ascending: false });
+      if (error) { 
+        console.error(error); 
+        renderBillingTable([]); 
+        return; 
+      }
       cache.billing = data || [];
       renderBillingTable(cache.billing);
     }
 
     // Section dispatcher
-    async function loadSection(id){
-      switch(id){
+    async function loadSection(id) {
+      switch (id) {
         case 'overview':
           await loadDashboardStats();
           await loadOverviewCards();
@@ -1228,10 +2636,10 @@
       }
     }
 
-    // Child modal
-    function openChildEditModal(id){
+    // Child modal functions
+    function openChildEditModal(id) {
       const c = children.find(x => x.id === id);
-      if(!c) return;
+      if (!c) return;
       document.getElementById('editChildId').value = c.id;
       document.getElementById('editChildName').value = c.name || '';
       document.getElementById('editChildDOB').value = c.date_of_birth || '';
@@ -1242,11 +2650,13 @@
       document.getElementById('childEditModal').classList.add('active');
       document.body.style.overflow = 'hidden';
     }
-    function closeChildEditModal(){
+
+    function closeChildEditModal() {
       document.getElementById('childEditModal').classList.remove('active');
-      document.body.style.overflow = 'auto';
+      document.body.style.overflow = '';
     }
-    async function saveChild(e){
+
+    async function saveChild(e) {
       e.preventDefault();
       const id = document.getElementById('editChildId').value;
       const updates = {
@@ -1259,8 +2669,11 @@
         updated_at: new Date().toISOString()
       };
       const { error } = await supabase.from('children').update(updates).eq('id', id);
-      if(error){ alert('Failed to update child.'); return; }
-      alert('Child updated.');
+      if (error) { 
+        alert('Failed to update child.'); 
+        return; 
+      }
+      alert('Child updated successfully!');
       closeChildEditModal();
       await loadChildren();
       await loadChildrenSection();
@@ -1269,7 +2682,7 @@
     }
 
     // Profile save
-    async function saveProfile(e){
+    async function saveProfile(e) {
       e.preventDefault();
       const updates = {
         full_name: document.getElementById('profileFullName').value,
@@ -1278,19 +2691,25 @@
         updated_at: new Date().toISOString()
       };
       const { error } = await supabase.from('parent_profiles').update(updates).eq('user_id', currentUser.id);
-      if(error){ alert('Failed to update profile.'); return; }
-      alert('Profile updated.');
+      if (error) { 
+        alert('Failed to update profile.'); 
+        return; 
+      }
+      alert('Profile updated successfully!');
       await loadProfile();
     }
 
     // Search and export hooks
-    function hookSearch(inputId, rowsGetter, renderFn, keys){
+    function hookSearch(inputId, rowsGetter, renderFn, keys) {
       const input = document.getElementById(inputId);
-      if(!input) return;
+      if (!input) return;
       input.addEventListener('input', () => {
         const q = input.value.trim().toLowerCase();
         const base = rowsGetter();
-        if(!q){ renderFn(base); return; }
+        if (!q) { 
+          renderFn(base); 
+          return; 
+        }
         const filtered = base.filter(row => {
           return keys.some(k => {
             const val = typeof k === 'function' ? k(row) : row[k];
@@ -1301,144 +2720,157 @@
       });
     }
 
-    function hookExport(btnId, filename, rowsGetter, columns){
+    function hookExport(btnId, filename, rowsGetter, columns) {
       const btn = document.getElementById(btnId);
-      if(!btn) return;
+      if (!btn) return;
       btn.addEventListener('click', () => {
         const rows = rowsGetter();
         exportCSV(filename, rows, columns);
       });
     }
 
-    // Events and init
+    // Event listeners
     document.getElementById('logoutLink')?.addEventListener('click', async (e) => {
       e.preventDefault();
       await supabase.auth.signOut();
       location.href = '/parent-portal.html';
     });
+
     document.getElementById('childEditForm')?.addEventListener('submit', saveChild);
     document.getElementById('profileForm')?.addEventListener('submit', saveProfile);
-
-    // Tabs within Reports
-    document.querySelectorAll('[data-tab]').forEach(btn => {
-      btn.addEventListener('click', () => {
-        document.querySelectorAll('#reports [data-tab]').forEach(b => b.classList.remove('btn-success'));
-        btn.classList.add('btn-success');
-        const target = btn.getAttribute('data-tab');
-        document.querySelectorAll('#reports .tab-pane').forEach(p => p.style.display = (p.id === target ? 'block' : 'none'));
-      });
-    });
     document.getElementById('refreshReports')?.addEventListener('click', loadReportsSection);
 
     // Search + Export bindings
-    hookSearch('childrenSearch', () => cache.children, renderChildrenTable, ['name','grade_level','status','emergency_contact']);
+    hookSearch('childrenSearch', () => cache.children, renderChildrenTable, ['name', 'grade_level', 'status', 'emergency_contact']);
     hookExport('childrenExport', 'children.csv', () => cache.children, [
-      { label:'Name', key:'name' },
-      { label:'DOB', get:r=>fmtDate(r.date_of_birth) },
-      { label:'Age', get:r=>yearsFrom(r.date_of_birth) },
-      { label:'Grade', key:'grade_level' },
-      { label:'Status', key:'status' },
-      { label:'Enrolled', get:r=>fmtDate(r.enrollment_date) },
-      { label:'Emergency', key:'emergency_contact' }
+      { label: 'Name', key: 'name' },
+      { label: 'DOB', get: r => fmtDate(r.date_of_birth) },
+      { label: 'Age', get: r => yearsFrom(r.date_of_birth) },
+      { label: 'Grade', key: 'grade_level' },
+      { label: 'Status', key: 'status' },
+      { label: 'Enrolled', get: r => fmtDate(r.enrollment_date) },
+      { label: 'Emergency', key: 'emergency_contact' }
     ]);
 
     hookSearch('lessonsSearch', () => cache.lessons, renderLessonsTable, [
-      r=>r.children?.name, r=>r.subjects?.name, r=>r.tutors?.full_name, 'status'
+      r => r.children?.name, r => r.subjects?.name, r => r.tutors?.full_name, 'status'
     ]);
     hookExport('lessonsExport', 'lessons.csv', () => cache.lessons, [
-      { label:'Date', get:r=>fmtDate(r.scheduled_at) },
-      { label:'Time', get:r=>fmtTime(r.scheduled_at) },
-      { label:'Child', get:r=>r.children?.name },
-      { label:'Subject', get:r=>r.subjects?.name },
-      { label:'Tutor', get:r=>r.tutors?.full_name },
-      { label:'Status', key:'status' },
-      { label:'Meeting URL', key:'meeting_url' }
+      { label: 'Date', get: r => fmtDate(r.scheduled_at) },
+      { label: 'Time', get: r => fmtTime(r.scheduled_at) },
+      { label: 'Child', get: r => r.children?.name },
+      { label: 'Subject', get: r => r.subjects?.name },
+      { label: 'Tutor', get: r => r.tutors?.full_name },
+      { label: 'Status', key: 'status' },
+      { label: 'Meeting URL', key: 'meeting_url' }
     ]);
 
-    hookSearch('tutorsSearch', () => cache.tutors, renderTutorsTable, [ r=>r.tutors?.full_name, r=>r.children?.name, r=>r.subjects?.name, 'status' ]);
+    hookSearch('tutorsSearch', () => cache.tutors, renderTutorsTable, [
+      r => r.tutors?.full_name, r => r.children?.name, r => r.subjects?.name, 'status'
+    ]);
     hookExport('tutorsExport', 'tutors.csv', () => cache.tutors, [
-      { label:'Tutor', get:r=>r.tutors?.full_name },
-      { label:'Child', get:r=>r.children?.name },
-      { label:'Subject', get:r=>r.subjects?.name },
-      { label:'Status', key:'status' }
+      { label: 'Tutor', get: r => r.tutors?.full_name },
+      { label: 'Child', get: r => r.children?.name },
+      { label: 'Subject', get: r => r.subjects?.name },
+      { label: 'Status', key: 'status' }
     ]);
 
-    hookSearch('recordingsSearch', () => cache.recordings, renderRecordingsTable, [ r=>r.children?.name, r=>r.subjects?.name ]);
+    hookSearch('recordingsSearch', () => cache.recordings, renderRecordingsTable, [
+      r => r.children?.name, r => r.subjects?.name
+    ]);
     hookExport('recordingsExport', 'recordings.csv', () => cache.recordings, [
-      { label:'Date', get:r=>fmtDate(r.recorded_at) },
-      { label:'Child', get:r=>r.children?.name },
-      { label:'Subject', get:r=>r.subjects?.name },
-      { label:'Duration', key:'duration' },
-      { label:'URL', key:'recording_url' }
+      { label: 'Date', get: r => fmtDate(r.recorded_at) },
+      { label: 'Child', get: r => r.children?.name },
+      { label: 'Subject', get: r => r.subjects?.name },
+      { label: 'Duration', key: 'duration' },
+      { label: 'URL', key: 'recording_url' }
     ]);
 
     hookSearch('assessmentsSearch', () => cache.assessments, renderAssessmentsTable, [
-      r=>r.children?.name, r=>r.subjects?.name, 'title','type','feedback'
+      r => r.children?.name, r => r.subjects?.name, 'title', 'type', 'feedback'
     ]);
     hookExport('assessmentsExport', 'assessments.csv', () => cache.assessments, [
-      { label:'Date', get:r=>fmtDate(r.conducted_at) },
-      { label:'Child', get:r=>r.children?.name },
-      { label:'Subject', get:r=>r.subjects?.name },
-      { label:'Title', key:'title' },
-      { label:'Type', key:'type' },
-      { label:'Grade', get:r=>r.grade },
-      { label:'Max Grade', get:r=>r.max_grade },
-      { label:'Feedback', key:'feedback' }
+      { label: 'Date', get: r => fmtDate(r.conducted_at) },
+      { label: 'Child', get: r => r.children?.name },
+      { label: 'Subject', get: r => r.subjects?.name },
+      { label: 'Title', key: 'title' },
+      { label: 'Type', key: 'type' },
+      { label: 'Grade', get: r => r.grade },
+      { label: 'Max Grade', get: r => r.max_grade },
+      { label: 'Feedback', key: 'feedback' }
     ]);
 
     hookSearch('progressSearch', () => cache.progress, renderProgressTable, [
-      r=>r.children?.name, r=>r.subjects?.name, 'strengths', 'areas_of_improvement'
+      r => r.children?.name, r => r.subjects?.name, 'strengths', 'areas_of_improvement'
     ]);
     hookExport('progressExport', 'progress_records.csv', () => cache.progress, [
-      { label:'Date', get:r=>fmtDate(r.recorded_at) },
-      { label:'Child', get:r=>r.children?.name },
-      { label:'Subject', get:r=>r.subjects?.name },
-      { label:'Score', get:r=>r.score },
-      { label:'Strengths', get:r=>r.strengths },
-      { label:'Improvement', get:r=>r.areas_of_improvement },
-      { label:'Recorded By', get:r=>r.tutors?.full_name }
+      { label: 'Date', get: r => fmtDate(r.recorded_at) },
+      { label: 'Child', get: r => r.children?.name },
+      { label: 'Subject', get: r => r.subjects?.name },
+      { label: 'Score', get: r => r.score },
+      { label: 'Strengths', get: r => r.strengths },
+      { label: 'Improvement', get: r => r.areas_of_improvement },
+      { label: 'Recorded By', get: r => r.tutors?.full_name }
     ]);
 
-    hookSearch('billingSearch', () => cache.billing, renderBillingTable, ['description','status','payment_method','transaction_id','currency']);
+    hookSearch('billingSearch', () => cache.billing, renderBillingTable, [
+      'description', 'status', 'payment_method', 'transaction_id', 'currency'
+    ]);
     hookExport('billingExport', 'billing.csv', () => cache.billing, [
-      { label:'Created', get:r=>fmtDate(r.created_at) },
-      { label:'Description', key:'description' },
-      { label:'Amount', get:r=>Number(r.amount||0).toFixed(2) },
-      { label:'Currency', key:'currency' },
-      { label:'Status', key:'status' },
-      { label:'Due Date', get:r=>fmtDate(r.due_date) },
-      { label:'Paid At', get:r=>fmtDate(r.paid_at) },
-      { label:'Payment Method', key:'payment_method' },
-      { label:'Transaction ID', key:'transaction_id' }
+      { label: 'Created', get: r => fmtDate(r.created_at) },
+      { label: 'Description', key: 'description' },
+      { label: 'Amount', get: r => Number(r.amount || 0).toFixed(2) },
+      { label: 'Currency', key: 'currency' },
+      { label: 'Status', key: 'status' },
+      { label: 'Due Date', get: r => fmtDate(r.due_date) },
+      { label: 'Paid At', get: r => fmtDate(r.paid_at) },
+      { label: 'Payment Method', key: 'payment_method' },
+      { label: 'Transaction ID', key: 'transaction_id' }
     ]);
 
-    // Global search: lightweight demo (filters children by default)
-    document.getElementById('globalSearch')?.addEventListener('input', (e)=>{
+    // Global search
+    document.getElementById('globalSearch')?.addEventListener('input', (e) => {
       const q = e.target.value.toLowerCase();
-      if(location.hash.replace('#','') !== 'children'){ location.hash = '#children'; }
+      if (location.hash.replace('#', '') !== 'children') { 
+        location.hash = '#children'; 
+      }
       const base = cache.children;
-      const filtered = q ? base.filter(r => [r.name, r.grade_level, r.status, r.emergency_contact].some(v => String(v||'').toLowerCase().includes(q))) : base;
+      const filtered = q ? base.filter(r => 
+        [r.name, r.grade_level, r.status, r.emergency_contact].some(v => 
+          String(v || '').toLowerCase().includes(q)
+        )
+      ) : base;
       renderChildrenTable(filtered);
     });
 
     // Notifications placeholder
-    document.getElementById('notifBtn')?.addEventListener('click', ()=> alert('Notifications coming soon.'));
+    document.getElementById('notificationBtn')?.addEventListener('click', () => {
+      alert('Notifications coming soon!');
+    });
 
     // Auth listener
     supabase.auth.onAuthStateChange((event, session) => {
-      if(event === 'SIGNED_OUT' || !session){ location.href='/parent-portal.html'; }
+      if (event === 'SIGNED_OUT' || !session) { 
+        location.href = '/parent-portal.html'; 
+      }
     });
 
+    // Make modal functions global
+    window.openChildEditModal = openChildEditModal;
+    window.closeChildEditModal = closeChildEditModal;
+
     // Boot
-    (async function init(){
-      const user = await ensureAuth(); if(!user) return;
+    (async function init() {
+      const user = await ensureAuth(); 
+      if (!user) return;
+      
       await loadProfile();
       await loadChildren();
 
       // Initial route
       routeFromHash();
 
-      // Preload some data for snappy UX
+      // Preload data for better UX
       loadDashboardStats();
       loadOverviewCards();
       loadLessonsSection();
