@@ -1906,15 +1906,21 @@
 
     // Navigation functionality
     function setActive(sectionId) {
+      // Update sections
       document.querySelectorAll('.section').forEach(s => 
         s.classList.toggle('active', s.id === sectionId)
       );
+      
+      // Update nav links
       document.querySelectorAll('.nav-link').forEach(a => 
         a.classList.toggle('active', a.dataset.section === sectionId)
       );
+      
+      // Update bottom nav
       document.querySelectorAll('.bottom-nav-item').forEach(b => 
         b.classList.toggle('active', b.dataset.section === sectionId)
       );
+      
       loadSection(sectionId);
       toggleSidebar(false);
     }
@@ -1923,8 +1929,10 @@
       const id = (location.hash || '#overview').replace('#', '');
       setActive(id);
     }
+
     window.addEventListener('hashchange', routeFromHash);
 
+    // Add click handlers for navigation
     document.querySelectorAll('[data-section]').forEach(link => {
       link.addEventListener('click', (e) => {
         e.preventDefault();
@@ -1933,15 +1941,19 @@
       });
     });
 
+    // User menu click handler
     document.getElementById('userMenu').addEventListener('click', () => {
       location.hash = '#profile';
     });
 
-    // Tabs
+    // Tab functionality for reports
     document.querySelectorAll('.tab-btn').forEach(btn => {
       btn.addEventListener('click', () => {
+        // Update tab buttons
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
+        
+        // Update tab content
         const target = btn.dataset.tab;
         document.querySelectorAll('.tab-content').forEach(content => {
           content.classList.toggle('active', content.id === target);
@@ -1949,30 +1961,58 @@
       });
     });
 
-    // Helpers
+    // Helper functions
     function initialsOf(str) {
       if (!str) return 'P';
       const base = str.includes('@') ? str.split('@')[0] : str;
       const parts = base.trim().split(/\s+/).filter(Boolean);
       return (parts[0]?.[0] || base[0] || 'P').toUpperCase() + (parts[1]?.[0] || '').toUpperCase();
     }
-    function fmtDate(d) { if (!d) return ''; const dt = new Date(d); return dt.toLocaleDateString(); }
-    function fmtTime(d) { if (!d) return ''; const dt = new Date(d); return dt.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}); }
-    function yearsFrom(d) { if (!d) return ''; const ms = Date.now() - new Date(d).getTime(); return Math.floor(ms / (365.25 * 24 * 60 * 60 * 1000)); }
-    function toPercent(grade, max) { if (!grade && grade !== 0) return ''; const denom = max || 100; const pct = Math.round((Number(grade) / Number(denom)) * 100); return pct + '%'; }
+
+    function fmtDate(d) { 
+      if (!d) return ''; 
+      const dt = new Date(d); 
+      return dt.toLocaleDateString(); 
+    }
+
+    function fmtTime(d) { 
+      if (!d) return ''; 
+      const dt = new Date(d); 
+      return dt.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}); 
+    }
+
+    function yearsFrom(d) {
+      if (!d) return '';
+      const ms = Date.now() - new Date(d).getTime();
+      return Math.floor(ms / (365.25 * 24 * 60 * 60 * 1000));
+    }
+
+    function toPercent(grade, max) { 
+      if (!grade && grade !== 0) return ''; 
+      const denom = max || 100; 
+      const pct = Math.round((Number(grade) / Number(denom)) * 100); 
+      return pct + '%'; 
+    }
+
     function statusBadge(status) {
       const s = (status || '').toLowerCase();
       let className = 'badge-secondary';
-      if (s.includes('paid') || s.includes('active') || s.includes('completed')) className = 'badge-success';
-      else if (s.includes('pending') || s.includes('scheduled')) className = 'badge-warning';
-      else if (s.includes('failed') || s.includes('overdue') || s.includes('cancelled')) className = 'badge-danger';
+      if (s.includes('paid') || s.includes('active') || s.includes('completed')) {
+        className = 'badge-success';
+      } else if (s.includes('pending') || s.includes('scheduled')) {
+        className = 'badge-warning';
+      } else if (s.includes('failed') || s.includes('overdue') || s.includes('cancelled')) {
+        className = 'badge-danger';
+      }
       return `<span class="badge ${className}">${status || '—'}</span>`;
     }
+
     function escapeCSV(val) {
       if (val == null) return '';
       const s = String(val);
       return /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
     }
+
     function exportCSV(filename, rows, columns) {
       const header = columns.map(c => c.label).join(',');
       const body = rows.map(r => 
@@ -1982,16 +2022,26 @@
       const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
-      a.href = url; a.download = filename;
-      document.body.appendChild(a); a.click();
-      document.body.removeChild(a); URL.revokeObjectURL(url);
+      a.href = url; 
+      a.download = filename;
+      document.body.appendChild(a); 
+      a.click();
+      document.body.removeChild(a); 
+      URL.revokeObjectURL(url);
     }
 
-    // Auth
+    // Auth functions
     async function ensureAuth() {
       const { data: { session } } = await supabase.auth.getSession();
-      if (!session) { location.href = '/index.html'; return null; }
-      if (!session.user.email_confirmed_at) { alert('Please verify your email.'); location.href = '/index.html'; return null; }
+      if (!session) { 
+        location.href = '/index.html'; 
+        return null; 
+      }
+      if (!session.user.email_confirmed_at) { 
+        alert('Please verify your email.'); 
+        location.href = '/index.html'; 
+        return null; 
+      }
       currentUser = session.user;
       return currentUser;
     }
@@ -2025,6 +2075,7 @@
                           (currentUser.email?.split('@')[0]) || 'Parent';
       const firstName = displayName.split(' ')[0];
       
+      // Update UI elements
       document.getElementById('userName').textContent = displayName;
       document.getElementById('parentName').textContent = firstName;
       
@@ -2032,22 +2083,27 @@
       document.getElementById('userInitials').textContent = initials;
       document.getElementById('profileInitials').textContent = initials;
 
+      // Update profile form
       document.getElementById('profileFullName').value = parentProfile.full_name || '';
       document.getElementById('profileEmail').value = currentUser.email || '';
       document.getElementById('profilePhone').value = parentProfile.phone || '';
       document.getElementById('profileAddress').value = parentProfile.address || '';
 
+      // Load profile image if exists
       if (parentProfile.profile_image_url) {
         const profileImg = document.getElementById('profileImage');
         const userAvatarImg = document.querySelector('#userAvatar img');
+        
         profileImg.src = parentProfile.profile_image_url;
         profileImg.style.display = 'block';
         document.getElementById('profileInitials').style.display = 'none';
+        
         if (userAvatarImg) {
           userAvatarImg.src = parentProfile.profile_image_url;
           userAvatarImg.style.display = 'block';
           document.getElementById('userInitials').style.display = 'none';
         } else {
+          // Create img element for header avatar
           const headerAvatar = document.getElementById('userAvatar');
           const newImg = document.createElement('img');
           newImg.src = parentProfile.profile_image_url;
@@ -2058,36 +2114,72 @@
       }
     }
 
-    // Profile image upload
+    // Profile image upload functionality
     document.querySelector('.avatar-upload').addEventListener('click', () => {
       document.getElementById('avatarInput').click();
     });
+
     document.getElementById('avatarInput').addEventListener('change', async (e) => {
       const file = e.target.files[0];
       if (!file) return;
-      if (!file.type.startsWith('image/')) { alert('Please select an image file.'); return; }
-      if (file.size > 5 * 1024 * 1024) { alert('File size must be less than 5MB.'); return; }
+
+      // Validate file type
+      if (!file.type.startsWith('image/')) {
+        alert('Please select an image file.');
+        return;
+      }
+
+      // Validate file size (max 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        alert('File size must be less than 5MB.');
+        return;
+      }
+
       try {
+        // Upload to Supabase Storage
         const fileExt = file.name.split('.').pop();
         const fileName = `${currentUser.id}-${Date.now()}.${fileExt}`;
-        const { error: upErr } = await supabase.storage.from('profile-images').upload(fileName, file);
-        if (upErr) throw upErr;
-        const { data: { publicUrl } } = supabase.storage.from('profile-images').getPublicUrl(fileName);
+        
+        const { data, error } = await supabase.storage
+          .from('profile-images')
+          .upload(fileName, file);
+
+        if (error) throw error;
+
+        // Get public URL
+        const { data: { publicUrl } } = supabase.storage
+          .from('profile-images')
+          .getPublicUrl(fileName);
+
+        // Update profile in database
         const { error: updateError } = await supabase
           .from('parent_profiles')
-          .update({ profile_image_url: publicUrl, updated_at: new Date().toISOString() })
+          .update({ 
+            profile_image_url: publicUrl,
+            updated_at: new Date().toISOString()
+          })
           .eq('user_id', currentUser.id);
+
         if (updateError) throw updateError;
+
+        // Update UI
         const profileImg = document.getElementById('profileImage');
         profileImg.src = publicUrl;
         profileImg.style.display = 'block';
         document.getElementById('profileInitials').style.display = 'none';
+
+        // Update header avatar
         const headerAvatar = document.getElementById('userAvatar');
         let headerImg = headerAvatar.querySelector('img');
-        if (!headerImg) { headerImg = document.createElement('img'); headerImg.alt = 'Profile'; headerAvatar.appendChild(headerImg); }
+        if (!headerImg) {
+          headerImg = document.createElement('img');
+          headerImg.alt = 'Profile';
+          headerAvatar.appendChild(headerImg);
+        }
         headerImg.src = publicUrl;
         headerImg.style.display = 'block';
         document.getElementById('userInitials').style.display = 'none';
+
         alert('Profile image updated successfully!');
       } catch (error) {
         console.error('Error uploading image:', error);
@@ -2095,14 +2187,17 @@
       }
     });
 
-    // Data loaders
     async function loadChildren() {
       const { data, error } = await supabase
         .from('children')
         .select('*')
         .eq('parent_id', currentUser.id)
         .order('created_at', { ascending: true });
-      if (error) { console.error(error); children = []; cache.children = []; return; }
+      if (error) { 
+        console.error(error); 
+        children = []; 
+        return; 
+      }
       children = data || [];
       cache.children = children;
     }
@@ -2151,35 +2246,27 @@
       document.getElementById('activeTutors').textContent = uniqueTutors.length;
     }
 
-    // Overview cards using embedded joins
+    // Overview widgets - SIMPLIFIED APPROACH using manual joins only
     async function loadOverviewCards() {
       const cids = children.map(c => c.id);
-
-      // Recent progress with joins
-      const { data: recent, error: recentErr } = await supabase
+      
+      // Recent progress
+      const { data: recent } = await supabase
         .from('progress_records')
-        .select(`
-          id, score, recorded_at,
-          children:child_id ( id, name ),
-          subjects:subject_id ( id, name ),
-          tutor_profiles:recorded_by ( id, full_name )
-        `)
+        .select('score, recorded_at, children:child_id(name), subjects:subject_id(name)')
         .in('child_id', cids)
         .order('recorded_at', { ascending: false })
         .limit(5);
 
       const progWrap = document.getElementById('overviewProgress');
-      if (recentErr) {
-        console.error(recentErr);
-        progWrap.innerHTML = '<div class="empty-state"><i class="fas fa-chart-line"></i><div>Unable to load progress.</div></div>';
-      } else if (!recent?.length) {
+      if (!recent?.length) {
         progWrap.innerHTML = '<div class="empty-state"><i class="fas fa-chart-line"></i><div>No progress records yet.</div></div>';
       } else {
         progWrap.innerHTML = recent.map(p => `
           <div class="progress-item">
             <div class="progress-info">
               <div class="progress-title">${p.subjects?.name || 'Subject'}</div>
-              <div class="progress-subtitle">${p.children?.name || 'Child'} • ${fmtDate(p.recorded_at)} • ${p.tutor_profiles?.full_name ? 'by ' + p.tutor_profiles.full_name : ''}</div>
+              <div class="progress-subtitle">${p.children?.name || 'Child'} • ${fmtDate(p.recorded_at)}</div>
             </div>
             <div class="progress-visual">
               <div class="progress-bar">
@@ -2191,40 +2278,57 @@
         `).join('');
       }
 
-      // Upcoming lessons with joins
+      // Upcoming lessons - MANUAL APPROACH ONLY
       const nowIso = new Date().toISOString();
-      const { data: lessons, error: lessonsErr } = await supabase
+      const { data: lessons } = await supabase
         .from('lessons')
-        .select(`
-          id, status, scheduled_at, meeting_url,
-          children:child_id ( id, name ),
-          subjects:subject_id ( id, name ),
-          tutor_profiles:tutor_id ( id, full_name )
-        `)
+        .select('*')
         .in('child_id', cids)
         .eq('status', 'scheduled')
         .gte('scheduled_at', nowIso)
         .order('scheduled_at', { ascending: true })
         .limit(5);
 
+      let upcoming = [];
+      if (lessons?.length) {
+        // Get unique IDs
+        const tutorIds = [...new Set(lessons.map(l => l.tutor_id).filter(Boolean))];
+        const childIds = [...new Set(lessons.map(l => l.child_id).filter(Boolean))];
+        const subjectIds = [...new Set(lessons.map(l => l.subject_id).filter(Boolean))];
+
+        // Fetch related data
+        const [tutorResults, childResults, subjectResults] = await Promise.all([
+          tutorIds.length ? supabase.from('tutor_profiles').select('id, full_name').in('id', tutorIds) : { data: [] },
+          childIds.length ? supabase.from('children').select('id, name').in('id', childIds) : { data: [] },
+          subjectIds.length ? supabase.from('subjects').select('id, name').in('id', subjectIds) : { data: [] }
+        ]);
+
+        const tutorMap = new Map((tutorResults.data || []).map(t => [t.id, t]));
+        const childMap = new Map((childResults.data || []).map(c => [c.id, c]));
+        const subjectMap = new Map((subjectResults.data || []).map(s => [s.id, s]));
+
+        // Combine data
+        upcoming = lessons.map(lesson => ({
+          ...lesson,
+          tutor_name: tutorMap.get(lesson.tutor_id)?.full_name || 'Tutor',
+          child_name: childMap.get(lesson.child_id)?.name || '',
+          subject_name: subjectMap.get(lesson.subject_id)?.name || 'Subject'
+        }));
+      }
+
       const lessonsWrap = document.getElementById('overviewLessons');
-      if (lessonsErr) {
-        console.error(lessonsErr);
-        lessonsWrap.innerHTML = '<div class="empty-state"><i class="fas fa-calendar-alt"></i><div>Unable to load lessons.</div></div>';
-      } else if (!lessons?.length) {
+      if (!upcoming?.length) {
         lessonsWrap.innerHTML = '<div class="empty-state"><i class="fas fa-calendar-alt"></i><div>No upcoming lessons scheduled.</div></div>';
       } else {
-        lessonsWrap.innerHTML = lessons.map(l => {
+        lessonsWrap.innerHTML = upcoming.map(l => {
           const dt = new Date(l.scheduled_at);
           const isToday = dt.toDateString() === new Date().toDateString();
-          const tutorName = l.tutor_profiles?.full_name || 'Tutor';
-          const childName = l.children?.name || '';
-          const subjName = l.subjects?.name || 'Subject';
+          
           return `
             <div class="progress-item">
               <div class="progress-info">
-                <div class="progress-title">${subjName}</div>
-                <div class="progress-subtitle">with ${tutorName} • ${childName}</div>
+                <div class="progress-title">${l.subject_name}</div>
+                <div class="progress-subtitle">with ${l.tutor_name} • ${l.child_name}</div>
               </div>
               <div class="progress-visual" style="gap: 0.75rem;">
                 <div class="badge badge-warning">${isToday ? 'Today' : fmtDate(l.scheduled_at)} ${fmtTime(l.scheduled_at)}</div>
@@ -2239,7 +2343,7 @@
       }
     }
 
-    // Renderers
+    // Table renderers
     function renderChildrenTable(rows) {
       const tb = document.getElementById('childrenTbody');
       if (!rows?.length) { 
@@ -2274,9 +2378,9 @@
         <tr>
           <td data-label="Date">${fmtDate(r.scheduled_at)}</td>
           <td data-label="Time">${fmtTime(r.scheduled_at)}</td>
-          <td data-label="Child">${r.children?.name || ''}</td>
-          <td data-label="Subject">${r.subjects?.name || ''}</td>
-          <td data-label="Tutor">${r.tutor_profiles?.full_name || 'Tutor'}</td>
+          <td data-label="Child">${r.child_name || ''}</td>
+          <td data-label="Subject">${r.subject_name || ''}</td>
+          <td data-label="Tutor">${r.tutor_name || ''}</td>
           <td data-label="Status">${statusBadge(r.status)}</td>
           <td data-label="Join">
             ${r.meeting_url ? 
@@ -2296,9 +2400,9 @@
       }
       tb.innerHTML = rows.map(r => `
         <tr>
-          <td data-label="Tutor">${r.tutor_profiles?.full_name || 'Tutor'}</td>
-          <td data-label="Child">${r.children?.name || ''}</td>
-          <td data-label="Subject">${r.subjects?.name || ''}</td>
+          <td data-label="Tutor">${r.tutor_name || ''}</td>
+          <td data-label="Child">${r.child_name || ''}</td>
+          <td data-label="Subject">${r.subject_name || ''}</td>
           <td data-label="Status">${statusBadge(r.status || 'Active')}</td>
         </tr>
       `).join('');
@@ -2312,7 +2416,7 @@
       }
       tb.innerHTML = rows.map(a => {
         const pct = toPercent(a.grade, a.max_grade);
-        const scoreStr = (a.grade != null ? a.grade : '—') + (a.max_grade ? ` / ${a.max_grade}` : '') + (pct ? ` (${pct})` : '';
+        const scoreStr = (a.grade != null ? a.grade : '—') + (a.max_grade ? ` / ${a.max_grade}` : '') + (pct ? ` (${pct})` : '');
         return `
           <tr>
             <td data-label="Date">${fmtDate(a.conducted_at)}</td>
@@ -2336,12 +2440,12 @@
       tb.innerHTML = rows.map(p => `
         <tr>
           <td data-label="Date">${fmtDate(p.recorded_at)}</td>
-          <td data-label="Child">${p.children?.name || ''}</td>
-          <td data-label="Subject">${p.subjects?.name || ''}</td>
+          <td data-label="Child">${p.child_name || ''}</td>
+          <td data-label="Subject">${p.subject_name || ''}</td>
           <td data-label="Score">${p.score != null ? p.score + '%' : '—'}</td>
           <td data-label="Strengths">${p.strengths ? String(p.strengths).slice(0, 50) + '...' : '—'}</td>
           <td data-label="Improvement">${p.areas_of_improvement ? String(p.areas_of_improvement).slice(0, 50) + '...' : '—'}</td>
-          <td data-label="Recorded By">${p.tutor_profiles?.full_name || '—'}</td>
+          <td data-label="Recorded By">${p.tutor_name || '—'}</td>
         </tr>
       `).join('');
     }
@@ -2366,43 +2470,95 @@
       `).join('');
     }
 
-    // Sections
+    // Section loaders - ALL USING MANUAL JOINS FOR CONSISTENCY
     async function loadChildrenSection() {
       renderChildrenTable(cache.children);
     }
 
     async function loadLessonsSection() {
-      if (!children.length) { renderLessonsTable([]); return; }
+      if (!children.length) { 
+        renderLessonsTable([]); 
+        return; 
+      }
+      
       const ids = children.map(c => c.id);
-      const { data, error } = await supabase
+      const { data: lessons } = await supabase
         .from('lessons')
-        .select(`
-          id, scheduled_at, status, meeting_url,
-          children:child_id ( id, name ),
-          subjects:subject_id ( id, name ),
-          tutor_profiles:tutor_id ( id, full_name )
-        `)
+        .select('*')
         .in('child_id', ids)
         .order('scheduled_at', { ascending: true });
-      if (error) { console.error(error); renderLessonsTable([]); return; }
+
+      let data = [];
+      if (lessons?.length) {
+        // Get unique IDs
+        const tutorIds = [...new Set(lessons.map(l => l.tutor_id).filter(Boolean))];
+        const childIds = [...new Set(lessons.map(l => l.child_id).filter(Boolean))];
+        const subjectIds = [...new Set(lessons.map(l => l.subject_id).filter(Boolean))];
+
+        // Fetch related data
+        const [tutorResults, childResults, subjectResults] = await Promise.all([
+          tutorIds.length ? supabase.from('tutor_profiles').select('id, full_name').in('id', tutorIds) : { data: [] },
+          childIds.length ? supabase.from('children').select('id, name').in('id', childIds) : { data: [] },
+          subjectIds.length ? supabase.from('subjects').select('id, name').in('id', subjectIds) : { data: [] }
+        ]);
+
+        const tutorMap = new Map((tutorResults.data || []).map(t => [t.id, t]));
+        const childMap = new Map((childResults.data || []).map(c => [c.id, c]));
+        const subjectMap = new Map((subjectResults.data || []).map(s => [s.id, s]));
+
+        // Combine data
+        data = lessons.map(lesson => ({
+          ...lesson,
+          tutor_name: tutorMap.get(lesson.tutor_id)?.full_name,
+          child_name: childMap.get(lesson.child_id)?.name,
+          subject_name: subjectMap.get(lesson.subject_id)?.name
+        }));
+      }
+
       cache.lessons = data || [];
       renderLessonsTable(cache.lessons);
     }
 
     async function loadTutorsSection() {
-      if (!children.length) { renderTutorsTable([]); return; }
+      if (!children.length) { 
+        renderTutorsTable([]); 
+        return; 
+      }
+      
       const ids = children.map(c => c.id);
-      const { data, error } = await supabase
+      const { data: assignments } = await supabase
         .from('tutor_assignments')
-        .select(`
-          id, status,
-          children:child_id ( id, name ),
-          subjects:subject_id ( id, name ),
-          tutor_profiles:tutor_id ( id, full_name )
-        `)
+        .select('*')
         .in('child_id', ids)
         .order('created_at', { ascending: false });
-      if (error) { console.error(error); renderTutorsTable([]); return; }
+
+      let data = [];
+      if (assignments?.length) {
+        // Get unique IDs
+        const tutorIds = [...new Set(assignments.map(a => a.tutor_id).filter(Boolean))];
+        const childIds = [...new Set(assignments.map(a => a.child_id).filter(Boolean))];
+        const subjectIds = [...new Set(assignments.map(a => a.subject_id).filter(Boolean))];
+
+        // Fetch related data
+        const [tutorResults, childResults, subjectResults] = await Promise.all([
+          tutorIds.length ? supabase.from('tutor_profiles').select('id, full_name, email').in('id', tutorIds) : { data: [] },
+          childIds.length ? supabase.from('children').select('id, name').in('id', childIds) : { data: [] },
+          subjectIds.length ? supabase.from('subjects').select('id, name').in('id', subjectIds) : { data: [] }
+        ]);
+
+        const tutorMap = new Map((tutorResults.data || []).map(t => [t.id, t]));
+        const childMap = new Map((childResults.data || []).map(c => [c.id, c]));
+        const subjectMap = new Map((subjectResults.data || []).map(s => [s.id, s]));
+
+        // Combine data
+        data = assignments.map(assignment => ({
+          ...assignment,
+          tutor_name: tutorMap.get(assignment.tutor_id)?.full_name,
+          child_name: childMap.get(assignment.child_id)?.name,
+          subject_name: subjectMap.get(assignment.subject_id)?.name
+        }));
+      }
+
       cache.tutors = data || [];
       renderTutorsTable(cache.tutors);
     }
@@ -2411,27 +2567,28 @@
       if (!children.length) {
         renderAssessmentsTable([]); 
         renderProgressTable([]);
-        if (charts.avgBySubject) { charts.avgBySubject.destroy(); charts.avgBySubject = null; }
-        if (charts.trend) { charts.trend.destroy(); charts.trend = null; }
+        if (charts.avgBySubject) { 
+          charts.avgBySubject.destroy(); 
+          charts.avgBySubject = null; 
+        }
+        if (charts.trend) { 
+          charts.trend.destroy(); 
+          charts.trend = null; 
+        }
         return;
       }
       const ids = children.map(c => c.id);
       
-      // Assessments with joins
-      const { data: assessments, error: assessErr } = await supabase
+      // Assessments
+      const { data: assessments } = await supabase
         .from('assessments')
-        .select(`
-          id, grade, max_grade, title, type, feedback, conducted_at,
-          children:child_id ( id, name ),
-          subjects:subject_id ( id, name )
-        `)
+        .select('id, grade, max_grade, title, type, feedback, conducted_at, children:child_id(name), subjects:subject_id(name)')
         .in('child_id', ids)
         .order('conducted_at', { ascending: false });
-      if (assessErr) { console.error(assessErr); cache.assessments = []; }
-      else cache.assessments = assessments || [];
+      cache.assessments = assessments || [];
       renderAssessmentsTable(cache.assessments);
 
-      // Charts
+      // Charts: averages by subject
       const bySubject = {};
       (cache.assessments).forEach(a => {
         const s = a.subjects?.name || 'Subject';
@@ -2440,7 +2597,10 @@
         bySubject[s].sum += pct; 
         bySubject[s].count += 1;
       });
-      const subjectAverages = Object.entries(bySubject).map(([subject, agg]) => ({ subject, avg: Math.round(agg.sum / agg.count || 0) }));
+      const subjectAverages = Object.entries(bySubject).map(([subject, agg]) => ({ 
+        subject, 
+        avg: Math.round(agg.sum / agg.count) 
+      }));
       
       const ctx1 = document.getElementById('avgBySubjectChart').getContext('2d');
       if (charts.avgBySubject) charts.avgBySubject.destroy();
@@ -2462,13 +2622,29 @@
           responsive: true, 
           maintainAspectRatio: false, 
           scales: { 
-            y: { beginAtZero: true, max: 100, ticks: { callback: v => v + '%' }, grid: { color: 'rgba(226, 232, 240, 0.5)' } },
-            x: { grid: { display: false } }
+            y: { 
+              beginAtZero: true, 
+              max: 100, 
+              ticks: { callback: v => v + '%' },
+              grid: { color: 'rgba(226, 232, 240, 0.5)' }
+            },
+            x: {
+              grid: { display: false }
+            }
           }, 
-          plugins: { legend: { display: false }, title: { display: true, text: 'Average Scores by Subject', font: { size: 14, weight: '600' }, color: '#1E293B' } }
+          plugins: { 
+            legend: { display: false },
+            title: {
+              display: true,
+              text: 'Average Scores by Subject',
+              font: { size: 14, weight: '600' },
+              color: '#1E293B'
+            }
+          }
         }
       });
 
+      // Trend: last 12
       const last = (cache.assessments).slice(0, 12).reverse();
       const trend = last.map(a => ({ 
         label: fmtDate(a.conducted_at), 
@@ -2498,26 +2674,60 @@
           responsive: true, 
           maintainAspectRatio: false, 
           scales: { 
-            y: { beginAtZero: true, max: 100, ticks: { callback: v => v + '%' }, grid: { color: 'rgba(226, 232, 240, 0.5)' } },
-            x: { grid: { display: false } }
+            y: { 
+              beginAtZero: true, 
+              max: 100, 
+              ticks: { callback: v => v + '%' },
+              grid: { color: 'rgba(226, 232, 240, 0.5)' }
+            },
+            x: {
+              grid: { display: false }
+            }
           }, 
-          plugins: { legend: { display: false }, title: { display: true, text: 'Recent Assessment Trend', font: { size: 14, weight: '600' }, color: '#1E293B' } }
+          plugins: { 
+            legend: { display: false },
+            title: {
+              display: true,
+              text: 'Recent Assessment Trend',
+              font: { size: 14, weight: '600' },
+              color: '#1E293B'
+            }
+          }
         }
       });
 
-      // Progress with joins (includes tutor name)
-      const { data: progressRecords, error: progErr } = await supabase
+      // Progress records - Manual approach
+      const { data: progressRecords } = await supabase
         .from('progress_records')
-        .select(`
-          id, recorded_at, score, strengths, areas_of_improvement, child_id, subject_id, recorded_by,
-          children:child_id ( id, name ),
-          subjects:subject_id ( id, name ),
-          tutor_profiles:recorded_by ( id, full_name )
-        `)
+        .select('*')
         .in('child_id', ids)
         .order('recorded_at', { ascending: false });
-      if (progErr) { console.error(progErr); cache.progress = []; }
-      else cache.progress = progressRecords || [];
+
+      let progressData = [];
+      if (progressRecords?.length) {
+        const tutorIds = [...new Set(progressRecords.map(p => p.recorded_by).filter(Boolean))];
+        const childIds = [...new Set(progressRecords.map(p => p.child_id).filter(Boolean))];
+        const subjectIds = [...new Set(progressRecords.map(p => p.subject_id).filter(Boolean))];
+
+        const [tutorResults, childResults, subjectResults] = await Promise.all([
+          tutorIds.length ? supabase.from('tutor_profiles').select('id, full_name').in('id', tutorIds) : { data: [] },
+          childIds.length ? supabase.from('children').select('id, name').in('id', childIds) : { data: [] },
+          subjectIds.length ? supabase.from('subjects').select('id, name').in('id', subjectIds) : { data: [] }
+        ]);
+
+        const tutorMap = new Map((tutorResults.data || []).map(t => [t.id, t]));
+        const childMap = new Map((childResults.data || []).map(c => [c.id, c]));
+        const subjectMap = new Map((subjectResults.data || []).map(s => [s.id, s]));
+
+        progressData = progressRecords.map(record => ({
+          ...record,
+          tutor_name: tutorMap.get(record.recorded_by)?.full_name,
+          child_name: childMap.get(record.child_id)?.name,
+          subject_name: subjectMap.get(record.subject_id)?.name
+        }));
+      }
+      
+      cache.progress = progressData;
       renderProgressTable(cache.progress);
     }
 
@@ -2527,12 +2737,16 @@
         .select('*')
         .eq('parent_id', currentUser.id)
         .order('created_at', { ascending: false });
-      if (error) { console.error(error); renderBillingTable([]); return; }
+      if (error) { 
+        console.error(error); 
+        renderBillingTable([]); 
+        return; 
+      }
       cache.billing = data || [];
       renderBillingTable(cache.billing);
     }
 
-    // Dispatcher
+    // Section dispatcher
     async function loadSection(id) {
       switch (id) {
         case 'overview':
@@ -2560,7 +2774,7 @@
       }
     }
 
-    // Child modal
+    // Child modal functions
     function openChildEditModal(id) {
       const c = children.find(x => x.id === id);
       if (!c) return;
@@ -2574,10 +2788,12 @@
       document.getElementById('childEditModal').classList.add('active');
       document.body.style.overflow = 'hidden';
     }
+
     function closeChildEditModal() {
       document.getElementById('childEditModal').classList.remove('active');
       document.body.style.overflow = '';
     }
+
     async function saveChild(e) {
       e.preventDefault();
       const id = document.getElementById('editChildId').value;
@@ -2591,15 +2807,16 @@
         updated_at: new Date().toISOString()
       };
       const { error } = await supabase.from('children').update(updates).eq('id', id);
-      if (error) { alert('Failed to update child.'); return; }
+      if (error) { 
+        alert('Failed to update child.'); 
+        return; 
+      }
       alert('Child updated successfully!');
       closeChildEditModal();
       await loadChildren();
       await loadChildrenSection();
       await loadOverviewCards();
       await loadReportsSection();
-      await loadLessonsSection();
-      await loadTutorsSection();
     }
 
     // Profile save
@@ -2612,19 +2829,25 @@
         updated_at: new Date().toISOString()
       };
       const { error } = await supabase.from('parent_profiles').update(updates).eq('user_id', currentUser.id);
-      if (error) { alert('Failed to update profile.'); return; }
+      if (error) { 
+        alert('Failed to update profile.'); 
+        return; 
+      }
       alert('Profile updated successfully!');
       await loadProfile();
     }
 
-    // Search + Export
+    // Search and export hooks
     function hookSearch(inputId, rowsGetter, renderFn, keys) {
       const input = document.getElementById(inputId);
       if (!input) return;
       input.addEventListener('input', () => {
         const q = input.value.trim().toLowerCase();
         const base = rowsGetter();
-        if (!q) { renderFn(base); return; }
+        if (!q) { 
+          renderFn(base); 
+          return; 
+        }
         const filtered = base.filter(row => {
           return keys.some(k => {
             const val = typeof k === 'function' ? k(row) : row[k];
@@ -2634,6 +2857,7 @@
         renderFn(filtered);
       });
     }
+
     function hookExport(btnId, filename, rowsGetter, columns) {
       const btn = document.getElementById(btnId);
       if (!btn) return;
@@ -2642,17 +2866,43 @@
         exportCSV(filename, rows, columns);
       });
     }
+    
+async function getTutorNameMap({ idsAsTutorId = [], idsAsUserId = [] }) {
+const map = new Map();
 
+// By tutor_profiles.id
+if (idsAsTutorId.length) {
+const { data: byId } = await supabase
+.from('tutor_profiles')
+.select('id, full_name')
+.in('id', Array.from(new Set(idsAsTutorId)));
+(byId || []).forEach(t => map.set(String(t.id), t.full_name));
+}
+
+// By tutor_profiles.user_id
+if (idsAsUserId.length) {
+const { data: byUser } = await supabase
+.from('tutor_profiles')
+.select('user_id, full_name')
+.in('user_id', Array.from(new Set(idsAsUserId)));
+(byUser || []).forEach(t => map.set(String(t.user_id), t.full_name));
+}
+
+return map;
+}
+
+    // Event listeners
     document.getElementById('logoutLink')?.addEventListener('click', async (e) => {
       e.preventDefault();
       await supabase.auth.signOut();
       location.href = '/index.html';
     });
+
     document.getElementById('childEditForm')?.addEventListener('submit', saveChild);
     document.getElementById('profileForm')?.addEventListener('submit', saveProfile);
     document.getElementById('refreshReports')?.addEventListener('click', loadReportsSection);
 
-    // Bindings
+    // Search + Export bindings
     hookSearch('childrenSearch', () => cache.children, renderChildrenTable, ['name', 'grade_level', 'status', 'emergency_contact']);
     hookExport('childrenExport', 'children.csv', () => cache.children, [
       { label: 'Name', key: 'name' },
@@ -2665,25 +2915,25 @@
     ]);
 
     hookSearch('lessonsSearch', () => cache.lessons, renderLessonsTable, [
-      r => r.children?.name, r => r.subjects?.name, r => r.tutor_profiles?.full_name, 'status'
+      'child_name', 'subject_name', 'tutor_name', 'status'
     ]);
     hookExport('lessonsExport', 'lessons.csv', () => cache.lessons, [
       { label: 'Date', get: r => fmtDate(r.scheduled_at) },
       { label: 'Time', get: r => fmtTime(r.scheduled_at) },
-      { label: 'Child', get: r => r.children?.name },
-      { label: 'Subject', get: r => r.subjects?.name },
-      { label: 'Tutor', get: r => r.tutor_profiles?.full_name },
+      { label: 'Child', key: 'child_name' },
+      { label: 'Subject', key: 'subject_name' },
+      { label: 'Tutor', key: 'tutor_name' },
       { label: 'Status', key: 'status' },
       { label: 'Meeting URL', key: 'meeting_url' }
     ]);
 
     hookSearch('tutorsSearch', () => cache.tutors, renderTutorsTable, [
-      r => r.tutor_profiles?.full_name, r => r.children?.name, r => r.subjects?.name, 'status'
+      'tutor_name', 'child_name', 'subject_name', 'status'
     ]);
     hookExport('tutorsExport', 'tutors.csv', () => cache.tutors, [
-      { label: 'Tutor', get: r => r.tutor_profiles?.full_name },
-      { label: 'Child', get: r => r.children?.name },
-      { label: 'Subject', get: r => r.subjects?.name },
+      { label: 'Tutor', key: 'tutor_name' },
+      { label: 'Child', key: 'child_name' },
+      { label: 'Subject', key: 'subject_name' },
       { label: 'Status', key: 'status' }
     ]);
 
@@ -2702,16 +2952,16 @@
     ]);
 
     hookSearch('progressSearch', () => cache.progress, renderProgressTable, [
-      r => r.children?.name, r => r.subjects?.name, 'strengths', 'areas_of_improvement', r => r.tutor_profiles?.full_name
+      'child_name', 'subject_name', 'strengths', 'areas_of_improvement'
     ]);
     hookExport('progressExport', 'progress_records.csv', () => cache.progress, [
       { label: 'Date', get: r => fmtDate(r.recorded_at) },
-      { label: 'Child', get: r => r.children?.name },
-      { label: 'Subject', get: r => r.subjects?.name },
+      { label: 'Child', key: 'child_name' },
+      { label: 'Subject', key: 'subject_name' },
       { label: 'Score', get: r => r.score },
       { label: 'Strengths', get: r => r.strengths },
       { label: 'Improvement', get: r => r.areas_of_improvement },
-      { label: 'Recorded By', get: r => r.tutor_profiles?.full_name }
+      { label: 'Recorded By', key: 'tutor_name' }
     ]);
 
     hookSearch('billingSearch', () => cache.billing, renderBillingTable, [
@@ -2732,7 +2982,9 @@
     // Global search
     document.getElementById('globalSearch')?.addEventListener('input', (e) => {
       const q = e.target.value.toLowerCase();
-      if (location.hash.replace('#', '') !== 'children') { location.hash = '#children'; }
+      if (location.hash.replace('#', '') !== 'children') { 
+        location.hash = '#children'; 
+      }
       const base = cache.children;
       const filtered = q ? base.filter(r => 
         [r.name, r.grade_level, r.status, r.emergency_contact].some(v => 
@@ -2749,10 +3001,12 @@
 
     // Auth listener
     supabase.auth.onAuthStateChange((event, session) => {
-      if (event === 'SIGNED_OUT' || !session) { location.href = '/index.html'; }
+      if (event === 'SIGNED_OUT' || !session) { 
+        location.href = '/index.html'; 
+      }
     });
 
-    // Global modal funcs
+    // Make modal functions global
     window.openChildEditModal = openChildEditModal;
     window.closeChildEditModal = closeChildEditModal;
 
@@ -2760,11 +3014,14 @@
     (async function init() {
       const user = await ensureAuth(); 
       if (!user) return;
+      
       await loadProfile();
       await loadChildren();
+
+      // Initial route
       routeFromHash();
 
-      // Preload
+      // Preload data for better UX
       loadDashboardStats();
       loadOverviewCards();
       loadLessonsSection();
