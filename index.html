@@ -1465,40 +1465,50 @@
 
         // ===== EMAIL VERIFICATION FUNCTIONS =====
         async function sendVerificationEmail(userData) {
-            try {
-                // Generate verification token
-                const verificationToken = btoa(`${userData.email}-${Date.now()}-${Math.random()}`);
-                
-                // Create verification link
-                const verificationLink = `${window.location.origin}/verify-email.html?token=${verificationToken}&email=${encodeURIComponent(userData.email)}`;
-                
-                // Prepare email data
-                const emailData = {
-                    to_email: userData.email,
-                    to_name: userData.fullName,
-                    from_name: 'Baobab Online Academy Parent Portal',
-                    subject: 'Welcome to Baobab Parent Portal - Please Verify Your Email',
-                    parent_name: userData.fullName,
-                    verification_link: verificationLink,
-                    portal_url: window.location.origin,
-                    support_email: 'parents@baobabacademy.com',
-                    current_year: new Date().getFullYear()
-                };
+  try {
+    // Ask Edge Function for the official Supabase confirmation link
+    const resp = await fetch(`$https://vcxdkacxbjsgaoxbhsip.supabase.co/functions/v1/smooth-responder`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        email: userData.email,
+        redirectTo: `${window.location.origin}/verify-email.html`
+      })
+    });
+    const payload = await resp.json();
+    if (!resp.ok || !payload?.link) {
+      console.error('generate_signup_link error:', payload?.error || resp.status);
+      return false;
+    }
 
-                // Send email via EmailJS
-                const response = await emailjs.send(
-                    EMAILJS_CONFIG.SERVICE_ID,
-                    EMAILJS_CONFIG.TEMPLATE_ID,
-                    emailData
-                );
+    // Use the official Supabase action_link in your EmailJS template
+    const verificationLink = payload.link;
 
-                console.log('Verification email sent successfully!', response);
-                return true;
-            } catch (error) {
-                console.error('Failed to send verification email:', error);
-                return false;
-            }
-        }
+    const emailData = {
+      to_email: userData.email,
+      to_name: userData.fullName,
+      from_name: 'Baobab Online Academy Parent Portal',
+      subject: 'Welcome to Baobab Parent Portal - Please Verify Your Email',
+      parent_name: userData.fullName,
+      verification_link: verificationLink, // IMPORTANT: this is the official link
+      portal_url: window.location.origin,
+      support_email: 'parents@baobabonlineacademy.com',
+      current_year: new Date().getFullYear()
+    };
+
+    const response = await emailjs.send(
+      EMAILJS_CONFIG.SERVICE_ID,
+      EMAILJS_CONFIG.TEMPLATE_ID,
+      emailData
+    );
+
+    console.log('Verification email (EmailJS) sent with official link!', response);
+    return true;
+  } catch (error) {
+    console.error('Failed to send verification email via EmailJS:', error);
+    return false;
+  }
+}
 
         async function resendVerificationEmail() {
             if (!pendingUserData) {
