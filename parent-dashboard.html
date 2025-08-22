@@ -1029,18 +1029,6 @@
       height: 250px;
     }
 
-    /* Debug info */
-    .debug-info {
-      background: var(--gray-50);
-      border: 1px solid var(--gray-200);
-      border-radius: var(--border-radius);
-      padding: 1rem;
-      margin-bottom: 1rem;
-      font-family: monospace;
-      font-size: 0.8rem;
-      color: var(--gray-600);
-    }
-
     /* Responsive Design */
     @media (max-width: 1024px) {
       .app-layout {
@@ -1558,7 +1546,6 @@
             </div>
           </div>
           <div class="card-content">
-            <div id="lessonsDebugInfo" class="debug-info" style="display: none;"></div>
             <div class="table-container">
               <table class="table" id="lessonsTable">
                 <thead>
@@ -1601,7 +1588,6 @@
             </div>
           </div>
           <div class="card-content">
-            <div id="tutorsDebugInfo" class="debug-info" style="display: none;"></div>
             <div class="table-container">
               <table class="table" id="tutorsTable">
                 <thead>
@@ -1906,9 +1892,6 @@
     const sidebar = document.getElementById('sidebar');
     const sidebarOverlay = document.getElementById('sidebarOverlay');
 
-    // Debug mode
-    const DEBUG_MODE = true; // Set to false to hide debug info
-
     // Mobile menu functionality
     function toggleSidebar(open) {
       const show = open ?? !sidebar.classList.contains('active');
@@ -2045,21 +2028,6 @@
       a.click();
       document.body.removeChild(a); 
       URL.revokeObjectURL(url);
-    }
-
-    // Debug function
-    function showDebug(elementId, data, query = '') {
-      if (!DEBUG_MODE) return;
-      const element = document.getElementById(elementId);
-      if (element) {
-        element.style.display = 'block';
-        element.innerHTML = `
-          <strong>Debug Info:</strong><br>
-          Query: ${query}<br>
-          Rows returned: ${data?.length || 0}<br>
-          Sample data: ${JSON.stringify(data?.[0] || {}, null, 2)}
-        `;
-      }
     }
 
     // Auth functions
@@ -2278,7 +2246,7 @@
       document.getElementById('activeTutors').textContent = uniqueTutors.length;
     }
 
-    // Overview widgets
+    // Overview widgets - SIMPLIFIED APPROACH using manual joins only
     async function loadOverviewCards() {
       const cids = children.map(c => c.id);
       
@@ -2310,64 +2278,42 @@
         `).join('');
       }
 
-      // Upcoming lessons - Let's try different approaches
+      // Upcoming lessons - MANUAL APPROACH ONLY
       const nowIso = new Date().toISOString();
-      
-      // Method 1: Direct join
-      let { data: upcoming, error: lessonsError } = await supabase
+      const { data: lessons } = await supabase
         .from('lessons')
-        .select(`
-          *,
-          children:child_id(name),
-          subjects:subject_id(name),
-          tutor_profiles!lessons_tutor_id_fkey(id, full_name)
-        `)
+        .select('*')
         .in('child_id', cids)
         .eq('status', 'scheduled')
         .gte('scheduled_at', nowIso)
         .order('scheduled_at', { ascending: true })
         .limit(5);
 
-      // If that fails, try manual join
-      if (lessonsError || !upcoming) {
-        console.log('Direct join failed, trying manual approach:', lessonsError);
-        
-        const { data: lessons } = await supabase
-          .from('lessons')
-          .select('*')
-          .in('child_id', cids)
-          .eq('status', 'scheduled')
-          .gte('scheduled_at', nowIso)
-          .order('scheduled_at', { ascending: true })
-          .limit(5);
+      let upcoming = [];
+      if (lessons?.length) {
+        // Get unique IDs
+        const tutorIds = [...new Set(lessons.map(l => l.tutor_id).filter(Boolean))];
+        const childIds = [...new Set(lessons.map(l => l.child_id).filter(Boolean))];
+        const subjectIds = [...new Set(lessons.map(l => l.subject_id).filter(Boolean))];
 
-        if (lessons?.length) {
-          // Get tutor IDs from lessons
-          const tutorIds = [...new Set(lessons.map(l => l.tutor_id).filter(Boolean))];
-          const childIds = [...new Set(lessons.map(l => l.child_id).filter(Boolean))];
-          const subjectIds = [...new Set(lessons.map(l => l.subject_id).filter(Boolean))];
+        // Fetch related data
+        const [tutorResults, childResults, subjectResults] = await Promise.all([
+          tutorIds.length ? supabase.from('tutor_profiles').select('id, full_name').in('id', tutorIds) : { data: [] },
+          childIds.length ? supabase.from('children').select('id, name').in('id', childIds) : { data: [] },
+          subjectIds.length ? supabase.from('subjects').select('id, name').in('id', subjectIds) : { data: [] }
+        ]);
 
-          // Fetch related data
-          const [tutorResults, childResults, subjectResults] = await Promise.all([
-            tutorIds.length ? supabase.from('tutor_profiles').select('id, full_name').in('id', tutorIds) : { data: [] },
-            childIds.length ? supabase.from('children').select('id, name').in('id', childIds) : { data: [] },
-            subjectIds.length ? supabase.from('subjects').select('id, name').in('id', subjectIds) : { data: [] }
-          ]);
+        const tutorMap = new Map((tutorResults.data || []).map(t => [t.id, t]));
+        const childMap = new Map((childResults.data || []).map(c => [c.id, c]));
+        const subjectMap = new Map((subjectResults.data || []).map(s => [s.id, s]));
 
-          const tutorMap = new Map((tutorResults.data || []).map(t => [t.id, t]));
-          const childMap = new Map((childResults.data || []).map(c => [c.id, c]));
-          const subjectMap = new Map((subjectResults.data || []).map(s => [s.id, s]));
-
-          // Combine data
-          upcoming = lessons.map(lesson => ({
-            ...lesson,
-            tutor_profiles: tutorMap.get(lesson.tutor_id),
-            children: childMap.get(lesson.child_id),
-            subjects: subjectMap.get(lesson.subject_id)
-          }));
-        } else {
-          upcoming = [];
-        }
+        // Combine data
+        upcoming = lessons.map(lesson => ({
+          ...lesson,
+          tutor_name: tutorMap.get(lesson.tutor_id)?.full_name || 'Tutor',
+          child_name: childMap.get(lesson.child_id)?.name || '',
+          subject_name: subjectMap.get(lesson.subject_id)?.name || 'Subject'
+        }));
       }
 
       const lessonsWrap = document.getElementById('overviewLessons');
@@ -2377,15 +2323,12 @@
         lessonsWrap.innerHTML = upcoming.map(l => {
           const dt = new Date(l.scheduled_at);
           const isToday = dt.toDateString() === new Date().toDateString();
-          const tutorName = l.tutor_profiles?.full_name || l.tutor_name || 'Tutor';
-          const childName = l.children?.name || l.child_name || '';
-          const subjectName = l.subjects?.name || l.subject_name || 'Subject';
           
           return `
             <div class="progress-item">
               <div class="progress-info">
-                <div class="progress-title">${subjectName}</div>
-                <div class="progress-subtitle">with ${tutorName} • ${childName}</div>
+                <div class="progress-title">${l.subject_name}</div>
+                <div class="progress-subtitle">with ${l.tutor_name} • ${l.child_name}</div>
               </div>
               <div class="progress-visual" style="gap: 0.75rem;">
                 <div class="badge badge-warning">${isToday ? 'Today' : fmtDate(l.scheduled_at)} ${fmtTime(l.scheduled_at)}</div>
@@ -2435,9 +2378,9 @@
         <tr>
           <td data-label="Date">${fmtDate(r.scheduled_at)}</td>
           <td data-label="Time">${fmtTime(r.scheduled_at)}</td>
-          <td data-label="Child">${r.children?.name || r.child_name || ''}</td>
-          <td data-label="Subject">${r.subjects?.name || r.subject_name || ''}</td>
-          <td data-label="Tutor">${r.tutor_profiles?.full_name || r.tutor_name || ''}</td>
+          <td data-label="Child">${r.child_name || ''}</td>
+          <td data-label="Subject">${r.subject_name || ''}</td>
+          <td data-label="Tutor">${r.tutor_name || ''}</td>
           <td data-label="Status">${statusBadge(r.status)}</td>
           <td data-label="Join">
             ${r.meeting_url ? 
@@ -2457,9 +2400,9 @@
       }
       tb.innerHTML = rows.map(r => `
         <tr>
-          <td data-label="Tutor">${r.tutor_profiles?.full_name || r.tutor_name || ''}</td>
-          <td data-label="Child">${r.children?.name || r.child_name || ''}</td>
-          <td data-label="Subject">${r.subjects?.name || r.subject_name || ''}</td>
+          <td data-label="Tutor">${r.tutor_name || ''}</td>
+          <td data-label="Child">${r.child_name || ''}</td>
+          <td data-label="Subject">${r.subject_name || ''}</td>
           <td data-label="Status">${statusBadge(r.status || 'Active')}</td>
         </tr>
       `).join('');
@@ -2497,12 +2440,12 @@
       tb.innerHTML = rows.map(p => `
         <tr>
           <td data-label="Date">${fmtDate(p.recorded_at)}</td>
-          <td data-label="Child">${p.children?.name || ''}</td>
-          <td data-label="Subject">${p.subjects?.name || ''}</td>
+          <td data-label="Child">${p.child_name || ''}</td>
+          <td data-label="Subject">${p.subject_name || ''}</td>
           <td data-label="Score">${p.score != null ? p.score + '%' : '—'}</td>
           <td data-label="Strengths">${p.strengths ? String(p.strengths).slice(0, 50) + '...' : '—'}</td>
           <td data-label="Improvement">${p.areas_of_improvement ? String(p.areas_of_improvement).slice(0, 50) + '...' : '—'}</td>
-          <td data-label="Recorded By">${p.tutor_profiles?.full_name || p.tutor_name || '—'}</td>
+          <td data-label="Recorded By">${p.tutor_name || '—'}</td>
         </tr>
       `).join('');
     }
@@ -2527,7 +2470,7 @@
       `).join('');
     }
 
-    // Section loaders with improved error handling and manual joins
+    // Section loaders - ALL USING MANUAL JOINS FOR CONSISTENCY
     async function loadChildrenSection() {
       renderChildrenTable(cache.children);
     }
@@ -2539,65 +2482,39 @@
       }
       
       const ids = children.map(c => c.id);
-      
-      // Try direct join first
-      let { data, error } = await supabase
+      const { data: lessons } = await supabase
         .from('lessons')
-        .select(`
-          *,
-          children:child_id(name),
-          subjects:subject_id(name),
-          tutor_profiles!lessons_tutor_id_fkey(id, full_name)
-        `)
+        .select('*')
         .in('child_id', ids)
         .order('scheduled_at', { ascending: true });
 
-      let debugQuery = 'Direct join with tutor_profiles';
+      let data = [];
+      if (lessons?.length) {
+        // Get unique IDs
+        const tutorIds = [...new Set(lessons.map(l => l.tutor_id).filter(Boolean))];
+        const childIds = [...new Set(lessons.map(l => l.child_id).filter(Boolean))];
+        const subjectIds = [...new Set(lessons.map(l => l.subject_id).filter(Boolean))];
 
-      // If direct join fails, try manual approach
-      if (error || !data) {
-        console.log('Direct join failed, trying manual approach:', error);
-        debugQuery = 'Manual join approach due to direct join failure';
-        
-        const { data: lessons } = await supabase
-          .from('lessons')
-          .select('*')
-          .in('child_id', ids)
-          .order('scheduled_at', { ascending: true });
+        // Fetch related data
+        const [tutorResults, childResults, subjectResults] = await Promise.all([
+          tutorIds.length ? supabase.from('tutor_profiles').select('id, full_name').in('id', tutorIds) : { data: [] },
+          childIds.length ? supabase.from('children').select('id, name').in('id', childIds) : { data: [] },
+          subjectIds.length ? supabase.from('subjects').select('id, name').in('id', subjectIds) : { data: [] }
+        ]);
 
-        if (lessons?.length) {
-          // Get unique IDs
-          const tutorIds = [...new Set(lessons.map(l => l.tutor_id).filter(Boolean))];
-          const childIds = [...new Set(lessons.map(l => l.child_id).filter(Boolean))];
-          const subjectIds = [...new Set(lessons.map(l => l.subject_id).filter(Boolean))];
+        const tutorMap = new Map((tutorResults.data || []).map(t => [t.id, t]));
+        const childMap = new Map((childResults.data || []).map(c => [c.id, c]));
+        const subjectMap = new Map((subjectResults.data || []).map(s => [s.id, s]));
 
-          // Fetch related data
-          const [tutorResults, childResults, subjectResults] = await Promise.all([
-            tutorIds.length ? supabase.from('tutor_profiles').select('id, full_name').in('id', tutorIds) : { data: [] },
-            childIds.length ? supabase.from('children').select('id, name').in('id', childIds) : { data: [] },
-            subjectIds.length ? supabase.from('subjects').select('id, name').in('id', subjectIds) : { data: [] }
-          ]);
-
-          const tutorMap = new Map((tutorResults.data || []).map(t => [t.id, t]));
-          const childMap = new Map((childResults.data || []).map(c => [c.id, c]));
-          const subjectMap = new Map((subjectResults.data || []).map(s => [s.id, s]));
-
-          // Combine data
-          data = lessons.map(lesson => ({
-            ...lesson,
-            tutor_profiles: tutorMap.get(lesson.tutor_id),
-            children: childMap.get(lesson.child_id),
-            subjects: subjectMap.get(lesson.subject_id),
-            tutor_name: tutorMap.get(lesson.tutor_id)?.full_name,
-            child_name: childMap.get(lesson.child_id)?.name,
-            subject_name: subjectMap.get(lesson.subject_id)?.name
-          }));
-        } else {
-          data = [];
-        }
+        // Combine data
+        data = lessons.map(lesson => ({
+          ...lesson,
+          tutor_name: tutorMap.get(lesson.tutor_id)?.full_name,
+          child_name: childMap.get(lesson.child_id)?.name,
+          subject_name: subjectMap.get(lesson.subject_id)?.name
+        }));
       }
 
-      showDebug('lessonsDebugInfo', data, debugQuery);
       cache.lessons = data || [];
       renderLessonsTable(cache.lessons);
     }
@@ -2609,65 +2526,39 @@
       }
       
       const ids = children.map(c => c.id);
-      
-      // Try direct join first
-      let { data, error } = await supabase
+      const { data: assignments } = await supabase
         .from('tutor_assignments')
-        .select(`
-          *,
-          children:child_id(name),
-          subjects:subject_id(name),
-          tutor_profiles!tutor_assignments_tutor_id_fkey(id, full_name, email)
-        `)
+        .select('*')
         .in('child_id', ids)
         .order('created_at', { ascending: false });
 
-      let debugQuery = 'Direct join with tutor_profiles';
+      let data = [];
+      if (assignments?.length) {
+        // Get unique IDs
+        const tutorIds = [...new Set(assignments.map(a => a.tutor_id).filter(Boolean))];
+        const childIds = [...new Set(assignments.map(a => a.child_id).filter(Boolean))];
+        const subjectIds = [...new Set(assignments.map(a => a.subject_id).filter(Boolean))];
 
-      // If direct join fails, try manual approach
-      if (error || !data) {
-        console.log('Direct join failed for tutors, trying manual approach:', error);
-        debugQuery = 'Manual join approach due to direct join failure';
-        
-        const { data: assignments } = await supabase
-          .from('tutor_assignments')
-          .select('*')
-          .in('child_id', ids)
-          .order('created_at', { ascending: false });
+        // Fetch related data
+        const [tutorResults, childResults, subjectResults] = await Promise.all([
+          tutorIds.length ? supabase.from('tutor_profiles').select('id, full_name, email').in('id', tutorIds) : { data: [] },
+          childIds.length ? supabase.from('children').select('id, name').in('id', childIds) : { data: [] },
+          subjectIds.length ? supabase.from('subjects').select('id, name').in('id', subjectIds) : { data: [] }
+        ]);
 
-        if (assignments?.length) {
-          // Get unique IDs
-          const tutorIds = [...new Set(assignments.map(a => a.tutor_id).filter(Boolean))];
-          const childIds = [...new Set(assignments.map(a => a.child_id).filter(Boolean))];
-          const subjectIds = [...new Set(assignments.map(a => a.subject_id).filter(Boolean))];
+        const tutorMap = new Map((tutorResults.data || []).map(t => [t.id, t]));
+        const childMap = new Map((childResults.data || []).map(c => [c.id, c]));
+        const subjectMap = new Map((subjectResults.data || []).map(s => [s.id, s]));
 
-          // Fetch related data
-          const [tutorResults, childResults, subjectResults] = await Promise.all([
-            tutorIds.length ? supabase.from('tutor_profiles').select('id, full_name, email').in('id', tutorIds) : { data: [] },
-            childIds.length ? supabase.from('children').select('id, name').in('id', childIds) : { data: [] },
-            subjectIds.length ? supabase.from('subjects').select('id, name').in('id', subjectIds) : { data: [] }
-          ]);
-
-          const tutorMap = new Map((tutorResults.data || []).map(t => [t.id, t]));
-          const childMap = new Map((childResults.data || []).map(c => [c.id, c]));
-          const subjectMap = new Map((subjectResults.data || []).map(s => [s.id, s]));
-
-          // Combine data
-          data = assignments.map(assignment => ({
-            ...assignment,
-            tutor_profiles: tutorMap.get(assignment.tutor_id),
-            children: childMap.get(assignment.child_id),
-            subjects: subjectMap.get(assignment.subject_id),
-            tutor_name: tutorMap.get(assignment.tutor_id)?.full_name,
-            child_name: childMap.get(assignment.child_id)?.name,
-            subject_name: subjectMap.get(assignment.subject_id)?.name
-          }));
-        } else {
-          data = [];
-        }
+        // Combine data
+        data = assignments.map(assignment => ({
+          ...assignment,
+          tutor_name: tutorMap.get(assignment.tutor_id)?.full_name,
+          child_name: childMap.get(assignment.child_id)?.name,
+          subject_name: subjectMap.get(assignment.subject_id)?.name
+        }));
       }
 
-      showDebug('tutorsDebugInfo', data, debugQuery);
       cache.tutors = data || [];
       renderTutorsTable(cache.tutors);
     }
@@ -2805,13 +2696,14 @@
         }
       });
 
-      // Progress records - Manual approach for consistency
+      // Progress records - Manual approach
       const { data: progressRecords } = await supabase
         .from('progress_records')
         .select('*')
         .in('child_id', ids)
         .order('recorded_at', { ascending: false });
 
+      let progressData = [];
       if (progressRecords?.length) {
         const tutorIds = [...new Set(progressRecords.map(p => p.recorded_by).filter(Boolean))];
         const childIds = [...new Set(progressRecords.map(p => p.child_id).filter(Boolean))];
@@ -2827,17 +2719,15 @@
         const childMap = new Map((childResults.data || []).map(c => [c.id, c]));
         const subjectMap = new Map((subjectResults.data || []).map(s => [s.id, s]));
 
-        cache.progress = progressRecords.map(record => ({
+        progressData = progressRecords.map(record => ({
           ...record,
-          tutor_profiles: tutorMap.get(record.recorded_by),
-          children: childMap.get(record.child_id),
-          subjects: subjectMap.get(record.subject_id),
-          tutor_name: tutorMap.get(record.recorded_by)?.full_name
+          tutor_name: tutorMap.get(record.recorded_by)?.full_name,
+          child_name: childMap.get(record.child_id)?.name,
+          subject_name: subjectMap.get(record.subject_id)?.name
         }));
-      } else {
-        cache.progress = [];
       }
       
+      cache.progress = progressData;
       renderProgressTable(cache.progress);
     }
 
@@ -3001,31 +2891,25 @@
     ]);
 
     hookSearch('lessonsSearch', () => cache.lessons, renderLessonsTable, [
-      r => r.children?.name || r.child_name, 
-      r => r.subjects?.name || r.subject_name, 
-      r => r.tutor_profiles?.full_name || r.tutor_name, 
-      'status'
+      'child_name', 'subject_name', 'tutor_name', 'status'
     ]);
     hookExport('lessonsExport', 'lessons.csv', () => cache.lessons, [
       { label: 'Date', get: r => fmtDate(r.scheduled_at) },
       { label: 'Time', get: r => fmtTime(r.scheduled_at) },
-      { label: 'Child', get: r => r.children?.name || r.child_name },
-      { label: 'Subject', get: r => r.subjects?.name || r.subject_name },
-      { label: 'Tutor', get: r => r.tutor_profiles?.full_name || r.tutor_name },
+      { label: 'Child', key: 'child_name' },
+      { label: 'Subject', key: 'subject_name' },
+      { label: 'Tutor', key: 'tutor_name' },
       { label: 'Status', key: 'status' },
       { label: 'Meeting URL', key: 'meeting_url' }
     ]);
 
     hookSearch('tutorsSearch', () => cache.tutors, renderTutorsTable, [
-      r => r.tutor_profiles?.full_name || r.tutor_name, 
-      r => r.children?.name || r.child_name, 
-      r => r.subjects?.name || r.subject_name, 
-      'status'
+      'tutor_name', 'child_name', 'subject_name', 'status'
     ]);
     hookExport('tutorsExport', 'tutors.csv', () => cache.tutors, [
-      { label: 'Tutor', get: r => r.tutor_profiles?.full_name || r.tutor_name },
-      { label: 'Child', get: r => r.children?.name || r.child_name },
-      { label: 'Subject', get: r => r.subjects?.name || r.subject_name },
+      { label: 'Tutor', key: 'tutor_name' },
+      { label: 'Child', key: 'child_name' },
+      { label: 'Subject', key: 'subject_name' },
       { label: 'Status', key: 'status' }
     ]);
 
@@ -3044,16 +2928,16 @@
     ]);
 
     hookSearch('progressSearch', () => cache.progress, renderProgressTable, [
-      r => r.children?.name, r => r.subjects?.name, 'strengths', 'areas_of_improvement'
+      'child_name', 'subject_name', 'strengths', 'areas_of_improvement'
     ]);
     hookExport('progressExport', 'progress_records.csv', () => cache.progress, [
       { label: 'Date', get: r => fmtDate(r.recorded_at) },
-      { label: 'Child', get: r => r.children?.name },
-      { label: 'Subject', get: r => r.subjects?.name },
+      { label: 'Child', key: 'child_name' },
+      { label: 'Subject', key: 'subject_name' },
       { label: 'Score', get: r => r.score },
       { label: 'Strengths', get: r => r.strengths },
       { label: 'Improvement', get: r => r.areas_of_improvement },
-      { label: 'Recorded By', get: r => r.tutor_profiles?.full_name || r.tutor_name }
+      { label: 'Recorded By', key: 'tutor_name' }
     ]);
 
     hookSearch('billingSearch', () => cache.billing, renderBillingTable, [
