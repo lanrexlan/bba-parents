@@ -27,7 +27,6 @@
     .bigicon{font-size:3.4rem;margin-bottom:10px}
     .loading{color:var(--sunset-gold);animation:spin 1s linear infinite}
     .success{color:var(--canopy-green)}
-    .pending{color:var(--sunset-gold)}
     .error{color:var(--desert-orange)}
     @keyframes spin{to{transform:rotate(360deg)}}
     .hidden{display:none}
@@ -59,31 +58,12 @@
       <p class="msg">Please wait while we process your verification.</p>
     </div>
 
-    <!-- Full success (Supabase confirmed) -->
+    <!-- Success -->
     <div id="ok" class="hidden">
       <i class="fas fa-check-circle bigicon success"></i>
       <h1 class="title">Email verified!</h1>
       <p class="msg">Your account is active. Redirecting to your dashboard…</p>
       <a class="btn btn-primary" href="/parent-dashboard.html"><i class="fas fa-tachometer-alt"></i> Go to dashboard</a>
-    </div>
-
-    <!-- Pending: custom token verified; final step email sent -->
-    <div id="pending" class="hidden">
-      <i class="fas fa-envelope-open-text bigicon pending"></i>
-      <h1 class="title">Almost done — check your inbox</h1>
-      <p class="msg" id="pendingMsg">
-        We’ve verified your link. For security, please click the final confirmation link we just sent to your email.
-      </p>
-      <div class="details">
-        <h4><i class="fas fa-lightbulb"></i> Finish activation</h4>
-        <ul>
-          <li><i class="fas fa-envelope"></i> Open the latest email from Baobab Online Academy</li>
-          <li><i class="fas fa-link"></i> Click the “Confirm email” link</li>
-          <li><i class="fas fa-sign-in-alt"></i> You can then log in immediately</li>
-        </ul>
-      </div>
-      <button id="resendBtn" class="btn btn-outline"><i class="fas fa-redo"></i> Resend confirmation</button>
-      <a class="btn btn-outline" href="/"><i class="fas fa-home"></i> Return home</a>
     </div>
 
     <!-- Error -->
@@ -131,7 +111,6 @@
     }
 
     async function handleSupabaseFlow(token_hash, type, access_token, refresh_token) {
-      // Preferred: token_hash + type from Supabase email
       if (token_hash && type) {
         const { data, error } = await supabase.auth.verifyOtp({
           token_hash,
@@ -141,7 +120,6 @@
         return data?.user || data?.session?.user || null;
       }
 
-      // Fallback: session tokens present (provider puts tokens in URL)
       if (access_token && refresh_token) {
         const { data, error } = await supabase.auth.setSession({ access_token, refresh_token });
         if (error) throw new Error(`Session error: ${error.message}`);
@@ -151,65 +129,91 @@
       return null;
     }
 
-    async function upsertProfileAndMark(email, userId, meta) {
-      // Upsert parent profile as the authenticated user
-      const { error: upsertErr } = await supabase
-        .from('parent_profiles')
-        .upsert({
-          user_id: userId,
-          email: (email || '').toLowerCase(),
-          full_name: meta?.full_name || null,
-          phone: meta?.phone || null,
-          email_verified: true,
-          verified_at: new Date().toISOString()
-        }, { onConflict: 'user_id' });
-
-      if (upsertErr) console.warn('parent_profiles upsert warning:', upsertErr?.message);
-
-      // Also flip authorised_emails as a best-effort (not critical)
-      const { error: aeErr } = await supabase
-        .from('authorised_emails')
-        .update({ is_used: true, used_at: new Date().toISOString() })
-        .eq('email', (email || '').toLowerCase());
-      if (aeErr) console.warn('authorised_emails update warning:', aeErr?.message);
-    }
-
     async function handleCustomEmailJSToken(token, email) {
-  const { data, error } = await supabase.rpc('verify_parent_email', {
-    p_token: token,
-    p_email: email
-  });
+      // First, verify the custom token via RPC
+      const { data, error } = await supabase.rpc('verify_parent_email', {
+        p_token: token,
+        p_email: email
+      });
 
-  if (error) throw new Error(error.message || 'Verification RPC failed');
-  if (!data?.ok) {
-    const reason = data?.reason || 'unknown';
-    throw new Error(`Custom token invalid (${reason}).`);
-  }
+      if (error) throw new Error(error.message || 'Verification RPC failed');
+      if (!data?.ok) {
+        const reason = data?.reason || 'unknown';
+        throw new Error(`Custom token invalid (${reason}).`);
+      }
 
-  // SUCCESS - show success and redirect (no pending state)
-  hide('loading'); 
-  show('ok');
-  setTimeout(() => { 
-    window.location.href = '/parent-dashboard.html'; 
-  }, 1800);
-}
+      // Now we need to establish a session since the user is confirmed
+      // Try to sign in the user to get a proper session
+      try {
+        // Get the user's current session (they should be confirmed now)
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+        
+        if (!session) {
+          // If no session, we need to guide them to login
+          hide('loading');
+          show('ok');
+          $('ok').innerHTML = `
+            <i class="fas fa-check-circle bigicon success"></i>
+            <h1 class="title">Email verified successfully!</h1>
+            <p class="msg">Your account is now active. Please login to access your dashboard.</p>
+            <a class="btn btn-primary" href="/"><i class="fas fa-sign-in-alt"></i> Go to Login</a>
+          `;
+          return;
+        }
 
-      
+        // If we have a session, proceed to dashboard
+        hide('loading');
+        show('ok');
+        setTimeout(() => { 
+          window.location.href = '/parent-dashboard.html'; 
+        }, 1800);
+
+      } catch (e) {
+        console.error('Session check error:', e);
+        // Fallback: redirect to login
+        hide('loading');
+        show('ok');
+        $('ok').innerHTML = `
+          <i class="fas fa-check-circle bigicon success"></i>
+          <h1 class="title">Email verified successfully!</h1>
+          <p class="msg">Your account is now active. Please login to access your dashboard.</p>
+          <a class="btn btn-primary" href="/"><i class="fas fa-sign-in-alt"></i> Go to Login</a>
+        `;
+      }
+    }
 
     async function main() {
       try {
         const p = params();
 
-        // 1) Supabase flow (true account activation)
+        // 1) Supabase flow (includes session establishment)
         const user = await handleSupabaseFlow(p.token_hash, p.type, p.access_token, p.refresh_token);
         if (user) {
-          await upsertProfileAndMark(user.email, user.id, user.user_metadata);
-          hide('loading'); show('ok');
+          // Update profile for Supabase-verified users
+          try {
+            const { error: upsertErr } = await supabase
+              .from('parent_profiles')
+              .upsert({
+                user_id: user.id,
+                email: (user.email || '').toLowerCase(),
+                full_name: user.user_metadata?.full_name || null,
+                phone: user.user_metadata?.phone || null,
+                email_verified: true,
+                verified_at: new Date().toISOString()
+              }, { onConflict: 'user_id' });
+
+            if (upsertErr) console.warn('parent_profiles upsert warning:', upsertErr?.message);
+          } catch (e) {
+            console.warn('Profile update error:', e);
+          }
+
+          hide('loading'); 
+          show('ok');
           setTimeout(() => { window.location.href = '/parent-dashboard.html'; }, 1800);
           return;
         }
 
-        // 2) Custom EmailJS token (verify DB state, then trigger official email)
+        // 2) Custom EmailJS token
         if (p.token && p.email) {
           await handleCustomEmailJSToken(p.token, p.email.toLowerCase());
           return;
@@ -220,8 +224,10 @@
 
       } catch (err) {
         console.error('Verify error:', err);
-        hide('loading'); show('fail');
-        const t = $('errText'); if (t) t.textContent = err.message || 'Verification failed. Please try again.';
+        hide('loading'); 
+        show('fail');
+        const t = $('errText'); 
+        if (t) t.textContent = err.message || 'Verification failed. Please try again.';
       }
     }
 
