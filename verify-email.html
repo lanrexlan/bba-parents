@@ -1,342 +1,248 @@
 <!DOCTYPE html>
 <html lang="en-GB">
 <head>
-    <meta charset="UTF-8">
-    <link rel="icon" type="image/png" sizes="32x32" href="/Images/logo.jpg">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Email Verification - Baobab Online Academy</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@300;400;700;900&family=Open+Sans:wght@300;400;600;700&family=Kalam:wght@400;700&display=swap" rel="stylesheet">
-    <!-- Supabase -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <style>
-        :root {
-            --baobab-brown: #8D4004;
-            --canopy-green: #2E7D32;
-            --sunset-gold: #F57C00;
-            --trunk-gray: #5D4037;
-            --sky-blue: #1976D2;
-            --earth-cream: #FFF8E1;
-            --desert-orange: #FF5722;
-            --sage-green: #689F38;
-            --deep-charcoal: #263238;
-            --white: #FFFFFF;
-            --glow-color: rgba(245, 124, 0, 0.6);
-            --transition-slow: all 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
-            --transition-medium: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
-            --transition-fast: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
-            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
-            --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
-            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
-        }
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: 'Open Sans', sans-serif;
-            color: var(--deep-charcoal);
-            line-height: 1.6;
-            background: linear-gradient(135deg, var(--canopy-green), var(--baobab-brown));
-            min-height: 100vh;
-            display: flex; align-items: center; justify-content: center;
-            padding: 20px;
-        }
-        .verification-container {
-            background: var(--white);
-            border-radius: 25px;
-            padding: 50px;
-            max-width: 600px; width: 100%;
-            text-align: center;
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
-            border: 3px solid var(--sunset-gold);
-            position: relative; overflow: hidden;
-        }
-        .verification-container::before {
-            content: '';
-            position: absolute; top: -50%; left: -50%;
-            width: 200%; height: 200%;
-            background: linear-gradient(45deg, transparent, rgba(245, 124, 0, 0.1), transparent);
-            animation: shimmer 3s infinite;
-        }
-        @keyframes shimmer {
-            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
-            100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
-        }
-        .verification-content { position: relative; z-index: 1; }
-        .logo-section { margin-bottom: 30px; }
-        .logo { display: inline-flex; align-items: center; gap: 15px; margin-bottom: 20px; }
-        .logo-icon {
-            width: 50px; height: 50px; background-color: var(--canopy-green);
-            display: flex; align-items: center; justify-content: center;
-            border-radius: 12px; font-size: 24px; color: var(--white);
-        }
-        .logo-text {
-            font-weight: 700; font-size: 24px; color: var(--baobab-brown); font-family: 'Merriweather', serif;
-        }
-        .verification-icon { font-size: 4rem; margin-bottom: 25px; display: block; }
-        .success-icon { color: var(--canopy-green); animation: pulse 2s infinite; }
-        .error-icon { color: var(--desert-orange); }
-        .loading-icon { color: var(--sunset-gold); animation: spin 1s linear infinite; }
-        @keyframes pulse { 0% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.1); opacity: 0.8; } 100% { transform: scale(1); opacity: 1; } }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        .verification-title { font-family: 'Merriweather', serif; font-size: 2.2rem; color: var(--baobab-brown); margin-bottom: 20px; font-weight: 700; }
-        .verification-message { font-size: 1.1rem; color: var(--trunk-gray); margin-bottom: 30px; line-height: 1.7; }
-        .verification-details {
-            background: var(--earth-cream);
-            border: 2px solid rgba(245, 124, 0, 0.3);
-            border-radius: 15px; padding: 25px; margin: 25px 0; text-align: left;
-        }
-        .verification-details h4 { color: var(--sunset-gold); margin-bottom: 15px; font-family: 'Merriweather', serif; }
-        .verification-details ul { list-style: none; padding: 0; }
-        .verification-details li { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; color: var(--trunk-gray); }
-        .verification-details i { color: var(--canopy-green); font-size: 1.1rem; width: 20px; }
-        .btn {
-            display: inline-flex; align-items: center; gap: 10px;
-            padding: 18px 35px; border-radius: 30px; font-weight: 600;
-            transition: var(--transition-fast); border: 2px solid transparent;
-            font-family: 'Open Sans', sans-serif; text-decoration: none; cursor: pointer;
-            font-size: 1.1rem; margin: 10px;
-        }
-        .btn-primary { background-color: var(--baobab-brown); color: var(--white); border-color: var(--baobab-brown); }
-        .btn-primary:hover { background-color: var(--trunk-gray); border-color: var(--trunk-gray); transform: translateY(-3px); box-shadow: var(--shadow-md); }
-        .btn-secondary { background-color: var(--sunset-gold); color: var(--deep-charcoal); border-color: var(--sunset-gold); }
-        .btn-secondary:hover { background-color: var(--desert-orange); border-color: var(--desert-orange); transform: translateY(-3px); box-shadow: var(--shadow-md); }
-        .btn-outlined { background-color: transparent; color: var(--baobab-brown); border-color: var(--baobab-brown); }
-        .btn-outlined:hover { background-color: var(--baobab-brown); color: var(--white); transform: translateY(-3px); box-shadow: var(--shadow-md); }
-        .action-buttons { display: flex; gap: 15px; justify-content: center; flex-wrap: wrap; margin-top: 30px; }
-        .support-info { margin-top: 40px; padding-top: 30px; border-top: 1px solid var(--earth-cream); color: var(--trunk-gray); font-size: 0.95rem; }
-        .support-info a { color: var(--sunset-gold); text-decoration: none; font-weight: 600; }
-        .support-info a:hover { text-decoration: underline; }
-        .loading-spinner {
-            display: inline-block; width: 30px; height: 30px;
-            border: 3px solid var(--earth-cream); border-top: 3px solid var(--sunset-gold);
-            border-radius: 50%; animation: spin 1s linear infinite; margin: 20px auto;
-        }
-        .hidden { display: none; }
-        @media (max-width: 768px) {
-            .verification-container { padding: 30px; margin: 10px; }
-            .verification-title { font-size: 1.8rem; }
-            .verification-message { font-size: 1rem; }
-            .action-buttons { flex-direction: column; align-items: center; }
-            .btn { padding: 16px 30px; font-size: 1rem; width: 100%; max-width: 300px; }
-        }
-        @media (max-width: 576px) {
-            body { padding: 10px; }
-            .verification-container { padding: 25px; }
-            .verification-title { font-size: 1.6rem; }
-            .logo-text { font-size: 20px; }
-            .verification-icon { font-size: 3rem; }
-            .verification-details { padding: 20px; }
-        }
-    </style>
+  <meta charset="UTF-8">
+  <link rel="icon" type="image/png" sizes="32x32" href="/Images/logo.jpg">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Email Verification - Baobab Online Academy</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@300;400;700;900&family=Open+Sans:wght@300;400;600;700&family=Kalam:wght@400;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    :root {
+      --baobab-brown:#8D4004;--canopy-green:#2E7D32;--sunset-gold:#F57C00;--trunk-gray:#5D4037;
+      --earth-cream:#FFF8E1;--desert-orange:#FF5722;--white:#FFFFFF;--deep-charcoal:#263238;
+    }
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:'Open Sans',sans-serif;color:var(--deep-charcoal);
+      background:linear-gradient(135deg,var(--canopy-green),var(--baobab-brown));
+      min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+    .card{background:var(--white);border-radius:24px;padding:40px;max-width:680px;width:100%;
+      text-align:center;border:3px solid var(--sunset-gold);box-shadow:0 20px 50px rgba(0,0,0,.3)}
+    .logo{display:inline-flex;align-items:center;gap:12px;margin-bottom:10px}
+    .logo-icon{width:44px;height:44px;background:var(--canopy-green);color:#fff;border-radius:10px;display:grid;place-items:center}
+    .logo-text{font-family:'Merriweather',serif;color:var(--baobab-brown);font-weight:700;font-size:22px}
+    .title{font-family:'Merriweather',serif;color:var(--baobab-brown);font-size:26px;margin:8px 0 12px}
+    .msg{color:var(--trunk-gray);line-height:1.7;margin-bottom:16px}
+    .bigicon{font-size:3.4rem;margin-bottom:10px}
+    .loading{color:var(--sunset-gold);animation:spin 1s linear infinite}
+    .success{color:var(--canopy-green)}
+    .pending{color:var(--sunset-gold)}
+    .error{color:var(--desert-orange)}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    .hidden{display:none}
+    .details{background:var(--earth-cream);border:2px solid rgba(245,124,0,.3);padding:16px;border-radius:14px;text-align:left;margin:14px 0}
+    .details h4{color:var(--sunset-gold);margin-bottom:8px;font-family:'Merriweather',serif}
+    .details ul{list-style:none}
+    .details li{margin:8px 0;display:flex;gap:10px;align-items:center;color:var(--trunk-gray)}
+    .btn{display:inline-flex;align-items:center;gap:10px;padding:12px 22px;border-radius:26px;
+      font-weight:600;text-decoration:none;cursor:pointer;border:2px solid transparent;margin:6px;transition:.25s}
+    .btn-primary{background:var(--baobab-brown);color:#fff;border-color:var(--baobab-brown)}
+    .btn-primary:hover{filter:brightness(.92);transform:translateY(-2px)}
+    .btn-outline{background:transparent;color:var(--baobab-brown);border-color:var(--baobab-brown)}
+    .btn-outline:hover{background:var(--baobab-brown);color:#fff}
+    .muted{opacity:.85;font-size:.95rem;margin-top:14px}
+    @media (max-width:576px){.card{padding:24px}.title{font-size:22px}.bigicon{font-size:3rem}}
+  </style>
 </head>
 <body>
-    <div class="verification-container">
-        <div class="verification-content">
-            <div class="logo-section">
-                <div class="logo">
-                    <div class="logo-icon"><i class="fas fa-tree"></i></div>
-                    <div class="logo-text">Baobab Academy</div>
-                </div>
-                <p style="color: var(--trunk-gray); font-style: italic;">Deep Roots, Limitless Growth</p>
-            </div>
-
-            <!-- Loading State -->
-            <div id="loadingState">
-                <i class="fas fa-spinner verification-icon loading-icon"></i>
-                <h1 class="verification-title">Verifying Your Email...</h1>
-                <p class="verification-message">Please wait while we verify your email address.</p>
-                <div class="loading-spinner"></div>
-            </div>
-
-            <!-- Success State -->
-            <div id="successState" class="hidden">
-                <i class="fas fa-check-circle verification-icon success-icon"></i>
-                <h1 class="verification-title">🎉 Email Verified Successfully!</h1>
-                <p class="verification-message">
-                    Welcome to the Baobab Academy family! Your parent account has been successfully verified and activated.
-                </p>
-
-                <div class="verification-details">
-                    <h4><i class="fas fa-star"></i> What's Next?</h4>
-                    <ul>
-                        <li><i class="fas fa-check-circle"></i> Access your secure parent portal</li>
-                        <li><i class="fas fa-check-circle"></i> Connect with your child's tutors</li>
-                        <li><i class="fas fa-check-circle"></i> Track real-time progress</li>
-                        <li><i class="fas fa-check-circle"></i> Monitor safety features</li>
-                        <li><i class="fas fa-check-circle"></i> Celebrate cultural milestones</li>
-                    </ul>
-                </div>
-
-                <div class="action-buttons">
-                    <a href="/parent-dashboard.html" class="btn btn-primary">
-                        <i class="fas fa-tachometer-alt"></i>
-                        Access Parent Dashboard
-                    </a>
-                    <a href="/" class="btn btn-outlined">
-                        <i class="fas fa-home"></i>
-                        Return to Homepage
-                    </a>
-                </div>
-            </div>
-
-            <!-- Error State -->
-            <div id="errorState" class="hidden">
-                <i class="fas fa-exclamation-triangle verification-icon error-icon"></i>
-                <h1 class="verification-title">Verification Failed</h1>
-                <p class="verification-message" id="errorMessage">
-                    We couldn't verify your email address. This could be due to an expired or invalid verification link.
-                </p>
-
-                <div class="verification-details">
-                    <h4><i class="fas fa-lightbulb"></i> What You Can Do:</h4>
-                    <ul>
-                        <li><i class="fas fa-redo"></i> Try clicking the verification link again</li>
-                        <li><i class="fas fa-envelope"></i> Check if the link has expired (links expire after 24 hours)</li>
-                        <li><i class="fas fa-user-plus"></i> Request a new verification email</li>
-                        <li><i class="fas fa-headset"></i> Contact our support team for assistance</li>
-                    </ul>
-                </div>
-
-                <div class="action-buttons">
-                    <a href="/" class="btn btn-secondary">
-                        <i class="fas fa-envelope"></i>
-                        Request New Verification
-                    </a>
-                    <a href="mailto:parents@baobabonlineacademy.com" class="btn btn-outlined">
-                        <i class="fas fa-headset"></i>
-                        Contact Support
-                    </a>
-                </div>
-            </div>
-
-            <div class="support-info">
-                <p>
-                    Need help? Contact our parent support team at
-                    <a href="mailto:parents@baobabonlineacademy.com">parents@baobabonlineacademy.com</a>
-                    or call <a href="tel:+2348165011291">+234 (0) 816 501 1291</a>
-                </p>
-            </div>
-        </div>
+  <div class="card">
+    <div class="logo">
+      <div class="logo-icon"><i class="fas fa-tree"></i></div>
+      <div class="logo-text">Baobab Academy</div>
     </div>
 
-    <script>
-        // ===== CONFIGURATION =====
-        const SUPABASE_URL = 'https://vcxdkacxbjsgaoxbhsip.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZjeGRrYWN4YmpzZ2FveGJoc2lwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI5MDQ5ODMsImV4cCI6MjA2ODQ4MDk4M30.T9KhHWzHZWyaZvyeFXtBu8tPLY9JOn6_wCHcH8B46FU';
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    <!-- Loading -->
+    <div id="loading">
+      <i class="fas fa-spinner bigicon loading"></i>
+      <h1 class="title">Verifying your email…</h1>
+      <p class="msg">Please wait while we process your verification.</p>
+    </div>
 
-        // ===== UI HELPERS =====
-        function showSuccessState() {
-            document.getElementById('loadingState').classList.add('hidden');
-            document.getElementById('errorState').classList.add('hidden');
-            document.getElementById('successState').classList.remove('hidden');
-        }
-        function showErrorState(message) {
-            document.getElementById('loadingState').classList.add('hidden');
-            document.getElementById('successState').classList.add('hidden');
-            document.getElementById('errorState').classList.remove('hidden');
-            document.getElementById('errorMessage').textContent = message || 'Verification failed. Please try again.';
-        }
+    <!-- Full success (Supabase confirmed) -->
+    <div id="ok" class="hidden">
+      <i class="fas fa-check-circle bigicon success"></i>
+      <h1 class="title">Email verified!</h1>
+      <p class="msg">Your account is active. Redirecting to your dashboard…</p>
+      <a class="btn btn-primary" href="/parent-dashboard.html"><i class="fas fa-tachometer-alt"></i> Go to dashboard</a>
+    </div>
 
-        // ===== MAIN FLOW =====
-        async function handleSupabaseConfirmation(urlParams) {
-            const token_hash = urlParams.get('token_hash');
-            const type = urlParams.get('type'); // 'signup' or 'email'
-            if (!token_hash || !type) {
-                throw new Error('Missing verification parameters.');
-            }
+    <!-- Pending: custom token verified; final step email sent -->
+    <div id="pending" class="hidden">
+      <i class="fas fa-envelope-open-text bigicon pending"></i>
+      <h1 class="title">Almost done — check your inbox</h1>
+      <p class="msg" id="pendingMsg">
+        We’ve verified your link. For security, please click the final confirmation link we just sent to your email.
+      </p>
+      <div class="details">
+        <h4><i class="fas fa-lightbulb"></i> Finish activation</h4>
+        <ul>
+          <li><i class="fas fa-envelope"></i> Open the latest email from Baobab Online Academy</li>
+          <li><i class="fas fa-link"></i> Click the “Confirm email” link</li>
+          <li><i class="fas fa-sign-in-alt"></i> You can then log in immediately</li>
+        </ul>
+      </div>
+      <button id="resendBtn" class="btn btn-outline"><i class="fas fa-redo"></i> Resend confirmation</button>
+      <a class="btn btn-outline" href="/"><i class="fas fa-home"></i> Return home</a>
+    </div>
 
-            // Verify email with Supabase; this should also establish a session
-            const { data, error } = await supabase.auth.verifyOtp({
-                token_hash,
-                type: (type === 'email' ? 'email' : 'signup')
-            });
+    <!-- Error -->
+    <div id="fail" class="hidden">
+      <i class="fas fa-exclamation-triangle bigicon error"></i>
+      <h1 class="title">Verification failed</h1>
+      <p class="msg" id="errText">The link seems invalid or expired.</p>
+      <div class="details">
+        <h4><i class="fas fa-tools"></i> Try this:</h4>
+        <ul>
+          <li><i class="fas fa-envelope"></i> Open the newest verification email</li>
+          <li><i class="fas fa-link"></i> Click the link again from this device</li>
+        </ul>
+      </div>
+      <a class="btn btn-outline" href="/"><i class="fas fa-home"></i> Return home</a>
+    </div>
 
-            if (error) {
-                throw new Error(`Email verification failed: ${error.message}`);
-            }
+    <p class="muted">Need help? Email parents@baobabonlineacademy.com or call +234 (0) 816 501 1291</p>
+  </div>
 
-            const user = data?.user;
-            if (!user) {
-                throw new Error('Verification succeeded but user information is missing.');
-            }
+  <script>
+    const SUPABASE_URL = 'https://vcxdkacxbjsgaoxbhsip.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZjeGRrYWN4YmpzZ2FveGJoc2lwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI5MDQ5ODMsImV4cCI6MjA2ODQ4MDk4M30.T9KhHWzHZWyaZvyeFXtBu8tPLY9JOn6_wCHcH8B46FU';
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-            // Update parent_profiles (requires RLS policy for authenticated users)
-            try {
-                const { error: profileErr } = await supabase
-                    .from('parent_profiles')
-                    .update({
-                        email_verified: true,
-                        verified_at: new Date().toISOString()
-                    })
-                    .eq('user_id', user.id);
+    const $ = id => document.getElementById(id);
+    const show = id => $(id).classList.remove('hidden');
+    const hide = id => $(id).classList.add('hidden');
 
-                if (profileErr) {
-                    // Log but don't block success UX
-                    console.error('parent_profiles update error:', profileErr);
-                }
-            } catch (e) {
-                console.error('Unexpected error updating parent_profiles:', e);
-            }
+    function params() {
+      const s = new URLSearchParams(window.location.search);
+      let h = new URLSearchParams();
+      if (window.location.hash && window.location.hash.includes('?')) {
+        h = new URLSearchParams(window.location.hash.split('?')[1]);
+      }
+      const get = k => s.get(k) || h.get(k);
+      return {
+        token_hash: get('token_hash'),
+        type: get('type'),
+        access_token: get('access_token'),
+        refresh_token: get('refresh_token'),
+        token: get('token'),
+        email: get('email')
+      };
+    }
 
-            showSuccessState();
-
-            // Redirect after a short delay
-            setTimeout(() => {
-                window.location.href = '/parent-dashboard.html';
-            }, 2500);
-        }
-
-        function hasSupabaseParams(urlParams) {
-            return urlParams.get('token_hash') || urlParams.get('type') || urlParams.get('access_token') || urlParams.get('refresh_token');
-        }
-
-        function setupErrorHandling() {
-            window.addEventListener('error', function (event) {
-                console.error('JavaScript error:', event.error || event.message);
-                if (document.getElementById('successState').classList.contains('hidden')) {
-                    showErrorState('An unexpected error occurred. Please try again or contact support.');
-                }
-            });
-            window.addEventListener('unhandledrejection', function (event) {
-                console.error('Unhandled promise rejection:', event.reason);
-                if (document.getElementById('successState').classList.contains('hidden')) {
-                    showErrorState('An unexpected error occurred. Please try again or contact support.');
-                }
-            });
-        }
-
-        document.addEventListener('DOMContentLoaded', async function () {
-            setupErrorHandling();
-
-            const urlParams = new URLSearchParams(window.location.search);
-
-            // Only support Supabase-native confirmation
-            if (!hasSupabaseParams(urlParams)) {
-                // Gracefully redirect if the link is invalid
-                showErrorState('Invalid verification link. Redirecting to homepage...');
-                setTimeout(() => { window.location.href = '/'; }, 2000);
-                return;
-            }
-
-            // Small delay for UX
-            setTimeout(async () => {
-                try {
-                    await handleSupabaseConfirmation(urlParams);
-                } catch (err) {
-                    console.error('Verification flow error:', err);
-                    showErrorState(err.message);
-                }
-            }, 800);
+    async function handleSupabaseFlow(token_hash, type, access_token, refresh_token) {
+      // Preferred: token_hash + type from Supabase email
+      if (token_hash && type) {
+        const { data, error } = await supabase.auth.verifyOtp({
+          token_hash,
+          type: (type === 'email' ? 'email' : 'signup')
         });
+        if (error) throw new Error(`Email verification failed: ${error.message}`);
+        return data?.user || data?.session?.user || null;
+      }
 
-        // Prevent navigating back to a broken state after success
-        window.addEventListener('popstate', function (event) {
-            if (!document.getElementById('successState').classList.contains('hidden')) {
-                event.preventDefault();
-                window.location.href = '/parent-dashboard.html';
-            }
-        });
-    </script>
+      // Fallback: session tokens present (provider puts tokens in URL)
+      if (access_token && refresh_token) {
+        const { data, error } = await supabase.auth.setSession({ access_token, refresh_token });
+        if (error) throw new Error(`Session error: ${error.message}`);
+        return data?.user || data?.session?.user || null;
+      }
+
+      return null;
+    }
+
+    async function upsertProfileAndMark(email, userId, meta) {
+      // Upsert parent profile as the authenticated user
+      const { error: upsertErr } = await supabase
+        .from('parent_profiles')
+        .upsert({
+          user_id: userId,
+          email: (email || '').toLowerCase(),
+          full_name: meta?.full_name || null,
+          phone: meta?.phone || null,
+          email_verified: true,
+          verified_at: new Date().toISOString()
+        }, { onConflict: 'user_id' });
+
+      if (upsertErr) console.warn('parent_profiles upsert warning:', upsertErr?.message);
+
+      // Also flip authorised_emails as a best-effort (not critical)
+      const { error: aeErr } = await supabase
+        .from('authorised_emails')
+        .update({ is_used: true, used_at: new Date().toISOString() })
+        .eq('email', (email || '').toLowerCase());
+      if (aeErr) console.warn('authorised_emails update warning:', aeErr?.message);
+    }
+
+    async function handleCustomEmailJSToken(token, email) {
+      // Validate via SECURITY DEFINER RPC (bypasses RLS safely)
+      const { data, error } = await supabase.rpc('verify_parent_email', {
+        p_token: token,
+        p_email: email
+      });
+
+      if (error) throw new Error(error.message || 'Verification RPC failed');
+      if (!data?.ok) {
+        const reason = data?.reason || 'unknown';
+        throw new Error(`Custom token invalid (${reason}).`);
+      }
+
+      // Ask Supabase to send the official confirmation email
+      try {
+        const { error: resendErr } = await supabase.auth.resend({ type: 'signup', email });
+        if (resendErr) {
+          console.warn('Resend confirmation warning:', resendErr.message);
+          $('pendingMsg').textContent = 'We verified your link, but could not auto-send the final confirmation. Please request a new confirmation from the login screen.';
+        }
+      } catch (e) {
+        console.warn('Resend exception:', e);
+      }
+
+      // Show pending state (user must click Supabase confirm email to finish)
+      hide('loading'); show('pending');
+
+      // Wire the resend button
+      $('resendBtn').onclick = async () => {
+        try {
+          const { error: resendErr } = await supabase.auth.resend({ type: 'signup', email });
+          if (resendErr) return alert('Failed to resend confirmation. Please try again later.');
+          alert('Confirmation email resent. Please check your inbox (and spam).');
+        } catch (e) {
+          alert('Failed to resend confirmation. Please try again later.');
+        }
+      };
+    }
+
+    async function main() {
+      try {
+        const p = params();
+
+        // 1) Supabase flow (true account activation)
+        const user = await handleSupabaseFlow(p.token_hash, p.type, p.access_token, p.refresh_token);
+        if (user) {
+          await upsertProfileAndMark(user.email, user.id, user.user_metadata);
+          hide('loading'); show('ok');
+          setTimeout(() => { window.location.href = '/parent-dashboard.html'; }, 1800);
+          return;
+        }
+
+        // 2) Custom EmailJS token (verify DB state, then trigger official email)
+        if (p.token && p.email) {
+          await handleCustomEmailJSToken(p.token, p.email.toLowerCase());
+          return;
+        }
+
+        // Neither path present
+        throw new Error('Missing verification parameters. Please use the verification link sent to your email.');
+
+      } catch (err) {
+        console.error('Verify error:', err);
+        hide('loading'); show('fail');
+        const t = $('errText'); if (t) t.textContent = err.message || 'Verification failed. Please try again.';
+      }
+    }
+
+    window.addEventListener('DOMContentLoaded', main);
+  </script>
 </body>
 </html>
