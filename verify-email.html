@@ -471,22 +471,22 @@
                 }
                 
                 // Method 2: Handle custom token verification (fallback)
-                const customToken = urlParams.get('token');
-                const email = urlParams.get('email');
+                //const customToken = urlParams.get('token');
+                //const email = urlParams.get('email');
                 
-                if (customToken && email) {
-                    console.log('Detected custom token verification');
-                    return await handleCustomTokenVerification(customToken, email);
+                //if (customToken && email) {
+                    //console.log('Detected custom token verification');
+                    //return await handleCustomTokenVerification(customToken, email);
                 }
                 
                 // No valid parameters
-                throw new Error('Invalid verification link. Missing required parameters.');
+                //throw new Error('Invalid verification link. Missing required parameters.');
                 
-            } catch (error) {
-                console.error('Verification error:', error);
-                showErrorState(error.message);
-            }
-        }
+            //} catch (error) {
+                //console.error('Verification error:', error);
+                //showErrorState(error.message);
+            //}
+        //}
 
         // ===== SUPABASE NATIVE CONFIRMATION =====
         async function handleSupabaseConfirmation(urlParams) {
