@@ -1753,7 +1753,6 @@
       children: [],
       lessons: [],
       tutors: [],
-      recordings: [],
       assessments: [],
       progress: [],
       billing: []
@@ -2252,28 +2251,7 @@
       `).join('');
     }
 
-    function renderRecordingsTable(rows) {
-      const tb = document.getElementById('recordingsTbody');
-      if (!rows?.length) { 
-        tb.innerHTML = `<tr><td colspan="5"><div class="empty-state"><i class="fas fa-video"></i><div>No recordings available.</div></div></td></tr>`; 
-        return; 
-      }
-      tb.innerHTML = rows.map(r => `
-        <tr>
-          <td data-label="Date">${fmtDate(r.recorded_at)}</td>
-          <td data-label="Child">${r.children?.name || ''}</td>
-          <td data-label="Subject">${r.subjects?.name || ''}</td>
-          <td data-label="Duration">${r.duration || '—'}</td>
-          <td data-label="Recording">
-            ${r.recording_url ? 
-              `<a class="btn btn-success btn-sm" href="${r.recording_url}" target="_blank" rel="noopener"><i class="fas fa-play"></i> Watch</a>` : 
-              '<span class="badge badge-secondary">—</span>'
-            }
-          </td>
-        </tr>
-      `).join('');
-    }
-
+    
     function renderAssessmentsTable(rows) {
       const tb = document.getElementById('assessmentsTbody');
       if (!rows?.length) { 
@@ -2381,26 +2359,7 @@
       renderTutorsTable(cache.tutors);
     }
 
-    async function loadRecordingsSection() {
-      if (!children.length) { 
-        renderRecordingsTable([]); 
-        return; 
-      }
-      const ids = children.map(c => c.id);
-      const { data, error } = await supabase
-        .from('lesson_recordings')
-        .select('recorded_at, duration, recording_url, children:child_id(name), subjects:subject_id(name)')
-        .in('child_id', ids)
-        .order('recorded_at', { ascending: false });
-      if (error) { 
-        console.error(error); 
-        renderRecordingsTable([]); 
-        return; 
-      }
-      cache.recordings = data || [];
-      renderRecordingsTable(cache.recordings);
-    }
-
+    
     async function loadReportsSection() {
       if (!children.length) {
         renderAssessmentsTable([]); 
@@ -2575,9 +2534,6 @@
         case 'tutors':
           await loadTutorsSection();
           break;
-        case 'recordings':
-          await loadRecordingsSection();
-          break;
         case 'reports':
           await loadReportsSection();
           break;
@@ -2729,17 +2685,7 @@
       { label: 'Status', key: 'status' }
     ]);
 
-    hookSearch('recordingsSearch', () => cache.recordings, renderRecordingsTable, [
-      r => r.children?.name, r => r.subjects?.name
-    ]);
-    hookExport('recordingsExport', 'recordings.csv', () => cache.recordings, [
-      { label: 'Date', get: r => fmtDate(r.recorded_at) },
-      { label: 'Child', get: r => r.children?.name },
-      { label: 'Subject', get: r => r.subjects?.name },
-      { label: 'Duration', key: 'duration' },
-      { label: 'URL', key: 'recording_url' }
-    ]);
-
+    
     hookSearch('assessmentsSearch', () => cache.assessments, renderAssessmentsTable, [
       r => r.children?.name, r => r.subjects?.name, 'title', 'type', 'feedback'
     ]);
@@ -2829,7 +2775,6 @@
       loadOverviewCards();
       loadLessonsSection();
       loadTutorsSection();
-      loadRecordingsSection();
       loadReportsSection();
       loadBillingSection();
     })();
