@@ -175,43 +175,26 @@
     }
 
     async function handleCustomEmailJSToken(token, email) {
-      // Validate via SECURITY DEFINER RPC (bypasses RLS safely)
-      const { data, error } = await supabase.rpc('verify_parent_email', {
-        p_token: token,
-        p_email: email
-      });
+  const { data, error } = await supabase.rpc('verify_parent_email', {
+    p_token: token,
+    p_email: email
+  });
 
-      if (error) throw new Error(error.message || 'Verification RPC failed');
-      if (!data?.ok) {
-        const reason = data?.reason || 'unknown';
-        throw new Error(`Custom token invalid (${reason}).`);
-      }
+  if (error) throw new Error(error.message || 'Verification RPC failed');
+  if (!data?.ok) {
+    const reason = data?.reason || 'unknown';
+    throw new Error(`Custom token invalid (${reason}).`);
+  }
 
-      // Ask Supabase to send the official confirmation email
-      try {
-        const { error: resendErr } = await supabase.auth.resend({ type: 'signup', email });
-        if (resendErr) {
-          console.warn('Resend confirmation warning:', resendErr.message);
-          $('pendingMsg').textContent = 'We verified your link, but could not auto-send the final confirmation. Please request a new confirmation from the login screen.';
-        }
-      } catch (e) {
-        console.warn('Resend exception:', e);
-      }
+  // SUCCESS - show success and redirect (no pending state)
+  hide('loading'); 
+  show('ok');
+  setTimeout(() => { 
+    window.location.href = '/parent-dashboard.html'; 
+  }, 1800);
+}
 
-      // Show pending state (user must click Supabase confirm email to finish)
-      hide('loading'); show('pending');
-
-      // Wire the resend button
-      $('resendBtn').onclick = async () => {
-        try {
-          const { error: resendErr } = await supabase.auth.resend({ type: 'signup', email });
-          if (resendErr) return alert('Failed to resend confirmation. Please try again later.');
-          alert('Confirmation email resent. Please check your inbox (and spam).');
-        } catch (e) {
-          alert('Failed to resend confirmation. Please try again later.');
-        }
-      };
-    }
+      
 
     async function main() {
       try {
