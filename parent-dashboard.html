@@ -1905,12 +1905,12 @@
     async function ensureAuth() {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) { 
-        location.href = '/parent-portal.html'; 
+        location.href = '/index.html'; 
         return null; 
       }
       if (!session.user.email_confirmed_at) { 
         alert('Please verify your email.'); 
-        location.href = '/parent-portal.html'; 
+        location.href = '/index.html'; 
         return null; 
       }
       currentUser = session.user;
@@ -2751,7 +2751,7 @@
     // Auth listener
     supabase.auth.onAuthStateChange((event, session) => {
       if (event === 'SIGNED_OUT' || !session) { 
-        location.href = '/parent-portal.html'; 
+        location.href = '/index.html'; 
       }
     });
 
