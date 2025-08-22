@@ -2643,7 +2643,7 @@
     document.getElementById('logoutLink')?.addEventListener('click', async (e) => {
       e.preventDefault();
       await supabase.auth.signOut();
-      location.href = '/parent-portal.html';
+      location.href = '/index.html';
     });
 
     document.getElementById('childEditForm')?.addEventListener('submit', saveChild);
