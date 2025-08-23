@@ -1340,404 +1340,262 @@
         </div>
     </div>
 
-    <script>
-// EmailJS Configuration
-const EMAILJS_CONFIG = {
-            PUBLIC_KEY: 'axzjFvaj8oDzIdLHB',     // Replace with your EmailJS public key
-            SERVICE_ID: 'service_02brniu',     // Replace with your EmailJS service ID
-            TEMPLATE_ID: 'template_ijjrhov'    // Replace with your EmailJS template ID for verification emails
-        };
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
 
-// Supabase Configuration
+<script>
+// ================== CONFIG ==================
 const SUPABASE_URL = 'https://vcxdkacxbjsgaoxbhsip.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZjeGRrYWN4YmpzZ2FveGJoc2lwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjQzMTc1MTcsImV4cCI6MjAzOTg5MzUxN30.dHoiJu-MNvp3yfxhgZJOqp4nOoO2GrpXI4YFQCLSoO8';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZjeGRrYWN4YmpzZ2FveGJoc2lwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjQzMTc1MTcsImV4cCI6MjAzOTg5MzUxN30.dHoiJu-MNvp3yfxhgZJOqp4nOoO2GrpXI4YFQCLSoO8'; // keep your actual anon key
+const EMAILJS_CONFIG = {
+  PUBLIC_KEY: 'axzjFvaj8oDzIdLHB',     // Replace with your EmailJS public key
+            SERVICE_ID: 'service_02brniu',     // Replace with your EmailJS service ID
+            TEMPLATE_ID: 'template_ijjrhov'
+};
+// ============================================
 
-// Initialize Supabase
+// Init clients
 const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-// Initialize EmailJS
 emailjs.init(EMAILJS_CONFIG.PUBLIC_KEY);
 
-// Global variables
+// Simple helpers
+const $ = (id) => document.getElementById(id);
+const show = (id) => { const el = $(id); if (el) el.style.display = 'block'; };
+const hide = (id) => { const el = $(id); if (el) el.style.display = 'none'; };
+
+function showError(id, msg) {
+  const el = $(id);
+  if (el) {
+    el.textContent = msg;
+    el.style.display = 'block';
+  } else {
+    console.error('Missing error element:', id, msg);
+  }
+}
+function clearMessages() {
+  document.querySelectorAll('.error-message').forEach(el => { el.textContent = ''; el.style.display = 'none'; });
+}
+
+// Modals (adapt to your DOM)
+function openRegistrationModal(){ const m=$('registrationModal'); if(m){ m.style.display='block'; document.body.style.overflow='hidden';}}
+function closeRegistrationModal(){ const m=$('registrationModal'); if(m){ m.style.display='none'; document.body.style.overflow='auto'; clearMessages(); }}
+function openVerificationModal(){ const m=$('verificationModal'); if(m){ m.style.display='block'; document.body.style.overflow='hidden'; }}
+function closeVerificationModal(){ const m=$('verificationModal'); if(m){ m.style.display='none'; document.body.style.overflow='auto'; }}
+
+// Store pending user for resend
 let pendingUserData = null;
 
-// Utility functions
-function $(id) { return document.getElementById(id); }
-function show(id) { $(id).style.display = 'block'; }
-function hide(id) { $(id).style.display = 'none'; }
-
-function showError(elementId, message) {
-    const errorElement = $(elementId);
-    if (errorElement) {
-        errorElement.textContent = message;
-        errorElement.style.display = 'block';
-    }
-}
-
-function clearMessages() {
-    const errorElements = document.querySelectorAll('.error-message');
-    errorElements.forEach(el => {
-        el.style.display = 'none';
-        el.textContent = '';
-    });
-}
-
-// Modal functions
-function openRegistrationModal() {
-    $('registrationModal').style.display = 'block';
-    document.body.style.overflow = 'hidden';
-}
-
-function closeRegistrationModal() {
-    $('registrationModal').style.display = 'none';
-    document.body.style.overflow = 'auto';
-    clearMessages();
-}
-
-function openVerificationModal() {
-    $('verificationModal').style.display = 'block';
-    document.body.style.overflow = 'hidden';
-}
-
-function closeVerificationModal() {
-    $('verificationModal').style.display = 'none';
-    document.body.style.overflow = 'auto';
-}
-
-// Simple verification email function without external dependencies
+// Core: send verification via EmailJS
 async function sendVerificationEmail(userData) {
-    try {
-        console.log('Sending verification email for:', userData.email);
-        
-        // Generate a simple verification token
-        const token = btoa(userData.email + ':' + Date.now() + ':' + Math.random()).replace(/[^a-zA-Z0-9]/g, '');
-        
-        // Store the token in database
-        const { error: tokenError } = await supabase
-            .from('email_verification_tokens')
-            .insert({
-                email: userData.email,
-                token: token,
-                user_id: userData.userId || null,
-                created_at: new Date().toISOString(),
-                expires_at: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString()
-            });
+  console.log('[Email] start', userData.email);
 
-        if (tokenError) {
-            console.error('Failed to store verification token:', tokenError);
-            return false;
-        }
+  // 1) Generate token
+  const tokenRaw = `${userData.email}:${Date.now()}:${crypto.getRandomValues(new Uint32Array(1))[0]}`;
+  const token = btoa(tokenRaw).replace(/[^a-zA-Z0-9]/g, '');
 
-        // Create verification link
-        const verificationLink = `${window.location.origin}/verify-email.html?token=${token}&email=${encodeURIComponent(userData.email)}`;
+  // 2) Save token
+  const { error: tokenError } = await supabase
+    .from('email_verification_tokens')
+    .insert({
+      email: userData.email.toLowerCase(),
+      token,
+      user_id: userData.userId || null,
+      created_at: new Date().toISOString(),
+      expires_at: new Date(Date.now() + 24*60*60*1000).toISOString()
+    });
+  if (tokenError) {
+    console.error('[Email] token insert failed', tokenError);
+    return { ok: false, reason: 'token_insert_failed', details: tokenError.message };
+  }
 
-        // EmailJS email data
-        const emailData = {
-            to_email: userData.email,
-            to_name: userData.fullName,
-            from_name: 'Baobab Online Academy Parent Portal',
-            subject: 'Welcome to Baobab Parent Portal - Please Verify Your Email',
-            parent_name: userData.fullName,
-            verification_link: verificationLink,
-            portal_url: window.location.origin,
-            support_email: 'parents@baobabonlineacademy.com',
-            current_year: new Date().getFullYear()
-        };
+  // 3) Compose verification link
+  const link = `${window.location.origin}/verify-email.html?token=${token}&email=${encodeURIComponent(userData.email)}`;
 
-        console.log('Attempting to send email via EmailJS...');
+  // 4) Prepare EmailJS variables
+  // IMPORTANT: Keys must match your EmailJS template variable names!
+  const templateData = {
+    to_email: userData.email,
+    to_name: userData.fullName || userData.email,
+    from_name: 'Baobab Online Academy Parent Portal',
+    subject: 'Verify your email',
+    parent_name: userData.fullName || '',
+    verification_link: link,
+    portal_url: window.location.origin,
+    support_email: 'parents@baobabonlineacademy.com',
+    current_year: new Date().getFullYear()
+  };
 
-        // Send email with timeout and retry logic
-        const timeoutPromise = new Promise((_, reject) => 
-            setTimeout(() => reject(new Error('EmailJS request timed out')), 15000)
-        );
+  // 5) Send with timeout wrapper
+  const timeoutMs = 20000;
+  const timeout = new Promise((_, rej) => setTimeout(() => rej(new Error('EmailJS timeout')), timeoutMs));
 
-        const emailPromise = emailjs.send(
-            EMAILJS_CONFIG.SERVICE_ID,
-            EMAILJS_CONFIG.TEMPLATE_ID,
-            emailData
-        );
-
-        const response = await Promise.race([emailPromise, timeoutPromise]);
-
-        console.log('Verification email sent successfully!', response);
-        return true;
-
-    } catch (error) {
-        console.error('Failed to send verification email:', error);
-        
-        // Fallback: Show manual verification instructions
-        showManualVerificationInstructions(userData);
-        return false;
-    }
-}
-
-// Fallback function for manual verification
-function showManualVerificationInstructions(userData) {
-    const modalContent = $('verificationModal').querySelector('.modal-content');
-    if (modalContent) {
-        modalContent.innerHTML = `
-            <div class="modal-header">
-                <h2>Account Created Successfully</h2>
-                <span class="close" onclick="closeVerificationModal()">&times;</span>
-            </div>
-            <div class="modal-body">
-                <div class="verification-content">
-                    <i class="fas fa-exclamation-triangle" style="font-size: 3rem; color: #f39c12; margin-bottom: 1rem;"></i>
-                    <h3>Email Service Temporarily Unavailable</h3>
-                    <p>Your account has been created successfully, but we're experiencing issues with our email service.</p>
-                    <p><strong>What to do next:</strong></p>
-                    <ol style="text-align: left; margin: 1rem 0;">
-                        <li>Contact support at <strong>parents@baobabonlineacademy.com</strong></li>
-                        <li>Include your email: <strong>${userData.email}</strong></li>
-                        <li>Request manual account verification</li>
-                    </ol>
-                    <p>We'll verify your account manually within 24 hours.</p>
-                    <button class="btn btn-primary" onclick="closeVerificationModal()" style="margin-top: 1rem;">
-                        <i class="fas fa-check"></i> Understood
-                    </button>
-                </div>
-            </div>
-        `;
-    }
+  try {
+    const resp = await Promise.race([
+      emailjs.send(EMAILJS_CONFIG.SERVICE_ID, EMAILJS_CONFIG.TEMPLATE_ID, templateData),
+      timeout
+    ]);
+    console.log('[Email] sent OK', resp);
+    return { ok: true };
+  } catch (err) {
+    console.error('[Email] send failed', err);
+    return { ok: false, reason: 'emailjs_failed', details: err.message || String(err) };
+  }
 }
 
 // Registration handler
-async function handleRegistration(event) {
-    event.preventDefault();
-    
-    // Check if user is already logged in
-    const { data: { user } } = await supabase.auth.getUser();
-    if (user && user.email_confirmed_at) {
-        showError('regErrorMessage', 'You are already logged in and verified. Redirecting to dashboard...');
-        setTimeout(() => {
-            closeRegistrationModal();
-            window.location.href = '/parent-dashboard.html';
-        }, 2000);
-        return;
-    }
-    
-    const submitBtn = $('regSubmitBtn');
-    const submitText = $('regSubmitText');
-    const loadingSpinner = $('regLoadingSpinner');
-    
-    // Show loading state
-    submitText.style.display = 'none';
-    loadingSpinner.style.display = 'inline-block';
-    submitBtn.disabled = true;
-    clearMessages();
-    
-    try {
-        const formData = new FormData(event.target);
-        const email = formData.get('email').toLowerCase().trim();
-        const fullName = formData.get('full_name').trim();
-        const phone = formData.get('phone').trim();
-        const password = formData.get('password');
-        const confirmPassword = formData.get('confirmPassword');
-        
-        // Validate passwords match
-        if (password !== confirmPassword) {
-            throw new Error('Passwords do not match');
-        }
-        
-        // Check if email is authorized
-        const { data: authorizedEmail, error: authCheckError } = await supabase
-            .from('authorised_emails')
-            .select('*')
-            .eq('email', email)
-            .eq('is_used', false)
-            .single();
-        
-        if (authCheckError || !authorizedEmail) {
-            throw new Error('This email is not authorized to create an account. Please contact support at parents@baobabacademy.com');
-        }
-        
-        // Create user account
-        const { data: authData, error: signUpError } = await supabase.auth.signUp({
-            email: email,
-            password: password,
-            options: {
-                data: {
-                    full_name: fullName,
-                    phone: phone
-                }
-            }
-        });
-        
-        if (signUpError) {
-            throw new Error(signUpError.message);
-        }
+async function handleRegistration(e) {
+  e.preventDefault();
 
-        // Store user data
-        pendingUserData = {
-            email: email,
-            fullName: fullName,
-            phone: phone,
-            userId: authData.user?.id
-        };
-        
-        // Reset form and show verification modal
-        event.target.reset();
-        closeRegistrationModal();
-        openVerificationModal();
-        
-        // Try to send verification email
-        await sendVerificationEmail(pendingUserData);
-        
-    } catch (error) {
-        console.error('Registration error:', error);
-        showError('regErrorMessage', error.message);
-    } finally {
-        // Reset button state
-        submitText.style.display = 'inline';
-        loadingSpinner.style.display = 'none';
-        submitBtn.disabled = false;
+  const submitBtn = $('regSubmitBtn');
+  const submitText = $('regSubmitText');
+  const loadingSpinner = $('regLoadingSpinner');
+  if (submitText) submitText.style.display = 'none';
+  if (loadingSpinner) loadingSpinner.style.display = 'inline-block';
+  if (submitBtn) submitBtn.disabled = true;
+  clearMessages();
+
+  try {
+    const fd = new FormData(e.target);
+    const email = String(fd.get('email') || '').toLowerCase().trim();
+    const fullName = String(fd.get('full_name') || '').trim();
+    const phone = String(fd.get('phone') || '').trim();
+    const password = String(fd.get('password') || '');
+    const confirmPassword = String(fd.get('confirmPassword') || '');
+
+    if (!email || !password) throw new Error('Email and password are required');
+    if (password !== confirmPassword) throw new Error('Passwords do not match');
+
+    // Optional: check authorised_emails
+    const { data: authRow, error: authErr } = await supabase
+      .from('authorised_emails')
+      .select('*')
+      .eq('email', email)
+      .maybeSingle();
+
+    if (authErr) console.warn('[AuthEmails] check error (continuing):', authErr.message);
+    if (authRow && authRow.is_used) throw new Error('This email has already been used to register.');
+
+    // Create user without Supabase email
+    const { data: signup, error: signErr } = await supabase.auth.signUp({
+      email,
+      password,
+      options: { data: { full_name: fullName, phone } }
+    });
+    if (signErr) throw new Error(signErr.message);
+
+    pendingUserData = {
+      email,
+      fullName,
+      phone,
+      userId: signup.user?.id || null
+    };
+
+    // Show verification modal early
+    if (e.target.reset) e.target.reset();
+    closeRegistrationModal();
+    openVerificationModal();
+
+    // Send email
+    const res = await sendVerificationEmail(pendingUserData);
+    if (!res.ok) {
+      showError('regErrorMessage', 'We created your account, but could not send the verification email. Please try Resend or contact support.');
+      console.warn('[Registration] email not sent:', res);
     }
+  } catch (err) {
+    console.error('[Registration] failed', err);
+    showError('regErrorMessage', err.message || 'Registration failed');
+  } finally {
+    if (submitText) submitText.style.display = 'inline';
+    if (loadingSpinner) loadingSpinner.style.display = 'none';
+    if (submitBtn) submitBtn.disabled = false;
+  }
 }
 
-// Login handler
-async function handleLogin(event) {
-    event.preventDefault();
-    
-    const submitBtn = $('loginSubmitBtn');
-    const submitText = $('loginSubmitText');
-    const loadingSpinner = $('loginLoadingSpinner');
-    
-    // Show loading state
-    submitText.style.display = 'none';
-    loadingSpinner.style.display = 'inline-block';
-    submitBtn.disabled = true;
-    clearMessages();
-    
-    try {
-        const formData = new FormData(event.target);
-        const email = formData.get('email').toLowerCase().trim();
-        const password = formData.get('password');
-        
-        // Attempt to sign in
-        const { data, error } = await supabase.auth.signInWithPassword({
-            email: email,
-            password: password
-        });
-        
-        if (error) {
-            throw new Error(error.message);
-        }
-        
-        // Check if email is verified
-        if (!data.user.email_confirmed_at) {
-            throw new Error('Please verify your email before logging in. Check your inbox for verification instructions.');
-        }
-        
-        // Successful login
-        console.log('Login successful:', data.user);
-        window.location.href = '/parent-dashboard.html';
-        
-    } catch (error) {
-        console.error('Login error:', error);
-        showError('loginErrorMessage', error.message);
-    } finally {
-        // Reset button state
-        submitText.style.display = 'inline';
-        loadingSpinner.style.display = 'none';
-        submitBtn.disabled = false;
+// Login handler (unchanged basics)
+async function handleLogin(e) {
+  e.preventDefault();
+  const submitBtn = $('loginSubmitBtn');
+  const submitText = $('loginSubmitText');
+  const loadingSpinner = $('loginLoadingSpinner');
+  if (submitText) submitText.style.display = 'none';
+  if (loadingSpinner) loadingSpinner.style.display = 'inline-block';
+  if (submitBtn) submitBtn.disabled = true;
+  clearMessages();
+
+  try {
+    const fd = new FormData(e.target);
+    const email = String(fd.get('email') || '').toLowerCase().trim();
+    const password = String(fd.get('password') || '');
+
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+    if (error) throw new Error(error.message);
+
+    if (!data.user.email_confirmed_at) {
+      throw new Error('Please verify your email before logging in.');
     }
+
+    window.location.href = '/parent-dashboard.html';
+  } catch (err) {
+    console.error('[Login] failed', err);
+    showError('loginErrorMessage', err.message || 'Login failed');
+  } finally {
+    if (submitText) submitText.style.display = 'inline';
+    if (loadingSpinner) loadingSpinner.style.display = 'none';
+    if (submitBtn) submitBtn.disabled = false;
+  }
 }
 
-// Resend verification email
+// Resend
 async function resendVerificationEmail() {
-    if (!pendingUserData) {
-        console.error('No pending user data for resend');
-        return;
+  if (!pendingUserData) {
+    console.warn('No pending user data to resend');
+    return;
+  }
+  const btn = $('resendBtn');
+  if (btn) { btn.disabled = true; btn.textContent = 'Sending...'; }
+
+  const res = await sendVerificationEmail(pendingUserData);
+  if (btn) {
+    if (res.ok) {
+      btn.textContent = 'Email Sent!';
+      setTimeout(() => { btn.textContent = 'Resend Email'; btn.disabled = false; }, 2500);
+    } else {
+      btn.textContent = 'Failed. Try Again';
+      setTimeout(() => { btn.textContent = 'Resend Email'; btn.disabled = false; }, 2500);
     }
-    
-    const resendBtn = $('resendBtn');
-    if (resendBtn) {
-        resendBtn.disabled = true;
-        resendBtn.textContent = 'Sending...';
-    }
-    
-    try {
-        const sent = await sendVerificationEmail(pendingUserData);
-        if (sent) {
-            if (resendBtn) {
-                resendBtn.textContent = 'Email Sent!';
-                setTimeout(() => {
-                    resendBtn.textContent = 'Resend Email';
-                    resendBtn.disabled = false;
-                }, 3000);
-            }
-        } else {
-            throw new Error('Failed to resend email');
-        }
-    } catch (error) {
-        console.error('Resend error:', error);
-        if (resendBtn) {
-            resendBtn.textContent = 'Resend Failed';
-            setTimeout(() => {
-                resendBtn.textContent = 'Resend Email';
-                resendBtn.disabled = false;
-            }, 3000);
-        }
-    }
+  }
 }
 
-// Check auth state on page load
-document.addEventListener('DOMContentLoaded', async function() {
-    console.log('Page loaded, checking auth state...');
-    
-    try {
-        const { data: { user } } = await supabase.auth.getUser();
-        
-        if (user) {
-            console.log('User is logged in:', user);
-            
-            if (user.email_confirmed_at) {
-                console.log('User is verified, redirecting to dashboard...');
-                window.location.href = '/parent-dashboard.html';
-            } else {
-                console.log('User exists but not verified');
-                // Store user data for potential resend
-                pendingUserData = {
-                    email: user.email,
-                    fullName: user.user_metadata?.full_name || '',
-                    phone: user.user_metadata?.phone || '',
-                    userId: user.id
-                };
-            }
-        } else {
-            console.log('No user logged in');
-        }
-    } catch (error) {
-        console.error('Auth check error:', error);
+// On load: if already logged in and verified, go to dashboard
+document.addEventListener('DOMContentLoaded', async () => {
+  try {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (user?.email_confirmed_at) {
+      window.location.href = '/parent-dashboard.html';
+    } else if (user) {
+      pendingUserData = {
+        email: user.email,
+        fullName: user.user_metadata?.full_name || '',
+        phone: user.user_metadata?.phone || '',
+        userId: user.id
+      };
     }
-});
+  } catch (e) {
+    console.warn('Auth check failed on load', e);
+  }
 
-// Event listeners
-document.addEventListener('DOMContentLoaded', function() {
-    // Registration form
-    const regForm = $('registrationForm');
-    if (regForm) {
-        regForm.addEventListener('submit', handleRegistration);
-    }
-    
-    // Login form
-    const loginForm = $('loginForm');
-    if (loginForm) {
-        loginForm.addEventListener('submit', handleLogin);
-    }
-    
-    // Modal close events
-    window.onclick = function(event) {
-        const regModal = $('registrationModal');
-        const verModal = $('verificationModal');
-        
-        if (event.target === regModal) {
-            closeRegistrationModal();
-        }
-        if (event.target === verModal) {
-            closeVerificationModal();
-        }
-    }
+  // Wire forms if present
+  const regForm = $('registrationForm');
+  if (regForm) regForm.addEventListener('submit', handleRegistration);
+  const loginForm = $('loginForm');
+  if (loginForm) loginForm.addEventListener('submit', handleLogin);
+
+  // Click outside to close modals (optional)
+  window.addEventListener('click', (ev) => {
+    const reg = $('registrationModal'); const ver = $('verificationModal');
+    if (ev.target === reg) closeRegistrationModal();
+    if (ev.target === ver) closeVerificationModal();
+  });
 });
 </script>
 </body>
