@@ -130,49 +130,56 @@
     }
 
     async function handleCustomEmailJSToken(token, email) {
-  // First, verify the custom token via database lookup
-  const { data, error } = await supabase
-    .from('email_verification_tokens')
-    .select('*')
-    .eq('token', token)
-    .eq('email', email)
-    .is('used_at', null)
-    .gte('expires_at', new Date().toISOString())
-    .single();
+  // First, verify the custom token via RPC
+  const { data, error } = await supabase.rpc('verify_parent_email', {
+    p_token: token,
+    p_email: email
+  });
 
-  if (error || !data) {
-    throw new Error('Invalid or expired verification token');
+  if (error) throw new Error(error.message || 'Verification RPC failed');
+  if (!data?.ok) {
+    const reason = data?.reason || 'unknown';
+    throw new Error(`Custom token invalid (${reason}).`);
   }
 
-  // Mark token as used
-  await supabase
-    .from('email_verification_tokens')
-    .update({ used_at: new Date().toISOString() })
-    .eq('id', data.id);
+  // Now we need to establish a session since the user is confirmed
+  // Try to sign in the user to get a proper session
+  try {
+    // Get the user's current session (they should be confirmed now)
+    const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+    
+    if (!session) {
+      // If no session, we need to guide them to login
+      hide('loading');
+      show('ok');
+      $('ok').innerHTML = `
+        <i class="fas fa-check-circle bigicon success"></i>
+        <h1 class="title">Email verified successfully!</h1>
+        <p class="msg">Your account is now active. Please login to access your dashboard.</p>
+        <a class="btn btn-primary" href="/"><i class="fas fa-sign-in-alt"></i> Go to Login</a>
+      `;
+      return;
+    }
 
-  // Get user by email and confirm
-  const { data: users, error: userError } = await supabase.auth.admin.listUsers();
-  if (userError) throw new Error('Failed to find user');
-  
-  const user = users.users.find(u => u.email === email);
-  if (!user) throw new Error('User not found');
+    // If we have a session, proceed to dashboard
+    hide('loading');
+    show('ok');
+    setTimeout(() => { 
+      window.location.href = '/parent-dashboard.html'; 
+    }, 1800);
 
-  // Confirm the user's email
-  const { error: confirmError } = await supabase.auth.admin.updateUserById(
-    user.id,
-    { email_confirm: true }
-  );
-
-  if (confirmError) {
-    throw new Error('Failed to confirm email: ' + confirmError.message);
+  } catch (e) {
+    console.error('Session check error:', e);
+    // Fallback: redirect to login
+    hide('loading');
+    show('ok');
+    $('ok').innerHTML = `
+      <i class="fas fa-check-circle bigicon success"></i>
+      <h1 class="title">Email verified successfully!</h1>
+      <p class="msg">Your account is now active. Please login to access your dashboard.</p>
+      <a class="btn btn-primary" href="/"><i class="fas fa-sign-in-alt"></i> Go to Login</a>
+    `;
   }
-
-  // Show success and redirect
-  hide('loading');
-  show('ok');
-  setTimeout(() => { 
-    window.location.href = '/parent-dashboard.html'; 
-  }, 1800);
 }
 
     async function main() {
