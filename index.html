@@ -1340,263 +1340,403 @@
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
-
-<script>
-// ================== CONFIG ==================
-const SUPABASE_URL = 'https://vcxdkacxbjsgaoxbhsip.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZjeGRrYWN4YmpzZ2FveGJoc2lwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjQzMTc1MTcsImV4cCI6MjAzOTg5MzUxN30.dHoiJu-MNvp3yfxhgZJOqp4nOoO2GrpXI4YFQCLSoO8'; // keep your actual anon key
-const EMAILJS_CONFIG = {
-  PUBLIC_KEY: 'axzjFvaj8oDzIdLHB',     // Replace with your EmailJS public key
+    <script>
+        // ===== CONFIGURATION SECTION =====
+        // Replace these with your actual credentials
+        const SUPABASE_URL = 'https://vcxdkacxbjsgaoxbhsip.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZjeGRrYWN4YmpzZ2FveGJoc2lwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI5MDQ5ODMsImV4cCI6MjA2ODQ4MDk4M30.T9KhHWzHZWyaZvyeFXtBu8tPLY9JOn6_wCHcH8B46FU';
+        
+        const EMAILJS_CONFIG = {
+            PUBLIC_KEY: 'axzjFvaj8oDzIdLHB',     // Replace with your EmailJS public key
             SERVICE_ID: 'service_02brniu',     // Replace with your EmailJS service ID
-            TEMPLATE_ID: 'template_ijjrhov'
-};
-// ============================================
+            TEMPLATE_ID: 'template_ijjrhov'    // Replace with your EmailJS template ID for verification emails
+        };
+        
+        // Initialize services
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        emailjs.init(EMAILJS_CONFIG.PUBLIC_KEY);
 
-// Init clients
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-emailjs.init(EMAILJS_CONFIG.PUBLIC_KEY);
+        // Store user data for verification email
+        let pendingUserData = null;
 
-// Simple helpers
-const $ = (id) => document.getElementById(id);
-const show = (id) => { const el = $(id); if (el) el.style.display = 'block'; };
-const hide = (id) => { const el = $(id); if (el) el.style.display = 'none'; };
+        // ===== MOBILE MENU FUNCTIONALITY =====
+        const menuToggle = document.getElementById('menuToggle');
+        const mobileMenuPanel = document.getElementById('mobileMenuPanel');
+        const menuOverlay = document.getElementById('menuOverlay');
+        
+        function toggleMenu() {
+            mobileMenuPanel.classList.toggle('active');
+            menuOverlay.classList.toggle('active');
+            document.body.style.overflow = mobileMenuPanel.classList.contains('active') ? 'hidden' : 'auto';
+            
+            if (mobileMenuPanel.classList.contains('active')) {
+                menuToggle.innerHTML = '<i class="fas fa-times"></i>';
+            } else {
+                menuToggle.innerHTML = '<i class="fas fa-bars"></i>';
+            }
+        }
+        
+        function closeMenu() {
+            mobileMenuPanel.classList.remove('active');
+            menuOverlay.classList.remove('active');
+            document.body.style.overflow = 'auto';
+            menuToggle.innerHTML = '<i class="fas fa-bars"></i>';
+        }
+        
+        menuToggle.addEventListener('click', toggleMenu);
+        menuOverlay.addEventListener('click', closeMenu);
+        
+        // Close menu when clicking on mobile links
+        document.querySelectorAll('.mobile-link').forEach(link => {
+            link.addEventListener('click', closeMenu);
+        });
 
-function showError(id, msg) {
-  const el = $(id);
-  if (el) {
-    el.textContent = msg;
-    el.style.display = 'block';
-  } else {
-    console.error('Missing error element:', id, msg);
-  }
-}
-function clearMessages() {
-  document.querySelectorAll('.error-message').forEach(el => { el.textContent = ''; el.style.display = 'none'; });
-}
+        // ===== MODAL FUNCTIONS =====
+        function openRegistrationModal() {
+            document.getElementById('registrationModal').style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+            clearMessages();
+        }
 
-// Modals (adapt to your DOM)
-function openRegistrationModal(){ const m=$('registrationModal'); if(m){ m.style.display='block'; document.body.style.overflow='hidden';}}
-function closeRegistrationModal(){ const m=$('registrationModal'); if(m){ m.style.display='none'; document.body.style.overflow='auto'; clearMessages(); }}
-function openVerificationModal(){ const m=$('verificationModal'); if(m){ m.style.display='block'; document.body.style.overflow='hidden'; }}
-function closeVerificationModal(){ const m=$('verificationModal'); if(m){ m.style.display='none'; document.body.style.overflow='auto'; }}
+        function closeRegistrationModal() {
+            document.getElementById('registrationModal').style.display = 'none';
+            document.body.style.overflow = 'auto';
+            clearMessages();
+        }
 
-// Store pending user for resend
-let pendingUserData = null;
+        function openLoginModal() {
+            document.getElementById('loginModal').style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+            clearMessages();
+        }
 
-// Core: send verification via EmailJS
-async function sendVerificationEmail(userData) {
-  console.log('[Email] start', userData.email);
+        function closeLoginModal() {
+            document.getElementById('loginModal').style.display = 'none';
+            document.body.style.overflow = 'auto';
+            clearMessages();
+        }
 
-  // 1) Generate token
-  const tokenRaw = `${userData.email}:${Date.now()}:${crypto.getRandomValues(new Uint32Array(1))[0]}`;
-  const token = btoa(tokenRaw).replace(/[^a-zA-Z0-9]/g, '');
+        function openVerificationModal() {
+            document.getElementById('verificationModal').style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
 
-  // 2) Save token
-  const { error: tokenError } = await supabase
-    .from('email_verification_tokens')
-    .insert({
-      email: userData.email.toLowerCase(),
-      token,
-      user_id: userData.userId || null,
-      created_at: new Date().toISOString(),
-      expires_at: new Date(Date.now() + 24*60*60*1000).toISOString()
-    });
-  if (tokenError) {
-    console.error('[Email] token insert failed', tokenError);
-    return { ok: false, reason: 'token_insert_failed', details: tokenError.message };
-  }
+        function closeVerificationModal() {
+            document.getElementById('verificationModal').style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
 
-  // 3) Compose verification link
-  const link = `${window.location.origin}/verify-email.html?token=${token}&email=${encodeURIComponent(userData.email)}`;
+        function switchToLogin() {
+            closeRegistrationModal();
+            openLoginModal();
+        }
 
-  // 4) Prepare EmailJS variables
-  // IMPORTANT: Keys must match your EmailJS template variable names!
-  const templateData = {
-    to_email: userData.email,
-    to_name: userData.fullName || userData.email,
-    from_name: 'Baobab Online Academy Parent Portal',
-    subject: 'Verify your email',
-    parent_name: userData.fullName || '',
-    verification_link: link,
-    portal_url: window.location.origin,
-    support_email: 'parents@baobabonlineacademy.com',
-    current_year: new Date().getFullYear()
-  };
+        function switchToRegistration() {
+            closeLoginModal();
+            openRegistrationModal();
+        }
 
-  // 5) Send with timeout wrapper
-  const timeoutMs = 20000;
-  const timeout = new Promise((_, rej) => setTimeout(() => rej(new Error('EmailJS timeout')), timeoutMs));
+        function clearMessages() {
+            const errorMessages = document.querySelectorAll('.error-message');
+            const successMessages = document.querySelectorAll('.success-message');
+            
+            errorMessages.forEach(msg => {
+                msg.style.display = 'none';
+                msg.textContent = '';
+            });
+            
+            successMessages.forEach(msg => {
+                msg.style.display = 'none';
+                msg.textContent = '';
+            });
+        }
 
+        function showError(elementId, message) {
+            const errorElement = document.getElementById(elementId);
+            errorElement.textContent = message;
+            errorElement.style.display = 'block';
+        }
+
+        function showSuccess(elementId, message) {
+            const successElement = document.getElementById(elementId);
+            successElement.textContent = message;
+            successElement.style.display = 'block';
+        }
+
+        // ===== EMAIL VERIFICATION FUNCTIONS =====
+        async function sendVerificationEmail(userData) {
   try {
-    const resp = await Promise.race([
-      emailjs.send(EMAILJS_CONFIG.SERVICE_ID, EMAILJS_CONFIG.TEMPLATE_ID, templateData),
-      timeout
-    ]);
-    console.log('[Email] sent OK', resp);
-    return { ok: true };
-  } catch (err) {
-    console.error('[Email] send failed', err);
-    return { ok: false, reason: 'emailjs_failed', details: err.message || String(err) };
-  }
-}
-
-// Registration handler
-async function handleRegistration(e) {
-  e.preventDefault();
-
-  const submitBtn = $('regSubmitBtn');
-  const submitText = $('regSubmitText');
-  const loadingSpinner = $('regLoadingSpinner');
-  if (submitText) submitText.style.display = 'none';
-  if (loadingSpinner) loadingSpinner.style.display = 'inline-block';
-  if (submitBtn) submitBtn.disabled = true;
-  clearMessages();
-
-  try {
-    const fd = new FormData(e.target);
-    const email = String(fd.get('email') || '').toLowerCase().trim();
-    const fullName = String(fd.get('full_name') || '').trim();
-    const phone = String(fd.get('phone') || '').trim();
-    const password = String(fd.get('password') || '');
-    const confirmPassword = String(fd.get('confirmPassword') || '');
-
-    if (!email || !password) throw new Error('Email and password are required');
-    if (password !== confirmPassword) throw new Error('Passwords do not match');
-
-    // Optional: check authorised_emails
-    const { data: authRow, error: authErr } = await supabase
-      .from('authorised_emails')
-      .select('*')
-      .eq('email', email)
-      .maybeSingle();
-
-    if (authErr) console.warn('[AuthEmails] check error (continuing):', authErr.message);
-    if (authRow && authRow.is_used) throw new Error('This email has already been used to register.');
-
-    // Create user without Supabase email
-    const { data: signup, error: signErr } = await supabase.auth.signUp({
-      email,
-      password,
-      options: { data: { full_name: fullName, phone } }
+    // Ask Edge Function for the official Supabase confirmation link
+    const resp = await fetch(`https://vcxdkacxbjsgaoxbhsip.supabase.co/functions/v1/smooth-responder`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        email: userData.email,
+        redirectTo: `${window.location.origin}/verify-email.html`
+      })
     });
-    if (signErr) throw new Error(signErr.message);
+    const payload = await resp.json();
+    if (!resp.ok || !payload?.link) {
+      console.error('generate_signup_link error:', payload?.error || resp.status);
+      return false;
+    }
 
-    pendingUserData = {
-      email,
-      fullName,
-      phone,
-      userId: signup.user?.id || null
+    // Use the official Supabase action_link in your EmailJS template
+    const verificationLink = payload.link;
+
+    const emailData = {
+      to_email: userData.email,
+      to_name: userData.fullName,
+      from_name: 'Baobab Online Academy Parent Portal',
+      subject: 'Welcome to Baobab Parent Portal - Please Verify Your Email',
+      parent_name: userData.fullName,
+      verification_link: verificationLink, // IMPORTANT: this is the official link
+      portal_url: window.location.origin,
+      support_email: 'parents@baobabonlineacademy.com',
+      current_year: new Date().getFullYear()
     };
 
-    // Show verification modal early
-    if (e.target.reset) e.target.reset();
-    closeRegistrationModal();
-    openVerificationModal();
+    const response = await emailjs.send(
+      EMAILJS_CONFIG.SERVICE_ID,
+      EMAILJS_CONFIG.TEMPLATE_ID,
+      emailData
+    );
 
-    // Send email
-    const res = await sendVerificationEmail(pendingUserData);
-    if (!res.ok) {
-      showError('regErrorMessage', 'We created your account, but could not send the verification email. Please try Resend or contact support.');
-      console.warn('[Registration] email not sent:', res);
-    }
-  } catch (err) {
-    console.error('[Registration] failed', err);
-    showError('regErrorMessage', err.message || 'Registration failed');
-  } finally {
-    if (submitText) submitText.style.display = 'inline';
-    if (loadingSpinner) loadingSpinner.style.display = 'none';
-    if (submitBtn) submitBtn.disabled = false;
+    console.log('Verification email (EmailJS) sent with official link!', response);
+    return true;
+  } catch (error) {
+    console.error('Failed to send verification email via EmailJS:', error);
+    return false;
   }
 }
 
-// Login handler (unchanged basics)
-async function handleLogin(e) {
-  e.preventDefault();
-  const submitBtn = $('loginSubmitBtn');
-  const submitText = $('loginSubmitText');
-  const loadingSpinner = $('loginLoadingSpinner');
-  if (submitText) submitText.style.display = 'none';
-  if (loadingSpinner) loadingSpinner.style.display = 'inline-block';
-  if (submitBtn) submitBtn.disabled = true;
-  clearMessages();
+        async function resendVerificationEmail() {
+            if (!pendingUserData) {
+                alert('No pending verification found. Please try registering again.');
+                return;
+            }
 
-  try {
-    const fd = new FormData(e.target);
-    const email = String(fd.get('email') || '').toLowerCase().trim();
-    const password = String(fd.get('password') || '');
+            try {
+                const emailSent = await sendVerificationEmail(pendingUserData);
+                if (emailSent) {
+                    alert('Verification email resent successfully! Please check your inbox.');
+                } else {
+                    alert('Failed to resend verification email. Please try again.');
+                }
+            } catch (error) {
+                alert('Failed to resend verification email. Please try again.');
+            }
+        }
 
-    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-    if (error) throw new Error(error.message);
+        // ===== REGISTRATION FUNCTION =====
+        async function handleRegistration(event) {
+            event.preventDefault();
+            
+            const submitBtn = document.getElementById('regSubmitBtn');
+            const submitText = document.getElementById('regSubmitText');
+            const loadingSpinner = document.getElementById('regLoadingSpinner');
+            
+            // Show loading state
+            submitText.style.display = 'none';
+            loadingSpinner.style.display = 'inline-block';
+            submitBtn.disabled = true;
+            clearMessages();
+            
+            try {
+                const formData = new FormData(event.target);
+                const email = formData.get('email').toLowerCase().trim();
+                const fullName = formData.get('full_name').trim();
+                const phone = formData.get('phone').trim();
+                const password = formData.get('password');
+                const confirmPassword = formData.get('confirmPassword');
+                
+                // Validate passwords match
+                if (password !== confirmPassword) {
+                    throw new Error('Passwords do not match');
+                }
+                
+                // Check if email is authorized
+                const { data: authorizedEmail, error: authCheckError } = await supabase
+                    .from('authorised_emails')
+                    .select('*')
+                    .eq('email', email)
+                    .eq('is_used', false)
+                    .single();
+                
+                if (authCheckError || !authorizedEmail) {
+                    throw new Error('This email is not authorized to create an account. Please contact support at parents@baobabacademy.com');
+                }
+                
+                // Create user account
+                const { data: authData, error: signUpError } = await supabase.auth.signUp({
+                    email: email,
+                    password: password,
+                    options: {
+                        emailRedirectTo: `${window.location.origin}/verify-email.html`,
+                        data: {
+                            full_name: fullName,
+                            phone: phone
+                        }
+                    }
+                });
+                
+                if (signUpError) {
+                    throw new Error(signUpError.message);
+                }
+                
+                // Store user data for potential resend
+                pendingUserData = {
+                    email: email,
+                    fullName: fullName,
+                    phone: phone,
+                    userId: authData.user?.id
+                };
+                
+                
+                
+                
+                
+                // Send verification email via EmailJS
+                const emailSent = await sendVerificationEmail(pendingUserData);
+                
+                // Reset form and show verification modal
+                event.target.reset();
+                closeRegistrationModal();
+                openVerificationModal();
+                
+                if (!emailSent) {
+                    console.warn('Verification email failed to send, but account was created');
+                }
+                
+            } catch (error) {
+                console.error('Registration error:', error);
+                showError('regErrorMessage', error.message);
+            } finally {
+                // Reset button state
+                submitText.style.display = 'inline';
+                loadingSpinner.style.display = 'none';
+                submitBtn.disabled = false;
+            }
+        }
 
-    if (!data.user.email_confirmed_at) {
-      throw new Error('Please verify your email before logging in.');
-    }
+        // ===== LOGIN FUNCTION =====
+        async function handleLogin(event) {
+            event.preventDefault();
+            
+            const submitBtn = document.getElementById('loginSubmitBtn');
+            const submitText = document.getElementById('loginSubmitText');
+            const loadingSpinner = document.getElementById('loginLoadingSpinner');
+            
+            // Show loading state
+            submitText.style.display = 'none';
+            loadingSpinner.style.display = 'inline-block';
+            submitBtn.disabled = true;
+            clearMessages();
+            
+            try {
+                const formData = new FormData(event.target);
+                const email = formData.get('email').toLowerCase().trim();
+                const password = formData.get('password');
+                
+                // Sign in user
+                const { data: authData, error: signInError } = await supabase.auth.signInWithPassword({
+                    email: email,
+                    password: password
+                });
+                
+                if (signInError) {
+                    throw new Error(signInError.message);
+                }
+                
+                // Check if email is verified
+                if (!authData.user.email_confirmed_at) {
+                    showError('loginErrorMessage', 'Please verify your email address before logging in. Check your inbox for the verification link.');
+                    return;
+                }
+                
+                showSuccess('loginSuccessMessage', 'Login successful! Redirecting to your dashboard...');
+                event.target.reset();
+                
+                // Redirect to dashboard
+                setTimeout(() => {
+                    closeLoginModal();
+                    window.location.href = '/parent-dashboard.html';
+                }, 2000);
+                
+            } catch (error) {
+                console.error('Login error:', error);
+                showError('loginErrorMessage', error.message);
+            } finally {
+                // Reset button state
+                submitText.style.display = 'inline';
+                loadingSpinner.style.display = 'none';
+                submitBtn.disabled = false;
+            }
+        }
 
-    window.location.href = '/parent-dashboard.html';
-  } catch (err) {
-    console.error('[Login] failed', err);
-    showError('loginErrorMessage', err.message || 'Login failed');
-  } finally {
-    if (submitText) submitText.style.display = 'inline';
-    if (loadingSpinner) loadingSpinner.style.display = 'none';
-    if (submitBtn) submitBtn.disabled = false;
-  }
-}
+        // ===== CHECK AUTHENTICATION STATUS =====
+        async function checkAuthStatus() {
+            const { data: { user } } = await supabase.auth.getUser();
+            
+            if (user && user.email_confirmed_at) {
+                console.log('User is logged in and verified:', user);
+            }
+        }
 
-// Resend
-async function resendVerificationEmail() {
-  if (!pendingUserData) {
-    console.warn('No pending user data to resend');
-    return;
-  }
-  const btn = $('resendBtn');
-  if (btn) { btn.disabled = true; btn.textContent = 'Sending...'; }
+        // ===== SMOOTH SCROLLING =====
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                const href = this.getAttribute('href');
+                if (href === '#' || href === '#login' || href === '#register') {
+                    e.preventDefault();
+                    return;
+                }
+                
+                e.preventDefault();
+                const target = document.querySelector(href);
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
 
-  const res = await sendVerificationEmail(pendingUserData);
-  if (btn) {
-    if (res.ok) {
-      btn.textContent = 'Email Sent!';
-      setTimeout(() => { btn.textContent = 'Resend Email'; btn.disabled = false; }, 2500);
-    } else {
-      btn.textContent = 'Failed. Try Again';
-      setTimeout(() => { btn.textContent = 'Resend Email'; btn.disabled = false; }, 2500);
-    }
-  }
-}
+        // ===== INTERACTIVE EFFECTS =====
+        document.querySelectorAll('.feature-card').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-15px) scale(1.02)';
+            });
+            
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0) scale(1)';
+            });
+        });
 
-// On load: if already logged in and verified, go to dashboard
-document.addEventListener('DOMContentLoaded', async () => {
-  try {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (user?.email_confirmed_at) {
-      window.location.href = '/parent-dashboard.html';
-    } else if (user) {
-      pendingUserData = {
-        email: user.email,
-        fullName: user.user_metadata?.full_name || '',
-        phone: user.user_metadata?.phone || '',
-        userId: user.id
-      };
-    }
-  } catch (e) {
-    console.warn('Auth check failed on load', e);
-  }
+        // ===== CLOSE MODALS ON OUTSIDE CLICK =====
+        document.getElementById('registrationModal').addEventListener('click', (e) => {
+            if (e.target === e.currentTarget) {
+                closeRegistrationModal();
+            }
+        });
 
-  // Wire forms if present
-  const regForm = $('registrationForm');
-  if (regForm) regForm.addEventListener('submit', handleRegistration);
-  const loginForm = $('loginForm');
-  if (loginForm) loginForm.addEventListener('submit', handleLogin);
+        document.getElementById('loginModal').addEventListener('click', (e) => {
+            if (e.target === e.currentTarget) {
+                closeLoginModal();
+            }
+        });
 
-  // Click outside to close modals (optional)
-  window.addEventListener('click', (ev) => {
-    const reg = $('registrationModal'); const ver = $('verificationModal');
-    if (ev.target === reg) closeRegistrationModal();
-    if (ev.target === ver) closeVerificationModal();
-  });
-});
-</script>
+        document.getElementById('verificationModal').addEventListener('click', (e) => {
+            if (e.target === e.currentTarget) {
+                closeVerificationModal();
+            }
+        });
+
+        // ===== INITIALIZE ON PAGE LOAD =====
+        document.addEventListener('DOMContentLoaded', function() {
+            checkAuthStatus();
+        });
+    </script>
 </body>
 </html>
