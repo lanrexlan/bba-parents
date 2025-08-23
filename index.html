@@ -1468,36 +1468,27 @@ async function sendVerificationEmail(userData) {
   try {
     console.log('Sending verification email for:', userData.email);
     
-    // Ask Edge Function for the official Supabase confirmation link
-    const resp = await fetch(`https://vcxdkacxbjsgaoxbhsip.supabase.co/functions/v1/smooth-responder`, {
-      method: 'POST',
-      headers: { 
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
-      },
-      body: JSON.stringify({
-        email: userData.email,
-        redirectTo: `${window.location.origin}/verify-email.html`
-      })
-    });
-
-    if (!resp.ok) {
-      const errorText = await resp.text();
-      console.error('Edge function request failed:', resp.status, errorText);
-      return false;
-    }
-
-    const payload = await resp.json();
-    console.log('Edge function response:', payload);
+    // Generate a simple verification token
+    const token = btoa(userData.email + ':' + Date.now() + ':' + Math.random()).replace(/[^a-zA-Z0-9]/g, '');
     
-    if (!payload?.link) {
-      console.error('No link in response:', payload);
+    // Store the token in your database for verification
+    const { error: tokenError } = await supabase
+      .from('email_verification_tokens')
+      .insert({
+        email: userData.email,
+        token: token,
+        user_id: userData.userId,
+        created_at: new Date().toISOString(),
+        expires_at: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString() // 24 hours
+      });
+
+    if (tokenError) {
+      console.error('Failed to store verification token:', tokenError);
       return false;
     }
 
-    // Use the official Supabase action_link in your EmailJS template
-    const verificationLink = payload.link;
-    console.log('Generated verification link:', verificationLink);
+    // Create verification link with custom token
+    const verificationLink = `${window.location.origin}/verify-email.html?token=${token}&email=${encodeURIComponent(userData.email)}`;
 
     const emailData = {
       to_email: userData.email,
@@ -1519,7 +1510,7 @@ async function sendVerificationEmail(userData) {
       emailData
     );
 
-    console.log('Verification email (EmailJS) sent with official link!', response);
+    console.log('Verification email (EmailJS) sent successfully!', response);
     return true;
   } catch (error) {
     console.error('Failed to send verification email via EmailJS:', error);
