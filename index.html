@@ -1466,23 +1466,21 @@
         // ===== EMAIL VERIFICATION FUNCTIONS =====
         async function sendVerificationEmail(userData) {
   try {
-    // Ask Edge Function for the official Supabase confirmation link
-    const resp = await fetch(`https://vcxdkacxbjsgaoxbhsip.supabase.co/functions/v1/smooth-responder`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
+    const { data: payload, error } = await supabase.functions.invoke('smooth-responder', {
+      body: {
         email: userData.email,
         redirectTo: `${window.location.origin}/verify-email.html`
-      })
+      },
+      headers: {
+        Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+        apikey: SUPABASE_ANON_KEY
+      }
     });
-    const payload = await resp.json();
-    if (!resp.ok || !payload?.link) {
-      console.error('generate_signup_link error:', payload?.error || resp.status);
+
+    if (error || !payload?.link) {
+      console.error('generate_signup_link error:', error?.message || 'No link returned');
       return false;
     }
-
-    // Use the official Supabase action_link in your EmailJS template
-    const verificationLink = payload.link;
 
     const emailData = {
       to_email: userData.email,
@@ -1490,7 +1488,7 @@
       from_name: 'Baobab Online Academy Parent Portal',
       subject: 'Welcome to Baobab Parent Portal - Please Verify Your Email',
       parent_name: userData.fullName,
-      verification_link: verificationLink, // IMPORTANT: this is the official link
+      verification_link: payload.link,
       portal_url: window.location.origin,
       support_email: 'parents@baobabonlineacademy.com',
       current_year: new Date().getFullYear()
