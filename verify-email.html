@@ -150,9 +150,16 @@
     .update({ used_at: new Date().toISOString() })
     .eq('id', data.id);
 
-  // Get user and confirm email
+  // Get user by email and confirm
+  const { data: users, error: userError } = await supabase.auth.admin.listUsers();
+  if (userError) throw new Error('Failed to find user');
+  
+  const user = users.users.find(u => u.email === email);
+  if (!user) throw new Error('User not found');
+
+  // Confirm the user's email
   const { error: confirmError } = await supabase.auth.admin.updateUserById(
-    data.user_id,
+    user.id,
     { email_confirm: true }
   );
 
