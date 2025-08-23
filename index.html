@@ -1464,10 +1464,10 @@
         }
 
         // ===== EMAIL VERIFICATION FUNCTIONS =====
-        async function sendVerificationEmail(userData) {
+async function sendVerificationEmail(userData) {
   try {
     // Ask Edge Function for the official Supabase confirmation link
-    const resp = await fetch(`$https://vcxdkacxbjsgaoxbhsip.supabase.co/functions/v1/smooth-responder`, {
+    const resp = await fetch(`https://vcxdkacxbjsgaoxbhsip.supabase.co/functions/v1/smooth-responder`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -1490,7 +1490,7 @@
       from_name: 'Baobab Online Academy Parent Portal',
       subject: 'Welcome to Baobab Parent Portal - Please Verify Your Email',
       parent_name: userData.fullName,
-      verification_link: verificationLink, // IMPORTANT: this is the official link
+      verification_link: verificationLink,
       portal_url: window.location.origin,
       support_email: 'parents@baobabonlineacademy.com',
       current_year: new Date().getFullYear()
