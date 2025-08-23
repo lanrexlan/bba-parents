@@ -1466,23 +1466,38 @@
         // ===== EMAIL VERIFICATION FUNCTIONS =====
 async function sendVerificationEmail(userData) {
   try {
+    console.log('Sending verification email for:', userData.email);
+    
     // Ask Edge Function for the official Supabase confirmation link
     const resp = await fetch(`https://vcxdkacxbjsgaoxbhsip.supabase.co/functions/v1/smooth-responder`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+      },
       body: JSON.stringify({
         email: userData.email,
         redirectTo: `${window.location.origin}/verify-email.html`
       })
     });
+
+    if (!resp.ok) {
+      const errorText = await resp.text();
+      console.error('Edge function request failed:', resp.status, errorText);
+      return false;
+    }
+
     const payload = await resp.json();
-    if (!resp.ok || !payload?.link) {
-      console.error('generate_signup_link error:', payload?.error || resp.status);
+    console.log('Edge function response:', payload);
+    
+    if (!payload?.link) {
+      console.error('No link in response:', payload);
       return false;
     }
 
     // Use the official Supabase action_link in your EmailJS template
     const verificationLink = payload.link;
+    console.log('Generated verification link:', verificationLink);
 
     const emailData = {
       to_email: userData.email,
@@ -1495,6 +1510,8 @@ async function sendVerificationEmail(userData) {
       support_email: 'parents@baobabonlineacademy.com',
       current_year: new Date().getFullYear()
     };
+
+    console.log('Sending email via EmailJS with data:', emailData);
 
     const response = await emailjs.send(
       EMAILJS_CONFIG.SERVICE_ID,
