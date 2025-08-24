@@ -1343,7 +1343,7 @@
 <script>
   // ===== CONFIGURATION SECTION =====
   const SUPABASE_URL = 'https://vcxdkacxbjsgaoxbhsip.supabase.co';
-  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZjeGRrYWN4YmpzZ2FoveGJoc2lwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI5MDQ5ODMsImV4cCI6MjA2ODQ4MDk4M30.T9KhHWzHZWyaZvyeFXtBu8tPLY9JOn6_wCHcH8B46FU';
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZjeGRrYWN4YmpzZ2FveGJoc2lwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI5MDQ5ODMsImV4cCI6MjA2ODQ4MDk4M30.T9KhHWzHZWyaZvyeFXtBu8tPLY9JOn6_wCHcH8B46FU';
 
   const EMAILJS_CONFIG = {
     PUBLIC_KEY: 'axzjFvaj8oDzIdLHB',
@@ -1358,14 +1358,12 @@
 
   // ===== AUTHENTICATION STATE MANAGEMENT =====
   
-  // Clear invalid authentication data
   function clearAuthState() {
     console.log('Clearing authentication state');
     localStorage.removeItem('sb-vcxdkacxbjsgaoxbhsip-auth-token');
     sessionStorage.removeItem('sb-vcxdkacxbjsgaoxbhsip-auth-token');
   }
 
-  // Handle authentication errors gracefully
   supabase.auth.onAuthStateChange((event, session) => {
     console.log('Auth state changed:', event, session?.user?.email || 'no user');
     
@@ -1534,6 +1532,25 @@
     }
   }
 
+  // Check if user exists in authorized_emails (for existing users)
+  async function isAuthorizedUser(email) {
+    try {
+      const { data, error } = await supabase
+        .from('authorised_emails')
+        .select('*')
+        .eq('email', email.toLowerCase())
+        .single();
+      
+      if (error || !data) return false;
+      
+      // If user exists in authorized_emails and is marked as used, they're an existing user
+      return data.is_used === true;
+    } catch (error) {
+      console.error('Error checking authorized user:', error);
+      return false;
+    }
+  }
+
   function validateVerificationToken(token, email) {
     try {
       const storedData = localStorage.getItem(`verification_${token}`);
@@ -1629,49 +1646,6 @@
     }
   }
 
-  // ===== MIGRATION FUNCTION FOR OLD ACCOUNTS =====
-  async function migrateOldAccount(email, password) {
-    try {
-      // First, try to sign in to verify credentials
-      const { data: authData, error: signInError } = await supabase.auth.signInWithPassword({
-        email,
-        password
-      });
-
-      if (signInError) {
-        throw signInError;
-      }
-
-      // If successful, mark user as verified (migration)
-      if (authData.user) {
-        console.log('Migrating old account:', email);
-        markUserVerified(email, authData.user.id);
-        
-        // Update authorized_emails if needed
-        try {
-          const { error: updateError } = await supabase
-            .from('authorised_emails')
-            .update({ 
-              is_used: true, 
-              used_at: new Date().toISOString()
-            })
-            .eq('email', email)
-            .eq('is_used', false);
-          
-          if (updateError) {
-            console.log('Email might already be marked as used:', updateError);
-          }
-        } catch (e) {
-          console.log('Error updating authorized_emails during migration:', e);
-        }
-        
-        return authData;
-      }
-    } catch (error) {
-      throw error;
-    }
-  }
-
   // ===== REGISTRATION FUNCTION =====
   async function handleRegistration(event) {
     event.preventDefault();
@@ -1717,7 +1691,6 @@
         throw new Error('This email is not authorized to create an account. Please contact support at parents@baobabonlineacademy.com');
       }
 
-      // If email is already used, this might be an existing account trying to re-register
       if (authorizedEmail.is_used) {
         throw new Error('This email has already been used to create an account. Please try logging in instead.');
       }
@@ -1793,7 +1766,7 @@
     }
   }
 
-  // ===== ENHANCED LOGIN FUNCTION =====
+  // ===== SIMPLIFIED LOGIN FUNCTION =====
   async function handleLogin(event) {
     event.preventDefault();
 
@@ -1815,54 +1788,28 @@
       await supabase.auth.signOut();
       clearAuthState();
 
-      let authData;
-      
-      // First check if user is verified in our system
-      if (!isUserVerified(email)) {
-        console.log('User not verified in our system, attempting migration...');
-        
-        try {
-          // Try to migrate old account
-          authData = await migrateOldAccount(email, password);
-          console.log('Account migrated successfully');
-        } catch (migrationError) {
-          console.log('Migration failed, user needs to verify:', migrationError);
-          showError('loginErrorMessage', 'Please verify your email address before logging in. Check your inbox for the verification link.');
-          return;
-        }
-      } else {
-        // User is verified, proceed with normal login
-        console.log('User is verified, proceeding with login...');
-        const { data, error: signInError } = await supabase.auth.signInWithPassword({
-          email,
-          password
-        });
+      console.log('Attempting login for:', email);
 
-        if (signInError) {
-          // If refresh token is invalid, clear auth state and try again
-          if (signInError.message?.includes('refresh') || signInError.message?.includes('token')) {
-            console.log('Token error, clearing auth state and retrying...');
-            clearAuthState();
-            
-            const { data: retryData, error: retryError } = await supabase.auth.signInWithPassword({
-              email,
-              password
-            });
-            
-            if (retryError) {
-              throw retryError;
-            }
-            authData = retryData;
-          } else {
-            throw signInError;
-          }
-        } else {
-          authData = data;
-        }
+      // Try to sign in first
+      const { data: authData, error: signInError } = await supabase.auth.signInWithPassword({
+        email,
+        password
+      });
+
+      if (signInError) {
+        throw new Error(signInError.message);
       }
 
       if (!authData || !authData.user) {
         throw new Error('Login failed. Please try again.');
+      }
+
+      console.log('Login successful for:', email);
+
+      // For existing users, automatically mark them as verified
+      if (!isUserVerified(email)) {
+        console.log('Automatically verifying existing user:', email);
+        markUserVerified(email, authData.user.id);
       }
 
       showSuccess('loginSuccessMessage', 'Login successful! Redirecting to your dashboard...');
@@ -1880,9 +1827,19 @@
       // Handle specific error cases
       if (errorMessage.includes('Invalid login credentials')) {
         errorMessage = 'Invalid email or password. Please check your credentials and try again.';
-      } else if (errorMessage.includes('refresh') || errorMessage.includes('token')) {
-        errorMessage = 'Session expired. Please try logging in again.';
-        clearAuthState();
+      } else if (errorMessage.includes('Email not confirmed')) {
+        // For new users who haven't verified yet
+        const isNewUser = !await isAuthorizedUser(formData.get('email').toLowerCase().trim());
+        if (isNewUser) {
+          errorMessage = 'Please verify your email address before logging in. Check your inbox for the verification link.';
+        } else {
+          // For existing users, allow them to proceed
+          console.log('Existing user with unconfirmed email, allowing login');
+          setTimeout(() => {
+            window.location.href = '/parent-dashboard.html';
+          }, 1000);
+          return;
+        }
       }
       
       showError('loginErrorMessage', errorMessage);
@@ -1900,6 +1857,10 @@
       
       if (error) {
         console.log('Auth check error:', error);
+        if (error.message.includes('session missing')) {
+          // This is normal when not logged in
+          return;
+        }
         clearAuthState();
         return;
       }
@@ -1907,15 +1868,15 @@
       if (user) {
         console.log('User session found:', user.email);
         
-        if (isUserVerified(user.email)) {
-          console.log('User is verified and can access dashboard');
-        } else {
-          console.log('User exists but not verified');
+        // Auto-verify existing users
+        if (!isUserVerified(user.email)) {
+          console.log('Auto-verifying existing user:', user.email);
+          markUserVerified(user.email, user.id);
         }
       }
     } catch (error) {
       console.log('Auth status check failed:', error);
-      clearAuthState();
+      // Don't clear auth state on error, might be temporary
     }
   }
 
