@@ -1340,7 +1340,7 @@
         </div>
     </div>
 
-    <script>
+<script>
   // ===== CONFIGURATION SECTION =====
   const SUPABASE_URL = 'https://vcxdkacxbjsgaoxbhsip.supabase.co';
   const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZjeGRrYWN4YmpzZ2FveGJoc2lwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI5MDQ5ODMsImV4cCI6MjA2ODQ4MDk4M30.T9KhHWzHZWyaZvyeFXtBu8tPLY9JOn6_wCHcH8B46FU';
@@ -1447,108 +1447,97 @@
     el.style.display = 'block';
   }
 
-  // ===== EMAIL VERIFICATION FUNCTIONS =====
-  // Preferred: use supabase.functions.invoke which attaches proper headers. We still pass anon key explicitly
-  async function requestOfficialVerificationLink(email) {
+  // ===== IMPROVED EMAIL VERIFICATION FUNCTIONS =====
+  
+  // Generate custom verification token and send via EmailJS
+  async function generateCustomVerificationToken(email) {
+    try {
+      const { data, error } = await supabase.rpc('generate_verification_token', {
+        p_email: email.toLowerCase()
+      });
+
+      if (error) {
+        console.error('Token generation error:', error);
+        return null;
+      }
+
+      return data;
+    } catch (err) {
+      console.error('Token generation exception:', err);
+      return null;
+    }
+  }
+
+  // Send verification email with retry logic
+  async function sendVerificationEmailWithRetry(userData, maxRetries = 3) {
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+      console.log(`EmailJS attempt ${attempt}/${maxRetries}`);
+      
+      try {
+        // Generate custom verification token
+        const token = await generateCustomVerificationToken(userData.email);
+        if (!token) {
+          throw new Error('Failed to generate verification token');
+        }
+
+        // Create verification link with custom token
+        const verificationLink = `${window.location.origin}/verify-email.html?token=${token}&email=${encodeURIComponent(userData.email)}`;
+
+        const emailData = {
+          to_email: userData.email,
+          to_name: userData.fullName,
+          from_name: 'Baobab Online Academy Parent Portal',
+          subject: 'Welcome to Baobab Parent Portal - Please Verify Your Email',
+          parent_name: userData.fullName,
+          verification_link: verificationLink,
+          portal_url: window.location.origin,
+          support_email: 'parents@baobabonlineacademy.com',
+          current_year: new Date().getFullYear()
+        };
+
+        // Send with longer timeout and proper error handling
+        const result = await Promise.race([
+          emailjs.send(EMAILJS_CONFIG.SERVICE_ID, EMAILJS_CONFIG.TEMPLATE_ID, emailData),
+          new Promise((_, reject) => 
+            setTimeout(() => reject(new Error('EmailJS timeout')), 30000) // 30 second timeout
+          )
+        ]);
+
+        console.log('EmailJS success:', result);
+        return true;
+
+      } catch (error) {
+        console.error(`EmailJS attempt ${attempt} failed:`, error);
+        
+        if (attempt === maxRetries) {
+          return false;
+        }
+        
+        // Wait before retry (exponential backoff)
+        await new Promise(resolve => setTimeout(resolve, 1000 * attempt));
+      }
+    }
+    return false;
+  }
+
+  // Fallback: Generate Supabase link (backup method)
+  async function generateSupabaseVerificationLink(email) {
     try {
       const { data, error } = await supabase.functions.invoke('smooth-responder', {
         body: {
           email,
           redirectTo: `${window.location.origin}/verify-email.html`
-        },
-        headers: {
-          Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
-          apikey: SUPABASE_ANON_KEY
         }
       });
 
       if (error || !data?.link) {
-        console.error('generate_signup_link error:', error?.message || data?.error || 'No link returned');
+        console.error('Supabase link generation failed:', error);
         return null;
       }
       return data.link;
     } catch (err) {
-      console.error('invoke error:', err);
+      console.error('Supabase link generation error:', err);
       return null;
-    }
-  }
-
-  // Fallback: direct fetch to Edge Function (kept here if you prefer fetch)
-  async function requestOfficialVerificationLinkViaFetch(email) {
-    try {
-      const resp = await fetch('https://vcxdkacxbjsgaoxbhsip.supabase.co/functions/v1/smooth-responder', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
-          'apikey': SUPABASE_ANON_KEY
-        },
-        body: JSON.stringify({
-          email,
-          redirectTo: `${window.location.origin}/verify-email.html`
-        })
-      });
-      const payload = await resp.json();
-      if (!resp.ok || !payload?.link) {
-        console.error('generate_signup_link error:', payload?.error || resp.status);
-        return null;
-      }
-      return payload.link;
-    } catch (err) {
-      console.error('fetch error:', err);
-      return null;
-    }
-  }
-
-  async function sendVerificationEmail(userData) {
-    try {
-      // 1) Ask Edge Function for official Supabase confirmation link
-      let verificationLink = await requestOfficialVerificationLink(userData.email);
-      if (!verificationLink) {
-        // optional fallback
-        verificationLink = await requestOfficialVerificationLinkViaFetch(userData.email);
-      }
-      if (!verificationLink) {
-        console.warn('Could not generate official verification link.');
-        return false;
-      }
-
-      // 2) Send via EmailJS
-      const emailData = {
-        to_email: userData.email,
-        to_name: userData.fullName,
-        from_name: 'Baobab Online Academy Parent Portal',
-        subject: 'Welcome to Baobab Parent Portal - Please Verify Your Email',
-        parent_name: userData.fullName,
-        verification_link: verificationLink,
-        portal_url: window.location.origin,
-        support_email: 'parents@baobabonlineacademy.com',
-        current_year: new Date().getFullYear()
-      };
-
-      // EmailJS may time out in some environments; handle gracefully
-      const controller = new AbortController();
-      const timeout = setTimeout(() => controller.abort(), 15000); // 15s timeout
-
-      try {
-        const res = await emailjs.send(
-          EMAILJS_CONFIG.SERVICE_ID,
-          EMAILJS_CONFIG.TEMPLATE_ID,
-          emailData,
-          { signal: controller.signal }
-        );
-        clearTimeout(timeout);
-        console.log('Verification email (EmailJS) sent with official link!', res);
-        return true;
-      } catch (e) {
-        clearTimeout(timeout);
-        // Network/timeout errors show up as "Failed to fetch" in browsers
-        console.error('Failed to send verification email via EmailJS:', e);
-        return false;
-      }
-    } catch (error) {
-      console.error('sendVerificationEmail unexpected error:', error);
-      return false;
     }
   }
 
@@ -1557,19 +1546,21 @@
       alert('No pending verification found. Please try registering again.');
       return;
     }
+
     try {
-      const ok = await sendVerificationEmail(pendingUserData);
-      if (ok) {
+      const success = await sendVerificationEmailWithRetry(pendingUserData);
+      if (success) {
         alert('Verification email resent successfully! Please check your inbox.');
       } else {
-        alert('Failed to resend verification email. Please try again in a moment.');
+        alert('Failed to resend verification email. Please contact support.');
       }
-    } catch {
+    } catch (error) {
+      console.error('Resend error:', error);
       alert('Failed to resend verification email. Please try again.');
     }
   }
 
-  // ===== REGISTRATION FUNCTION =====
+  // ===== IMPROVED REGISTRATION FUNCTION =====
   async function handleRegistration(event) {
     event.preventDefault();
 
@@ -1594,7 +1585,7 @@
         throw new Error('Passwords do not match');
       }
 
-      // Check authorised email
+      // Check authorized email
       const { data: authorizedEmail, error: authCheckError } = await supabase
         .from('authorised_emails')
         .select('*')
@@ -1606,13 +1597,16 @@
         throw new Error('This email is not authorized to create an account. Please contact support at parents@baobabonlineacademy.com');
       }
 
-      // Create user account (Supabase will send its own confirmation if enabled)
+      // Create user account WITHOUT email confirmation (we'll handle it manually)
       const { data: authData, error: signUpError } = await supabase.auth.signUp({
         email,
         password,
         options: {
           emailRedirectTo: `${window.location.origin}/verify-email.html`,
-          data: { full_name: fullName, phone }
+          data: { 
+            full_name: fullName, 
+            phone: phone 
+          }
         }
       });
 
@@ -1620,25 +1614,47 @@
         throw new Error(signUpError.message);
       }
 
-      // Store for potential resend
+      if (!authData.user) {
+        throw new Error('Failed to create user account');
+      }
+
+      // Store user data for verification
       pendingUserData = {
         email,
         fullName,
         phone,
-        userId: authData.user?.id
+        userId: authData.user.id
       };
 
-      // Try sending our custom verification email (non-blocking UX)
-      const emailSent = await sendVerificationEmail(pendingUserData);
+      // Send verification email via EmailJS
+      console.log('Sending verification email via EmailJS...');
+      const emailSent = await sendVerificationEmailWithRetry(pendingUserData);
 
-      // Reset form and show verification UI regardless (account exists)
+      if (!emailSent) {
+        throw new Error('Failed to send verification email. Please try again or contact support.');
+      }
+
+      // Mark email as used only after successful email sending
+      const { error: updateError } = await supabase
+        .from('authorised_emails')
+        .update({ 
+          is_used: true, 
+          used_at: new Date().toISOString(),
+          used_by_user_id: authData.user.id 
+        })
+        .eq('email', email);
+
+      if (updateError) {
+        console.error('Failed to update authorised_emails:', updateError);
+        // Don't throw error here as email was sent successfully
+      }
+
+      // Reset form and show verification modal
       event.target.reset();
       closeRegistrationModal();
       openVerificationModal();
 
-      if (!emailSent) {
-        console.warn('Verification email failed to send, but account was created');
-      }
+      console.log('Registration completed successfully');
 
     } catch (error) {
       console.error('Registration error:', error);
@@ -1677,7 +1693,14 @@
         throw new Error(signInError.message);
       }
 
-      if (!authData.user.email_confirmed_at) {
+      // Check if email is verified through our custom verification
+      const { data: profile, error: profileError } = await supabase
+        .from('parent_profiles')
+        .select('email_verified')
+        .eq('user_id', authData.user.id)
+        .single();
+
+      if (profileError || !profile?.email_verified) {
         showError('loginErrorMessage', 'Please verify your email address before logging in. Check your inbox for the verification link.');
         return;
       }
@@ -1703,8 +1726,8 @@
   // ===== CHECK AUTHENTICATION STATUS =====
   async function checkAuthStatus() {
     const { data: { user } } = await supabase.auth.getUser();
-    if (user && user.email_confirmed_at) {
-      console.log('User is logged in and verified:', user);
+    if (user) {
+      console.log('User session found:', user);
     }
   }
 
