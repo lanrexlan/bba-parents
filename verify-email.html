@@ -86,7 +86,7 @@
 
   <script>
   const SUPABASE_URL = 'https://vcxdkacxbjsgaoxbhsip.supabase.co';
-  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZjeGRrYWN4YmpzZ2FveGJoc2lwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI5MDQ5ODMsImV4cCI6MjA2ODQ4MDk4M0.T9KhHWzHZWyaZvyeFXtBu8tPLY9JOn6_wCHcH8B46FU';
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZjeGRrYWN4YmpzZ2FveGJoc2lwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI5MDQ5ODMsImV4cCI6MjA2ODQ4MDk4M30.T9KhHWzHZWyaZvyeFXtBu8tPLY9JOn6_wCHcH8B46FU';
   const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
   const $ = id => document.getElementById(id);
@@ -102,7 +102,39 @@
     };
   }
 
-  function validateCustomToken(token, email) {
+  // Check if user is already verified
+  function isUserAlreadyVerified(email) {
+    try {
+      const userVerificationKey = `user_verification_${email.toLowerCase()}`;
+      const verificationData = localStorage.getItem(userVerificationKey);
+      
+      if (!verificationData) return false;
+      
+      const data = JSON.parse(verificationData);
+      return data.verified === true;
+    } catch (error) {
+      console.error('Error checking verification status:', error);
+      return false;
+    }
+  }
+
+  // Mark user as verified permanently
+  function markUserVerified(email, userData) {
+    const userVerificationKey = `user_verification_${email.toLowerCase()}`;
+    
+    const verificationData = {
+      email: email.toLowerCase(),
+      userId: userData.userId,
+      verified: true,
+      verifiedAt: new Date().toISOString(),
+      userData: userData
+    };
+    
+    localStorage.setItem(userVerificationKey, JSON.stringify(verificationData));
+    console.log('User permanently marked as verified:', email);
+  }
+
+  function validateVerificationToken(token, email) {
     try {
       const storedData = localStorage.getItem(`verification_${token}`);
       if (!storedData) return null;
@@ -110,7 +142,6 @@
       const data = JSON.parse(storedData);
       if (data.expires < Date.now()) {
         localStorage.removeItem(`verification_${token}`);
-        localStorage.removeItem(`verification_email_${data.email}`);
         return null;
       }
       
@@ -124,26 +155,27 @@
   }
 
   async function handleCustomTokenVerification(token, email) {
-    const validationData = validateCustomToken(token, email);
+    // Check if user is already verified
+    if (isUserAlreadyVerified(email)) {
+      console.log('User is already verified, proceeding to dashboard');
+      return { alreadyVerified: true };
+    }
+
+    const validationData = validateVerificationToken(token, email);
     if (!validationData) {
       throw new Error('Invalid or expired verification token');
     }
 
     const userData = validationData.userData;
 
-    // Mark user as verified in localStorage
-    localStorage.setItem(`verified_${userData.userId}`, JSON.stringify({
-      email: email.toLowerCase(),
-      verifiedAt: new Date().toISOString(),
-      userData: userData
-    }));
+    // Mark user as verified permanently
+    markUserVerified(email.toLowerCase(), userData);
 
-    // Clean up tokens
+    // Clean up the one-time verification token
     localStorage.removeItem(`verification_${token}`);
-    localStorage.removeItem(`verification_email_${email.toLowerCase()}`);
 
     console.log('User successfully verified via custom token');
-    return userData;
+    return { userData, newlyVerified: true };
   }
 
   async function main() {
@@ -151,16 +183,26 @@
       const p = params();
 
       if (p.token && p.email) {
-        console.log('Processing custom verification token...');
-        const userData = await handleCustomTokenVerification(p.token, p.email.toLowerCase());
+        console.log('Processing verification for:', p.email);
+        
+        const result = await handleCustomTokenVerification(p.token, p.email.toLowerCase());
         
         hide('loading');
         show('ok');
         
-        // Wait a bit longer before redirect to ensure state is saved
+        if (result.alreadyVerified) {
+          $('ok').innerHTML = `
+            <i class="fas fa-check-circle bigicon success"></i>
+            <h1 class="title">Already verified!</h1>
+            <p class="msg">Your account is already verified. Redirecting to dashboard...</p>
+            <a class="btn btn-primary" href="/parent-dashboard.html"><i class="fas fa-tachometer-alt"></i> Go to dashboard</a>
+          `;
+        }
+        
+        // Redirect to dashboard
         setTimeout(() => { 
           window.location.href = '/parent-dashboard.html'; 
-        }, 3000);
+        }, 2000);
         return;
       }
 

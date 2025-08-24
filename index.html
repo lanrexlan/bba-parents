@@ -1447,7 +1447,7 @@
     el.style.display = 'block';
   }
 
-  // ===== EMAIL VERIFICATION FUNCTIONS =====
+  // ===== PERSISTENT VERIFICATION SYSTEM =====
   
   function generateVerificationToken() {
     return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
@@ -1457,18 +1457,69 @@
     });
   }
 
+  // Store verification token with email as key (persistent)
   function storeVerificationToken(email, token, userData) {
     const verificationData = {
       email: email.toLowerCase(),
       token: token,
       userData: userData,
       timestamp: Date.now(),
-      expires: Date.now() + (24 * 60 * 60 * 1000)
+      expires: Date.now() + (24 * 60 * 60 * 1000), // 24 hours
+      verified: false
     };
+    
+    // Store by token (for verification)
     localStorage.setItem(`verification_${token}`, JSON.stringify(verificationData));
-    localStorage.setItem(`verification_email_${email.toLowerCase()}`, token);
+    
+    // Store by email (for login checking) - this persists even after verification
+    localStorage.setItem(`user_verification_${email.toLowerCase()}`, JSON.stringify({
+      email: email.toLowerCase(),
+      userId: userData.userId,
+      verified: false,
+      token: token,
+      created: Date.now()
+    }));
   }
 
+  // Mark user as verified permanently
+  function markUserVerified(email, userId) {
+    const userVerificationKey = `user_verification_${email.toLowerCase()}`;
+    const existingData = localStorage.getItem(userVerificationKey);
+    
+    let verificationData;
+    if (existingData) {
+      verificationData = JSON.parse(existingData);
+    } else {
+      verificationData = {
+        email: email.toLowerCase(),
+        userId: userId
+      };
+    }
+    
+    verificationData.verified = true;
+    verificationData.verifiedAt = new Date().toISOString();
+    
+    localStorage.setItem(userVerificationKey, JSON.stringify(verificationData));
+    console.log('User marked as verified:', email);
+  }
+
+  // Check if user is verified
+  function isUserVerified(email) {
+    try {
+      const userVerificationKey = `user_verification_${email.toLowerCase()}`;
+      const verificationData = localStorage.getItem(userVerificationKey);
+      
+      if (!verificationData) return false;
+      
+      const data = JSON.parse(verificationData);
+      return data.verified === true;
+    } catch (error) {
+      console.error('Error checking verification status:', error);
+      return false;
+    }
+  }
+
+  // Validate verification token (one-time use)
   function validateVerificationToken(token, email) {
     try {
       const storedData = localStorage.getItem(`verification_${token}`);
@@ -1477,7 +1528,6 @@
       const data = JSON.parse(storedData);
       if (data.expires < Date.now()) {
         localStorage.removeItem(`verification_${token}`);
-        localStorage.removeItem(`verification_email_${data.email}`);
         return null;
       }
       
@@ -1565,7 +1615,7 @@
     }
   }
 
-  // ===== IMPROVED REGISTRATION FUNCTION =====
+  // ===== REGISTRATION FUNCTION =====
   async function handleRegistration(event) {
     event.preventDefault();
 
@@ -1611,23 +1661,7 @@
         throw new Error('This email is not authorized to create an account. Please contact support at parents@baobabonlineacademy.com');
       }
 
-      // Store user data for verification (before creating account)
-      pendingUserData = {
-        email,
-        fullName,
-        phone,
-        userId: null // Will be updated after account creation
-      };
-
-      // Send verification email FIRST
-      console.log('Sending verification email via EmailJS...');
-      const emailResult = await sendVerificationEmailWithRetry(pendingUserData);
-
-      if (!emailResult.success) {
-        throw new Error(`Failed to send verification email: ${emailResult.error}`);
-      }
-
-      // Create user account with email confirmation DISABLED
+      // Create user account first
       console.log('Creating user account...');
       const { data: authData, error: signUpError } = await supabase.auth.signUp({
         email,
@@ -1636,7 +1670,7 @@
           data: { 
             full_name: fullName, 
             phone: phone,
-            email_confirm: false // Explicitly disable email confirmation
+            email_confirm: false
           }
         }
       });
@@ -1649,10 +1683,23 @@
         throw new Error('Failed to create user account');
       }
 
-      // Update pending user data with actual user ID
-      pendingUserData.userId = authData.user.id;
+      // Store user data for verification
+      pendingUserData = {
+        email,
+        fullName,
+        phone,
+        userId: authData.user.id
+      };
 
-      // Mark email as used - using simpler update without used_by_user_id field
+      // Send verification email
+      console.log('Sending verification email via EmailJS...');
+      const emailResult = await sendVerificationEmailWithRetry(pendingUserData);
+
+      if (!emailResult.success) {
+        throw new Error(`Failed to send verification email: ${emailResult.error}`);
+      }
+
+      // Mark email as used
       console.log('Marking email as used...');
       const { error: updateError } = await supabase
         .from('authorised_emails')
@@ -1667,15 +1714,6 @@
       } else {
         console.log('Successfully marked email as used');
       }
-
-      // Store verification status in localStorage (bypass RLS issues)
-      localStorage.setItem(`pending_verification_${authData.user.id}`, JSON.stringify({
-        email,
-        fullName,
-        phone,
-        userId: authData.user.id,
-        timestamp: Date.now()
-      }));
 
       // Reset form and show verification modal
       event.target.reset();
@@ -1712,6 +1750,12 @@
       const email = (formData.get('email') || '').toLowerCase().trim();
       const password = formData.get('password');
 
+      // Check if user is verified BEFORE attempting login
+      if (!isUserVerified(email)) {
+        showError('loginErrorMessage', 'Please verify your email address before logging in. Check your inbox for the verification link.');
+        return;
+      }
+
       const { data: authData, error: signInError } = await supabase.auth.signInWithPassword({
         email,
         password
@@ -1719,13 +1763,6 @@
 
       if (signInError) {
         throw new Error(signInError.message);
-      }
-
-      // Check verification status from localStorage first
-      const verificationData = localStorage.getItem(`verified_${authData.user.id}`);
-      if (!verificationData) {
-        showError('loginErrorMessage', 'Please verify your email address before logging in. Check your inbox for the verification link.');
-        return;
       }
 
       showSuccess('loginSuccessMessage', 'Login successful! Redirecting to your dashboard...');
@@ -1752,10 +1789,11 @@
     if (user) {
       console.log('User session found:', user);
       
-      // Check if user is verified
-      const verificationData = localStorage.getItem(`verified_${user.id}`);
-      if (verificationData) {
-        console.log('User is verified');
+      // Check verification status
+      if (isUserVerified(user.email)) {
+        console.log('User is verified and can access dashboard');
+      } else {
+        console.log('User exists but not verified');
       }
     }
   }
@@ -1767,16 +1805,11 @@
       return { success: false, error: 'Invalid or expired verification token' };
     }
 
-    // Mark user as verified in localStorage
-    localStorage.setItem(`verified_${validationData.userData.userId}`, JSON.stringify({
-      email: email.toLowerCase(),
-      verifiedAt: new Date().toISOString(),
-      userData: validationData.userData
-    }));
+    // Mark user as verified permanently
+    markUserVerified(email.toLowerCase(), validationData.userData.userId);
 
-    // Clean up the verification token
+    // Clean up the one-time verification token
     localStorage.removeItem(`verification_${token}`);
-    localStorage.removeItem(`verification_email_${email.toLowerCase()}`);
 
     return { success: true, userData: validationData.userData };
   };
