@@ -85,153 +85,162 @@
   </div>
 
   <script>
-    const SUPABASE_URL = 'https://vcxdkacxbjsgaoxbhsip.supabase.co';
-    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZjeGRrYWN4YmpzZ2FveGJoc2lwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI5MDQ5ODMsImV4cCI6MjA2ODQ4MDk4M30.T9KhHWzHZWyaZvyeFXtBu8tPLY9JOn6_wCHcH8B46FU';
-    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  const SUPABASE_URL = 'https://vcxdkacxbjsgaoxbhsip.supabase.co';
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZjeGRrYWN4YmpzZ2FveGJoc2lwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI5MDQ5ODMsImV4cCI6MjA2ODQ4MDk4M30.T9KhHWzHZWyaZvyeFXtBu8tPLY9JOn6_wCHcH8B46FU';
+  const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    const $ = id => document.getElementById(id);
-    const show = id => $(id).classList.remove('hidden');
-    const hide = id => $(id).classList.add('hidden');
+  const $ = id => document.getElementById(id);
+  const show = id => $(id).classList.remove('hidden');
+  const hide = id => $(id).classList.add('hidden');
 
-    function params() {
-      const s = new URLSearchParams(window.location.search);
-      let h = new URLSearchParams();
-      if (window.location.hash && window.location.hash.includes('?')) {
-        h = new URLSearchParams(window.location.hash.split('?')[1]);
-      }
-      const get = k => s.get(k) || h.get(k);
-      return {
-        token_hash: get('token_hash'),
-        type: get('type'),
-        access_token: get('access_token'),
-        refresh_token: get('refresh_token'),
-        token: get('token'),
-        email: get('email')
-      };
+  function params() {
+    const s = new URLSearchParams(window.location.search);
+    let h = new URLSearchParams();
+    if (window.location.hash && window.location.hash.includes('?')) {
+      h = new URLSearchParams(window.location.hash.split('?')[1]);
     }
+    const get = k => s.get(k) || h.get(k);
+    return {
+      token_hash: get('token_hash'),
+      type: get('type'),
+      access_token: get('access_token'),
+      refresh_token: get('refresh_token'),
+      token: get('token'),
+      email: get('email')
+    };
+  }
 
-    async function handleSupabaseFlow(token_hash, type, access_token, refresh_token) {
-      if (token_hash && type) {
-        const { data, error } = await supabase.auth.verifyOtp({
-          token_hash,
-          type: (type === 'email' ? 'email' : 'signup')
-        });
-        if (error) throw new Error(`Email verification failed: ${error.message}`);
-        return data?.user || data?.session?.user || null;
+  // Validate custom token from localStorage
+  function validateCustomToken(token, email) {
+    try {
+      const storedData = localStorage.getItem(`verification_${token}`);
+      if (!storedData) return null;
+      
+      const data = JSON.parse(storedData);
+      if (data.expires < Date.now()) {
+        localStorage.removeItem(`verification_${token}`);
+        localStorage.removeItem(`verification_email_${data.email}`);
+        return null;
       }
-
-      if (access_token && refresh_token) {
-        const { data, error } = await supabase.auth.setSession({ access_token, refresh_token });
-        if (error) throw new Error(`Session error: ${error.message}`);
-        return data?.user || data?.session?.user || null;
-      }
-
+      
+      if (data.email !== email.toLowerCase()) return null;
+      
+      return data;
+    } catch (error) {
+      console.error('Token validation error:', error);
       return null;
     }
+  }
 
-    async function handleCustomEmailJSToken(token, email) {
-      // First, verify the custom token via RPC
-      const { data, error } = await supabase.rpc('verify_parent_email', {
-        p_token: token,
-        p_email: email
+  async function handleCustomTokenVerification(token, email) {
+    const validationData = validateCustomToken(token, email);
+    if (!validationData) {
+      throw new Error('Invalid or expired verification token');
+    }
+
+    const userData = validationData.userData;
+
+    // Update user as confirmed in Supabase
+    const { error: updateUserError } = await supabase.auth.updateUser({
+      email_confirm: true
+    });
+
+    // Update parent profile
+    const { error: profileError } = await supabase
+      .from('parent_profiles')
+      .update({
+        email_verified: true,
+        verified_at: new Date().toISOString()
+      })
+      .eq('user_id', userData.userId);
+
+    if (profileError) {
+      console.error('Profile update error:', profileError);
+    }
+
+    // Clean up tokens
+    localStorage.removeItem(`verification_${token}`);
+    localStorage.removeItem(`verification_email_${email.toLowerCase()}`);
+
+    return userData;
+  }
+
+  async function handleSupabaseFlow(token_hash, type, access_token, refresh_token) {
+    if (token_hash && type) {
+      const { data, error } = await supabase.auth.verifyOtp({
+        token_hash,
+        type: (type === 'email' ? 'email' : 'signup')
       });
+      if (error) throw new Error(`Email verification failed: ${error.message}`);
+      return data?.user || data?.session?.user || null;
+    }
 
-      if (error) throw new Error(error.message || 'Verification RPC failed');
-      if (!data?.ok) {
-        const reason = data?.reason || 'unknown';
-        throw new Error(`Custom token invalid (${reason}).`);
-      }
+    if (access_token && refresh_token) {
+      const { data, error } = await supabase.auth.setSession({ access_token, refresh_token });
+      if (error) throw new Error(`Session error: ${error.message}`);
+      return data?.user || data?.session?.user || null;
+    }
 
-      // Now we need to establish a session since the user is confirmed
-      // Try to sign in the user to get a proper session
-      try {
-        // Get the user's current session (they should be confirmed now)
-        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+    return null;
+  }
+
+  async function main() {
+    try {
+      const p = params();
+
+      // 1) Try custom token first
+      if (p.token && p.email) {
+        console.log('Processing custom verification token...');
+        const userData = await handleCustomTokenVerification(p.token, p.email.toLowerCase());
         
-        if (!session) {
-          // If no session, we need to guide them to login
-          hide('loading');
-          show('ok');
-          $('ok').innerHTML = `
-            <i class="fas fa-check-circle bigicon success"></i>
-            <h1 class="title">Email verified successfully!</h1>
-            <p class="msg">Your account is now active. Please login to access your dashboard.</p>
-            <a class="btn btn-primary" href="/"><i class="fas fa-sign-in-alt"></i> Go to Login</a>
-          `;
-          return;
-        }
-
-        // If we have a session, proceed to dashboard
         hide('loading');
         show('ok');
         setTimeout(() => { 
           window.location.href = '/parent-dashboard.html'; 
         }, 1800);
-
-      } catch (e) {
-        console.error('Session check error:', e);
-        // Fallback: redirect to login
-        hide('loading');
-        show('ok');
-        $('ok').innerHTML = `
-          <i class="fas fa-check-circle bigicon success"></i>
-          <h1 class="title">Email verified successfully!</h1>
-          <p class="msg">Your account is now active. Please login to access your dashboard.</p>
-          <a class="btn btn-primary" href="/"><i class="fas fa-sign-in-alt"></i> Go to Login</a>
-        `;
+        return;
       }
-    }
 
-    async function main() {
-      try {
-        const p = params();
+      // 2) Fallback to Supabase flow
+      const user = await handleSupabaseFlow(p.token_hash, p.type, p.access_token, p.refresh_token);
+      if (user) {
+        // Update profile for Supabase-verified users
+        try {
+          const { error: upsertErr } = await supabase
+            .from('parent_profiles')
+            .upsert({
+              user_id: user.id,
+              email: (user.email || '').toLowerCase(),
+              full_name: user.user_metadata?.full_name || null,
+              phone: user.user_metadata?.phone || null,
+              email_verified: true,
+              verified_at: new Date().toISOString()
+            }, { onConflict: 'user_id' });
 
-        // 1) Supabase flow (includes session establishment)
-        const user = await handleSupabaseFlow(p.token_hash, p.type, p.access_token, p.refresh_token);
-        if (user) {
-          // Update profile for Supabase-verified users
-          try {
-            const { error: upsertErr } = await supabase
-              .from('parent_profiles')
-              .upsert({
-                user_id: user.id,
-                email: (user.email || '').toLowerCase(),
-                full_name: user.user_metadata?.full_name || null,
-                phone: user.user_metadata?.phone || null,
-                email_verified: true,
-                verified_at: new Date().toISOString()
-              }, { onConflict: 'user_id' });
-
-            if (upsertErr) console.warn('parent_profiles upsert warning:', upsertErr?.message);
-          } catch (e) {
-            console.warn('Profile update error:', e);
-          }
-
-          hide('loading'); 
-          show('ok');
-          setTimeout(() => { window.location.href = '/parent-dashboard.html'; }, 1800);
-          return;
+          if (upsertErr) console.warn('parent_profiles upsert warning:', upsertErr?.message);
+        } catch (e) {
+          console.warn('Profile update error:', e);
         }
 
-        // 2) Custom EmailJS token
-        if (p.token && p.email) {
-          await handleCustomEmailJSToken(p.token, p.email.toLowerCase());
-          return;
-        }
-
-        // Neither path present
-        throw new Error('Missing verification parameters. Please use the verification link sent to your email.');
-
-      } catch (err) {
-        console.error('Verify error:', err);
         hide('loading'); 
-        show('fail');
-        const t = $('errText'); 
-        if (t) t.textContent = err.message || 'Verification failed. Please try again.';
+        show('ok');
+        setTimeout(() => { window.location.href = '/parent-dashboard.html'; }, 1800);
+        return;
       }
-    }
 
-    window.addEventListener('DOMContentLoaded', main);
-  </script>
+      // Neither path present
+      throw new Error('Missing verification parameters. Please use the verification link sent to your email.');
+
+    } catch (err) {
+      console.error('Verify error:', err);
+      hide('loading'); 
+      show('fail');
+      const t = $('errText'); 
+      if (t) t.textContent = err.message || 'Verification failed. Please try again.';
+    }
+  }
+
+  window.addEventListener('DOMContentLoaded', main);
+</script>
 </body>
 </html>

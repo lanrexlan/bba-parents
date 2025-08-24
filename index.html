@@ -1447,40 +1447,66 @@
     el.style.display = 'block';
   }
 
-  // ===== IMPROVED EMAIL VERIFICATION FUNCTIONS =====
+  // ===== SIMPLIFIED EMAIL VERIFICATION FUNCTIONS =====
   
-  // Generate custom verification token and send via EmailJS
-  async function generateCustomVerificationToken(email) {
-    try {
-      const { data, error } = await supabase.rpc('generate_verification_token', {
-        p_email: email.toLowerCase()
-      });
+  // Generate a simple UUID-based verification token
+  function generateVerificationToken() {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+      const r = Math.random() * 16 | 0;
+      const v = c == 'x' ? r : (r & 0x3 | 0x8);
+      return v.toString(16);
+    });
+  }
 
-      if (error) {
-        console.error('Token generation error:', error);
+  // Store verification token in localStorage temporarily
+  function storeVerificationToken(email, token, userData) {
+    const verificationData = {
+      email: email.toLowerCase(),
+      token: token,
+      userData: userData,
+      timestamp: Date.now(),
+      expires: Date.now() + (24 * 60 * 60 * 1000) // 24 hours
+    };
+    localStorage.setItem(`verification_${token}`, JSON.stringify(verificationData));
+    localStorage.setItem(`verification_email_${email.toLowerCase()}`, token);
+  }
+
+  // Validate verification token
+  function validateVerificationToken(token, email) {
+    try {
+      const storedData = localStorage.getItem(`verification_${token}`);
+      if (!storedData) return null;
+      
+      const data = JSON.parse(storedData);
+      if (data.expires < Date.now()) {
+        // Clean up expired token
+        localStorage.removeItem(`verification_${token}`);
+        localStorage.removeItem(`verification_email_${data.email}`);
         return null;
       }
-
+      
+      if (data.email !== email.toLowerCase()) return null;
+      
       return data;
-    } catch (err) {
-      console.error('Token generation exception:', err);
+    } catch (error) {
+      console.error('Token validation error:', error);
       return null;
     }
   }
 
-  // Send verification email with retry logic
+  // Send verification email with enhanced retry logic
   async function sendVerificationEmailWithRetry(userData, maxRetries = 3) {
     for (let attempt = 1; attempt <= maxRetries; attempt++) {
       console.log(`EmailJS attempt ${attempt}/${maxRetries}`);
       
       try {
-        // Generate custom verification token
-        const token = await generateCustomVerificationToken(userData.email);
-        if (!token) {
-          throw new Error('Failed to generate verification token');
-        }
-
-        // Create verification link with custom token
+        // Generate verification token
+        const token = generateVerificationToken();
+        
+        // Store token and user data
+        storeVerificationToken(userData.email, token, userData);
+        
+        // Create verification link
         const verificationLink = `${window.location.origin}/verify-email.html?token=${token}&email=${encodeURIComponent(userData.email)}`;
 
         const emailData = {
@@ -1495,50 +1521,45 @@
           current_year: new Date().getFullYear()
         };
 
-        // Send with longer timeout and proper error handling
+        // Configure EmailJS with longer timeout
+        const emailjsConfig = {
+          ...EMAILJS_CONFIG,
+          timeout: 30000 // 30 seconds
+        };
+
+        // Send email with Promise race for timeout control
         const result = await Promise.race([
-          emailjs.send(EMAILJS_CONFIG.SERVICE_ID, EMAILJS_CONFIG.TEMPLATE_ID, emailData),
+          new Promise((resolve, reject) => {
+            emailjs.send(
+              EMAILJS_CONFIG.SERVICE_ID, 
+              EMAILJS_CONFIG.TEMPLATE_ID, 
+              emailData,
+              EMAILJS_CONFIG.PUBLIC_KEY
+            ).then(resolve).catch(reject);
+          }),
           new Promise((_, reject) => 
-            setTimeout(() => reject(new Error('EmailJS timeout')), 30000) // 30 second timeout
+            setTimeout(() => reject(new Error('EmailJS request timeout after 30 seconds')), 30000)
           )
         ]);
 
         console.log('EmailJS success:', result);
-        return true;
+        return { success: true, token };
 
       } catch (error) {
-        console.error(`EmailJS attempt ${attempt} failed:`, error);
+        console.error(`EmailJS attempt ${attempt} failed:`, error.message || error);
         
+        // If this was the last attempt, return failure
         if (attempt === maxRetries) {
-          return false;
+          return { success: false, error: error.message || 'Failed to send email' };
         }
         
-        // Wait before retry (exponential backoff)
-        await new Promise(resolve => setTimeout(resolve, 1000 * attempt));
+        // Wait before retry with exponential backoff
+        const delay = Math.min(1000 * Math.pow(2, attempt - 1), 10000); // Max 10 seconds
+        console.log(`Waiting ${delay}ms before retry...`);
+        await new Promise(resolve => setTimeout(resolve, delay));
       }
     }
-    return false;
-  }
-
-  // Fallback: Generate Supabase link (backup method)
-  async function generateSupabaseVerificationLink(email) {
-    try {
-      const { data, error } = await supabase.functions.invoke('smooth-responder', {
-        body: {
-          email,
-          redirectTo: `${window.location.origin}/verify-email.html`
-        }
-      });
-
-      if (error || !data?.link) {
-        console.error('Supabase link generation failed:', error);
-        return null;
-      }
-      return data.link;
-    } catch (err) {
-      console.error('Supabase link generation error:', err);
-      return null;
-    }
+    return { success: false, error: 'All retry attempts failed' };
   }
 
   async function resendVerificationEmail() {
@@ -1548,16 +1569,24 @@
     }
 
     try {
-      const success = await sendVerificationEmailWithRetry(pendingUserData);
-      if (success) {
+      console.log('Resending verification email...');
+      const result = await sendVerificationEmailWithRetry(pendingUserData);
+      
+      if (result.success) {
         alert('Verification email resent successfully! Please check your inbox.');
       } else {
-        alert('Failed to resend verification email. Please contact support.');
+        alert(`Failed to resend verification email: ${result.error}`);
       }
     } catch (error) {
       console.error('Resend error:', error);
       alert('Failed to resend verification email. Please try again.');
     }
+  }
+
+  // ===== DISABLE SUPABASE AUTO-EMAILS =====
+  async function disableSupabaseAutoEmails() {
+    // This is handled by not setting email confirmation in signup options
+    return true;
   }
 
   // ===== IMPROVED REGISTRATION FUNCTION =====
@@ -1581,11 +1610,21 @@
       const password = formData.get('password');
       const confirmPassword = formData.get('confirmPassword');
 
+      // Validation
+      if (!email || !fullName || !phone || !password) {
+        throw new Error('Please fill in all required fields');
+      }
+
       if (password !== confirmPassword) {
         throw new Error('Passwords do not match');
       }
 
+      if (password.length < 6) {
+        throw new Error('Password must be at least 6 characters long');
+      }
+
       // Check authorized email
+      console.log('Checking authorized email...');
       const { data: authorizedEmail, error: authCheckError } = await supabase
         .from('authorised_emails')
         .select('*')
@@ -1597,16 +1636,17 @@
         throw new Error('This email is not authorized to create an account. Please contact support at parents@baobabonlineacademy.com');
       }
 
-      // Create user account WITHOUT email confirmation (we'll handle it manually)
+      // Create user account with email confirmation disabled
+      console.log('Creating user account...');
       const { data: authData, error: signUpError } = await supabase.auth.signUp({
         email,
         password,
         options: {
-          emailRedirectTo: `${window.location.origin}/verify-email.html`,
           data: { 
             full_name: fullName, 
             phone: phone 
           }
+          // Note: We're NOT setting emailRedirectTo to prevent Supabase from sending emails
         }
       });
 
@@ -1628,13 +1668,14 @@
 
       // Send verification email via EmailJS
       console.log('Sending verification email via EmailJS...');
-      const emailSent = await sendVerificationEmailWithRetry(pendingUserData);
+      const emailResult = await sendVerificationEmailWithRetry(pendingUserData);
 
-      if (!emailSent) {
-        throw new Error('Failed to send verification email. Please try again or contact support.');
+      if (!emailResult.success) {
+        throw new Error(`Failed to send verification email: ${emailResult.error}`);
       }
 
       // Mark email as used only after successful email sending
+      console.log('Marking email as used...');
       const { error: updateError } = await supabase
         .from('authorised_emails')
         .update({ 
@@ -1646,7 +1687,27 @@
 
       if (updateError) {
         console.error('Failed to update authorised_emails:', updateError);
-        // Don't throw error here as email was sent successfully
+        // Don't throw error here as the critical parts succeeded
+      }
+
+      // Create parent profile
+      try {
+        const { error: profileError } = await supabase
+          .from('parent_profiles')
+          .insert({
+            user_id: authData.user.id,
+            email: email,
+            full_name: fullName,
+            phone: phone,
+            email_verified: false, // Will be set to true after verification
+            created_at: new Date().toISOString()
+          });
+
+        if (profileError) {
+          console.error('Profile creation error:', profileError);
+        }
+      } catch (profileErr) {
+        console.error('Profile creation exception:', profileErr);
       }
 
       // Reset form and show verification modal
@@ -1693,7 +1754,7 @@
         throw new Error(signInError.message);
       }
 
-      // Check if email is verified through our custom verification
+      // Check if email is verified through our system
       const { data: profile, error: profileError } = await supabase
         .from('parent_profiles')
         .select('email_verified')
@@ -1722,6 +1783,20 @@
       submitBtn.disabled = false;
     }
   }
+
+  // ===== VERIFICATION FUNCTIONS FOR VERIFY-EMAIL.HTML PAGE =====
+  window.verifyEmailToken = function(token, email) {
+    const validationData = validateVerificationToken(token, email);
+    if (!validationData) {
+      return { success: false, error: 'Invalid or expired verification token' };
+    }
+
+    // Clean up the token after successful validation
+    localStorage.removeItem(`verification_${token}`);
+    localStorage.removeItem(`verification_email_${email.toLowerCase()}`);
+
+    return { success: true, userData: validationData.userData };
+  };
 
   // ===== CHECK AUTHENTICATION STATUS =====
   async function checkAuthStatus() {
