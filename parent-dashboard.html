@@ -2395,7 +2395,7 @@
     function renderTutorsTable(rows) {
       const tb = document.getElementById('tutorsTbody');
       if (!rows?.length) { 
-        tb.innerHTML = `<tr><td colspan="4"><div class="empty-state"><i class="fas fa-chalkboard-teacher"></i><div>No tutor assignments found.</div></div></td></tr>`; 
+        tb.innerHTML = `<tr><td colspan="4"><div class="empty-state"><i class="fas fa-chalkboard-teacher"></i><div>No tutor found.</div></div></td></tr>`; 
         return; 
       }
       tb.innerHTML = rows.map(r => `
