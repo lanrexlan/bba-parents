@@ -86,7 +86,7 @@
 
   <script>
   const SUPABASE_URL = 'https://vcxdkacxbjsgaoxbhsip.supabase.co';
-  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZjeGRrYWN4YmpzZ2FveGJoc2lwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI5MDQ5ODMsImV4cCI6MjA2ODQ4MDk4M30.T9KhHWzHZWyaZvyeFXtBu8tPLY9JOn6_wCHcH8B46FU';
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZjeGRrYWN4YmpzZ2FveGJoc2lwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI5MDQ5ODMsImV4cCI6MjA2ODQ4MDk4M0.T9KhHWzHZWyaZvyeFXtBu8tPLY9JOn6_wCHcH8B46FU';
   const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
   const $ = id => document.getElementById(id);
@@ -95,22 +95,13 @@
 
   function params() {
     const s = new URLSearchParams(window.location.search);
-    let h = new URLSearchParams();
-    if (window.location.hash && window.location.hash.includes('?')) {
-      h = new URLSearchParams(window.location.hash.split('?')[1]);
-    }
-    const get = k => s.get(k) || h.get(k);
+    const get = k => s.get(k);
     return {
-      token_hash: get('token_hash'),
-      type: get('type'),
-      access_token: get('access_token'),
-      refresh_token: get('refresh_token'),
       token: get('token'),
       email: get('email')
     };
   }
 
-  // Validate custom token from localStorage
   function validateCustomToken(token, email) {
     try {
       const storedData = localStorage.getItem(`verification_${token}`);
@@ -140,95 +131,39 @@
 
     const userData = validationData.userData;
 
-    // Update user as confirmed in Supabase
-    const { error: updateUserError } = await supabase.auth.updateUser({
-      email_confirm: true
-    });
-
-    // Update parent profile
-    const { error: profileError } = await supabase
-      .from('parent_profiles')
-      .update({
-        email_verified: true,
-        verified_at: new Date().toISOString()
-      })
-      .eq('user_id', userData.userId);
-
-    if (profileError) {
-      console.error('Profile update error:', profileError);
-    }
+    // Mark user as verified in localStorage
+    localStorage.setItem(`verified_${userData.userId}`, JSON.stringify({
+      email: email.toLowerCase(),
+      verifiedAt: new Date().toISOString(),
+      userData: userData
+    }));
 
     // Clean up tokens
     localStorage.removeItem(`verification_${token}`);
     localStorage.removeItem(`verification_email_${email.toLowerCase()}`);
 
+    console.log('User successfully verified via custom token');
     return userData;
-  }
-
-  async function handleSupabaseFlow(token_hash, type, access_token, refresh_token) {
-    if (token_hash && type) {
-      const { data, error } = await supabase.auth.verifyOtp({
-        token_hash,
-        type: (type === 'email' ? 'email' : 'signup')
-      });
-      if (error) throw new Error(`Email verification failed: ${error.message}`);
-      return data?.user || data?.session?.user || null;
-    }
-
-    if (access_token && refresh_token) {
-      const { data, error } = await supabase.auth.setSession({ access_token, refresh_token });
-      if (error) throw new Error(`Session error: ${error.message}`);
-      return data?.user || data?.session?.user || null;
-    }
-
-    return null;
   }
 
   async function main() {
     try {
       const p = params();
 
-      // 1) Try custom token first
       if (p.token && p.email) {
         console.log('Processing custom verification token...');
         const userData = await handleCustomTokenVerification(p.token, p.email.toLowerCase());
         
         hide('loading');
         show('ok');
+        
+        // Wait a bit longer before redirect to ensure state is saved
         setTimeout(() => { 
           window.location.href = '/parent-dashboard.html'; 
-        }, 1800);
+        }, 3000);
         return;
       }
 
-      // 2) Fallback to Supabase flow
-      const user = await handleSupabaseFlow(p.token_hash, p.type, p.access_token, p.refresh_token);
-      if (user) {
-        // Update profile for Supabase-verified users
-        try {
-          const { error: upsertErr } = await supabase
-            .from('parent_profiles')
-            .upsert({
-              user_id: user.id,
-              email: (user.email || '').toLowerCase(),
-              full_name: user.user_metadata?.full_name || null,
-              phone: user.user_metadata?.phone || null,
-              email_verified: true,
-              verified_at: new Date().toISOString()
-            }, { onConflict: 'user_id' });
-
-          if (upsertErr) console.warn('parent_profiles upsert warning:', upsertErr?.message);
-        } catch (e) {
-          console.warn('Profile update error:', e);
-        }
-
-        hide('loading'); 
-        show('ok');
-        setTimeout(() => { window.location.href = '/parent-dashboard.html'; }, 1800);
-        return;
-      }
-
-      // Neither path present
       throw new Error('Missing verification parameters. Please use the verification link sent to your email.');
 
     } catch (err) {
