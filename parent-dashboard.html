@@ -1765,6 +1765,7 @@
                     <th>Status</th>
                     <th>Enrolled</th>
                     <th>Emergency Contact</th>
+                    <th>Supporting Tutors</th>
                     <th>Actions</th>
                   </tr>
                 </thead>
@@ -2026,7 +2027,7 @@
 
                 <div class="agreement-section">
                   <p style="text-align: center; margin-bottom: 2rem; font-size: 1rem; line-height: 1.8;">
-                    This Agreement is made on the <strong id="agreementDate">_______</strong> day of <strong id="agreementMonth">_______</strong> 2025 between <strong>Baobab Online Academy</strong> and <strong id="parentNameAgreement">_______</strong>, regarding the education of her children, <span id="childrenListAgreement">_______</span>.
+                    This Agreement is made on the <strong id="agreementDate">_______</strong> day of <strong id="agreementMonth">_______</strong> 2025 between <strong>Baobab Online Academy</strong> and <strong id="parentNameAgreement">_______</strong>, regarding the education of his/her children, <span id="childrenListAgreement">_______</span>.
                   </p>
                 </div>
 
@@ -2238,6 +2239,13 @@
           <div class="form-group">
             <label class="form-label" for="editChildPreferences">Learning Preferences</label>
             <textarea class="form-input" id="editChildPreferences" name="learning_preferences"></textarea>
+            <div class="form-group">
+  <label class="form-label" for="editChildSupportingTutors">Supporting Tutors</label>
+  <input class="form-input" id="editChildSupportingTutors" name="supporting_tutors" type="text" placeholder="Enter supporting tutor names (comma-separated)">
+  <small style="color: var(--gray-500); font-size: 0.8rem; margin-top: 0.25rem; display: block;">
+    Enter names separated by commas, e.g., "John Smith, Jane Doe"
+  </small>
+</div>
           </div>
           <button class="btn btn-primary" type="submit">
             <i class="fas fa-save"></i>
@@ -2949,6 +2957,16 @@
           });
           tutorAssignments += '</ul>';
 
+          const supportingTutorsInfo = children
+    .filter(child => child.supporting_tutors && child.supporting_tutors.length > 0)
+    .map(child => {
+      const tutorsList = child.supporting_tutors.join(' and ');
+      return `<li>Lessons for <strong>${child.name}</strong> will be supported by ${tutorsList} as assistant teachers.</li>`;
+    })
+    .join('');
+
+    
+
           // Calculate fees (simplified - assuming Group class for all)
           const childCount = children.length;
           const baseGrade = children[0]?.grade_level ? parseInt(children[0].grade_level) : 1;
@@ -3024,6 +3042,7 @@
           <td data-label="Status">${statusBadge(r.status || 'Active')}</td>
           <td data-label="Enrolled">${fmtDate(r.enrollment_date)}</td>
           <td data-label="Emergency Contact">${r.emergency_contact || '—'}</td>
+          <td data-label="Supporting Tutors">${r.supporting_tutors ? r.supporting_tutors.join(', ') : '—'}</td>
           <td data-label="Actions">
             <button class="btn btn-warning btn-sm" onclick="openChildEditModal('${r.id}')">
               <i class="fas fa-edit"></i> Edit
@@ -3453,6 +3472,9 @@
       document.getElementById('editChildEmergency').value = c.emergency_contact || '';
       document.getElementById('editChildMedical').value = c.medical_info || '';
       document.getElementById('editChildPreferences').value = c.learning_preferences || '';
+      // Handle supporting tutors array
+  const supportingTutors = c.supporting_tutors ? c.supporting_tutors.join(', ') : '';
+  document.getElementById('editChildSupportingTutors').value = supportingTutors;
       document.getElementById('childEditModal').classList.add('active');
       document.body.style.overflow = 'hidden';
     }
@@ -3472,6 +3494,7 @@
         emergency_contact: document.getElementById('editChildEmergency').value,
         medical_info: document.getElementById('editChildMedical').value,
         learning_preferences: document.getElementById('editChildPreferences').value,
+        supporting_tutors: supportingTutorsArray,
         updated_at: new Date().toISOString()
       };
       const { error } = await supabase.from('children').update(updates).eq('id', id);
