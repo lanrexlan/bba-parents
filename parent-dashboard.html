@@ -3319,7 +3319,7 @@
 
       let data = [];
       if (assignments?.length) {
-        const tutorIds = [...new Set(assignments.map(a => a.tutor_id).filter(Boolean))
+        const tutorIds = [...new Set(assignments.map(a => a.tutor_id).filter(Boolean))];
         const childIds = [...new Set(assignments.map(a => a.child_id).filter(Boolean))];
         const subjectIds = [...new Set(assignments.map(a => a.subject_id).filter(Boolean))];
 
