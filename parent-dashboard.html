@@ -541,153 +541,179 @@
       padding: 1.5rem;
     }
 
-    /* Agreement specific styles */
+    /* Agreement Specific Styles */
     .agreement-document {
       background: var(--white);
+      border-radius: var(--border-radius-lg);
+      padding: 2.5rem;
+      margin: 1.5rem 0;
+      box-shadow: var(--shadow-xl);
       border: 1px solid var(--gray-200);
-      border-radius: var(--border-radius);
-      padding: 2rem;
-      font-family: 'Times New Roman', serif;
+      font-family: 'Inter', sans-serif;
       line-height: 1.8;
-      color: var(--gray-800);
       max-width: 800px;
-      margin: 0 auto;
-      box-shadow: var(--shadow-md);
+      margin-left: auto;
+      margin-right: auto;
+      position: relative;
     }
 
     .agreement-header {
       text-align: center;
       margin-bottom: 2rem;
-      padding-bottom: 1rem;
-      border-bottom: 2px solid var(--gray-200);
+      padding-bottom: 1.5rem;
+      border-bottom: 2px solid var(--primary);
     }
 
     .agreement-title {
-      font-size: 1.8rem;
-      font-weight: bold;
-      color: var(--gray-900);
-      margin-bottom: 1rem;
       font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 1.75rem;
+      font-weight: 800;
+      color: var(--primary);
+      margin-bottom: 0.5rem;
+      letter-spacing: -0.025em;
     }
 
-    .agreement-intro {
-      font-size: 1rem;
-      color: var(--gray-700);
-      margin-bottom: 1.5rem;
+    .agreement-subtitle {
+      color: var(--gray-600);
+      font-size: 0.95rem;
+      font-weight: 500;
     }
 
     .agreement-section {
       margin-bottom: 2rem;
     }
 
-    .agreement-section h3 {
-      font-size: 1.3rem;
-      font-weight: bold;
-      color: var(--primary);
-      margin-bottom: 1rem;
+    .agreement-section-title {
       font-family: 'Plus Jakarta Sans', sans-serif;
-    }
-
-    .agreement-section ul {
-      list-style-type: disc;
-      margin-left: 1.5rem;
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--gray-800);
       margin-bottom: 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--gray-200);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
     }
 
-    .agreement-section li {
+    .agreement-section-icon {
+      width: 24px;
+      height: 24px;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 0.75rem;
+      flex-shrink: 0;
+    }
+
+    .agreement-content p {
+      margin-bottom: 0.75rem;
+      color: var(--gray-700);
+      font-size: 0.95rem;
+    }
+
+    .agreement-list {
+      list-style: none;
+      padding-left: 0;
+      margin: 1rem 0;
+    }
+
+    .agreement-list li {
       margin-bottom: 0.5rem;
+      padding-left: 1.5rem;
+      position: relative;
+      color: var(--gray-700);
+      font-size: 0.95rem;
     }
 
-    .agreement-signatures {
+    .agreement-list li::before {
+      content: '●';
+      color: var(--primary);
+      font-weight: bold;
+      position: absolute;
+      left: 0;
+      top: 0;
+    }
+
+    .highlight-info {
+      background: linear-gradient(135deg, var(--primary-light), var(--secondary-light));
+      border: 1px solid var(--primary);
+      border-radius: var(--border-radius);
+      padding: 1rem 1.25rem;
+      margin: 1rem 0;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .highlight-info::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 4px;
+      height: 100%;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+    }
+
+    .highlight-info strong {
+      color: var(--primary);
+      font-weight: 700;
+    }
+
+    .signature-section {
       margin-top: 3rem;
+      padding-top: 2rem;
+      border-top: 2px solid var(--gray-200);
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 2rem;
-      border-top: 2px solid var(--gray-200);
-      padding-top: 2rem;
     }
 
     .signature-block {
       text-align: center;
+      padding: 1.5rem;
+      background: var(--gray-50);
+      border-radius: var(--border-radius);
+      border: 1px solid var(--gray-200);
     }
 
     .signature-line {
       border-bottom: 2px solid var(--gray-400);
-      margin-bottom: 0.5rem;
-      height: 3rem;
-      display: flex;
-      align-items: flex-end;
-      padding-bottom: 0.5rem;
+      margin: 2rem 0 0.5rem;
+      height: 1px;
     }
 
-    .signature-label {
-      font-weight: bold;
-      color: var(--gray-700);
+    .signature-title {
+      font-weight: 700;
+      color: var(--gray-800);
+      margin-bottom: 0.25rem;
     }
 
-    .dynamic-field {
-      color: var(--primary);
-      font-weight: bold;
-      text-decoration: underline;
+    .signature-subtitle {
+      font-size: 0.85rem;
+      color: var(--gray-500);
+      font-style: italic;
     }
 
-    .print-button {
-      position: fixed;
-      bottom: 2rem;
-      right: 2rem;
-      z-index: 100;
-      background: linear-gradient(135deg, var(--primary), var(--secondary));
-      color: white;
-      border: none;
-      border-radius: 50px;
-      padding: 1rem 1.5rem;
-      font-weight: 600;
-      box-shadow: var(--shadow-lg);
-      cursor: pointer;
-      transition: var(--transition);
+    .agreement-watermark {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) rotate(-45deg);
+      font-size: 8rem;
+      color: rgba(0, 102, 255, 0.03);
+      font-weight: 900;
+      pointer-events: none;
+      z-index: 0;
+      font-family: 'Plus Jakarta Sans', sans-serif;
     }
 
-    .print-button:hover {
-      transform: translateY(-2px);
-      box-shadow: var(--shadow-xl);
-    }
-
-    @media print {
-      .header, .sidebar, .print-button, .card-header, .card-actions {
-        display: none !important;
-      }
-      
-      .app-layout {
-        padding: 0;
-        margin: 0;
-        max-width: none;
-      }
-      
-      .main-content {
-        padding: 0;
-      }
-      
-      .card {
-        box-shadow: none;
-        border: none;
-        background: white;
-      }
-      
-      .card-content {
-        padding: 0;
-      }
-      
-      .agreement-document {
-        max-width: none;
-        box-shadow: none;
-        border: none;
-        margin: 0;
-        padding: 1rem;
-      }
-      
-      body {
-        background: white !important;
-      }
+    .agreement-content {
+      position: relative;
+      z-index: 1;
     }
 
     /* Buttons */
@@ -1196,6 +1222,16 @@
       .stats-grid {
         grid-template-columns: repeat(2, 1fr);
       }
+
+      .agreement-document {
+        padding: 2rem;
+        margin: 1rem 0;
+      }
+
+      .signature-section {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+      }
     }
 
     @media (max-width: 768px) {
@@ -1349,20 +1385,16 @@
       }
 
       .agreement-document {
-        padding: 1rem;
-        font-size: 0.9rem;
+        padding: 1.5rem;
+        margin: 0.5rem 0;
       }
 
-      .agreement-signatures {
-        grid-template-columns: 1fr;
-        gap: 1rem;
+      .agreement-title {
+        font-size: 1.5rem;
       }
 
-      .print-button {
-        bottom: 6rem;
-        right: 1rem;
-        padding: 0.75rem 1rem;
-        font-size: 0.8rem;
+      .agreement-section-title {
+        font-size: 1.1rem;
       }
 
       /* Mobile table view */
@@ -1458,8 +1490,11 @@
       }
 
       .agreement-document {
-        padding: 0.75rem;
-        font-size: 0.85rem;
+        padding: 1rem;
+      }
+
+      .agreement-title {
+        font-size: 1.25rem;
       }
     }
 
@@ -1467,6 +1502,45 @@
     @media (min-width: 769px) {
       .search-container {
         display: block;
+      }
+    }
+
+    @media print {
+      .header, .sidebar, .bottom-nav, .card-header, .btn {
+        display: none !important;
+      }
+      
+      .app-layout {
+        flex-direction: column;
+        max-width: none;
+        margin: 0;
+        padding: 0;
+      }
+      
+      .main-content {
+        padding: 0;
+      }
+      
+      .agreement-document {
+        box-shadow: none;
+        border: 1px solid #000;
+        margin: 0;
+        padding: 2rem;
+        background: white;
+      }
+      
+      .card {
+        box-shadow: none;
+        border: none;
+        background: transparent;
+      }
+      
+      .card-content {
+        padding: 0;
+      }
+
+      .agreement-watermark {
+        display: none;
       }
     }
   </style>
@@ -1931,11 +2005,11 @@
               Parent Agreement
             </div>
             <div class="card-actions">
-              <button class="btn btn-primary" id="printAgreement">
+              <button class="btn btn-secondary" id="printAgreement">
                 <i class="fas fa-print"></i>
                 Print Agreement
               </button>
-              <button class="btn btn-secondary" id="downloadAgreement">
+              <button class="btn btn-primary" id="downloadAgreementPDF">
                 <i class="fas fa-download"></i>
                 Download PDF
               </button>
@@ -1943,62 +2017,106 @@
           </div>
           <div class="card-content">
             <div class="agreement-document" id="agreementDocument">
-              <div class="agreement-header">
-                <h1 class="agreement-title">PARENT AGREEMENT</h1>
-                <div class="agreement-intro">
-                  This Agreement is made on the <span class="dynamic-field" id="agreementDate">_____ day of _____ 2025</span> between Baobab Online Academy and <span class="dynamic-field" id="agreementParentName">Parent's Name</span>, regarding the education of <span class="dynamic-field" id="agreementChildrenList">her children</span>.
+              <div class="agreement-watermark">BAOBAB</div>
+              <div class="agreement-content">
+                <div class="agreement-header">
+                  <h1 class="agreement-title">PARENT AGREEMENT</h1>
+                  <p class="agreement-subtitle">Baobab Online Academy • Educational Excellence</p>
                 </div>
-              </div>
 
-              <div class="agreement-section">
-                <h3>1. Enrollment & Subjects</h3>
-                <ul>
-                  <li>The children are enrolled in <span class="dynamic-field" id="agreementSubjects">Mathematics and English</span>.</li>
-                  <li>Total = <span class="dynamic-field" id="agreementWeeklyLessons">6</span> lessons per week.</li>
-                  <li>Mathematics will be taught by <span class="dynamic-field">Mrs. Toyyibat Jimoh</span>.</li>
-                  <li>English will be taught by <span class="dynamic-field">Mrs. Hiqmah Adekilekun</span>.</li>
-                  <li>Lessons will be supported by <span class="dynamic-field">Miss Oluwafunmilayo Jogbodo and Miss Similolula Fagbohungbe</span> as assistant teachers.</li>
-                </ul>
-              </div>
-
-              <div class="agreement-section">
-                <h3>2. Fees</h3>
-                <ul>
-                  <li>The tuition fee is <span class="dynamic-field" id="agreementFeePerChild">₦60,000 (Sixty Thousand Naira)</span> per child, per month.</li>
-                  <li>Total due for <span class="dynamic-field" id="agreementChildCount">two</span> children = <span class="dynamic-field" id="agreementTotalFee">₦120,000 (One Hundred and Twenty Thousand Naira)</span>.</li>
-                  <li>Fees must be paid before the commencement of classes.</li>
-                  <li>Fees are non-refundable once the term commences.</li>
-                </ul>
-              </div>
-
-              <div class="agreement-section">
-                <h3>3. Learning Commitment</h3>
-                <ul>
-                  <li>The Academy shall provide qualified instructors and structured lesson delivery.</li>
-                  <li>The Parent agrees to ensure consistent attendance and encourage children to complete assignments.</li>
-                  <li>The Academy shall not be held responsible for missed lessons due to student absence.</li>
-                </ul>
-              </div>
-
-              <div class="agreement-section">
-                <h3>4. Termination</h3>
-                <ul>
-                  <li>Either party may terminate this agreement with two (2) weeks' written notice.</li>
-                  <li>No refund will be issued for partial term attendance.</li>
-                </ul>
-              </div>
-
-              <div class="agreement-signatures">
-                <div class="signature-block">
-                  <div class="signature-line"></div>
-                  <div class="signature-label">Head of School</div>
-                  <div>Baobab Online Academy</div>
-                  <div>Date: _____________</div>
+                <div class="agreement-section">
+                  <p style="text-align: center; margin-bottom: 2rem; font-size: 1rem; line-height: 1.8;">
+                    This Agreement is made on the <strong id="agreementDate">_______</strong> day of <strong id="agreementMonth">_______</strong> 2025 between <strong>Baobab Online Academy</strong> and <strong id="parentNameAgreement">_______</strong>, regarding the education of her children, <span id="childrenListAgreement">_______</span>.
+                  </p>
                 </div>
-                <div class="signature-block">
-                  <div class="signature-line"></div>
-                  <div class="signature-label">Parent (<span id="agreementParentNameSignature">Parent Name</span>)</div>
-                  <div>Date: _____________</div>
+
+                <div class="agreement-section">
+                  <h2 class="agreement-section-title">
+                    <div class="agreement-section-icon">
+                      <i class="fas fa-graduation-cap"></i>
+                    </div>
+                    Enrollment & Subjects
+                  </h2>
+                  <div class="agreement-content">
+                    <div class="highlight-info">
+                      <div id="subjectsEnrollmentAgreement">
+                        <p>Loading enrollment details...</p>
+                      </div>
+                    </div>
+                    <div id="tutorAssignmentsAgreement">
+                      <p>Loading tutor assignments...</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="agreement-section">
+                  <h2 class="agreement-section-title">
+                    <div class="agreement-section-icon">
+                      <i class="fas fa-pound-sign"></i>
+                    </div>
+                    Fees
+                  </h2>
+                  <div class="agreement-content">
+                    <div class="highlight-info">
+                      <div id="feesBreakdownAgreement">
+                        <p>Loading fee structure...</p>
+                      </div>
+                    </div>
+                    <ul class="agreement-list">
+                      <li>Fees must be paid before the commencement of classes.</li>
+                      <li>Fees are non-refundable once the term commences.</li>
+                    </ul>
+                  </div>
+                </div>
+
+                <div class="agreement-section">
+                  <h2 class="agreement-section-title">
+                    <div class="agreement-section-icon">
+                      <i class="fas fa-handshake"></i>
+                    </div>
+                    Learning Commitment
+                  </h2>
+                  <div class="agreement-content">
+                    <ul class="agreement-list">
+                      <li>The Academy shall provide qualified instructors and structured lesson delivery.</li>
+                      <li>The Parent agrees to ensure consistent attendance and encourage children to complete assignments.</li>
+                      <li>The Academy shall not be held responsible for missed lessons due to student absence.</li>
+                    </ul>
+                  </div>
+                </div>
+
+                <div class="agreement-section">
+                  <h2 class="agreement-section-title">
+                    <div class="agreement-section-icon">
+                      <i class="fas fa-file-signature"></i>
+                    </div>
+                    Termination
+                  </h2>
+                  <div class="agreement-content">
+                    <ul class="agreement-list">
+                      <li>Either party may terminate this agreement with two (2) weeks' written notice.</li>
+                      <li>No refund will be issued for partial term attendance.</li>
+                    </ul>
+                  </div>
+                </div>
+
+                <div class="signature-section">
+                  <div class="signature-block">
+                    <div class="signature-line"></div>
+                    <div class="signature-title">Head of School</div>
+                    <div class="signature-subtitle">Baobab Online Academy</div>
+                    <div style="margin-top: 1rem; font-size: 0.9rem; color: var(--gray-600);">
+                      Date: <strong id="schoolSignatureDate">_____________</strong>
+                    </div>
+                  </div>
+                  <div class="signature-block">
+                    <div class="signature-line"></div>
+                    <div class="signature-title" id="parentSignatureName">Parent's Name</div>
+                    <div class="signature-subtitle">Parent/Guardian</div>
+                    <div style="margin-top: 1rem; font-size: 0.9rem; color: var(--gray-600);">
+                      Date: <strong id="parentSignatureDate">_____________</strong>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -2147,7 +2265,9 @@
       tutors: [],
       assessments: [],
       progress: [],
-      billing: []
+      billing: [],
+      fees: [],
+      subjects: []
     };
 
     // UI elements
@@ -2293,7 +2413,6 @@
       URL.revokeObjectURL(url);
     }
 
-    // Number formatting functions
     function numberToWords(num) {
       const ones = ['', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine'];
       const teens = ['Ten', 'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen', 'Seventeen', 'Eighteen', 'Nineteen'];
@@ -2335,64 +2454,71 @@
       return result.trim();
     }
 
-    // Agreement functions
-    function populateAgreement() {
-      // Set current date
-      const today = new Date();
-      const day = today.getDate();
-      const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
-        'July', 'August', 'September', 'October', 'November', 'December'];
-      const month = monthNames[today.getMonth()];
-      const year = today.getFullYear();
-      
-      document.getElementById('agreementDate').textContent = `${day} day of ${month} ${year}`;
+    // Initialize fees table and data
+    async function initializeFeesTable() {
+      try {
+        // Check if fees table exists and has data
+        const { data: existingFees, error: feeError } = await supabase
+          .from('fees')
+          .select('*')
+          .limit(1);
 
-      // Parent name
-      const parentName = parentProfile?.full_name || currentUser?.email?.split('@')[0] || 'Parent';
-      document.getElementById('agreementParentName').textContent = parentName;
-      document.getElementById('agreementParentNameSignature').textContent = parentName;
+        if (feeError && feeError.code === '42P01') {
+          // Table doesn't exist, create it
+          console.log('Fees table not found. Creating fees table...');
+          await createFeesTable();
+        } else if (!existingFees || existingFees.length === 0) {
+          // Table exists but no data, insert default fees
+          await insertDefaultFees();
+        }
 
-      if (children.length === 0) {
-        document.getElementById('agreementChildrenList').textContent = 'her children';
-        document.getElementById('agreementChildCount').textContent = 'children';
-        document.getElementById('agreementTotalFee').textContent = '₦60,000 (Sixty Thousand Naira)';
-        return;
+        // Load fees into cache
+        const { data: fees } = await supabase
+          .from('fees')
+          .select('*');
+        cache.fees = fees || [];
+      } catch (error) {
+        console.error('Error initializing fees table:', error);
+        // Fallback to default fees structure
+        cache.fees = [
+          { grade_range: 'Grades 1-6', class_type: 'Group', amount: 40000, currency: 'NGN' },
+          { grade_range: 'Grades 1-6', class_type: '1-on-1', amount: 60000, currency: 'NGN' },
+          { grade_range: 'Grades 7-11', class_type: 'Group', amount: 60000, currency: 'NGN' },
+          { grade_range: 'Grades 7-11', class_type: '1-on-1', amount: 100000, currency: 'NGN' },
+          { grade_range: 'All Grades', class_type: 'Exam Intensive', amount: 100000, currency: 'NGN' },
+          { grade_range: 'All Grades', class_type: 'Python Programming', amount: 60000, currency: 'NGN' }
+        ];
       }
-
-      // Children list
-      const childrenText = children.map(child => {
-        const grade = child.grade_level ? ` (Grade ${child.grade_level})` : '';
-        return `${child.name}${grade}`;
-      }).join(' and ');
-      
-      const gender = parentProfile?.gender?.toLowerCase() === 'male' ? 'his' : 'her';
-      document.getElementById('agreementChildrenList').textContent = `${gender} children, ${childrenText}`;
-
-      // Child count
-      const count = children.length;
-      const countWords = numberToWords(count).toLowerCase();
-      document.getElementById('agreementChildCount').textContent = `${countWords} children`;
-
-      // Calculate total fee (₦60,000 per child)
-      const feePerChild = 60000;
-      const totalFee = feePerChild * count;
-      const totalFeeWords = numberToWords(totalFee);
-      document.getElementById('agreementTotalFee').textContent = `₦${totalFee.toLocaleString()} (${totalFeeWords} Naira)`;
-
-      // Weekly lessons (could be dynamic based on actual data)
-      document.getElementById('agreementWeeklyLessons').textContent = '6';
-      
-      // Subject information (could be dynamic based on actual enrollment)
-      document.getElementById('agreementSubjects').textContent = 'Mathematics (2 periods weekly) and English (Comprehension, Creative Writing, SPaG, and Verbal Reasoning -- 3 periods weekly)';
     }
 
-    function printAgreement() {
-      window.print();
+    async function createFeesTable() {
+      // This would typically be done via database migration, but for demo purposes:
+      console.log('Note: Fees table should be created via database migration');
     }
 
-    function downloadAgreementPDF() {
-      // For now, just trigger print - in production you might want to use a PDF library
-      alert('PDF download functionality will be implemented. For now, please use the print option and save as PDF.');
+    async function insertDefaultFees() {
+      const defaultFees = [
+        { grade_range: 'Grades 1-6', class_type: 'Group', amount: 40000, currency: 'NGN', description: 'Group classes for Key Stages 1-2' },
+        { grade_range: 'Grades 1-6', class_type: '1-on-1', amount: 60000, currency: 'NGN', description: 'Individual classes for Key Stages 1-2' },
+        { grade_range: 'Grades 7-11', class_type: 'Group', amount: 60000, currency: 'NGN', description: 'Group classes for Key Stages 3-4' },
+        { grade_range: 'Grades 7-11', class_type: '1-on-1', amount: 100000, currency: 'NGN', description: 'Individual classes for Key Stages 3-4' },
+        { grade_range: 'All Grades', class_type: 'Exam Intensive', amount: 100000, currency: 'NGN', description: 'Intensive exam preparation' },
+        { grade_range: 'All Grades', class_type: 'Python Programming', amount: 60000, currency: 'NGN', description: 'Python programming course' }
+      ];
+
+      try {
+        const { error } = await supabase
+          .from('fees')
+          .insert(defaultFees);
+        
+        if (error) {
+          console.error('Error inserting default fees:', error);
+        } else {
+          console.log('Default fees inserted successfully');
+        }
+      } catch (error) {
+        console.error('Error inserting default fees:', error);
+      }
     }
 
     // Auth functions
@@ -2567,6 +2693,20 @@
       cache.children = children;
     }
 
+    async function loadSubjects() {
+      const { data, error } = await supabase
+        .from('subjects')
+        .select('*')
+        .eq('is_active', true)
+        .order('name');
+      if (error) {
+        console.error('Error loading subjects:', error);
+        cache.subjects = [];
+        return;
+      }
+      cache.subjects = data || [];
+    }
+
     async function loadDashboardStats() {
       if (!children.length) {
         document.getElementById('totalLessons').textContent = 0;
@@ -2707,6 +2847,166 @@
         }).join('');
       }
     }
+
+    // Agreement functionality
+    async function loadAgreementSection() {
+      if (!parentProfile || !children.length) {
+        document.getElementById('agreementDocument').innerHTML = `
+          <div class="empty-state">
+            <i class="fas fa-file-contract"></i>
+            <div>Agreement data not available. Please ensure your profile and children information is complete.</div>
+          </div>
+        `;
+        return;
+      }
+
+      try {
+        // Set basic info
+        const now = new Date();
+        const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+        
+        document.getElementById('agreementDate').textContent = now.getDate();
+        document.getElementById('agreementMonth').textContent = months[now.getMonth()];
+        document.getElementById('parentNameAgreement').textContent = parentProfile.full_name || 'Parent Name';
+        document.getElementById('parentSignatureName').textContent = parentProfile.full_name || 'Parent Name';
+        
+        // Format account creation date
+        const createdAt = new Date(currentUser.created_at);
+        document.getElementById('parentSignatureDate').textContent = createdAt.toLocaleDateString();
+        document.getElementById('schoolSignatureDate').textContent = now.toLocaleDateString();
+
+        // Format children list
+        const childrenList = children.map(child => {
+          const grade = child.grade_level ? ` (Grade ${child.grade_level})` : '';
+          return `<strong>${child.name}</strong>${grade}`;
+        }).join(' and ');
+        document.getElementById('childrenListAgreement').innerHTML = childrenList;
+
+        // Load tutor assignments and subjects for children
+        const childIds = children.map(c => c.id);
+        const { data: assignments } = await supabase
+          .from('tutor_assignments')
+          .select('*')
+          .in('child_id', childIds)
+          .eq('status', 'active');
+
+        let subjectsEnrollment = '';
+        let tutorAssignments = '';
+        let totalFees = 0;
+
+        if (assignments?.length) {
+          // Get related data
+          const tutorIds = [...new Set(assignments.map(a => a.tutor_id).filter(Boolean))];
+          const subjectIds = [...new Set(assignments.map(a => a.subject_id).filter(Boolean))];
+
+          const [tutorResults, subjectResults] = await Promise.all([
+            tutorIds.length ? supabase.from('tutor_profiles').select('id, full_name').in('id', tutorIds) : { data: [] },
+            subjectIds.length ? supabase.from('subjects').select('id, name, weekly_frequency').in('id', subjectIds) : { data: [] }
+          ]);
+
+          const tutorMap = new Map((tutorResults.data || []).map(t => [t.id, t]));
+          const subjectMap = new Map((subjectResults.data || []).map(s => [s.id, s]));
+
+          // Group subjects by frequency
+          const subjectGroups = {};
+          assignments.forEach(assignment => {
+            const subject = subjectMap.get(assignment.subject_id);
+            if (subject) {
+              const frequency = subject.weekly_frequency || 2;
+              const key = `${subject.name}_${frequency}`;
+              if (!subjectGroups[key]) {
+                subjectGroups[key] = {
+                  name: subject.name,
+                  frequency: frequency,
+                  tutors: new Set()
+                };
+              }
+              const tutor = tutorMap.get(assignment.tutor_id);
+              if (tutor) {
+                subjectGroups[key].tutors.add(tutor.full_name);
+              }
+            }
+          });
+
+          // Build subjects enrollment text
+          const subjectEntries = Object.values(subjectGroups);
+          subjectsEnrollment = `<p>The children are enrolled in:</p><ul class="agreement-list">`;
+          
+          let totalPeriods = 0;
+          subjectEntries.forEach(subject => {
+            const periodsText = subject.frequency === 1 ? '1 period weekly' : `${subject.frequency} periods weekly`;
+            subjectsEnrollment += `<li><strong>${subject.name}</strong> (${periodsText})</li>`;
+            totalPeriods += subject.frequency;
+          });
+          
+          subjectsEnrollment += `</ul><p><strong>Total weekly periods: ${totalPeriods}</strong></p>`;
+
+          // Build tutor assignments
+          tutorAssignments = '<p>Subject assignments:</p><ul class="agreement-list">';
+          subjectEntries.forEach(subject => {
+            const tutorsList = Array.from(subject.tutors).join(' and ');
+            tutorAssignments += `<li><strong>${subject.name}</strong> will be taught by ${tutorsList}.</li>`;
+          });
+          tutorAssignments += '</ul>';
+
+          // Calculate fees (simplified - assuming Group class for all)
+          const childCount = children.length;
+          const baseGrade = children[0]?.grade_level ? parseInt(children[0].grade_level) : 1;
+          let feePerChild = 40000; // Default for Grades 1-6 Group
+
+          if (baseGrade >= 7) {
+            feePerChild = 60000; // Grades 7-11 Group
+          }
+
+          totalFees = feePerChild * childCount;
+
+        } else {
+          subjectsEnrollment = '<p><em>No active subject enrollments found.</em></p>';
+          tutorAssignments = '<p><em>No tutor assignments found.</em></p>';
+        }
+
+        // Update agreement content
+        document.getElementById('subjectsEnrollmentAgreement').innerHTML = subjectsEnrollment;
+        document.getElementById('tutorAssignmentsAgreement').innerHTML = tutorAssignments;
+
+        // Update fees
+        const currency = 'NGN';
+        const totalFeesFormatted = new Intl.NumberFormat('en-NG', {
+          style: 'currency',
+          currency: 'NGN',
+          minimumFractionDigits: 0
+        }).format(totalFees);
+
+        const feesInWords = numberToWords(totalFees);
+        const feesBreakdown = `
+          <p>The tuition fee is <strong>${totalFeesFormatted}</strong> per child, per month.</p>
+          <p>Total due for <strong>${children.length} ${children.length === 1 ? 'child' : 'children'}</strong> = <strong>${totalFeesFormatted}</strong> (${feesInWords} Naira only).</p>
+        `;
+        document.getElementById('feesBreakdownAgreement').innerHTML = feesBreakdown;
+
+      } catch (error) {
+        console.error('Error loading agreement:', error);
+        document.getElementById('agreementDocument').innerHTML = `
+          <div class="empty-state">
+            <i class="fas fa-exclamation-triangle"></i>
+            <div>Error loading agreement data. Please refresh the page and try again.</div>
+          </div>
+        `;
+      }
+    }
+
+    // Print agreement functionality
+    document.getElementById('printAgreement')?.addEventListener('click', () => {
+      window.print();
+    });
+
+    // Download PDF functionality (basic implementation)
+    document.getElementById('downloadAgreementPDF')?.addEventListener('click', () => {
+      // For a complete PDF solution, you'd integrate with jsPDF or a similar library
+      // For now, we'll use the browser's print to PDF functionality
+      alert('Please use your browser\'s "Print to PDF" option from the print dialog for now. Full PDF download functionality will be added soon.');
+      window.print();
+    });
 
     // Table renderers
     function renderChildrenTable(rows) {
@@ -3038,7 +3338,7 @@
         options: { 
           responsive: true, 
           maintainAspectRatio: false, 
-          scales: { 
+          scales: {
             y: { 
               beginAtZero: true, 
               max: 100, 
@@ -3111,10 +3411,6 @@
       renderBillingTable(cache.billing);
     }
 
-    function loadAgreementSection() {
-      populateAgreement();
-    }
-
     // Section dispatcher
     async function loadSection(id) {
       switch (id) {
@@ -3138,7 +3434,7 @@
           await loadBillingSection();
           break;
         case 'agreement':
-          loadAgreementSection();
+          await loadAgreementSection();
           break;
         case 'profile':
         default:
@@ -3189,10 +3485,7 @@
       await loadChildrenSection();
       await loadOverviewCards();
       await loadReportsSection();
-      // Update agreement if viewing it
-      if (location.hash.includes('agreement')) {
-        populateAgreement();
-      }
+      await loadAgreementSection(); // Reload agreement with updated child data
     }
 
     // Profile save
@@ -3211,10 +3504,7 @@
       }
       alert('Profile updated successfully!');
       await loadProfile();
-      // Update agreement if viewing it
-      if (location.hash.includes('agreement')) {
-        populateAgreement();
-      }
+      await loadAgreementSection(); // Reload agreement with updated profile data
     }
 
     // Search and export hooks
@@ -3282,10 +3572,6 @@
     document.getElementById('profileForm')?.addEventListener('submit', saveProfile);
     document.getElementById('refreshReports')?.addEventListener('click', loadReportsSection);
 
-    // Agreement button handlers
-    document.getElementById('printAgreement')?.addEventListener('click', printAgreement);
-    document.getElementById('downloadAgreement')?.addEventListener('click', downloadAgreementPDF);
-
     // Search + Export bindings
     hookSearch('childrenSearch', () => cache.children, renderChildrenTable, ['name', 'grade_level', 'status', 'emergency_contact']);
     hookExport('childrenExport', 'children.csv', () => cache.children, [
@@ -3343,7 +3629,7 @@
       { label: 'Child', key: 'child_name' },
       { label: 'Subject', key: 'subject_name' },
       { label: 'Score', get: r => r.score },
-      { label: 'Strengths', get: r => r.strengths},
+      { label: 'Strengths', get: r => r.strengths },
       { label: 'Improvement', get: r => r.areas_of_improvement },
       { label: 'Recorded By', key: 'tutor_name' }
     ]);
@@ -3401,6 +3687,8 @@
       
       await loadProfile();
       await loadChildren();
+      await loadSubjects();
+      await initializeFeesTable();
 
       // Initial route
       routeFromHash();
@@ -3412,8 +3700,8 @@
       loadTutorsSection();
       loadReportsSection();
       loadBillingSection();
+      loadAgreementSection();
     })();
   </script>
 </body>
 </html>
-      
