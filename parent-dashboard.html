@@ -684,6 +684,49 @@
       border-bottom: 2px solid var(--gray-400);
       margin: 2rem 0 0.5rem;
       height: 1px;
+      position: relative;
+    }
+
+    .signature-image {
+      max-width: 150px;
+      max-height: 80px;
+      margin: 1rem auto;
+      display: block;
+      border: 1px solid var(--gray-200);
+      border-radius: var(--border-radius);
+    }
+
+    .signature-upload {
+      position: relative;
+      display: inline-block;
+      margin: 1rem 0;
+    }
+
+    .signature-upload input {
+      position: absolute;
+      opacity: 0;
+      width: 100%;
+      height: 100%;
+      cursor: pointer;
+    }
+
+    .signature-upload-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 0.75rem 1rem;
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: var(--border-radius);
+      cursor: pointer;
+      font-size: 0.85rem;
+      transition: var(--transition);
+    }
+
+    .signature-upload-btn:hover {
+      background: var(--primary-hover);
     }
 
     .signature-title {
@@ -784,7 +827,7 @@
       font-size: 0.9rem;
     }
 
-    .form-input {
+    .form-input, .form-select {
       width: 100%;
       padding: 0.75rem 0.875rem;
       border: 2px solid var(--gray-200);
@@ -794,7 +837,7 @@
       background: var(--white);
     }
 
-    .form-input:focus {
+    .form-input:focus, .form-select:focus {
       outline: none;
       border-color: var(--primary);
       box-shadow: 0 0 0 3px var(--primary-light);
@@ -1506,7 +1549,7 @@
     }
 
     @media print {
-      .header, .sidebar, .bottom-nav, .card-header, .btn {
+      .header, .sidebar, .bottom-nav, .card-header, .btn, .signature-upload {
         display: none !important;
       }
       
@@ -1762,6 +1805,7 @@
                     <th>DOB</th>
                     <th>Age</th>
                     <th>Grade</th>
+                    <th>Class Type</th>
                     <th>Status</th>
                     <th>Enrolled</th>
                     <th>Emergency Contact</th>
@@ -2027,7 +2071,7 @@
 
                 <div class="agreement-section">
                   <p style="text-align: center; margin-bottom: 2rem; font-size: 1rem; line-height: 1.8;">
-                    This Agreement is made on the <strong id="agreementDate">_______</strong> day of <strong id="agreementMonth">_______</strong> 2025 between <strong>Baobab Online Academy</strong> and <strong id="parentNameAgreement">_______</strong>, regarding the education of his/her children, <span id="childrenListAgreement">_______</span>.
+                    This Agreement is made on the <strong id="agreementDate">_______</strong> day of <strong id="agreementMonth">_______</strong> 2025 between <strong>Baobab Online Academy</strong> and <strong id="parentNameAgreement">_______</strong>, regarding the education of her children, <span id="childrenListAgreement">_______</span>.
                   </p>
                 </div>
 
@@ -2104,6 +2148,7 @@
                 <div class="signature-section">
                   <div class="signature-block">
                     <div class="signature-line"></div>
+                    <img id="schoolSignatureImage" class="signature-image" src="https://via.placeholder.com/150x80/0066FF/FFFFFF?text=Head+Signature" alt="Head of School Signature" style="display: block;">
                     <div class="signature-title">Head of School</div>
                     <div class="signature-subtitle">Baobab Online Academy</div>
                     <div style="margin-top: 1rem; font-size: 0.9rem; color: var(--gray-600);">
@@ -2112,6 +2157,14 @@
                   </div>
                   <div class="signature-block">
                     <div class="signature-line"></div>
+                    <img id="parentSignatureImage" class="signature-image" alt="Parent Signature" style="display: none;">
+                    <div class="signature-upload">
+                      <input type="file" id="signatureInput" accept="image/*">
+                      <button class="signature-upload-btn">
+                        <i class="fas fa-upload"></i>
+                        Upload Signature
+                      </button>
+                    </div>
                     <div class="signature-title" id="parentSignatureName">Parent's Name</div>
                     <div class="signature-subtitle">Parent/Guardian</div>
                     <div style="margin-top: 1rem; font-size: 0.9rem; color: var(--gray-600);">
@@ -2229,8 +2282,24 @@
             <input class="form-input" id="editChildGrade" name="grade_level" type="text">
           </div>
           <div class="form-group">
+            <label class="form-label" for="editChildClassType">Class Type</label>
+            <select class="form-select" id="editChildClassType" name="class_type">
+              <option value="Group">Group Class</option>
+              <option value="1-on-1">1-on-1 Class</option>
+              <option value="Exam Intensive">Exam Intensive</option>
+              <option value="Python Programming">Python Programming</option>
+            </select>
+          </div>
+          <div class="form-group">
             <label class="form-label" for="editChildEmergency">Emergency Contact</label>
             <input class="form-input" id="editChildEmergency" name="emergency_contact" type="text">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="editChildSupportingTutors">Supporting Tutors</label>
+            <input class="form-input" id="editChildSupportingTutors" name="supporting_tutors" type="text" placeholder="Enter supporting tutor names (comma-separated)">
+            <small style="color: var(--gray-500); font-size: 0.8rem; margin-top: 0.25rem; display: block;">
+              Enter names separated by commas, e.g., "John Smith, Jane Doe"
+            </small>
           </div>
           <div class="form-group">
             <label class="form-label" for="editChildMedical">Medical Information</label>
@@ -2239,13 +2308,6 @@
           <div class="form-group">
             <label class="form-label" for="editChildPreferences">Learning Preferences</label>
             <textarea class="form-input" id="editChildPreferences" name="learning_preferences"></textarea>
-            <div class="form-group">
-  <label class="form-label" for="editChildSupportingTutors">Supporting Tutors</label>
-  <input class="form-input" id="editChildSupportingTutors" name="supporting_tutors" type="text" placeholder="Enter supporting tutor names (comma-separated)">
-  <small style="color: var(--gray-500); font-size: 0.8rem; margin-top: 0.25rem; display: block;">
-    Enter names separated by commas, e.g., "John Smith, Jane Doe"
-  </small>
-</div>
           </div>
           <button class="btn btn-primary" type="submit">
             <i class="fas fa-save"></i>
@@ -2465,68 +2527,52 @@
     // Initialize fees table and data
     async function initializeFeesTable() {
       try {
-        // Check if fees table exists and has data
-        const { data: existingFees, error: feeError } = await supabase
-          .from('fees')
-          .select('*')
-          .limit(1);
-
-        if (feeError && feeError.code === '42P01') {
-          // Table doesn't exist, create it
-          console.log('Fees table not found. Creating fees table...');
-          await createFeesTable();
-        } else if (!existingFees || existingFees.length === 0) {
-          // Table exists but no data, insert default fees
-          await insertDefaultFees();
-        }
-
         // Load fees into cache
-        const { data: fees } = await supabase
+        const { data: fees, error } = await supabase
           .from('fees')
           .select('*');
-        cache.fees = fees || [];
-      } catch (error) {
-        console.error('Error initializing fees table:', error);
-        // Fallback to default fees structure
-        cache.fees = [
-          { grade_range: 'Grades 1-6', class_type: 'Group', amount: 40000, currency: 'NGN' },
-          { grade_range: 'Grades 1-6', class_type: '1-on-1', amount: 60000, currency: 'NGN' },
-          { grade_range: 'Grades 7-11', class_type: 'Group', amount: 60000, currency: 'NGN' },
-          { grade_range: 'Grades 7-11', class_type: '1-on-1', amount: 100000, currency: 'NGN' },
-          { grade_range: 'All Grades', class_type: 'Exam Intensive', amount: 100000, currency: 'NGN' },
-          { grade_range: 'All Grades', class_type: 'Python Programming', amount: 60000, currency: 'NGN' }
-        ];
-      }
-    }
-
-    async function createFeesTable() {
-      // This would typically be done via database migration, but for demo purposes:
-      console.log('Note: Fees table should be created via database migration');
-    }
-
-    async function insertDefaultFees() {
-      const defaultFees = [
-        { grade_range: 'Grades 1-6', class_type: 'Group', amount: 40000, currency: 'NGN', description: 'Group classes for Key Stages 1-2' },
-        { grade_range: 'Grades 1-6', class_type: '1-on-1', amount: 60000, currency: 'NGN', description: 'Individual classes for Key Stages 1-2' },
-        { grade_range: 'Grades 7-11', class_type: 'Group', amount: 60000, currency: 'NGN', description: 'Group classes for Key Stages 3-4' },
-        { grade_range: 'Grades 7-11', class_type: '1-on-1', amount: 100000, currency: 'NGN', description: 'Individual classes for Key Stages 3-4' },
-        { grade_range: 'All Grades', class_type: 'Exam Intensive', amount: 100000, currency: 'NGN', description: 'Intensive exam preparation' },
-        { grade_range: 'All Grades', class_type: 'Python Programming', amount: 60000, currency: 'NGN', description: 'Python programming course' }
-      ];
-
-      try {
-        const { error } = await supabase
-          .from('fees')
-          .insert(defaultFees);
         
         if (error) {
-          console.error('Error inserting default fees:', error);
+          console.error('Error loading fees:', error);
+          // Fallback fees
+          cache.fees = [
+            { grade_range: 'Grades 1-6', class_type: 'Group', amount: 40000, currency: 'NGN' },
+            { grade_range: 'Grades 1-6', class_type: '1-on-1', amount: 60000, currency: 'NGN' },
+            { grade_range: 'Grades 7-11', class_type: 'Group', amount: 60000, currency: 'NGN' },
+            { grade_range: 'Grades 7-11', class_type: '1-on-1', amount: 100000, currency: 'NGN' },
+            { grade_range: 'All Grades', class_type: 'Exam Intensive', amount: 100000, currency: 'NGN' },
+            { grade_range: 'All Grades', class_type: 'Python Programming', amount: 60000, currency: 'NGN' }
+          ];
         } else {
-          console.log('Default fees inserted successfully');
+          cache.fees = fees || [];
         }
       } catch (error) {
-        console.error('Error inserting default fees:', error);
+        console.error('Error initializing fees table:', error);
+        cache.fees = [];
       }
+    }
+
+    function getFeeForChild(child) {
+      const gradeLevel = parseInt(child.grade_level) || 1;
+      const classType = child.class_type || 'Group';
+      
+      // Determine grade range
+      let gradeRange = 'Grades 1-6';
+      if (gradeLevel >= 7) {
+        gradeRange = 'Grades 7-11';
+      }
+      
+      // Special cases
+      if (classType === 'Exam Intensive' || classType === 'Python Programming') {
+        gradeRange = 'All Grades';
+      }
+      
+      // Find matching fee
+      const fee = cache.fees.find(f => 
+        f.grade_range === gradeRange && f.class_type === classType
+      );
+      
+      return fee ? fee.amount : (gradeLevel >= 7 ? 60000 : 40000); // Fallback
     }
 
     // Auth functions
@@ -2611,6 +2657,14 @@
           document.getElementById('userInitials').style.display = 'none';
         }
       }
+
+      // Load parent signature if exists
+      if (parentProfile.signature_url) {
+        const sigImg = document.getElementById('parentSignatureImage');
+        sigImg.src = parentProfile.signature_url;
+        sigImg.style.display = 'block';
+        document.querySelector('.signature-upload').style.display = 'none';
+      }
     }
 
     // Profile image upload functionality
@@ -2622,20 +2676,17 @@
       const file = e.target.files[0];
       if (!file) return;
 
-      // Validate file type
       if (!file.type.startsWith('image/')) {
         alert('Please select an image file.');
         return;
       }
 
-      // Validate file size (max 5MB)
       if (file.size > 5 * 1024 * 1024) {
         alert('File size must be less than 5MB.');
         return;
       }
 
       try {
-        // Upload to Supabase Storage
         const fileExt = file.name.split('.').pop();
         const fileName = `${currentUser.id}-${Date.now()}.${fileExt}`;
         
@@ -2645,12 +2696,10 @@
 
         if (error) throw error;
 
-        // Get public URL
         const { data: { publicUrl } } = supabase.storage
           .from('profile-images')
           .getPublicUrl(fileName);
 
-        // Update profile in database
         const { error: updateError } = await supabase
           .from('parent_profiles')
           .update({ 
@@ -2667,7 +2716,6 @@
         profileImg.style.display = 'block';
         document.getElementById('profileInitials').style.display = 'none';
 
-        // Update header avatar
         const headerAvatar = document.getElementById('userAvatar');
         let headerImg = headerAvatar.querySelector('img');
         if (!headerImg) {
@@ -2683,6 +2731,59 @@
       } catch (error) {
         console.error('Error uploading image:', error);
         alert('Failed to upload image. Please try again.');
+      }
+    });
+
+    // Signature upload functionality
+    document.getElementById('signatureInput').addEventListener('change', async (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      if (!file.type.startsWith('image/')) {
+        alert('Please select an image file.');
+        return;
+      }
+
+      if (file.size > 2 * 1024 * 1024) {
+        alert('Signature file size must be less than 2MB.');
+        return;
+      }
+
+      try {
+        const fileExt = file.name.split('.').pop();
+        const fileName = `signature-${currentUser.id}-${Date.now()}.${fileExt}`;
+        
+        const { data, error } = await supabase.storage
+          .from('signatures')
+          .upload(fileName, file);
+
+        if (error) throw error;
+
+        const { data: { publicUrl } } = supabase.storage
+          .from('signatures')
+          .getPublicUrl(fileName);
+
+        const { error: updateError } = await supabase
+          .from('parent_profiles')
+          .update({ 
+            signature_url: publicUrl,
+            agreement_signed_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+          })
+          .eq('user_id', currentUser.id);
+
+        if (updateError) throw updateError;
+
+        // Update UI
+        const sigImg = document.getElementById('parentSignatureImage');
+        sigImg.src = publicUrl;
+        sigImg.style.display = 'block';
+        document.querySelector('.signature-upload').style.display = 'none';
+
+        alert('Signature uploaded successfully!');
+      } catch (error) {
+        console.error('Error uploading signature:', error);
+        alert('Failed to upload signature. Please try again.');
       }
     });
 
@@ -2759,7 +2860,7 @@
       document.getElementById('activeTutors').textContent = uniqueTutors.length;
     }
 
-    // Overview widgets - SIMPLIFIED APPROACH using manual joins only
+    // Overview widgets
     async function loadOverviewCards() {
       const cids = children.map(c => c.id);
       
@@ -2791,7 +2892,7 @@
         `).join('');
       }
 
-      // Upcoming lessons - MANUAL APPROACH ONLY
+      // Upcoming lessons
       const nowIso = new Date().toISOString();
       const { data: lessons } = await supabase
         .from('lessons')
@@ -2804,12 +2905,10 @@
 
       let upcoming = [];
       if (lessons?.length) {
-        // Get unique IDs
         const tutorIds = [...new Set(lessons.map(l => l.tutor_id).filter(Boolean))];
         const childIds = [...new Set(lessons.map(l => l.child_id).filter(Boolean))];
         const subjectIds = [...new Set(lessons.map(l => l.subject_id).filter(Boolean))];
 
-        // Fetch related data
         const [tutorResults, childResults, subjectResults] = await Promise.all([
           tutorIds.length ? supabase.from('tutor_profiles').select('id, full_name').in('id', tutorIds) : { data: [] },
           childIds.length ? supabase.from('children').select('id, name').in('id', childIds) : { data: [] },
@@ -2820,7 +2919,6 @@
         const childMap = new Map((childResults.data || []).map(c => [c.id, c]));
         const subjectMap = new Map((subjectResults.data || []).map(s => [s.id, s]));
 
-        // Combine data
         upcoming = lessons.map(lesson => ({
           ...lesson,
           tutor_name: tutorMap.get(lesson.tutor_id)?.full_name || 'Tutor',
@@ -2869,23 +2967,22 @@
       }
 
       try {
-        // Set basic info
-        const now = new Date();
+        // Set basic info - use parent registration date
+        const registrationDate = new Date(currentUser.created_at);
         const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
         
-        document.getElementById('agreementDate').textContent = now.getDate();
-        document.getElementById('agreementMonth').textContent = months[now.getMonth()];
+        document.getElementById('agreementDate').textContent = registrationDate.getDate();
+        document.getElementById('agreementMonth').textContent = months[registrationDate.getMonth()];
         document.getElementById('parentNameAgreement').textContent = parentProfile.full_name || 'Parent Name';
         document.getElementById('parentSignatureName').textContent = parentProfile.full_name || 'Parent Name';
         
-        // Format account creation date
-        const createdAt = new Date(currentUser.created_at);
-        document.getElementById('parentSignatureDate').textContent = createdAt.toLocaleDateString();
-        document.getElementById('schoolSignatureDate').textContent = now.toLocaleDateString();
+        // Format registration date for signatures
+        document.getElementById('parentSignatureDate').textContent = registrationDate.toLocaleDateString();
+        document.getElementById('schoolSignatureDate').textContent = registrationDate.toLocaleDateString();
 
-        // Format children list
+        // Format children list - fix double grade issue
         const childrenList = children.map(child => {
-          const grade = child.grade_level ? ` (Grade ${child.grade_level})` : '';
+          const grade = child.grade_level ? ` (${child.grade_level})` : '';
           return `<strong>${child.name}</strong>${grade}`;
         }).join(' and ');
         document.getElementById('childrenListAgreement').innerHTML = childrenList;
@@ -2903,7 +3000,6 @@
         let totalFees = 0;
 
         if (assignments?.length) {
-          // Get related data
           const tutorIds = [...new Set(assignments.map(a => a.tutor_id).filter(Boolean))];
           const subjectIds = [...new Set(assignments.map(a => a.subject_id).filter(Boolean))];
 
@@ -2957,38 +3053,35 @@
           });
           tutorAssignments += '</ul>';
 
+          // Add supporting tutors information
           const supportingTutorsInfo = children
-    .filter(child => child.supporting_tutors && child.supporting_tutors.length > 0)
-    .map(child => {
-      const tutorsList = child.supporting_tutors.join(' and ');
-      return `<li>Lessons for <strong>${child.name}</strong> will be supported by ${tutorsList} as assistant teachers.</li>`;
-    })
-    .join('');
-
-    
-
-          // Calculate fees (simplified - assuming Group class for all)
-          const childCount = children.length;
-          const baseGrade = children[0]?.grade_level ? parseInt(children[0].grade_level) : 1;
-          let feePerChild = 40000; // Default for Grades 1-6 Group
-
-          if (baseGrade >= 7) {
-            feePerChild = 60000; // Grades 7-11 Group
+            .filter(child => child.supporting_tutors && child.supporting_tutors.length > 0)
+            .map(child => {
+              const tutorsList = child.supporting_tutors.join(' and ');
+              return `<li>Lessons for <strong>${child.name}</strong> will be supported by ${tutorsList} as assistant teachers.</li>`;
+            })
+            .join('');
+          
+          if (supportingTutorsInfo) {
+            tutorAssignments += '<p>Additional support:</p><ul class="agreement-list">' + supportingTutorsInfo + '</ul>';
           }
-
-          totalFees = feePerChild * childCount;
 
         } else {
           subjectsEnrollment = '<p><em>No active subject enrollments found.</em></p>';
           tutorAssignments = '<p><em>No tutor assignments found.</em></p>';
         }
 
+        // Calculate fees based on each child's grade and class type
+        children.forEach(child => {
+          const fee = getFeeForChild(child);
+          totalFees += fee;
+        });
+
         // Update agreement content
         document.getElementById('subjectsEnrollmentAgreement').innerHTML = subjectsEnrollment;
         document.getElementById('tutorAssignmentsAgreement').innerHTML = tutorAssignments;
 
-        // Update fees
-        const currency = 'NGN';
+        // Update fees with proper calculation
         const totalFeesFormatted = new Intl.NumberFormat('en-NG', {
           style: 'currency',
           currency: 'NGN',
@@ -2996,10 +3089,22 @@
         }).format(totalFees);
 
         const feesInWords = numberToWords(totalFees);
-        const feesBreakdown = `
-          <p>The tuition fee is <strong>${totalFeesFormatted}</strong> per child, per month.</p>
-          <p>Total due for <strong>${children.length} ${children.length === 1 ? 'child' : 'children'}</strong> = <strong>${totalFeesFormatted}</strong> (${feesInWords} Naira only).</p>
-        `;
+        
+        // Build detailed fees breakdown
+        let feesBreakdown = '<p>Fee breakdown per child:</p><ul class="agreement-list">';
+        children.forEach(child => {
+          const fee = getFeeForChild(child);
+          const feeFormatted = new Intl.NumberFormat('en-NG', {
+            style: 'currency',
+            currency: 'NGN',
+            minimumFractionDigits: 0
+          }).format(fee);
+          feesBreakdown += `<li><strong>${child.name}</strong> (${child.class_type || 'Group'} class): ${feeFormatted} per month</li>`;
+        });
+        feesBreakdown += '</ul>';
+        
+        feesBreakdown += `<p><strong>Total due for ${children.length} ${children.length === 1 ? 'child' : 'children'} = ${totalFeesFormatted}</strong> (${feesInWords} Naira only) per month.</p>`;
+        
         document.getElementById('feesBreakdownAgreement').innerHTML = feesBreakdown;
 
       } catch (error) {
@@ -3018,10 +3123,8 @@
       window.print();
     });
 
-    // Download PDF functionality (basic implementation)
+    // Download PDF functionality
     document.getElementById('downloadAgreementPDF')?.addEventListener('click', () => {
-      // For a complete PDF solution, you'd integrate with jsPDF or a similar library
-      // For now, we'll use the browser's print to PDF functionality
       alert('Please use your browser\'s "Print to PDF" option from the print dialog for now. Full PDF download functionality will be added soon.');
       window.print();
     });
@@ -3030,7 +3133,7 @@
     function renderChildrenTable(rows) {
       const tb = document.getElementById('childrenTbody');
       if (!rows?.length) { 
-        tb.innerHTML = `<tr><td colspan="8"><div class="empty-state"><i class="fas fa-child"></i><div>No children found.</div></div></td></tr>`; 
+        tb.innerHTML = `<tr><td colspan="10"><div class="empty-state"><i class="fas fa-child"></i><div>No children found.</div></div></td></tr>`; 
         return; 
       }
       tb.innerHTML = rows.map(r => `
@@ -3039,6 +3142,7 @@
           <td data-label="DOB">${fmtDate(r.date_of_birth)}</td>
           <td data-label="Age">${yearsFrom(r.date_of_birth) || ''}</td>
           <td data-label="Grade">${r.grade_level || ''}</td>
+          <td data-label="Class Type"><span class="badge badge-primary">${r.class_type || 'Group'}</span></td>
           <td data-label="Status">${statusBadge(r.status || 'Active')}</td>
           <td data-label="Enrolled">${fmtDate(r.enrollment_date)}</td>
           <td data-label="Emergency Contact">${r.emergency_contact || '—'}</td>
@@ -3154,7 +3258,7 @@
       `).join('');
     }
 
-    // Section loaders - ALL USING MANUAL JOINS FOR CONSISTENCY
+    // Section loaders
     async function loadChildrenSection() {
       renderChildrenTable(cache.children);
     }
@@ -3174,12 +3278,10 @@
 
       let data = [];
       if (lessons?.length) {
-        // Get unique IDs
         const tutorIds = [...new Set(lessons.map(l => l.tutor_id).filter(Boolean))];
         const childIds = [...new Set(lessons.map(l => l.child_id).filter(Boolean))];
         const subjectIds = [...new Set(lessons.map(l => l.subject_id).filter(Boolean))];
 
-        // Fetch related data
         const [tutorResults, childResults, subjectResults] = await Promise.all([
           tutorIds.length ? supabase.from('tutor_profiles').select('id, full_name').in('id', tutorIds) : { data: [] },
           childIds.length ? supabase.from('children').select('id, name').in('id', childIds) : { data: [] },
@@ -3190,7 +3292,6 @@
         const childMap = new Map((childResults.data || []).map(c => [c.id, c]));
         const subjectMap = new Map((subjectResults.data || []).map(s => [s.id, s]));
 
-        // Combine data
         data = lessons.map(lesson => ({
           ...lesson,
           tutor_name: tutorMap.get(lesson.tutor_id)?.full_name,
@@ -3218,12 +3319,10 @@
 
       let data = [];
       if (assignments?.length) {
-        // Get unique IDs
-        const tutorIds = [...new Set(assignments.map(a => a.tutor_id).filter(Boolean))];
+        const tutorIds = [...new Set(assignments.map(a => a.tutor_id).filter(Boolean))
         const childIds = [...new Set(assignments.map(a => a.child_id).filter(Boolean))];
         const subjectIds = [...new Set(assignments.map(a => a.subject_id).filter(Boolean))];
 
-        // Fetch related data
         const [tutorResults, childResults, subjectResults] = await Promise.all([
           tutorIds.length ? supabase.from('tutor_profiles').select('id, full_name, email').in('id', tutorIds) : { data: [] },
           childIds.length ? supabase.from('children').select('id, name').in('id', childIds) : { data: [] },
@@ -3234,7 +3333,6 @@
         const childMap = new Map((childResults.data || []).map(c => [c.id, c]));
         const subjectMap = new Map((subjectResults.data || []).map(s => [s.id, s]));
 
-        // Combine data
         data = assignments.map(assignment => ({
           ...assignment,
           tutor_name: tutorMap.get(assignment.tutor_id)?.full_name,
@@ -3357,7 +3455,7 @@
         options: { 
           responsive: true, 
           maintainAspectRatio: false, 
-          scales: {
+          scales: { 
             y: { 
               beginAtZero: true, 
               max: 100, 
@@ -3380,7 +3478,7 @@
         }
       });
 
-      // Progress records - Manual approach
+      // Progress records
       const { data: progressRecords } = await supabase
         .from('progress_records')
         .select('*')
@@ -3469,12 +3567,15 @@
       document.getElementById('editChildName').value = c.name || '';
       document.getElementById('editChildDOB').value = c.date_of_birth || '';
       document.getElementById('editChildGrade').value = c.grade_level || '';
+      document.getElementById('editChildClassType').value = c.class_type || 'Group';
       document.getElementById('editChildEmergency').value = c.emergency_contact || '';
       document.getElementById('editChildMedical').value = c.medical_info || '';
       document.getElementById('editChildPreferences').value = c.learning_preferences || '';
+      
       // Handle supporting tutors array
-  const supportingTutors = c.supporting_tutors ? c.supporting_tutors.join(', ') : '';
-  document.getElementById('editChildSupportingTutors').value = supportingTutors;
+      const supportingTutors = c.supporting_tutors ? c.supporting_tutors.join(', ') : '';
+      document.getElementById('editChildSupportingTutors').value = supportingTutors;
+      
       document.getElementById('childEditModal').classList.add('active');
       document.body.style.overflow = 'hidden';
     }
@@ -3487,16 +3588,25 @@
     async function saveChild(e) {
       e.preventDefault();
       const id = document.getElementById('editChildId').value;
+      
+      // Handle supporting tutors conversion from string to array
+      const supportingTutorsString = document.getElementById('editChildSupportingTutors').value;
+      const supportingTutorsArray = supportingTutorsString 
+        ? supportingTutorsString.split(',').map(name => name.trim()).filter(name => name.length > 0)
+        : null;
+      
       const updates = {
         name: document.getElementById('editChildName').value,
         date_of_birth: document.getElementById('editChildDOB').value || null,
         grade_level: document.getElementById('editChildGrade').value,
+        class_type: document.getElementById('editChildClassType').value,
         emergency_contact: document.getElementById('editChildEmergency').value,
         medical_info: document.getElementById('editChildMedical').value,
         learning_preferences: document.getElementById('editChildPreferences').value,
         supporting_tutors: supportingTutorsArray,
         updated_at: new Date().toISOString()
       };
+      
       const { error } = await supabase.from('children').update(updates).eq('id', id);
       if (error) { 
         alert('Failed to update child.'); 
@@ -3508,7 +3618,7 @@
       await loadChildrenSection();
       await loadOverviewCards();
       await loadReportsSection();
-      await loadAgreementSection(); // Reload agreement with updated child data
+      await loadAgreementSection();
     }
 
     // Profile save
@@ -3527,7 +3637,7 @@
       }
       alert('Profile updated successfully!');
       await loadProfile();
-      await loadAgreementSection(); // Reload agreement with updated profile data
+      await loadAgreementSection();
     }
 
     // Search and export hooks
@@ -3559,30 +3669,6 @@
         exportCSV(filename, rows, columns);
       });
     }
-    
-    async function getTutorNameMap({ idsAsTutorId = [], idsAsUserId = [] }) {
-      const map = new Map();
-
-      // By tutor_profiles.id
-      if (idsAsTutorId.length) {
-        const { data: byId } = await supabase
-          .from('tutor_profiles')
-          .select('id, full_name')
-          .in('id', Array.from(new Set(idsAsTutorId)));
-        (byId || []).forEach(t => map.set(String(t.id), t.full_name));
-      }
-
-      // By tutor_profiles.user_id
-      if (idsAsUserId.length) {
-        const { data: byUser } = await supabase
-          .from('tutor_profiles')
-          .select('user_id, full_name')
-          .in('user_id', Array.from(new Set(idsAsUserId)));
-        (byUser || []).forEach(t => map.set(String(t.user_id), t.full_name));
-      }
-
-      return map;
-    }
 
     // Event listeners
     document.getElementById('logoutLink')?.addEventListener('click', async (e) => {
@@ -3596,15 +3682,17 @@
     document.getElementById('refreshReports')?.addEventListener('click', loadReportsSection);
 
     // Search + Export bindings
-    hookSearch('childrenSearch', () => cache.children, renderChildrenTable, ['name', 'grade_level', 'status', 'emergency_contact']);
+    hookSearch('childrenSearch', () => cache.children, renderChildrenTable, ['name', 'grade_level', 'status', 'emergency_contact', 'class_type', r => r.supporting_tutors?.join(' ')]);
     hookExport('childrenExport', 'children.csv', () => cache.children, [
       { label: 'Name', key: 'name' },
       { label: 'DOB', get: r => fmtDate(r.date_of_birth) },
       { label: 'Age', get: r => yearsFrom(r.date_of_birth) },
       { label: 'Grade', key: 'grade_level' },
+      { label: 'Class Type', key: 'class_type' },
       { label: 'Status', key: 'status' },
       { label: 'Enrolled', get: r => fmtDate(r.enrollment_date) },
-      { label: 'Emergency', key: 'emergency_contact' }
+      { label: 'Emergency', key: 'emergency_contact' },
+      { label: 'Supporting Tutors', get: r => r.supporting_tutors?.join(', ') || '' }
     ]);
 
     hookSearch('lessonsSearch', () => cache.lessons, renderLessonsTable, [
@@ -3680,7 +3768,7 @@
       }
       const base = cache.children;
       const filtered = q ? base.filter(r => 
-        [r.name, r.grade_level, r.status, r.emergency_contact].some(v => 
+        [r.name, r.grade_level, r.status, r.emergency_contact, r.class_type].some(v => 
           String(v || '').toLowerCase().includes(q)
         )
       ) : base;
