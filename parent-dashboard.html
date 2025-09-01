@@ -2049,6 +2049,7 @@
                       <th>Score</th>
                       <th>Strengths</th>
                       <th>Improvement</th>
+                      <th>Notes</th>
                       <th>Recorded By</th>
                     </tr>
                   </thead>
@@ -2923,6 +2924,14 @@
                 doc.text(strengthsText, margin + 10, yPosition);
                 yPosition += strengthsText.length * 4 + 2;
               }
+
+              if (progress.notes) {
+                doc.text('notes:', margin + 5, yPosition);
+                yPosition += 4;
+                const notesText = doc.splitTextToSize(progress.notes, pageWidth - 2 * margin - 15);
+                doc.text(notesText, margin + 10, yPosition);
+                yPosition += notesText.length * 4 + 2;
+              }
               
               if (progress.areas_of_improvement) {
                 doc.text('Areas for Improvement:', margin + 5, yPosition);
@@ -3647,6 +3656,7 @@
           <td data-label="Score">${p.score != null ? p.score + '%' : '—'}</td>
           <td data-label="Strengths">${createExpandableText(p.strengths)}</td>
           <td data-label="Improvement">${createExpandableText(p.areas_of_improvement)}</td>
+          <td data-label="Notes">${createExpandableText(p.notes)}</td>
           <td data-label="Recorded By">${p.tutor_name || '—'}</td>
         </tr>
       `).join('');
@@ -4150,7 +4160,7 @@
     ]);
 
     hookSearch('progressSearch', () => cache.progress, renderProgressTable, [
-      'child_name', 'subject_name', 'strengths', 'areas_of_improvement'
+      'child_name', 'subject_name', 'strengths','notes', 'areas_of_improvement'
     ]);
     hookExport('progressExport', 'progress_records.csv', () => cache.progress, [
       { label: 'Date', get: r => fmtDate(r.recorded_at) },
@@ -4158,6 +4168,7 @@
       { label: 'Subject', key: 'subject_name' },
       { label: 'Score', get: r => r.score },
       { label: 'Strengths', get: r => r.strengths },
+      { label: 'notes', get: r => r.notes },
       { label: 'Improvement', get: r => r.areas_of_improvement },
       { label: 'Recorded By', key: 'tutor_name' }
     ]);
