@@ -3081,10 +3081,11 @@ async function generatePDFReport() {
     doc.setFont(undefined, 'normal');
     doc.text('Baobab Online Academy - Excellence in Digital Education', pageWidth/2, yPosition, { align: 'center' });
     yPosition += 5;
-    doc.text('For inquiries: support@baobabackademy.com | www.baobabackademy.com', pageWidth/2, yPosition, { align: 'center' });
+    doc.text('For inquiries: admin@baobabonlineacademy.com | www.baobabaonlineacademy.com', pageWidth/2, yPosition, { align: 'center' });
     
-    // Save the PDF
-    const filename = `Baobab_Comprehensive_Report_${child?.name?.replace(/\s+/g, '_') || 'Student'}_${new Date().toISOString().split('T')[0]}.pdf`;
+    // Save the PDF with corrected filename generation
+    const studentNames = children.map(child => child.name).join('_');
+    const filename = `Baobab_Comprehensive_Report_${studentNames.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`;
     doc.save(filename);
     
   } catch (error) {
