@@ -10,6 +10,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
   <style>
     :root {
@@ -915,6 +916,7 @@
       border-bottom: 1px solid var(--gray-100);
       vertical-align: middle;
       font-size: 0.9rem;
+      word-break: break-word;
     }
 
     .table tbody tr {
@@ -1245,6 +1247,81 @@
       padding: 1rem;
       margin-bottom: 1.25rem;
       height: 250px;
+    }
+
+    /* PDF Template Styles */
+    #pdfTemplate {
+      display: none;
+    }
+
+    .pdf-container {
+      width: 100%;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 2rem;
+      background: white;
+      font-family: 'Inter', sans-serif;
+      color: var(--gray-800);
+    }
+
+    .pdf-header {
+      text-align: center;
+      margin-bottom: 2rem;
+      border-bottom: 2px solid var(--primary);
+      padding-bottom: 1rem;
+    }
+
+    .pdf-title {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 1.75rem;
+      font-weight: 800;
+      color: var(--primary);
+      margin-bottom: 0.5rem;
+    }
+
+    .pdf-subtitle {
+      font-size: 1rem;
+      color: var(--gray-600);
+    }
+
+    .pdf-child-section {
+      margin-bottom: 2rem;
+    }
+
+    .pdf-child-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--gray-800);
+      margin-bottom: 1rem;
+      border-bottom: 1px solid var(--gray-200);
+      padding-bottom: 0.5rem;
+    }
+
+    .pdf-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 1rem;
+    }
+
+    .pdf-table th {
+      background: var(--gray-100);
+      padding: 0.75rem;
+      text-align: left;
+      font-weight: 600;
+      border-bottom: 2px solid var(--gray-200);
+    }
+
+    .pdf-table td {
+      padding: 0.75rem;
+      border-bottom: 1px solid var(--gray-200);
+      word-break: break-word;
+    }
+
+    .pdf-footer {
+      text-align: center;
+      margin-top: 2rem;
+      font-size: 0.85rem;
+      color: var(--gray-500);
     }
 
     /* Responsive Design */
@@ -1934,6 +2011,10 @@
                   <i class="fas fa-download"></i>
                   Export CSV
                 </button>
+                <button class="btn btn-primary" id="assessmentsPDF">
+                  <i class="fas fa-file-pdf"></i>
+                  Download PDF
+                </button>
               </div>
 
               <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; margin-bottom: 1.5rem;">
@@ -1972,6 +2053,10 @@
                 <button class="btn btn-secondary" id="progressExport">
                   <i class="fas fa-download"></i>
                   Export CSV
+                </button>
+                <button class="btn btn-primary" id="progressPDF">
+                  <i class="fas fa-file-pdf"></i>
+                  Download PDF
                 </button>
               </div>
 
@@ -2314,6 +2399,21 @@
             Update Child
           </button>
         </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Hidden PDF Template -->
+  <div id="pdfTemplate">
+    <div class="pdf-container">
+      <div class="pdf-header">
+        <h1 class="pdf-title" id="pdfMainTitle"></h1>
+        <p class="pdf-subtitle">Baobab Online Academy - Generated on <span id="pdfDate"></span></p>
+      </div>
+      <div id="pdfBody"></div>
+      <div class="pdf-footer">
+        <p>Confidential - For Parent Use Only</p>
+        <p>Baobab Online Academy © 2025</p>
       </div>
     </div>
   </div>
@@ -3213,7 +3313,7 @@
             <td data-label="Title">${a.title || ''}</td>
             <td data-label="Type"><span class="badge badge-secondary">${a.type || 'quiz'}</span></td>
             <td data-label="Score">${scoreStr}</td>
-            <td data-label="Feedback">${a.feedback ? String(a.feedback).slice(0, 60) + '...' : '—'}</td>
+            <td data-label="Feedback">${a.feedback ? a.feedback : '—'}</td>
           </tr>
         `;
       }).join('');
@@ -3231,8 +3331,8 @@
           <td data-label="Child">${p.child_name || ''}</td>
           <td data-label="Subject">${p.subject_name || ''}</td>
           <td data-label="Score">${p.score != null ? p.score + '%' : '—'}</td>
-          <td data-label="Strengths">${p.strengths ? String(p.strengths).slice(0, 50) + '...' : '—'}</td>
-          <td data-label="Improvement">${p.areas_of_improvement ? String(p.areas_of_improvement).slice(0, 50) + '...' : '—'}</td>
+          <td data-label="Strengths">${p.strengths ? p.strengths : '—'}</td>
+          <td data-label="Improvement">${p.areas_of_improvement ? p.areas_of_improvement : '—'}</td>
           <td data-label="Recorded By">${p.tutor_name || '—'}</td>
         </tr>
       `).join('');
@@ -3258,6 +3358,105 @@
       `).join('');
     }
 
+    // PDF Generation
+    async function generatePDF(type) {
+      const template = document.getElementById('pdfTemplate').cloneNode(true);
+      const pdfBody = template.querySelector('#pdfBody');
+      const pdfMainTitle = template.querySelector('#pdfMainTitle');
+      const pdfDate = template.querySelector('#pdfDate');
+      pdfDate.textContent = new Date().toLocaleDateString();
+
+      let data = type === 'assessments' ? cache.assessments : cache.progress;
+      let title = type === 'assessments' ? 'Assessments Report' : 'Progress Records Report';
+      pdfMainTitle.textContent = title;
+
+      // Group by child
+      const grouped = {};
+      data.forEach(item => {
+        const childName = (type === 'assessments' ? item.children?.name : item.child_name) || 'Unknown Child';
+        if (!grouped[childName]) grouped[childName] = [];
+        grouped[childName].push(item);
+      });
+
+      Object.entries(grouped).forEach(([childName, items]) => {
+        const section = document.createElement('div');
+        section.className = 'pdf-child-section';
+        section.innerHTML = `<h2 class="pdf-child-title">${childName}</h2>`;
+
+        const table = document.createElement('table');
+        table.className = 'pdf-table';
+
+        let thead = document.createElement('thead');
+        let tr = document.createElement('tr');
+
+        if (type === 'assessments') {
+          ['Date', 'Subject', 'Title', 'Type', 'Score', 'Feedback'].forEach(header => {
+            let th = document.createElement('th');
+            th.textContent = header;
+            tr.appendChild(th);
+          });
+        } else {
+          ['Date', 'Subject', 'Score', 'Strengths', 'Improvement', 'Recorded By'].forEach(header => {
+            let th = document.createElement('th');
+            th.textContent = header;
+            tr.appendChild(th);
+          });
+        }
+
+        thead.appendChild(tr);
+        table.appendChild(thead);
+
+        let tbody = document.createElement('tbody');
+        items.forEach(item => {
+          let row = document.createElement('tr');
+          if (type === 'assessments') {
+            const pct = toPercent(item.grade, item.max_grade);
+            const scoreStr = (item.grade != null ? item.grade : '—') + (item.max_grade ? ` / ${item.max_grade}` : '') + (pct ? ` (${pct})` : '');
+            [
+              fmtDate(item.conducted_at),
+              item.subjects?.name || '—',
+              item.title || '—',
+              item.type || 'quiz',
+              scoreStr,
+              item.feedback || '—'
+            ].forEach(text => {
+              let td = document.createElement('td');
+              td.textContent = text;
+              row.appendChild(td);
+            });
+          } else {
+            [
+              fmtDate(item.recorded_at),
+              item.subject_name || '—',
+              item.score != null ? item.score + '%' : '—',
+              item.strengths || '—',
+              item.areas_of_improvement || '—',
+              item.tutor_name || '—'
+            ].forEach(text => {
+              let td = document.createElement('td');
+              td.textContent = text;
+              row.appendChild(td);
+            });
+          }
+          tbody.appendChild(row);
+        });
+        table.appendChild(tbody);
+
+        section.appendChild(table);
+        pdfBody.appendChild(section);
+      });
+
+      const opt = {
+        margin: 0.5,
+        filename: `${title.replace(/\s+/g, '_').toLowerCase()}.pdf`,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2 },
+        jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+      };
+
+      html2pdf().set(opt).from(template).save();
+    }
+
     // Section loaders
     async function loadChildrenSection() {
       renderChildrenTable(cache.children);
@@ -3270,10 +3469,13 @@
       }
       
       const ids = children.map(c => c.id);
+      const nowIso = new Date().toISOString();
       const { data: lessons } = await supabase
         .from('lessons')
         .select('*')
         .in('child_id', ids)
+        .eq('status', 'scheduled')
+        .gte('scheduled_at', nowIso)
         .order('scheduled_at', { ascending: true });
 
       let data = [];
@@ -3669,6 +3871,10 @@
         exportCSV(filename, rows, columns);
       });
     }
+
+    // PDF Download buttons
+    document.getElementById('assessmentsPDF')?.addEventListener('click', () => generatePDF('assessments'));
+    document.getElementById('progressPDF')?.addEventListener('click', () => generatePDF('progress'));
 
     // Event listeners
     document.getElementById('logoutLink')?.addEventListener('click', async (e) => {
