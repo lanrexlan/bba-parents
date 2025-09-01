@@ -2750,7 +2750,7 @@ async function generatePDFReport() {
     // Default formatting settings
     const defaultFontSize = 12;
     const lineSpacing = 1.5;
-    const lineHeight = defaultFontSize * lineSpacing * 0.352778; // Convert to points
+    const lineHeight = defaultFontSize * lineSpacing * 0.352778;
     
     // Helper function to add page if needed
     function checkPageBreak(requiredSpace = 20) {
@@ -2775,58 +2775,30 @@ async function generatePDFReport() {
       doc.setGState(new doc.GState({opacity: 1}));
     }
     
-    // Helper function to write justified paragraph with proper spacing
+    // Simplified paragraph function without justification
     function writeParagraph(text, fontSize = defaultFontSize, color = [0, 0, 0], indent = 0, bold = false) {
       doc.setFontSize(fontSize);
       doc.setTextColor(...color);
       doc.setFont(undefined, bold ? 'bold' : 'normal');
       
-      // Calculate line height for current font size
       const currentLineHeight = fontSize * lineSpacing * 0.352778;
-      
-      // Split text to fit within margins
       const maxWidth = pageWidth - 2 * margin - indent;
       const splitText = doc.splitTextToSize(text, maxWidth);
       
-      // Write each line with proper spacing and justification
-      splitText.forEach((line, index) => {
+      splitText.forEach((line) => {
         checkPageBreak(currentLineHeight + 5);
-        
-        // Justify text (except for last line of paragraph)
-        if (index < splitText.length - 1 && line.trim().length > 0) {
-          // Calculate spaces needed for justification
-          const words = line.trim().split(' ');
-          if (words.length > 1) {
-            const lineWidth = doc.getTextWidth(line);
-            const spaceNeeded = maxWidth - lineWidth;
-            const spacePerGap = spaceNeeded / (words.length - 1);
-            
-            let xPos = margin + indent;
-            words.forEach((word, wordIndex) => {
-              doc.text(word, xPos, yPosition);
-              if (wordIndex < words.length - 1) {
-                xPos += doc.getTextWidth(word) + doc.getTextWidth(' ') + spacePerGap;
-              }
-            });
-          } else {
-            doc.text(line, margin + indent, yPosition);
-          }
-        } else {
-          // Last line or single word - normal alignment
-          doc.text(line, margin + indent, yPosition);
-        }
-        
+        doc.text(line, margin + indent, yPosition);
         yPosition += currentLineHeight;
       });
       
-      yPosition += currentLineHeight * 0.5; // Extra spacing after paragraph
+      yPosition += currentLineHeight * 0.3;
       return splitText.length;
     }
     
     // Helper function to write section header
     function writeSectionHeader(title, color = [0, 102, 255], fontSize = 14) {
       checkPageBreak(25);
-      yPosition += lineHeight;
+      yPosition += lineHeight * 0.5;
       doc.setFontSize(fontSize);
       doc.setTextColor(...color);
       doc.setFont(undefined, 'bold');
@@ -2835,7 +2807,19 @@ async function generatePDFReport() {
       doc.setFont(undefined, 'normal');
     }
     
-    // Helper function to analyze performance
+    // Helper function to write subsection header
+    function writeSubsectionHeader(title, color = [29, 181, 132], fontSize = 12) {
+      checkPageBreak(20);
+      yPosition += lineHeight * 0.3;
+      doc.setFontSize(fontSize);
+      doc.setTextColor(...color);
+      doc.setFont(undefined, 'bold');
+      doc.text(title, margin + 5, yPosition);
+      yPosition += fontSize * 1.1 * 0.352778;
+      doc.setFont(undefined, 'normal');
+    }
+    
+    // Helper function to analyze performance from actual data
     function getPerformanceAnalysis(assessments) {
       if (!assessments.length) return null;
       
@@ -2849,30 +2833,17 @@ async function generatePDFReport() {
       if (!scores.length) return null;
       
       const avgScore = scores.reduce((sum, score) => sum + score, 0) / scores.length;
-      const trend = scores.length > 1 ? 
-        (scores[scores.length - 1] - scores[0]) / scores.length : 0;
       
       return {
         average: Math.round(avgScore),
-        trend: Math.round(trend),
         total: assessments.length,
         scores: scores
       };
     }
     
-    // Helper function to get performance description
-    function getPerformanceDescription(average) {
-      if (average >= 90) return "exceptional";
-      if (average >= 80) return "excellent";
-      if (average >= 70) return "good";
-      if (average >= 60) return "satisfactory";
-      return "needs improvement";
-    }
-    
     // FIRST PAGE - COVER PAGE
     addWatermark();
     
-    // Enhanced Header
     doc.setFontSize(28);
     doc.setTextColor(0, 102, 255);
     doc.setFont(undefined, 'bold');
@@ -2881,79 +2852,60 @@ async function generatePDFReport() {
     
     doc.setFontSize(20);
     doc.setTextColor(29, 181, 132);
-    doc.text('Comprehensive Student Progress & Assessment Report', pageWidth/2, yPosition, { align: 'center' });
+    doc.text('Student Progress & Assessment Report', pageWidth/2, yPosition, { align: 'center' });
     yPosition += 40;
     
-    // Report metadata in center
     doc.setFontSize(14);
     doc.setTextColor(0, 0, 0);
     doc.setFont(undefined, 'normal');
-    doc.text(`Report Period: Academic Year 2024-2025`, pageWidth/2, yPosition, { align: 'center' });
+    doc.text(`Academic Year 2024-2025`, pageWidth/2, yPosition, { align: 'center' });
     yPosition += 10;
-    doc.text(`Generated: ${new Date().toLocaleDateString('en-US', { 
-      weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' 
+    doc.text(`${new Date().toLocaleDateString('en-US', { 
+      year: 'numeric', month: 'long', day: 'numeric' 
     })}`, pageWidth/2, yPosition, { align: 'center' });
     yPosition += 40;
     
-    // Professional Introduction on cover page
     const personalizedGreeting = `Dear ${parentProfile?.full_name || 'Valued Parent'},`;
     writeParagraph(personalizedGreeting, 14, [0, 0, 0], 0, true);
     
-    const introText = `We are pleased to present this comprehensive academic progress report for your ${children.length === 1 ? 'child' : 'children'}. This detailed assessment has been carefully compiled by our qualified educational team to provide you with meaningful insights into ${children.length === 1 ? 'your child\'s' : 'your children\'s'} learning journey, academic achievements, and areas of growth.`;
+    const introText = `This report provides a comprehensive overview of your ${children.length === 1 ? 'child\'s' : 'children\'s'} academic progress, including assessment results, tutor observations, and recommendations for continued growth.`;
     writeParagraph(introText);
     
-    const purposeText = `This report encompasses a thorough analysis of assessment results, learning progress indicators, personalized feedback from our tutors, and strategic recommendations for continued academic excellence. Our goal is to ensure transparent communication about your ${children.length === 1 ? 'child\'s' : 'children\'s'} educational development and to foster a collaborative approach to their learning success.`;
-    writeParagraph(purposeText);
-    
-    const scopeText = `The following pages contain detailed individual reports for each student, including performance analysis, tutor observations, and personalized recommendations for continued academic growth.`;
-    writeParagraph(scopeText);
-    
-    // For each child, generate comprehensive report on separate pages
+    // For each child, generate report on separate pages
     for (let childIndex = 0; childIndex < children.length; childIndex++) {
       const child = children[childIndex];
       
-      // Start each student on a fresh page
       doc.addPage();
       addWatermark();
       yPosition = margin;
       
-      // Student Profile Header
-      doc.setFontSize(22);
+      // Student Header
+      doc.setFontSize(20);
       doc.setTextColor(0, 102, 255);
       doc.setFont(undefined, 'bold');
-      doc.text(`STUDENT PROFILE: ${child.name.toUpperCase()}`, margin, yPosition);
-      yPosition += 20;
+      doc.text(`${child.name.toUpperCase()}`, margin, yPosition);
+      yPosition += 15;
       
       doc.setFontSize(defaultFontSize);
       doc.setTextColor(0, 0, 0);
       doc.setFont(undefined, 'normal');
-      doc.text(`Academic Level: ${child.grade_level || 'Not Specified'} | Learning Format: ${child.class_type === 'private' ? 'Individual Tutoring' : 'Group Learning'}`, margin, yPosition);
-      yPosition += 25;
+      doc.text(`Grade: ${child.grade_level || 'N/A'} | Class Type: ${child.class_type === 'private' ? 'Individual' : 'Group'}`, margin, yPosition);
+      yPosition += 20;
       
-      // Get data for this child
+      // Get actual data for this child
       const childAssessments = cache.assessments.filter(a => a.children?.name === child.name);
       const childProgress = cache.progress.filter(p => p.child_name === child.name);
       const performanceData = getPerformanceAnalysis(childAssessments);
       
-      // Executive Summary
-      writeSectionHeader('EXECUTIVE SUMMARY', [255, 107, 53], 16);
-      
+      // ACADEMIC PERFORMANCE SECTION
       if (performanceData) {
-        const summaryText = `${child.name} has demonstrated ${getPerformanceDescription(performanceData.average)} academic performance throughout the assessment period, achieving an overall average of ${performanceData.average}% across ${performanceData.total} formal assessments. ${performanceData.trend > 0 ? `Notably, there has been a positive upward trend in performance, indicating consistent improvement and strong learning momentum.` : performanceData.trend < -5 ? `We have identified some areas where additional support could be beneficial to help maintain consistent performance levels.` : `Performance has remained stable, showing consistent engagement with the learning material.`}`;
-        writeParagraph(summaryText);
+        writeSectionHeader('ACADEMIC PERFORMANCE', [0, 102, 255], 16);
         
-        const engagementText = `Our tutors have recorded ${childProgress.length} detailed progress observations, reflecting ${child.name}'s active participation in the learning process. This comprehensive tracking allows us to provide targeted support and celebrate achievements in real-time.`;
-        writeParagraph(engagementText);
-      } else {
-        const summaryText = `${child.name} is actively engaged in our learning program. While formal assessment data is still being compiled, our tutors have made ${childProgress.length} progress observations that demonstrate ongoing educational development and engagement with the curriculum.`;
-        writeParagraph(summaryText);
-      }
-      
-      // Academic Performance Analysis
-      if (childAssessments.length > 0) {
-        writeSectionHeader('ACADEMIC PERFORMANCE ANALYSIS', [29, 181, 132], 16);
+        writeSubsectionHeader('Overall Score Summary');
+        const scoreText = `${child.name} completed ${performanceData.total} assessments with an average score of ${performanceData.average}%.`;
+        writeParagraph(scoreText, defaultFontSize, [0, 0, 0], 10);
         
-        // Group assessments by subject
+        // Subject breakdown
         const subjectGroups = {};
         childAssessments.forEach(assessment => {
           const subject = assessment.subjects?.name || 'General Studies';
@@ -2963,178 +2915,142 @@ async function generatePDFReport() {
           subjectGroups[subject].push(assessment);
         });
         
-        // Analyze each subject
         Object.keys(subjectGroups).forEach(subject => {
           const subjectAssessments = subjectGroups[subject];
           const subjectPerformance = getPerformanceAnalysis(subjectAssessments);
           
           if (subjectPerformance) {
-            const subjectText = `In ${subject}, ${child.name} has completed ${subjectAssessments.length} assessments with an average score of ${subjectPerformance.average}%. This ${getPerformanceDescription(subjectPerformance.average)} performance reflects ${subjectPerformance.average >= 80 ? 'strong mastery of key concepts and consistent application of learned skills' : subjectPerformance.average >= 60 ? 'solid understanding with opportunities for continued growth and skill refinement' : 'areas where additional support and practice could significantly enhance learning outcomes'}.`;
-            writeParagraph(subjectText, defaultFontSize, [0, 0, 0], 10);
-            
-            // Recent performance trend
-            if (subjectAssessments.length >= 3) {
-              const recentScores = subjectPerformance.scores.slice(-3);
-              const recentAvg = recentScores.reduce((sum, score) => sum + score, 0) / recentScores.length;
-              const trendText = `Recent assessments show ${recentAvg > subjectPerformance.average + 5 ? 'accelerating improvement' : recentAvg < subjectPerformance.average - 5 ? 'fluctuating performance that may benefit from additional review' : 'consistent performance levels'}, indicating ${recentAvg > subjectPerformance.average + 5 ? 'effective learning strategies and growing confidence' : 'steady engagement with the material'}.`;
-              writeParagraph(trendText, 11, [80, 80, 80], 15);
-            }
+            const subjectText = `${subject}: ${subjectAssessments.length} assessments, ${subjectPerformance.average}% average`;
+            writeParagraph(subjectText, 11, [60, 60, 60], 15);
           }
         });
-        
-        // Overall academic insights
-        const insightText = `Across all subject areas, ${child.name} demonstrates ${performanceData.average >= 75 ? 'strong analytical thinking and problem-solving capabilities' : 'developing analytical skills with consistent effort and engagement'}. The diversity of assessment formats—including ${[...new Set(childAssessments.map(a => a.type || 'Quiz'))].join(', ').toLowerCase()}—provides a comprehensive view of learning preferences and strengths.`;
-        writeParagraph(insightText);
       }
       
-      // Detailed Tutor Feedback & Observations
-      writeSectionHeader('TUTOR OBSERVATIONS & FEEDBACK', [138, 43, 226], 16);
-      
-      const feedbackAssessments = childAssessments.filter(a => a.feedback && a.feedback.trim());
-      if (feedbackAssessments.length > 0 || childProgress.length > 0) {
-        const introFeedback = `Our qualified tutors have provided detailed observations and personalized feedback to support ${child.name}'s continued academic growth. These insights reflect direct classroom interactions and assessment evaluations.`;
-        writeParagraph(introFeedback);
+      // PROGRESS OBSERVATIONS SECTION
+      if (childProgress.length > 0) {
+        writeSectionHeader('TUTOR OBSERVATIONS', [138, 43, 226], 16);
         
-        // Structured feedback from assessments
-        if (feedbackAssessments.length > 0) {
-          feedbackAssessments.slice(0, 3).forEach((assessment, index) => {
-            checkPageBreak(30);
-            const feedbackHeader = `Assessment Feedback - ${assessment.subjects?.name || 'Subject Study'} (${fmtDate(assessment.conducted_at)}):`;
-            doc.setFontSize(13);
-            doc.setTextColor(29, 181, 132);
-            doc.setFont(undefined, 'bold');
-            doc.text(feedbackHeader, margin + 10, yPosition);
-            yPosition += lineHeight;
-            
-            const enhancedFeedback = `"${assessment.feedback}" This feedback reflects ${child.name}'s engagement with the assessment material and provides specific guidance for continued learning development.`;
-            writeParagraph(enhancedFeedback, 11, [60, 60, 60], 15);
-          });
-        }
-        
-        // Progress record insights
-        if (childProgress.length > 0) {
-          const progressHeader = `Ongoing Progress Observations:`;
-          doc.setFontSize(14);
-          doc.setTextColor(255, 107, 53);
-          doc.setFont(undefined, 'bold');
-          doc.text(progressHeader, margin, yPosition);
-          yPosition += lineHeight * 1.2;
-          doc.setFont(undefined, 'normal');
+        childProgress.slice(0, 3).forEach((progress, index) => {
+          checkPageBreak(30);
           
-          const recentProgress = childProgress.slice(0, 3);
-          recentProgress.forEach(progress => {
-            checkPageBreak(25);
-            
-            let progressNarrative = `During ${progress.subject_name || 'learning activities'} on ${fmtDate(progress.recorded_at)}, `;
-            
-            if (progress.score) {
-              progressNarrative += `${child.name} achieved a ${progress.score}% performance level, `;
-            }
-            
-            if (progress.strengths) {
-              progressNarrative += `demonstrating particular strength in ${progress.strengths.toLowerCase()}. `;
-            }
-            
-            if (progress.areas_of_improvement) {
-              progressNarrative += `Areas identified for continued focus include ${progress.areas_of_improvement.toLowerCase()}, which will be addressed through targeted learning activities. `;
-            }
-            
-            if (progress.notes) {
-              progressNarrative += `Additional observations: ${progress.notes}`;
-            }
-            
-            progressNarrative += ` This assessment was conducted by ${progress.tutor_name || 'our qualified tutor'}, ensuring personalized attention to learning needs.`;
-            
-            writeParagraph(progressNarrative, 11, [40, 40, 40], 10);
-          });
-        }
-      } else {
-        const noFeedbackText = `Detailed tutor feedback is currently being compiled for ${child.name}. Our educational team maintains ongoing observations of learning progress and will provide comprehensive feedback in upcoming assessment cycles.`;
-        writeParagraph(noFeedbackText);
+          // Date and score
+          writeSubsectionHeader(`${fmtDate(progress.recorded_at)} - ${progress.subject_name || 'Subject'}`);
+          
+          if (progress.score) {
+            writeParagraph(`Performance Score: ${progress.score}%`, 11, [0, 0, 0], 10);
+          }
+          
+          // Strengths
+          if (progress.strengths) {
+            writeSubsectionHeader('Strengths', [29, 181, 132], 11);
+            writeParagraph(progress.strengths, 11, [0, 0, 0], 15);
+          }
+          
+          // Areas for improvement
+          if (progress.areas_of_improvement) {
+            writeSubsectionHeader('Areas for Improvement', [255, 107, 53], 11);
+            writeParagraph(progress.areas_of_improvement, 11, [0, 0, 0], 15);
+          }
+          
+          // Goals
+          if (progress.goals) {
+            writeSubsectionHeader('Learning Goals', [255, 152, 0], 11);
+            writeParagraph(progress.goals, 11, [0, 0, 0], 15);
+          }
+          
+          // Additional notes
+          if (progress.notes) {
+            writeSubsectionHeader('Additional Notes', [100, 100, 100], 11);
+            writeParagraph(progress.notes, 11, [60, 60, 60], 15);
+          }
+          
+          yPosition += 10; // Space between progress entries
+        });
       }
       
-      // Learning Recommendations & Next Steps
-      writeSectionHeader('RECOMMENDATIONS & LEARNING PATHWAY', [255, 152, 0], 16);
+      // ASSESSMENT FEEDBACK SECTION
+      const feedbackAssessments = childAssessments.filter(a => a.feedback && a.feedback.trim());
+      if (feedbackAssessments.length > 0) {
+        writeSectionHeader('ASSESSMENT FEEDBACK', [29, 181, 132], 16);
+        
+        feedbackAssessments.slice(0, 3).forEach((assessment) => {
+          checkPageBreak(25);
+          writeSubsectionHeader(`${assessment.subjects?.name || 'Subject'} - ${fmtDate(assessment.conducted_at)}`);
+          
+          if (assessment.grade && assessment.max_grade) {
+            writeParagraph(`Score: ${assessment.grade}/${assessment.max_grade}`, 11, [0, 0, 0], 10);
+          }
+          
+          writeParagraph(assessment.feedback, 11, [60, 60, 60], 15);
+          yPosition += 8;
+        });
+      }
       
-      let recommendations = `Based on comprehensive analysis of ${child.name}'s academic performance and learning patterns, we recommend the following strategic approaches for continued educational growth:`;
-      writeParagraph(recommendations);
+      // RECOMMENDATIONS SECTION
+      writeSectionHeader('RECOMMENDATIONS', [255, 152, 0], 16);
       
       if (performanceData) {
         if (performanceData.average >= 80) {
-          const excellenceText = `Excellence Pathway: Given ${child.name}'s strong academic performance, we suggest introducing advanced challenges and enrichment activities to maintain engagement and foster deeper conceptual understanding. Consider accelerated learning modules in strongest subject areas.`;
-          writeParagraph(excellenceText, defaultFontSize, [0, 0, 0], 10);
+          writeParagraph('Continue with advanced challenges and enrichment activities to maintain high performance.', defaultFontSize, [0, 0, 0], 10);
         } else if (performanceData.average >= 60) {
-          const growthText = `Growth Pathway: ${child.name} shows solid foundational understanding. We recommend focused practice sessions in identified areas, supplemented by confidence-building activities in stronger subjects to maintain motivation.`;
-          writeParagraph(growthText, defaultFontSize, [0, 0, 0], 10);
+          writeParagraph('Focus on targeted practice in weaker areas while building confidence in stronger subjects.', defaultFontSize, [0, 0, 0], 10);
         } else {
-          const supportText = `Support Pathway: We recommend implementing additional support structures, including more frequent check-ins, alternative learning approaches, and collaborative goal-setting to build confidence and academic momentum.`;
-          writeParagraph(supportText, defaultFontSize, [0, 0, 0], 10);
+          writeParagraph('Implement additional support structures with more frequent check-ins and alternative learning approaches.', defaultFontSize, [0, 0, 0], 10);
         }
       }
       
-      const personalizedText = `Personalized Learning Focus: Continue leveraging ${child.class_type === 'private' ? 'the benefits of individual tutoring for customized pace and attention' : 'collaborative group learning for peer interaction and diverse perspectives'}. Regular assessment cycles will monitor progress and adjust teaching strategies to optimize learning outcomes.`;
-      writeParagraph(personalizedText, defaultFontSize, [0, 0, 0], 10);
+      const learningFormatText = `Continue with ${child.class_type === 'private' ? 'individual tutoring for personalized attention' : 'group learning for collaborative engagement'}.`;
+      writeParagraph(learningFormatText, defaultFontSize, [0, 0, 0], 10);
       
-      // Performance Summary Box
+      // Summary Box
       if (performanceData) {
-        checkPageBreak(30);
+        checkPageBreak(25);
         yPosition += 10;
         
-        // Draw a summary box
         doc.setDrawColor(0, 102, 255);
         doc.setLineWidth(0.5);
-        doc.rect(margin, yPosition, pageWidth - 2 * margin, 30);
-        
-        doc.setFontSize(13);
-        doc.setTextColor(0, 102, 255);
-        doc.setFont(undefined, 'bold');
-        doc.text('ACADEMIC SUMMARY', margin + 10, yPosition + 12);
+        doc.rect(margin, yPosition, pageWidth - 2 * margin, 25);
         
         doc.setFontSize(11);
+        doc.setTextColor(0, 102, 255);
+        doc.setFont(undefined, 'bold');
+        doc.text('SUMMARY', margin + 10, yPosition + 10);
+        
+        doc.setFontSize(10);
         doc.setTextColor(0, 0, 0);
         doc.setFont(undefined, 'normal');
-        doc.text(`Total Assessments: ${performanceData.total} | Average Performance: ${performanceData.average}% | Progress Records: ${childProgress.length}`, margin + 10, yPosition + 20);
-        doc.text(`Performance Trend: ${performanceData.trend > 0 ? 'Improving' : performanceData.trend < -5 ? 'Needs Attention' : 'Stable'} | Learning Format: ${child.class_type === 'private' ? 'Individual' : 'Group'}`, margin + 10, yPosition + 26);
+        doc.text(`Assessments: ${performanceData.total} | Average: ${performanceData.average}% | Progress Records: ${childProgress.length}`, margin + 10, yPosition + 18);
         
-        yPosition += 40;
+        yPosition += 35;
       }
     }
     
-    // Professional Closing on separate page
+    // Professional Closing
     doc.addPage();
     addWatermark();
     yPosition = margin + 30;
     
-    writeSectionHeader('PARTNERSHIP IN EDUCATION', [0, 102, 255], 18);
+    writeSectionHeader('THANK YOU', [0, 102, 255], 18);
     
-    const closingText = `At Baobab Online Academy, we believe that education is a collaborative journey between students, families, and educators. This comprehensive report represents our commitment to transparent communication and data-driven educational excellence. We encourage you to discuss these insights with your ${children.length === 1 ? 'child' : 'children'} and reach out to our academic team for any clarifications or additional support.`;
+    const closingText = `Thank you for choosing Baobab Online Academy. We remain committed to your child's educational success and look forward to continued partnership in their learning journey.`;
     writeParagraph(closingText);
     
-    const nextStepsText = `Our team will continue to monitor progress closely and provide regular updates on academic development. We look forward to celebrating continued achievements and supporting ongoing learning success.`;
-    writeParagraph(nextStepsText);
-    
     yPosition += 20;
-    doc.setFontSize(14);
-    doc.setTextColor(0, 102, 255);
-    doc.setFont(undefined, 'italic');
-    doc.text('Thank you for entrusting us with your child\'s educational journey.', pageWidth/2, yPosition, { align: 'center' });
-    yPosition += 15;
-    
     doc.setFontSize(11);
     doc.setTextColor(100, 100, 100);
     doc.setFont(undefined, 'normal');
     doc.text('Baobab Online Academy - Excellence in Digital Education', pageWidth/2, yPosition, { align: 'center' });
     yPosition += 8;
-    doc.text('For inquiries: support@baobabackademy.com | www.baobabackademy.com', pageWidth/2, yPosition, { align: 'center' });
+    doc.text('support@baobabackademy.com | www.baobabackademy.com', pageWidth/2, yPosition, { align: 'center' });
     
-    // Save the PDF with corrected filename generation
+    // Save the PDF
     const studentNames = children.map(child => child.name).join('_');
-    const filename = `Baobab_Comprehensive_Report_${studentNames.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`;
+    const filename = `Baobab_Report_${studentNames.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`;
     doc.save(filename);
     
   } catch (error) {
-    console.error('Error generating comprehensive PDF:', error);
-    alert('Failed to generate comprehensive report. Please try again.');
+    console.error('Error generating PDF:', error);
+    alert('Failed to generate report. Please try again.');
   }
 }
 
