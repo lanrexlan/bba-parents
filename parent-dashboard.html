@@ -10,7 +10,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
   <style>
     :root {
@@ -916,7 +916,6 @@
       border-bottom: 1px solid var(--gray-100);
       vertical-align: middle;
       font-size: 0.9rem;
-      word-break: break-word;
     }
 
     .table tbody tr {
@@ -925,6 +924,36 @@
 
     .table tbody tr:hover {
       background: var(--gray-50);
+    }
+
+    /* Expandable text cells */
+    .expandable-text {
+      max-width: 200px;
+      position: relative;
+    }
+
+    .text-preview {
+      max-height: 40px;
+      overflow: hidden;
+      line-height: 1.4;
+    }
+
+    .text-full {
+      display: none;
+      line-height: 1.4;
+      white-space: pre-wrap;
+    }
+
+    .text-toggle {
+      color: var(--primary);
+      cursor: pointer;
+      font-size: 0.8rem;
+      margin-top: 0.25rem;
+      text-decoration: underline;
+    }
+
+    .text-toggle:hover {
+      color: var(--primary-hover);
     }
 
     /* Badges */
@@ -1249,79 +1278,26 @@
       height: 250px;
     }
 
-    /* PDF Template Styles */
-    #pdfTemplate {
-      display: none;
-    }
-
-    .pdf-container {
-      width: 100%;
-      max-width: 800px;
-      margin: 0 auto;
-      padding: 2rem;
-      background: white;
-      font-family: 'Inter', sans-serif;
-      color: var(--gray-800);
-    }
-
-    .pdf-header {
-      text-align: center;
-      margin-bottom: 2rem;
-      border-bottom: 2px solid var(--primary);
-      padding-bottom: 1rem;
-    }
-
-    .pdf-title {
-      font-family: 'Plus Jakarta Sans', sans-serif;
-      font-size: 1.75rem;
-      font-weight: 800;
-      color: var(--primary);
-      margin-bottom: 0.5rem;
-    }
-
-    .pdf-subtitle {
-      font-size: 1rem;
-      color: var(--gray-600);
-    }
-
-    .pdf-child-section {
-      margin-bottom: 2rem;
-    }
-
-    .pdf-child-title {
-      font-size: 1.25rem;
-      font-weight: 700;
-      color: var(--gray-800);
-      margin-bottom: 1rem;
-      border-bottom: 1px solid var(--gray-200);
-      padding-bottom: 0.5rem;
-    }
-
-    .pdf-table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-bottom: 1rem;
-    }
-
-    .pdf-table th {
-      background: var(--gray-100);
-      padding: 0.75rem;
-      text-align: left;
+    /* PDF Download Button */
+    .download-pdf-btn {
+      background: linear-gradient(135deg, var(--accent), var(--accent-hover));
+      color: white;
+      border: none;
+      padding: 0.75rem 1.5rem;
+      border-radius: var(--border-radius);
       font-weight: 600;
-      border-bottom: 2px solid var(--gray-200);
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: var(--transition);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      box-shadow: var(--shadow-md);
     }
 
-    .pdf-table td {
-      padding: 0.75rem;
-      border-bottom: 1px solid var(--gray-200);
-      word-break: break-word;
-    }
-
-    .pdf-footer {
-      text-align: center;
-      margin-top: 2rem;
-      font-size: 0.85rem;
-      color: var(--gray-500);
+    .download-pdf-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-lg);
     }
 
     /* Responsive Design */
@@ -1552,8 +1528,9 @@
         padding: 0.375rem 0;
         display: flex;
         justify-content: space-between;
-        align-items: center;
+        align-items: flex-start;
         font-size: 0.85rem;
+        gap: 1rem;
       }
 
       .table td::before {
@@ -1564,6 +1541,12 @@
         font-size: 0.7rem;
         letter-spacing: 0.5px;
         flex-shrink: 0;
+        min-width: 80px;
+      }
+
+      .table td .expandable-text {
+        max-width: none;
+        flex: 1;
       }
 
       .modal-content {
@@ -1989,6 +1972,10 @@
               Reports & Assessments
             </div>
             <div class="card-actions">
+              <button class="download-pdf-btn" id="downloadReportsPDF">
+                <i class="fas fa-file-pdf"></i>
+                Download PDF Report
+              </button>
               <button class="btn btn-secondary" id="refreshReports">
                 <i class="fas fa-refresh"></i>
                 Refresh
@@ -2010,10 +1997,6 @@
                 <button class="btn btn-secondary" id="assessmentsExport">
                   <i class="fas fa-download"></i>
                   Export CSV
-                </button>
-                <button class="btn btn-primary" id="assessmentsPDF">
-                  <i class="fas fa-file-pdf"></i>
-                  Download PDF
                 </button>
               </div>
 
@@ -2053,10 +2036,6 @@
                 <button class="btn btn-secondary" id="progressExport">
                   <i class="fas fa-download"></i>
                   Export CSV
-                </button>
-                <button class="btn btn-primary" id="progressPDF">
-                  <i class="fas fa-file-pdf"></i>
-                  Download PDF
                 </button>
               </div>
 
@@ -2403,21 +2382,6 @@
     </div>
   </div>
 
-  <!-- Hidden PDF Template -->
-  <div id="pdfTemplate">
-    <div class="pdf-container">
-      <div class="pdf-header">
-        <h1 class="pdf-title" id="pdfMainTitle"></h1>
-        <p class="pdf-subtitle">Baobab Online Academy - Generated on <span id="pdfDate"></span></p>
-      </div>
-      <div id="pdfBody"></div>
-      <div class="pdf-footer">
-        <p>Confidential - For Parent Use Only</p>
-        <p>Baobab Online Academy © 2025</p>
-      </div>
-    </div>
-  </div>
-
   <script>
     // Supabase setup
     const SUPABASE_URL = 'https://vcxdkacxbjsgaoxbhsip.supabase.co';
@@ -2624,6 +2588,45 @@
       return result.trim();
     }
 
+    // Create expandable text cell
+    function createExpandableText(text, maxLength = 150) {
+      if (!text || text.length <= maxLength) {
+        return `<div class="expandable-text">${text || '—'}</div>`;
+      }
+
+      const preview = text.substring(0, maxLength);
+      const uniqueId = 'text_' + Math.random().toString(36).substr(2, 9);
+      
+      return `
+        <div class="expandable-text">
+          <div class="text-preview" id="${uniqueId}_preview">
+            ${preview}...
+            <div class="text-toggle" onclick="toggleText('${uniqueId}')">Show more</div>
+          </div>
+          <div class="text-full" id="${uniqueId}_full">
+            ${text}
+            <div class="text-toggle" onclick="toggleText('${uniqueId}')">Show less</div>
+          </div>
+        </div>
+      `;
+    }
+
+    function toggleText(id) {
+      const preview = document.getElementById(id + '_preview');
+      const full = document.getElementById(id + '_full');
+      
+      if (preview.style.display === 'none') {
+        preview.style.display = 'block';
+        full.style.display = 'none';
+      } else {
+        preview.style.display = 'none';
+        full.style.display = 'block';
+      }
+    }
+
+    // Make toggleText global
+    window.toggleText = toggleText;
+
     // Initialize fees table and data
     async function initializeFeesTable() {
       try {
@@ -2673,6 +2676,267 @@
       );
       
       return fee ? fee.amount : (gradeLevel >= 7 ? 60000 : 40000); // Fallback
+    }
+
+    // PDF Generation Function
+    async function generatePDFReport() {
+      if (!children.length) {
+        alert('No children data available to generate report.');
+        return;
+      }
+
+      try {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        
+        // Set up document properties
+        const pageWidth = doc.internal.pageSize.width;
+        const pageHeight = doc.internal.pageSize.height;
+        const margin = 20;
+        let yPosition = margin;
+        
+        // Helper function to add page if needed
+        function checkPageBreak(requiredSpace = 20) {
+          if (yPosition + requiredSpace > pageHeight - margin) {
+            doc.addPage();
+            yPosition = margin;
+            return true;
+          }
+          return false;
+        }
+        
+        // Helper function to add watermark
+        function addWatermark() {
+          doc.setGState(new doc.GState({opacity: 0.1}));
+          doc.setFontSize(60);
+          doc.setTextColor(0, 102, 255);
+          doc.text('BAOBAB ACADEMY', pageWidth/2, pageHeight/2, {
+            angle: 45,
+            align: 'center'
+          });
+          doc.setGState(new doc.GState({opacity: 1}));
+        }
+        
+        // Add watermark to first page
+        addWatermark();
+        
+        // Header
+        doc.setFontSize(20);
+        doc.setTextColor(0, 102, 255);
+        doc.text('BAOBAB ONLINE ACADEMY', pageWidth/2, yPosition, { align: 'center' });
+        yPosition += 10;
+        
+        doc.setFontSize(16);
+        doc.setTextColor(0, 0, 0);
+        doc.text('Student Assessment & Progress Report', pageWidth/2, yPosition, { align: 'center' });
+        yPosition += 15;
+        
+        // Parent information
+        doc.setFontSize(12);
+        doc.text(`Dear ${parentProfile?.full_name || 'Parent'},`, margin, yPosition);
+        yPosition += 10;
+        
+        const introText = `This comprehensive report provides detailed information about the academic progress and achievements of your ${children.length === 1 ? 'child' : 'children'}. The report includes assessments, progress records, and detailed feedback from our qualified tutors.`;
+        const splitIntro = doc.splitTextToSize(introText, pageWidth - 2 * margin);
+        doc.text(splitIntro, margin, yPosition);
+        yPosition += splitIntro.length * 5 + 10;
+        
+        // Report generation date
+        doc.setFontSize(10);
+        doc.setTextColor(100, 100, 100);
+        doc.text(`Report Generated: ${new Date().toLocaleDateString()}`, margin, yPosition);
+        yPosition += 15;
+        
+        // For each child, generate detailed report
+        for (const child of children) {
+          checkPageBreak(30);
+          
+          // Child header
+          doc.setFontSize(16);
+          doc.setTextColor(0, 102, 255);
+          doc.text(`Student: ${child.name}`, margin, yPosition);
+          yPosition += 8;
+          
+          doc.setFontSize(12);
+          doc.setTextColor(0, 0, 0);
+          doc.text(`Grade: ${child.grade_level || 'N/A'} | Class Type: ${child.class_type || 'Group'}`, margin, yPosition);
+          yPosition += 15;
+          
+          // Get assessments for this child
+          const childAssessments = cache.assessments.filter(a => a.children?.name === child.name);
+          const childProgress = cache.progress.filter(p => p.child_name === child.name);
+          
+          // Assessments section
+          if (childAssessments.length > 0) {
+            checkPageBreak(20);
+            doc.setFontSize(14);
+            doc.setTextColor(29, 181, 132);
+            doc.text('Assessment Results', margin, yPosition);
+            yPosition += 10;
+            
+            doc.setFontSize(10);
+            doc.setTextColor(0, 0, 0);
+            
+            // Assessment table headers
+            const headers = ['Date', 'Subject', 'Assessment', 'Score', 'Type'];
+            const colWidths = [25, 30, 45, 20, 25];
+            let xPos = margin;
+            
+            headers.forEach((header, index) => {
+              doc.setFont(undefined, 'bold');
+              doc.text(header, xPos, yPosition);
+              xPos += colWidths[index];
+            });
+            yPosition += 8;
+            
+            // Assessment data
+            childAssessments.slice(0, 10).forEach(assessment => {
+              checkPageBreak();
+              xPos = margin;
+              doc.setFont(undefined, 'normal');
+              
+              const scoreText = assessment.grade != null ? 
+                `${assessment.grade}${assessment.max_grade ? `/${assessment.max_grade}` : ''}` : 'N/A';
+              
+              const rowData = [
+                fmtDate(assessment.conducted_at),
+                assessment.subjects?.name || 'N/A',
+                assessment.title || 'Assessment',
+                scoreText,
+                assessment.type || 'Quiz'
+              ];
+              
+              rowData.forEach((data, index) => {
+                const text = doc.splitTextToSize(data, colWidths[index] - 2);
+                doc.text(text, xPos, yPosition);
+                xPos += colWidths[index];
+              });
+              yPosition += 6;
+            });
+            
+            yPosition += 10;
+            
+            // Feedback section
+            const feedbackAssessments = childAssessments.filter(a => a.feedback);
+            if (feedbackAssessments.length > 0) {
+              checkPageBreak(20);
+              doc.setFontSize(12);
+              doc.setTextColor(29, 181, 132);
+              doc.text('Recent Feedback', margin, yPosition);
+              yPosition += 8;
+              
+              doc.setFontSize(10);
+              doc.setTextColor(0, 0, 0);
+              
+              feedbackAssessments.slice(0, 3).forEach(assessment => {
+                checkPageBreak(15);
+                doc.setFont(undefined, 'bold');
+                doc.text(`${assessment.subjects?.name || 'Subject'} - ${assessment.title || 'Assessment'}:`, margin, yPosition);
+                yPosition += 5;
+                
+                doc.setFont(undefined, 'normal');
+                const feedbackText = doc.splitTextToSize(assessment.feedback, pageWidth - 2 * margin - 10);
+                doc.text(feedbackText, margin + 5, yPosition);
+                yPosition += feedbackText.length * 4 + 5;
+              });
+              
+              yPosition += 10;
+            }
+          }
+          
+          // Progress records section
+          if (childProgress.length > 0) {
+            checkPageBreak(20);
+            doc.setFontSize(14);
+            doc.setTextColor(255, 107, 53);
+            doc.text('Progress Records', margin, yPosition);
+            yPosition += 10;
+            
+            doc.setFontSize(10);
+            doc.setTextColor(0, 0, 0);
+            
+            childProgress.slice(0, 5).forEach(progress => {
+              checkPageBreak(15);
+              
+              doc.setFont(undefined, 'bold');
+              doc.text(`${progress.subject_name || 'Subject'} - ${fmtDate(progress.recorded_at)}`, margin, yPosition);
+              yPosition += 5;
+              
+              doc.setFont(undefined, 'normal');
+              doc.text(`Score: ${progress.score || 'N/A'}% | Recorded by: ${progress.tutor_name || 'Tutor'}`, margin + 5, yPosition);
+              yPosition += 5;
+              
+              if (progress.strengths) {
+                doc.text('Strengths:', margin + 5, yPosition);
+                yPosition += 4;
+                const strengthsText = doc.splitTextToSize(progress.strengths, pageWidth - 2 * margin - 15);
+                doc.text(strengthsText, margin + 10, yPosition);
+                yPosition += strengthsText.length * 4 + 2;
+              }
+              
+              if (progress.areas_of_improvement) {
+                doc.text('Areas for Improvement:', margin + 5, yPosition);
+                yPosition += 4;
+                const improvementText = doc.splitTextToSize(progress.areas_of_improvement, pageWidth - 2 * margin - 15);
+                doc.text(improvementText, margin + 10, yPosition);
+                yPosition += improvementText.length * 4 + 2;
+              }
+              
+              yPosition += 8;
+            });
+          }
+          
+          // Summary for child
+          if (childAssessments.length > 0) {
+            checkPageBreak(20);
+            const avgScore = childAssessments.reduce((sum, a) => {
+              const score = a.max_grade ? (Number(a.grade || 0) / Number(a.max_grade)) * 100 : Number(a.grade || 0);
+              return sum + score;
+            }, 0) / childAssessments.length;
+            
+            doc.setFontSize(12);
+            doc.setTextColor(0, 102, 255);
+            doc.text('Summary', margin, yPosition);
+            yPosition += 8;
+            
+            doc.setFontSize(10);
+            doc.setTextColor(0, 0, 0);
+            doc.text(`Total Assessments: ${childAssessments.length}`, margin + 5, yPosition);
+            yPosition += 5;
+            doc.text(`Average Score: ${Math.round(avgScore)}%`, margin + 5, yPosition);
+            yPosition += 5;
+            doc.text(`Progress Records: ${childProgress.length}`, margin + 5, yPosition);
+            yPosition += 20;
+          }
+          
+          // Add page break between children (except for last child)
+          if (child !== children[children.length - 1]) {
+            doc.addPage();
+            addWatermark();
+            yPosition = margin;
+          }
+        }
+        
+        // Footer on last page
+        checkPageBreak(30);
+        yPosition += 10;
+        doc.setFontSize(12);
+        doc.setTextColor(0, 102, 255);
+        doc.text('Thank you for choosing Baobab Online Academy', pageWidth/2, yPosition, { align: 'center' });
+        yPosition += 8;
+        
+        doc.setFontSize(10);
+        doc.setTextColor(100, 100, 100);
+        doc.text('For any questions about this report, please contact our support team.', pageWidth/2, yPosition, { align: 'center' });
+        
+        // Save the PDF
+        const filename = `Baobab_Assessment_Report_${new Date().toISOString().split('T')[0]}.pdf`;
+        doc.save(filename);
+        
+      } catch (error) {
+        console.error('Error generating PDF:', error);
+        alert('Failed to generate PDF report. Please try again.');
+      }
     }
 
     // Auth functions
@@ -2992,13 +3256,13 @@
         `).join('');
       }
 
-      // Upcoming lessons
+      // Upcoming lessons - Fixed the query to show lessons after current time
       const nowIso = new Date().toISOString();
       const { data: lessons } = await supabase
         .from('lessons')
         .select('*')
         .in('child_id', cids)
-        .eq('status', 'scheduled')
+        .in('status', ['scheduled', 'confirmed'])  // Include both scheduled and confirmed
         .gte('scheduled_at', nowIso)
         .order('scheduled_at', { ascending: true })
         .limit(5);
@@ -3313,7 +3577,7 @@
             <td data-label="Title">${a.title || ''}</td>
             <td data-label="Type"><span class="badge badge-secondary">${a.type || 'quiz'}</span></td>
             <td data-label="Score">${scoreStr}</td>
-            <td data-label="Feedback">${a.feedback ? a.feedback : '—'}</td>
+            <td data-label="Feedback">${createExpandableText(a.feedback)}</td>
           </tr>
         `;
       }).join('');
@@ -3331,8 +3595,8 @@
           <td data-label="Child">${p.child_name || ''}</td>
           <td data-label="Subject">${p.subject_name || ''}</td>
           <td data-label="Score">${p.score != null ? p.score + '%' : '—'}</td>
-          <td data-label="Strengths">${p.strengths ? p.strengths : '—'}</td>
-          <td data-label="Improvement">${p.areas_of_improvement ? p.areas_of_improvement : '—'}</td>
+          <td data-label="Strengths">${createExpandableText(p.strengths)}</td>
+          <td data-label="Improvement">${createExpandableText(p.areas_of_improvement)}</td>
           <td data-label="Recorded By">${p.tutor_name || '—'}</td>
         </tr>
       `).join('');
@@ -3358,105 +3622,6 @@
       `).join('');
     }
 
-    // PDF Generation
-    async function generatePDF(type) {
-      const template = document.getElementById('pdfTemplate').cloneNode(true);
-      const pdfBody = template.querySelector('#pdfBody');
-      const pdfMainTitle = template.querySelector('#pdfMainTitle');
-      const pdfDate = template.querySelector('#pdfDate');
-      pdfDate.textContent = new Date().toLocaleDateString();
-
-      let data = type === 'assessments' ? cache.assessments : cache.progress;
-      let title = type === 'assessments' ? 'Assessments Report' : 'Progress Records Report';
-      pdfMainTitle.textContent = title;
-
-      // Group by child
-      const grouped = {};
-      data.forEach(item => {
-        const childName = (type === 'assessments' ? item.children?.name : item.child_name) || 'Unknown Child';
-        if (!grouped[childName]) grouped[childName] = [];
-        grouped[childName].push(item);
-      });
-
-      Object.entries(grouped).forEach(([childName, items]) => {
-        const section = document.createElement('div');
-        section.className = 'pdf-child-section';
-        section.innerHTML = `<h2 class="pdf-child-title">${childName}</h2>`;
-
-        const table = document.createElement('table');
-        table.className = 'pdf-table';
-
-        let thead = document.createElement('thead');
-        let tr = document.createElement('tr');
-
-        if (type === 'assessments') {
-          ['Date', 'Subject', 'Title', 'Type', 'Score', 'Feedback'].forEach(header => {
-            let th = document.createElement('th');
-            th.textContent = header;
-            tr.appendChild(th);
-          });
-        } else {
-          ['Date', 'Subject', 'Score', 'Strengths', 'Improvement', 'Recorded By'].forEach(header => {
-            let th = document.createElement('th');
-            th.textContent = header;
-            tr.appendChild(th);
-          });
-        }
-
-        thead.appendChild(tr);
-        table.appendChild(thead);
-
-        let tbody = document.createElement('tbody');
-        items.forEach(item => {
-          let row = document.createElement('tr');
-          if (type === 'assessments') {
-            const pct = toPercent(item.grade, item.max_grade);
-            const scoreStr = (item.grade != null ? item.grade : '—') + (item.max_grade ? ` / ${item.max_grade}` : '') + (pct ? ` (${pct})` : '');
-            [
-              fmtDate(item.conducted_at),
-              item.subjects?.name || '—',
-              item.title || '—',
-              item.type || 'quiz',
-              scoreStr,
-              item.feedback || '—'
-            ].forEach(text => {
-              let td = document.createElement('td');
-              td.textContent = text;
-              row.appendChild(td);
-            });
-          } else {
-            [
-              fmtDate(item.recorded_at),
-              item.subject_name || '—',
-              item.score != null ? item.score + '%' : '—',
-              item.strengths || '—',
-              item.areas_of_improvement || '—',
-              item.tutor_name || '—'
-            ].forEach(text => {
-              let td = document.createElement('td');
-              td.textContent = text;
-              row.appendChild(td);
-            });
-          }
-          tbody.appendChild(row);
-        });
-        table.appendChild(tbody);
-
-        section.appendChild(table);
-        pdfBody.appendChild(section);
-      });
-
-      const opt = {
-        margin: 0.5,
-        filename: `${title.replace(/\s+/g, '_').toLowerCase()}.pdf`,
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2 },
-        jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
-      };
-
-      html2pdf().set(opt).from(template).save();
-    }
-
     // Section loaders
     async function loadChildrenSection() {
       renderChildrenTable(cache.children);
@@ -3469,13 +3634,10 @@
       }
       
       const ids = children.map(c => c.id);
-      const nowIso = new Date().toISOString();
       const { data: lessons } = await supabase
         .from('lessons')
         .select('*')
         .in('child_id', ids)
-        .eq('status', 'scheduled')
-        .gte('scheduled_at', nowIso)
         .order('scheduled_at', { ascending: true });
 
       let data = [];
@@ -3872,10 +4034,6 @@
       });
     }
 
-    // PDF Download buttons
-    document.getElementById('assessmentsPDF')?.addEventListener('click', () => generatePDF('assessments'));
-    document.getElementById('progressPDF')?.addEventListener('click', () => generatePDF('progress'));
-
     // Event listeners
     document.getElementById('logoutLink')?.addEventListener('click', async (e) => {
       e.preventDefault();
@@ -3886,6 +4044,9 @@
     document.getElementById('childEditForm')?.addEventListener('submit', saveChild);
     document.getElementById('profileForm')?.addEventListener('submit', saveProfile);
     document.getElementById('refreshReports')?.addEventListener('click', loadReportsSection);
+
+    // PDF Download Event Listener
+    document.getElementById('downloadReportsPDF')?.addEventListener('click', generatePDFReport);
 
     // Search + Export bindings
     hookSearch('childrenSearch', () => cache.children, renderChildrenTable, ['name', 'grade_level', 'status', 'emergency_contact', 'class_type', r => r.supporting_tutors?.join(' ')]);
