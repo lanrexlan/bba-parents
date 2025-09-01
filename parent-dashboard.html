@@ -2775,7 +2775,7 @@ async function generatePDFReport() {
       doc.setGState(new doc.GState({opacity: 1}));
     }
     
-    // Simplified paragraph function without justification
+    // Enhanced paragraph function with proper justification
     function writeParagraph(text, fontSize = defaultFontSize, color = [0, 0, 0], indent = 0, bold = false) {
       doc.setFontSize(fontSize);
       doc.setTextColor(...color);
@@ -2785,9 +2785,34 @@ async function generatePDFReport() {
       const maxWidth = pageWidth - 2 * margin - indent;
       const splitText = doc.splitTextToSize(text, maxWidth);
       
-      splitText.forEach((line) => {
+      splitText.forEach((line, lineIndex) => {
         checkPageBreak(currentLineHeight + 5);
-        doc.text(line, margin + indent, yPosition);
+        
+        // Justify all lines except the last line of the paragraph
+        if (lineIndex < splitText.length - 1 && line.trim().length > 0) {
+          const words = line.trim().split(/\s+/);
+          if (words.length > 1) {
+            // Calculate total width of words without spaces
+            const wordsWidth = words.reduce((total, word) => total + doc.getTextWidth(word), 0);
+            const availableSpace = maxWidth - wordsWidth;
+            const spaceBetweenWords = availableSpace / (words.length - 1);
+            
+            let xPos = margin + indent;
+            words.forEach((word, wordIndex) => {
+              doc.text(word, xPos, yPosition);
+              if (wordIndex < words.length - 1) {
+                xPos += doc.getTextWidth(word) + spaceBetweenWords;
+              }
+            });
+          } else {
+            // Single word - just place it normally
+            doc.text(line, margin + indent, yPosition);
+          }
+        } else {
+          // Last line or empty line - no justification
+          doc.text(line, margin + indent, yPosition);
+        }
+        
         yPosition += currentLineHeight;
       });
       
@@ -2869,7 +2894,7 @@ async function generatePDFReport() {
     writeParagraph(personalizedGreeting, 14, [0, 0, 0], 0, true);
     
     const introText = `This report provides a comprehensive overview of your ${children.length === 1 ? 'child\'s' : 'children\'s'} academic progress, including assessment results, tutor observations, and recommendations for continued growth.`;
-    writeParagraph(introText);
+    writeParagraph(introText, 12); // Ensure 12pt font
     
     // For each child, generate report on separate pages
     for (let childIndex = 0; childIndex < children.length; childIndex++) {
@@ -2886,7 +2911,7 @@ async function generatePDFReport() {
       doc.text(`${child.name.toUpperCase()}`, margin, yPosition);
       yPosition += 15;
       
-      doc.setFontSize(defaultFontSize);
+      doc.setFontSize(12); // Ensure 12pt
       doc.setTextColor(0, 0, 0);
       doc.setFont(undefined, 'normal');
       doc.text(`Grade: ${child.grade_level || 'N/A'} | Class Type: ${child.class_type === 'private' ? 'Individual' : 'Group'}`, margin, yPosition);
@@ -2902,8 +2927,8 @@ async function generatePDFReport() {
         writeSectionHeader('ACADEMIC PERFORMANCE', [0, 102, 255], 16);
         
         writeSubsectionHeader('Overall Score Summary');
-        const scoreText = `${child.name} completed ${performanceData.total} assessments with an average score of ${performanceData.average}%.`;
-        writeParagraph(scoreText, defaultFontSize, [0, 0, 0], 10);
+        const scoreText = `${child.name} completed ${performanceData.total} assessments with an average score of ${performanceData.average}%. This performance demonstrates consistent engagement with academic material and shows areas of both strength and opportunity for continued growth.`;
+        writeParagraph(scoreText, 12, [0, 0, 0], 10); // 12pt font, justified
         
         // Subject breakdown
         const subjectGroups = {};
@@ -2920,8 +2945,8 @@ async function generatePDFReport() {
           const subjectPerformance = getPerformanceAnalysis(subjectAssessments);
           
           if (subjectPerformance) {
-            const subjectText = `${subject}: ${subjectAssessments.length} assessments, ${subjectPerformance.average}% average`;
-            writeParagraph(subjectText, 11, [60, 60, 60], 15);
+            const subjectText = `In ${subject}, the student completed ${subjectAssessments.length} assessments achieving an average of ${subjectPerformance.average}%, indicating solid understanding of subject concepts and consistent application of learned skills.`;
+            writeParagraph(subjectText, 12, [60, 60, 60], 15); // 12pt font, justified
           }
         });
       }
@@ -2937,31 +2962,32 @@ async function generatePDFReport() {
           writeSubsectionHeader(`${fmtDate(progress.recorded_at)} - ${progress.subject_name || 'Subject'}`);
           
           if (progress.score) {
-            writeParagraph(`Performance Score: ${progress.score}%`, 11, [0, 0, 0], 10);
+            const scoreText = `During this assessment period, the student achieved a performance score of ${progress.score}%, reflecting their current understanding and application of subject material.`;
+            writeParagraph(scoreText, 12, [0, 0, 0], 10); // 12pt font, justified
           }
           
           // Strengths
           if (progress.strengths) {
-            writeSubsectionHeader('Strengths', [29, 181, 132], 11);
-            writeParagraph(progress.strengths, 11, [0, 0, 0], 15);
+            writeSubsectionHeader('Strengths', [29, 181, 132], 12);
+            writeParagraph(progress.strengths, 12, [0, 0, 0], 15); // 12pt font, justified
           }
           
           // Areas for improvement
           if (progress.areas_of_improvement) {
-            writeSubsectionHeader('Areas for Improvement', [255, 107, 53], 11);
-            writeParagraph(progress.areas_of_improvement, 11, [0, 0, 0], 15);
+            writeSubsectionHeader('Areas for Improvement', [255, 107, 53], 12);
+            writeParagraph(progress.areas_of_improvement, 12, [0, 0, 0], 15); // 12pt font, justified
           }
           
           // Goals
           if (progress.goals) {
-            writeSubsectionHeader('Learning Goals', [255, 152, 0], 11);
-            writeParagraph(progress.goals, 11, [0, 0, 0], 15);
+            writeSubsectionHeader('Learning Goals', [255, 152, 0], 12);
+            writeParagraph(progress.goals, 12, [0, 0, 0], 15); // 12pt font, justified
           }
           
           // Additional notes
           if (progress.notes) {
-            writeSubsectionHeader('Additional Notes', [100, 100, 100], 11);
-            writeParagraph(progress.notes, 11, [60, 60, 60], 15);
+            writeSubsectionHeader('Additional Notes', [100, 100, 100], 12);
+            writeParagraph(progress.notes, 12, [60, 60, 60], 15); // 12pt font, justified
           }
           
           yPosition += 10; // Space between progress entries
@@ -2978,10 +3004,11 @@ async function generatePDFReport() {
           writeSubsectionHeader(`${assessment.subjects?.name || 'Subject'} - ${fmtDate(assessment.conducted_at)}`);
           
           if (assessment.grade && assessment.max_grade) {
-            writeParagraph(`Score: ${assessment.grade}/${assessment.max_grade}`, 11, [0, 0, 0], 10);
+            const gradeText = `Assessment score: ${assessment.grade} out of ${assessment.max_grade} marks, demonstrating the student's current level of understanding in this subject area.`;
+            writeParagraph(gradeText, 12, [0, 0, 0], 10); // 12pt font, justified
           }
           
-          writeParagraph(assessment.feedback, 11, [60, 60, 60], 15);
+          writeParagraph(assessment.feedback, 12, [60, 60, 60], 15); // 12pt font, justified
           yPosition += 8;
         });
       }
@@ -2990,17 +3017,19 @@ async function generatePDFReport() {
       writeSectionHeader('RECOMMENDATIONS', [255, 152, 0], 16);
       
       if (performanceData) {
+        let recommendationText = '';
         if (performanceData.average >= 80) {
-          writeParagraph('Continue with advanced challenges and enrichment activities to maintain high performance.', defaultFontSize, [0, 0, 0], 10);
+          recommendationText = 'Based on the excellent performance demonstrated, we recommend continuing with advanced challenges and enrichment activities to maintain high academic standards and foster deeper conceptual understanding.';
         } else if (performanceData.average >= 60) {
-          writeParagraph('Focus on targeted practice in weaker areas while building confidence in stronger subjects.', defaultFontSize, [0, 0, 0], 10);
+          recommendationText = 'The student shows solid foundational understanding. We recommend focused practice in identified areas while building confidence through success in stronger subjects to maintain motivation and academic momentum.';
         } else {
-          writeParagraph('Implement additional support structures with more frequent check-ins and alternative learning approaches.', defaultFontSize, [0, 0, 0], 10);
+          recommendationText = 'To support continued academic growth, we recommend implementing additional support structures including more frequent check-ins, alternative learning approaches, and collaborative goal-setting to build confidence.';
         }
+        writeParagraph(recommendationText, 12, [0, 0, 0], 10); // 12pt font, justified
       }
       
-      const learningFormatText = `Continue with ${child.class_type === 'private' ? 'individual tutoring for personalized attention' : 'group learning for collaborative engagement'}.`;
-      writeParagraph(learningFormatText, defaultFontSize, [0, 0, 0], 10);
+      const learningFormatText = `We recommend continuing with ${child.class_type === 'private' ? 'individual tutoring sessions to maintain personalized attention and customized learning pace' : 'group learning sessions to foster collaborative engagement and peer interaction'}, as this format best supports the student's learning style and academic needs.`;
+      writeParagraph(learningFormatText, 12, [0, 0, 0], 10); // 12pt font, justified
       
       // Summary Box
       if (performanceData) {
@@ -3011,12 +3040,12 @@ async function generatePDFReport() {
         doc.setLineWidth(0.5);
         doc.rect(margin, yPosition, pageWidth - 2 * margin, 25);
         
-        doc.setFontSize(11);
+        doc.setFontSize(12); // 12pt font for summary too
         doc.setTextColor(0, 102, 255);
         doc.setFont(undefined, 'bold');
         doc.text('SUMMARY', margin + 10, yPosition + 10);
         
-        doc.setFontSize(10);
+        doc.setFontSize(11);
         doc.setTextColor(0, 0, 0);
         doc.setFont(undefined, 'normal');
         doc.text(`Assessments: ${performanceData.total} | Average: ${performanceData.average}% | Progress Records: ${childProgress.length}`, margin + 10, yPosition + 18);
@@ -3032,11 +3061,11 @@ async function generatePDFReport() {
     
     writeSectionHeader('THANK YOU', [0, 102, 255], 18);
     
-    const closingText = `Thank you for choosing Baobab Online Academy. We remain committed to your child's educational success and look forward to continued partnership in their learning journey.`;
-    writeParagraph(closingText);
+    const closingText = `Thank you for choosing Baobab Online Academy. We remain committed to your child's educational success and look forward to continued partnership in their learning journey. Our dedicated team of educators will continue to provide comprehensive support and regular updates on academic progress.`;
+    writeParagraph(closingText, 12); // 12pt font, justified
     
     yPosition += 20;
-    doc.setFontSize(11);
+    doc.setFontSize(12); // 12pt font
     doc.setTextColor(100, 100, 100);
     doc.setFont(undefined, 'normal');
     doc.text('Baobab Online Academy - Excellence in Digital Education', pageWidth/2, yPosition, { align: 'center' });
@@ -3053,7 +3082,6 @@ async function generatePDFReport() {
     alert('Failed to generate report. Please try again.');
   }
 }
-
     // Auth functions
     async function ensureAuth() {
       const { data: { session } } = await supabase.auth.getSession();
