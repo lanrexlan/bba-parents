@@ -2655,28 +2655,48 @@
       }
     }
 
-    function getFeeForChild(child) {
-      const gradeLevel = parseInt(child.grade_level) || 1;
-      const classType = child.class_type || 'Group';
-      
-      // Determine grade range
-      let gradeRange = 'Grades 1-6';
-      if (gradeLevel >= 7) {
-        gradeRange = 'Grades 7-11';
-      }
-      
-      // Special cases
-      if (classType === 'Exam Intensive' || classType === 'Python Programming') {
-        gradeRange = 'All Grades';
-      }
-      
-      // Find matching fee
-      const fee = cache.fees.find(f => 
-        f.grade_range === gradeRange && f.class_type === classType
-      );
-      
-      return fee ? fee.amount : (gradeLevel >= 7 ? 60000 : 40000); // Fallback
+    /**
+ * Calculates the fee for a specific child based on their grade and class type.
+ * It now correctly handles both single grade values and grade ranges (e.g., "5" or "1-4").
+ *
+ * @param {object} child The child object, containing grade_level and class_type.
+ * @returns {string} The formatted fee amount or a status string.
+ */
+function getFeeForChild(child) {
+    // Ensure that the necessary data (fees cache and child object) is available.
+    if (!cache.fees || !child) {
+        return 'N/A';
     }
+
+    const grade = parseInt(child.grade_level, 10);
+    const classType = child.class_type;
+
+    // If the child's grade level is not a valid number, we can't calculate the fee.
+    if (isNaN(grade)) {
+        return 'N/A';
+    }
+
+    // Find the correct fee record in the cached fees data.
+    const fee = cache.fees.find(f => {
+        // Split the grade_range string (e.g., "1-3" or "5") into parts.
+        const rangeParts = f.grade_range.split('-').map(Number);
+        const minGrade = rangeParts[0];
+        
+        // If the range is a single number, maxGrade will be the same as minGrade.
+        const maxGrade = rangeParts.length > 1 ? rangeParts[1] : minGrade;
+
+        // Ensure the parsed grade range is valid.
+        if (isNaN(minGrade) || isNaN(maxGrade)) {
+            return false;
+        }
+
+        // Check if the child's grade falls within the range and the class type matches.
+        return grade >= minGrade && grade <= maxGrade && f.class_type === classType;
+    });
+
+    // If a matching fee is found, format it with the currency. Otherwise, indicate it's not set.
+    return fee ? `₦${Number(fee.amount).toLocaleString()}` : 'Not Set';
+}
 
     // PDF Generation Function
     async function generatePDFReport() {
