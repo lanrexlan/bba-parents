@@ -3686,21 +3686,9 @@ async function generatePDFReport() {
       <td data-label="Child">${p.child_name || '—'}</td>
       <td data-label="Subject">${p.subject_name || '—'}</td>
       <td data-label="Score">${p.score != null ? p.score + '%' : '—'}</td>
-      <td data-label="Strengths">
-        <div style="max-width: 200px; word-wrap: break-word; white-space: pre-wrap;">
-          ${p.strengths || '—'}
-        </div>
-      </td>
-      <td data-label="Improvement">
-        <div style="max-width: 200px; word-wrap: break-word; white-space: pre-wrap;">
-          ${p.areas_of_improvement || '—'}
-        </div>
-      </td>
-      <td data-label="Notes">
-        <div style="max-width: 200px; word-wrap: break-word; white-space: pre-wrap;">
-          ${p.notes || '—'}
-        </div>
-      </td>
+      <td data-label="Strengths">${createExpandableText(p.strengths, 120)}</td>
+      <td data-label="Improvement">${createExpandableText(p.areas_of_improvement, 120)}</td>
+      <td data-label="Notes">${createExpandableText(p.notes, 120)}</td>
       <td data-label="Recorded By">${p.tutor_name || '—'}</td>
     </tr>
   `).join('');
