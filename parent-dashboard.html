@@ -2730,6 +2730,7 @@
 }
 
     
+// Enhanced PDF Generation Function (drop-in replacement)
 async function generatePDFReport() {
   if (!children.length) {
     alert('No children data available to generate report.');
@@ -2738,350 +2739,437 @@ async function generatePDFReport() {
 
   try {
     const { jsPDF } = window.jspdf;
-    const doc = new jsPDF();
-    
-    // Set up document properties
-    const pageWidth = doc.internal.pageSize.width;
-    const pageHeight = doc.internal.pageSize.height;
-    const margin = 20;
-    let yPosition = margin;
-    
-    // Default formatting settings
+    const doc = new jsPDF({ unit: 'mm', format: 'a4' });
+
+    // Constants and metrics
+    const baseFont = 'helvetica';
     const defaultFontSize = 12;
-    const lineSpacing = 1.5;
-    const lineHeight = defaultFontSize * lineSpacing * 0.352778;
-    
-    // Helper function to add page if needed
-    function checkPageBreak(requiredSpace = 20) {
-      if (yPosition + requiredSpace > pageHeight - margin) {
+    const lineSpacing = 1.45; // slightly tighter than 1.5 to improve page fit
+    const mmPerPt = 0.352777778;
+
+    const pageWidth = typeof doc.internal.pageSize.getWidth === 'function'
+      ? doc.internal.pageSize.getWidth()
+      : doc.internal.pageSize.width;
+
+    const pageHeight = typeof doc.internal.pageSize.getHeight === 'function'
+      ? doc.internal.pageSize.getHeight()
+      : doc.internal.pageSize.height;
+
+    const margin = 20;
+    let y = margin;
+
+    // Ensure base font is always set
+    doc.setFont(baseFont, 'normal');
+    doc.setFontSize(defaultFontSize);
+    doc.setTextColor(0, 0, 0);
+
+    // Helpers
+    const lineHeightFor = (fontSize) => fontSize * lineSpacing * mmPerPt;
+
+    function safeText(s) {
+      // Replace punctuation that can render oddly in core fonts
+      return String(s || '')
+        .replace(/[–—]/g, '-')
+        .replace(/[“”]/g, '"')
+        .replace(/[‘’]/g, "'")
+        .replace(/\u00A0/g, ' '); // non-breaking space -> space
+    }
+
+    function addWatermark() {
+      // Draw watermark with low opacity, restoring graphics state afterward
+      const useGState = !!(doc.setGState && doc.GState);
+      if (doc.saveGraphicsState) doc.saveGraphicsState();
+      if (useGState) doc.setGState(new doc.GState({ opacity: 0.08 }));
+
+      doc.setFont(baseFont, 'bold');
+      doc.setFontSize(48);
+      doc.setTextColor(0, 102, 255);
+      doc.text('BAOBAB ACADEMY', pageWidth / 2, pageHeight / 2, {
+        align: 'center',
+        angle: 45
+      });
+
+      if (useGState) doc.setGState(new doc.GState({ opacity: 1 }));
+      if (doc.restoreGraphicsState) doc.restoreGraphicsState();
+
+      // Reset base text state
+      doc.setFont(baseFont, 'normal');
+      doc.setFontSize(defaultFontSize);
+      doc.setTextColor(0, 0, 0);
+    }
+
+    function checkPageBreak(blockHeight = 20) {
+      if (y + blockHeight > pageHeight - margin) {
         doc.addPage();
-        yPosition = margin;
         addWatermark();
+        y = margin;
         return true;
       }
       return false;
     }
-    
-    // Helper function to add watermark
-    function addWatermark() {
-      doc.setGState(new doc.GState({opacity: 0.08}));
-      doc.setFontSize(50);
-      doc.setTextColor(0, 102, 255);
-      doc.text('BAOBAB ACADEMY', pageWidth/2, pageHeight/2, {
-        angle: 45,
-        align: 'center'
-      });
-      doc.setGState(new doc.GState({opacity: 1}));
-    }
-    
-    // Enhanced paragraph function with proper justification
-    function writeParagraph(text, fontSize = defaultFontSize, color = [0, 0, 0], indent = 0, bold = false) {
-  doc.setFontSize(fontSize);
-  doc.setTextColor(...color);
-  doc.setFont(undefined, bold ? 'bold' : 'normal');
-  
-  const currentLineHeight = fontSize * lineSpacing * 0.352778;
-  const maxWidth = pageWidth - 2 * margin - indent;
-  const splitText = doc.splitTextToSize(text, maxWidth);
-  
-  splitText.forEach((line) => {
-    checkPageBreak(currentLineHeight + 5);
-    // Simple left-aligned text without justification
-    doc.text(line, margin + indent, yPosition);
-    yPosition += currentLineHeight;
-  });
-  
-  yPosition += currentLineHeight * 0.3;
-  return splitText.length;
-}
-    
-    // Helper function to write section header
-    function writeSectionHeader(title, color = [0, 102, 255], fontSize = 14) {
-      checkPageBreak(25);
-      yPosition += lineHeight * 0.5;
+
+    function writeSectionHeader(title, color = [0, 102, 255], fontSize = 16) {
+      checkPageBreak(lineHeightFor(fontSize) * 1.8);
+      y += lineHeightFor(defaultFontSize) * 0.3;
+
+      doc.setFont(baseFont, 'bold');
       doc.setFontSize(fontSize);
       doc.setTextColor(...color);
-      doc.setFont(undefined, 'bold');
-      doc.text(title, margin, yPosition);
-      yPosition += fontSize * 1.2 * 0.352778;
-      doc.setFont(undefined, 'normal');
+      doc.text(safeText(title), margin, y);
+
+      y += fontSize * 1.2 * mmPerPt;
+      doc.setFont(baseFont, 'normal');
+      doc.setFontSize(defaultFontSize);
+      doc.setTextColor(0, 0, 0);
     }
-    
-    // Helper function to write subsection header
+
     function writeSubsectionHeader(title, color = [29, 181, 132], fontSize = 12) {
-      checkPageBreak(20);
-      yPosition += lineHeight * 0.3;
+      checkPageBreak(lineHeightFor(fontSize) * 1.6);
+      y += lineHeightFor(defaultFontSize) * 0.2;
+
+      doc.setFont(baseFont, 'bold');
       doc.setFontSize(fontSize);
       doc.setTextColor(...color);
-      doc.setFont(undefined, 'bold');
-      doc.text(title, margin + 5, yPosition);
-      yPosition += fontSize * 1.1 * 0.352778;
-      doc.setFont(undefined, 'normal');
+      doc.text(safeText(title), margin + 5, y);
+
+      y += fontSize * 1.1 * mmPerPt;
+      doc.setFont(baseFont, 'normal');
+      doc.setFontSize(defaultFontSize);
+      doc.setTextColor(0, 0, 0);
     }
-    
-    // Helper function to analyze performance from actual data
-    function getPerformanceAnalysis(assessments) {
-      if (!assessments.length) return null;
-      
-      const scores = assessments.map(a => {
-        if (a.max_grade) {
-          return (Number(a.grade || 0) / Number(a.max_grade)) * 100;
+
+    // Safer paragraph writer with guarded justification
+    // options = { fontSize, color, indent, bold, align: 'left'|'center'|'right', justify: boolean }
+    function writeParagraph(text, options = {}) {
+      if (!text) return 0;
+
+      const {
+        fontSize = defaultFontSize,
+        color = [0, 0, 0],
+        indent = 0,
+        bold = false,
+        align = 'left',
+        justify = false
+      } = options;
+
+      const t = safeText(text);
+      const lh = lineHeightFor(fontSize);
+      const maxWidth = pageWidth - (2 * margin + indent);
+
+      doc.setFont(baseFont, bold ? 'bold' : 'normal');
+      doc.setFontSize(fontSize);
+      doc.setTextColor(...color);
+
+      const lines = doc.splitTextToSize(t, maxWidth);
+      const paraHeight = lines.length * lh + lh * 0.3;
+      checkPageBreak(paraHeight);
+
+      const x0 = margin + indent;
+
+      lines.forEach((line, i) => {
+        // Justify all but the last line (optional)
+        if (justify && i < lines.length - 1) {
+          const words = line.trim().split(/\s+/);
+          const spaces = Math.max(words.length - 1, 0);
+
+          if (spaces > 0) {
+            const wordsWidth = words.reduce((sum, w) => sum + doc.getTextWidth(w), 0);
+            const available = maxWidth - wordsWidth;
+            const baseSpace = doc.getTextWidth(' ');
+
+            // Additional spacing per gap (beyond a single space)
+            let extraPerSpace = available / spaces - baseSpace;
+
+            // Guard against extreme spacing (which causes garbling)
+            const maxExtra = baseSpace * 2; // up to 3x a normal space total
+            if (!isFinite(extraPerSpace)) extraPerSpace = 0;
+            if (extraPerSpace > maxExtra) extraPerSpace = maxExtra;
+            if (extraPerSpace < -baseSpace) extraPerSpace = -baseSpace * 0.8;
+
+            // If the line is too short (one or two words), left-align it (safer)
+            if (words.length <= 2) {
+              doc.text(line, x0, y);
+            } else {
+              let x = x0;
+              words.forEach((w, wi) => {
+                doc.text(w, x, y);
+                if (wi < words.length - 1) {
+                  x += doc.getTextWidth(w) + baseSpace + extraPerSpace;
+                }
+              });
+            }
+          } else {
+            // single word line
+            doc.text(line, x0, y);
+          }
+        } else {
+          // No justification / last line
+          if (align === 'center') {
+            doc.text(line, pageWidth / 2, y, { align: 'center' });
+          } else if (align === 'right') {
+            doc.text(line, pageWidth - margin, y, { align: 'right' });
+          } else {
+            doc.text(line, x0, y);
+          }
         }
-        return Number(a.grade || 0);
-      }).filter(score => score > 0);
-      
+
+        y = +(y + lh).toFixed(2);
+      });
+
+      y += lh * 0.3;
+
+      // Restore base font state
+      doc.setFont(baseFont, 'normal');
+      doc.setFontSize(defaultFontSize);
+      doc.setTextColor(0, 0, 0);
+
+      return lines.length;
+    }
+
+    // Analysis helpers
+    function getPerformanceAnalysis(assessments) {
+      if (!assessments?.length) return null;
+
+      const scores = assessments
+        .map(a => {
+          const g = Number(a.grade);
+          const m = Number(a.max_grade) || 100;
+          if (!isFinite(g) || !isFinite(m) || m <= 0) return null;
+          return Math.max(0, Math.min(100, (g / m) * 100));
+        })
+        .filter(v => v !== null);
+
       if (!scores.length) return null;
-      
-      const avgScore = scores.reduce((sum, score) => sum + score, 0) / scores.length;
-      
+
+      const avg = scores.reduce((s, v) => s + v, 0) / scores.length;
       return {
-        average: Math.round(avgScore),
-        total: assessments.length,
-        scores: scores
+        average: Math.round(avg),
+        total: assessments.length
       };
     }
-    
-    // FIRST PAGE - COVER PAGE
-    addWatermark();
-    
-    doc.setFontSize(28);
-    doc.setTextColor(0, 102, 255);
-    doc.setFont(undefined, 'bold');
-    doc.text('BAOBAB ONLINE ACADEMY', pageWidth/2, yPosition + 20, { align: 'center' });
-    yPosition += 35;
-    
-    doc.setFontSize(20);
-    doc.setTextColor(29, 181, 132);
-    doc.text('Student Progress & Assessment Report', pageWidth/2, yPosition, { align: 'center' });
-    yPosition += 40;
-    
-    doc.setFontSize(14);
-    doc.setTextColor(0, 0, 0);
-    doc.setFont(undefined, 'normal');
-    doc.text(`Academic Year 2024-2025`, pageWidth/2, yPosition, { align: 'center' });
-    yPosition += 10;
-    doc.text(`${new Date().toLocaleDateString('en-US', { 
-      year: 'numeric', month: 'long', day: 'numeric' 
-    })}`, pageWidth/2, yPosition, { align: 'center' });
-    yPosition += 40;
-    
-    const personalizedGreeting = `Dear ${parentProfile?.full_name || 'Valued Parent'},`;
-    writeParagraph(personalizedGreeting, 14, [0, 0, 0], 0, true);
-    
-    const introText = `This report provides a comprehensive overview of your ${children.length === 1 ? 'child\'s' : 'children\'s'} academic progress, including assessment results, tutor observations, and recommendations for continued growth.`;
-    writeParagraph(introText, 12); // Ensure 12pt font
-    
-    // For each child, generate report on separate pages
-    for (let childIndex = 0; childIndex < children.length; childIndex++) {
-      const child = children[childIndex];
-      
-      doc.addPage();
-      addWatermark();
-      yPosition = margin;
-      
-      // Student Header
-      doc.setFontSize(20);
-      doc.setTextColor(0, 102, 255);
-      doc.setFont(undefined, 'bold');
-      doc.text(`${child.name.toUpperCase()}`, margin, yPosition);
-      yPosition += 15;
-      
-      doc.setFontSize(12); // Ensure 12pt
-      doc.setTextColor(0, 0, 0);
-      doc.setFont(undefined, 'normal');
-      doc.text(`Grade: ${child.grade_level || 'N/A'} | Class Type: ${child.class_type === 'Python Programming' ? '1-to-1' : 'Group'}`, margin, yPosition);
-      yPosition += 20;
-      
-      // Get actual data for this child
-      const childAssessments = cache.assessments.filter(a => a.children?.name === child.name);
-      const childProgress = cache.progress.filter(p => p.child_name === child.name);
-      const performanceData = getPerformanceAnalysis(childAssessments);
-      
-      // ACADEMIC PERFORMANCE SECTION
-      if (performanceData) {
-        writeSectionHeader('ACADEMIC PERFORMANCE', [0, 102, 255], 16);
-        
-        // helper: returns a small summary + suggestion based on average percent
-function getScoreSummary(average) {
-  const avg = Number(average ?? 0);
 
-  if (avg >= 90) {
-    return {
-      label: 'Excellent',
-      message: 'Outstanding performance — the student demonstrates mastery of material.',
-      suggestion: 'Keep challenging them with higher-level problems and enrichment activities.'
-    };
-  }
+    function scoreBandMessage(avg, scope = 'overall', subject = '') {
+      const subj = subject ? `in ${subject}` : 'in this area';
 
-  if (avg >= 75) {
-    return {
-      label: 'Very Good',
-      message: 'Strong performance with solid understanding in most areas.',
-      suggestion: 'Focus on targeted practice for the small gaps to push this even higher.'
-    };
-  }
-
-  if (avg >= 60) {
-    return {
-      label: 'Satisfactory',
-      message: 'Satisfactory performance; there is consistent engagement but room to improve.',
-      suggestion: 'Prioritise regular revision of weaker topics and short weekly assessments.'
-    };
-  }
-
-  if (avg >= 40) {
-    return {
-      label: 'Below Expectations',
-      message: 'Performance is below expectations and shows gaps in foundational topics.',
-      suggestion: 'Introduce focused remediation sessions and break concepts into smaller steps.'
-    };
-  }
-
-  // avg < 40
-  return {
-    label: 'Needs Intervention',
-    message: 'Performance is low and indicates the need for immediate support.',
-    suggestion: 'Arrange one-on-one support, re-teach fundamentals, and monitor progress closely.'
-  };
-}
-
-// usage — build the paragraph and write it
-writeSubsectionHeader('Overall Score Summary');
-
-const avg = Number(performanceData.average ?? 0);
-const roundedAvg = Math.round(avg * 10) / 10; // one decimal place
-const summary = getScoreSummary(avg);
-
-const scoreText =
-  `${child.name} completed ${performanceData.total} assessments with an average score of ${roundedAvg}%. ` +
-  `${summary.message} ${summary.suggestion}`;
-
-//
-// If your writeParagraph supports an alignment parameter, pass "left" (preferred).
-// If it doesn't, remove the last argument or update writeParagraph definition to accept alignment.
-writeParagraph(scoreText, 12, [0, 0, 0], 10, 'left'); // 12pt font, left-aligned
-
-        
-        // Subject breakdown
-        const subjectGroups = {};
-        childAssessments.forEach(assessment => {
-          const subject = assessment.subjects?.name || 'General Studies';
-          if (!subjectGroups[subject]) {
-            subjectGroups[subject] = [];
-          }
-          subjectGroups[subject].push(assessment);
-        });
-        
-        Object.keys(subjectGroups).forEach(subject => {
-          const subjectAssessments = subjectGroups[subject];
-          const subjectPerformance = getPerformanceAnalysis(subjectAssessments);
-          
-          if (subjectPerformance) {
-            const subjectText = `In ${subject}, the student completed ${subjectAssessments.length} assessments achieving an average of ${subjectPerformance.average}%, indicating solid understanding of subject concepts and consistent application of learned skills.`;
-            writeParagraph(subjectText, 12, [60, 60, 60], 15); // 12pt font, justified
-          }
-        });
-      }
-      
-      // PROGRESS OBSERVATIONS SECTION
-      if (childProgress.length > 0) {
-        writeSectionHeader('TUTOR OBSERVATIONS', [138, 43, 226], 16);
-        
-        childProgress.slice(0, 3).forEach((progress, index) => {
-          checkPageBreak(30);
-        
-          
-          // Strengths
-          if (progress.strengths) {
-            writeSubsectionHeader('Strengths', [29, 181, 132], 12);
-            writeParagraph(progress.strengths, 12, [0, 0, 0], 15); // 12pt font, justified
-          }
-          
-          // Areas for improvement
-          if (progress.areas_of_improvement) {
-            writeSubsectionHeader('Areas for Improvement', [255, 107, 53], 12);
-            writeParagraph(progress.areas_of_improvement, 12, [0, 0, 0], 15); // 12pt font, justified
-          }
-          
-          // Goals
-          if (progress.goals) {
-            writeSubsectionHeader('Learning Goals', [255, 152, 0], 12);
-            writeParagraph(progress.goals, 12, [0, 0, 0], 15); // 12pt font, justified
-          }
-          
-          // Additional notes
-          if (progress.notes) {
-            writeSubsectionHeader('Additional Notes', [100, 100, 100], 12);
-            writeParagraph(progress.notes, 12, [60, 60, 60], 15); // 12pt font, justified
-          }
-          
-          yPosition += 10; // Space between progress entries
-        });
-      }
-      
-      
-      // RECOMMENDATIONS SECTION
-      writeSectionHeader('RECOMMENDATIONS', [255, 152, 0], 16);
-      
-      if (performanceData) {
-        let recommendationText = '';
-        if (performanceData.average >= 80) {
-          recommendationText = 'Based on the excellent performance demonstrated, we recommend continuing with advanced challenges and enrichment activities to maintain high academic standards and foster deeper conceptual understanding.';
-        } else if (performanceData.average >= 60) {
-          recommendationText = 'The student shows solid foundational understanding. We recommend focused practice in identified areas while building confidence through success in stronger subjects to maintain motivation and academic momentum.';
-        } else {
-          recommendationText = 'To support continued academic growth, we recommend implementing additional support structures including more frequent check-ins, alternative learning approaches, and collaborative goal-setting to build confidence.';
-        }
-        writeParagraph(recommendationText, 12, [0, 0, 0], 10); 
-      }
-      
-      
-      // Summary Box
-      if (performanceData) {
-        checkPageBreak(25);
-        yPosition += 10;
-        
-        doc.setDrawColor(0, 102, 255);
-        doc.setLineWidth(0.5);
-        doc.rect(margin, yPosition, pageWidth - 2 * margin, 25);
-        
-        doc.setFontSize(12); // 12pt font for summary too
-        doc.setTextColor(0, 102, 255);
-        doc.setFont(undefined, 'bold');
-        doc.text('SUMMARY', margin + 10, yPosition + 10);
-        
-        doc.setFontSize(11);
-        doc.setTextColor(0, 0, 0);
-        doc.setFont(undefined, 'normal');
-        doc.text(`Assessments: ${performanceData.total} | Average: ${performanceData.average}% | Progress Records: ${childProgress.length}`, margin + 10, yPosition + 18);
-        
-        yPosition += 35;
+      if (avg >= 85) {
+        return scope === 'overall'
+          ? 'Outstanding performance; demonstrates excellent mastery and consistent high-quality work. Sustain momentum with enrichment and stretch tasks.'
+          : `Excellent attainment ${subj}; deep understanding and consistent accuracy. Encourage extension activities and further challenge.`;
+      } else if (avg >= 70) {
+        return scope === 'overall'
+          ? 'Good performance; strong understanding with minor gaps. Maintain regular practice and begin targeted revision of weaker objectives.'
+          : `Good understanding ${subj} with minor gaps. Maintain practice and address weaker objectives with short, focused reviews.`;
+      } else if (avg >= 55) {
+        return scope === 'overall'
+          ? 'Satisfactory performance; consistent engagement but room to improve. Prioritise regular revision of weaker topics and short weekly assessments.'
+          : `Satisfactory attainment ${subj}. Continue practice, prioritise consolidation of core concepts, and use quick formative checks.`;
+      } else if (avg >= 40) {
+        return scope === 'overall'
+          ? 'Developing performance; foundational understanding is emerging. Increase guided practice, revisit core concepts, and schedule frequent feedback loops.'
+          : `Developing understanding ${subj}. Revisit prerequisite skills, increase guided practice, and set short, achievable goals.`;
+      } else {
+        return scope === 'overall'
+          ? 'At-risk performance; structured intervention is recommended. Focus on prerequisite skills, scaffold tasks, and increase monitoring and feedback.'
+          : `At-risk attainment ${subj}. Implement focused intervention on core skills and provide scaffolded tasks with close monitoring.`;
       }
     }
-    
-    // Professional Closing
+
+    function recommendationsForAverage(avg) {
+      if (avg >= 85) {
+        return 'Maintain an accelerated pathway with enrichment tasks, independent projects, and peer mentoring to deepen mastery.';
+      } else if (avg >= 70) {
+        return 'Continue steady practice, add weekly targeted revision for gaps, and use spaced retrieval to strengthen retention.';
+      } else if (avg >= 55) {
+        return 'Prioritise weekly revision of weaker objectives, use short formative quizzes, and reinforce core strategies during lessons.';
+      } else if (avg >= 40) {
+        return 'Increase guided practice on fundamental concepts, use structured worked examples, and check understanding in small, frequent intervals.';
+      } else {
+        return 'Adopt an intervention plan: rebuild prerequisite knowledge, break objectives into smaller steps, and increase parent–tutor check-ins.';
+      }
+    }
+
+    // Cover page
+    addWatermark();
+
+    doc.setFont(baseFont, 'bold');
+    doc.setFontSize(28);
+    doc.setTextColor(0, 102, 255);
+    doc.text('BAOBAB ONLINE ACADEMY', pageWidth / 2, y + 20, { align: 'center' });
+    y += 35;
+
+    doc.setFontSize(20);
+    doc.setTextColor(29, 181, 132);
+    doc.text('Student Progress & Assessment Report', pageWidth / 2, y, { align: 'center' });
+    y += 40;
+
+    doc.setFont(baseFont, 'normal');
+    doc.setFontSize(14);
+    doc.setTextColor(0, 0, 0);
+    doc.text('Academic Year 2024–2025', pageWidth / 2, y, { align: 'center' });
+    y += 10;
+    doc.text(new Date().toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' }), pageWidth / 2, y, { align: 'center' });
+    y += 40;
+
+    writeParagraph(`Dear ${safeText(parentProfile?.full_name || 'Valued Parent')},`, { fontSize: 14, bold: true });
+    writeParagraph(
+      `This report provides a comprehensive overview of your ${children.length === 1 ? "child's" : "children's"} academic progress, including assessment results, tutor observations, and recommendations for continued growth.`,
+      { justify: true }
+    );
+
+    // Per-child pages
+    for (let i = 0; i < children.length; i++) {
+      const child = children[i];
+
+      doc.addPage();
+      addWatermark();
+      y = margin;
+
+      // Header
+      doc.setFont(baseFont, 'bold');
+      doc.setFontSize(20);
+      doc.setTextColor(0, 102, 255);
+      doc.text(safeText((child.name || '').toUpperCase()), margin, y);
+      y += 15;
+
+      doc.setFont(baseFont, 'normal');
+      doc.setFontSize(12);
+      doc.setTextColor(0, 0, 0);
+      doc.text(
+        safeText(`Grade: ${child.grade_level || 'N/A'} | Class Type: ${child.class_type || 'Group'}`),
+        margin,
+        y
+      );
+      y += 18;
+
+      // Data for this child
+      const childAssessments = cache.assessments.filter(a => a.children?.name === child.name);
+      const childProgress = cache.progress.filter(p => p.child_name === child.name);
+      const performance = getPerformanceAnalysis(childAssessments);
+
+      // Academic performance
+      if (performance) {
+        writeSectionHeader('ACADEMIC PERFORMANCE', [0, 102, 255], 16);
+
+        writeSubsectionHeader('Overall Score Summary', [29, 181, 132], 12);
+        const overallText =
+          `${child.name} completed ${performance.total} ${performance.total === 1 ? 'assessment' : 'assessments'} ` +
+          `with an average score of ${performance.average}%. ` +
+          scoreBandMessage(performance.average, 'overall');
+        writeParagraph(overallText, { indent: 10, justify: true });
+
+        // Subject breakdown
+        const subjectGroups = {};
+        childAssessments.forEach(a => {
+          const subject = a.subjects?.name || 'General Studies';
+          subjectGroups[subject] = subjectGroups[subject] || [];
+          subjectGroups[subject].push(a);
+        });
+
+        for (const subject of Object.keys(subjectGroups)) {
+          const subjectPerf = getPerformanceAnalysis(subjectGroups[subject]);
+          if (!subjectPerf) continue;
+
+          const subjectText =
+            `In ${subject}, the student completed ${subjectPerf.total} ${subjectPerf.total === 1 ? 'assessment' : 'assessments'} ` +
+            `achieving an average of ${subjectPerf.average}%. ` +
+            scoreBandMessage(subjectPerf.average, 'subject', subject);
+
+          writeParagraph(subjectText, { indent: 15, color: [60, 60, 60], justify: true });
+        }
+      }
+
+      // Tutor observations (recent)
+      if (childProgress.length > 0) {
+        writeSectionHeader('TUTOR OBSERVATIONS', [138, 43, 226], 16);
+
+        childProgress.slice(0, 3).forEach(rec => {
+          // Strengths
+          if (rec.strengths) {
+            writeSubsectionHeader('Strengths', [29, 181, 132], 12);
+            writeParagraph(rec.strengths, { indent: 15, justify: true });
+          }
+
+          // Areas for Improvement
+          if (rec.areas_of_improvement) {
+            writeSubsectionHeader('Areas for Improvement', [255, 107, 53], 12);
+            writeParagraph(rec.areas_of_improvement, { indent: 15, justify: true });
+          }
+
+          // Goals
+          if (rec.goals) {
+            writeSubsectionHeader('Learning Goals', [255, 152, 0], 12);
+            writeParagraph(rec.goals, { indent: 15, justify: true });
+          }
+
+          // Notes
+          if (rec.notes) {
+            writeSubsectionHeader('Additional Notes', [100, 100, 100], 12);
+            writeParagraph(rec.notes, { indent: 15, color: [60, 60, 60], justify: true });
+          }
+
+          y += 6;
+        });
+      }
+
+      // Recommendations
+      writeSectionHeader('RECOMMENDATIONS', [255, 152, 0], 16);
+      if (performance) {
+        writeParagraph(recommendationsForAverage(performance.average), { indent: 10, justify: true });
+      } else {
+        writeParagraph('Insufficient assessment data to compute tailored recommendations. Continue regular practice and request a diagnostic check.', { indent: 10, justify: true });
+      }
+
+      // Summary box
+      if (performance) {
+        checkPageBreak(30);
+        y += 6;
+
+        doc.setDrawColor(0, 102, 255);
+        doc.setLineWidth(0.5);
+        const boxX = margin;
+        const boxY = y;
+        const boxW = pageWidth - 2 * margin;
+        const boxH = 25;
+        doc.rect(boxX, boxY, boxW, boxH);
+
+        doc.setFont(baseFont, 'bold');
+        doc.setFontSize(12);
+        doc.setTextColor(0, 102, 255);
+        doc.text('SUMMARY', boxX + 6, boxY + 9);
+
+        doc.setFont(baseFont, 'normal');
+        doc.setFontSize(11);
+        doc.setTextColor(0, 0, 0);
+        const summaryText = `Assessments: ${performance.total} | Average: ${performance.average}% | Progress Records: ${childProgress.length}`;
+        doc.text(summaryText, boxX + 6, boxY + 17);
+
+        y += boxH + 6;
+      }
+    }
+
+    // Closing page
     doc.addPage();
     addWatermark();
-    yPosition = margin + 30;
-    
+    y = margin + 30;
+
     writeSectionHeader('THANK YOU', [0, 102, 255], 18);
-    
-    const closingText = `Thank you for choosing Baobab Online Academy. We remain committed to your child's educational success and look forward to continued partnership in their learning journey. Our dedicated team of educators will continue to provide comprehensive support and regular updates on academic progress.`;
-    writeParagraph(closingText, 12); // 12pt font, justified
-    
-    yPosition += 20;
-    doc.setFontSize(12); // 12pt font
+    writeParagraph(
+      'Thank you for choosing Baobab Online Academy. We remain committed to your child’s educational success and look forward to continued partnership in their learning journey. Our dedicated team will continue to provide comprehensive support and regular updates on academic progress.',
+      { justify: true }
+    );
+
+    y += 10;
+    doc.setFont(baseFont, 'normal');
+    doc.setFontSize(12);
     doc.setTextColor(100, 100, 100);
-    doc.setFont(undefined, 'normal');
-    doc.text('Baobab Online Academy - Excellence in Digital Education', pageWidth/2, yPosition, { align: 'center' });
-    yPosition += 8;
-    doc.text('admin@baobabonlineacademy.com.com | www.baobabonlineacademy.com', pageWidth/2, yPosition, { align: 'center' });
-    
-    // Save the PDF
-    const studentNames = children.map(child => child.name).join('_');
-    const filename = `Baobab_Report_${studentNames.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`;
+    doc.text('Baobab Online Academy – Excellence in Digital Education', pageWidth / 2, y, { align: 'center' });
+    y += 7;
+    doc.text('admin@baobabonlineacademy.com | www.baobabonlineacademy.com', pageWidth / 2, y, { align: 'center' });
+
+    // Save
+    const studentNames = children.map(c => c.name).join('_').replace(/\s+/g, '_');
+    const filename = `Baobab_Report_${studentNames}_${new Date().toISOString().split('T')[0]}.pdf`;
     doc.save(filename);
-    
   } catch (error) {
     console.error('Error generating PDF:', error);
     alert('Failed to generate report. Please try again.');
