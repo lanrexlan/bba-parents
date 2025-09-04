@@ -2591,26 +2591,26 @@
 
     // Create expandable text cell
     function createExpandableText(text, maxLength = 150) {
-      if (!text || text.length <= maxLength) {
-        return `<div class="expandable-text">${text || '—'}</div>`;
-      }
+  if (!text || text.length <= maxLength) {
+    return `<div class="expandable-text">${text || '—'}</div>`;
+  }
 
-      const preview = text.substring(0, maxLength);
-      const uniqueId = 'text_' + Math.random().toString(36).substr(2, 9);
-      
-      return `
-        <div class="expandable-text">
-          <div class="text-preview" id="${uniqueId}_preview">
-            ${preview}...
-            <div class="text-toggle" onclick="toggleText('${uniqueId}')">Show more</div>
-          </div>
-          <div class="text-full" id="${uniqueId}_full">
-            ${text}
-            <div class="text-toggle" onclick="toggleText('${uniqueId}')">Show less</div>
-          </div>
-        </div>
-      `;
-    }
+  const preview = text.substring(0, maxLength);
+  const uniqueId = 'text_' + Math.random().toString(36).substr(2, 9);
+  
+  return `
+    <div class="expandable-text">
+      <div class="text-preview" id="${uniqueId}_preview">
+        ${preview}...
+        <div class="text-toggle" onclick="toggleText('${uniqueId}')">Show more</div>
+      </div>
+      <div class="text-full" id="${uniqueId}_full" style="white-space: pre-wrap; word-wrap: break-word;">
+        ${text}
+        <div class="text-toggle" onclick="toggleText('${uniqueId}')">Show less</div>
+      </div>
+    </div>
+  `;
+}
 
     function toggleText(id) {
       const preview = document.getElementById(id + '_preview');
@@ -2777,48 +2777,24 @@ async function generatePDFReport() {
     
     // Enhanced paragraph function with proper justification
     function writeParagraph(text, fontSize = defaultFontSize, color = [0, 0, 0], indent = 0, bold = false) {
-      doc.setFontSize(fontSize);
-      doc.setTextColor(...color);
-      doc.setFont(undefined, bold ? 'bold' : 'normal');
-      
-      const currentLineHeight = fontSize * lineSpacing * 0.352778;
-      const maxWidth = pageWidth - 2 * margin - indent;
-      const splitText = doc.splitTextToSize(text, maxWidth);
-      
-      splitText.forEach((line, lineIndex) => {
-        checkPageBreak(currentLineHeight + 5);
-        
-        // Justify all lines except the last line of the paragraph
-        if (lineIndex < splitText.length - 1 && line.trim().length > 0) {
-          const words = line.trim().split(/\s+/);
-          if (words.length > 1) {
-            // Calculate total width of words without spaces
-            const wordsWidth = words.reduce((total, word) => total + doc.getTextWidth(word), 0);
-            const availableSpace = maxWidth - wordsWidth;
-            const spaceBetweenWords = availableSpace / (words.length - 1);
-            
-            let xPos = margin + indent;
-            words.forEach((word, wordIndex) => {
-              doc.text(word, xPos, yPosition);
-              if (wordIndex < words.length - 1) {
-                xPos += doc.getTextWidth(word) + spaceBetweenWords;
-              }
-            });
-          } else {
-            // Single word - just place it normally
-            doc.text(line, margin + indent, yPosition);
-          }
-        } else {
-          // Last line or empty line - no justification
-          doc.text(line, margin + indent, yPosition);
-        }
-        
-        yPosition += currentLineHeight;
-      });
-      
-      yPosition += currentLineHeight * 0.3;
-      return splitText.length;
-    }
+  doc.setFontSize(fontSize);
+  doc.setTextColor(...color);
+  doc.setFont(undefined, bold ? 'bold' : 'normal');
+  
+  const currentLineHeight = fontSize * lineSpacing * 0.352778;
+  const maxWidth = pageWidth - 2 * margin - indent;
+  const splitText = doc.splitTextToSize(text, maxWidth);
+  
+  splitText.forEach((line) => {
+    checkPageBreak(currentLineHeight + 5);
+    // Simple left-aligned text without justification
+    doc.text(line, margin + indent, yPosition);
+    yPosition += currentLineHeight;
+  });
+  
+  yPosition += currentLineHeight * 0.3;
+  return splitText.length;
+}
     
     // Helper function to write section header
     function writeSectionHeader(title, color = [0, 102, 255], fontSize = 14) {
@@ -3700,24 +3676,24 @@ async function generatePDFReport() {
     }
 
     function renderProgressTable(rows) {
-      const tb = document.getElementById('progressTbody');
-      if (!rows?.length) { 
-        tb.innerHTML = `<tr><td colspan="7"><div class="empty-state"><i class="fas fa-chart-line"></i><div>No progress records yet.</div></div></td></tr>`; 
-        return; 
-      }
-      tb.innerHTML = rows.map(p => `
-        <tr>
-          <td data-label="Date">${fmtDate(p.recorded_at)}</td>
-          <td data-label="Child">${p.child_name || ''}</td>
-          <td data-label="Subject">${p.subject_name || ''}</td>
-          <td data-label="Score">${p.score != null ? p.score + '%' : '—'}</td>
-          <td data-label="Strengths">${createExpandableText(p.strengths)}</td>
-          <td data-label="Improvement">${createExpandableText(p.areas_of_improvement)}</td>
-          <td data-label="Notes">${createExpandableText(p.notes)}</td>
-          <td data-label="Recorded By">${p.tutor_name || '—'}</td>
-        </tr>
-      `).join('');
-    }
+  const tb = document.getElementById('progressTbody');
+  if (!rows?.length) { 
+    tb.innerHTML = `<tr><td colspan="8"><div class="empty-state"><i class="fas fa-chart-line"></i><div>No progress records yet.</div></div></td></tr>`; 
+    return; 
+  }
+  tb.innerHTML = rows.map(p => `
+    <tr>
+      <td data-label="Date">${fmtDate(p.recorded_at)}</td>
+      <td data-label="Child">${p.child_name || ''}</td>
+      <td data-label="Subject">${p.subject_name || ''}</td>
+      <td data-label="Score">${p.score != null ? p.score + '%' : '—'}</td>
+      <td data-label="Strengths">${createExpandableText(p.strengths, 100)}</td>
+      <td data-label="Improvement">${createExpandableText(p.areas_of_improvement, 100)}</td>
+      <td data-label="Notes">${createExpandableText(p.notes, 100)}</td>
+      <td data-label="Recorded By">${p.tutor_name || '—'}</td>
+    </tr>
+  `).join('');
+}
 
     function renderBillingTable(rows) {
       const tb = document.getElementById('billingTbody');
