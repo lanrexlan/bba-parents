@@ -2590,7 +2590,7 @@
     }
 
     // Create expandable text cell
-    function createExpandableText(text, maxLength = 150) {
+  function createExpandableText(text, maxLength = 120) {
   if (!text || text.length <= maxLength) {
     return `<div class="expandable-text">${text || '—'}</div>`;
   }
@@ -2602,11 +2602,11 @@
     <div class="expandable-text">
       <div class="text-preview" id="${uniqueId}_preview">
         ${preview}...
-        <div class="text-toggle" onclick="toggleText('${uniqueId}')">Show more</div>
+        <div class="text-toggle" onclick="toggleText('${uniqueId}')" style="color: var(--primary); cursor: pointer; font-size: 0.8rem; margin-top: 0.25rem;">Show more</div>
       </div>
-      <div class="text-full" id="${uniqueId}_full" style="white-space: pre-wrap; word-wrap: break-word;">
+      <div class="text-full" id="${uniqueId}_full" style="display: none; white-space: pre-wrap; word-wrap: break-word;">
         ${text}
-        <div class="text-toggle" onclick="toggleText('${uniqueId}')">Show less</div>
+        <div class="text-toggle" onclick="toggleText('${uniqueId}')" style="color: var(--primary); cursor: pointer; font-size: 0.8rem; margin-top: 0.25rem;">Show less</div>
       </div>
     </div>
   `;
@@ -2975,7 +2975,7 @@ async function generatePDFReport() {
         } else {
           recommendationText = 'To support continued academic growth, we recommend implementing additional support structures including more frequent check-ins, alternative learning approaches, and collaborative goal-setting to build confidence.';
         }
-        writeParagraph(recommendationText, 12, [0, 0, 0], 10, "left"); // 12pt font, justified
+        writeParagraph(recommendationText, 12, [0, 0, 0], 10); 
       }
       
       
