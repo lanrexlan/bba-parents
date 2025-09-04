@@ -2914,7 +2914,7 @@ async function generatePDFReport() {
       doc.setFontSize(12); // Ensure 12pt
       doc.setTextColor(0, 0, 0);
       doc.setFont(undefined, 'normal');
-      doc.text(`Grade: ${child.grade_level || 'N/A'} | Class Type: ${child.class_type === 'private' ? 'Individual' : 'Group'}`, margin, yPosition);
+      doc.text(`Grade: ${child.grade_level || 'N/A'} | Class Type: ${child.class_type === 'Python Programming' ? '1-to-1' : 'Group'}`, margin, yPosition);
       yPosition += 20;
       
       // Get actual data for this child
@@ -2957,14 +2957,7 @@ async function generatePDFReport() {
         
         childProgress.slice(0, 3).forEach((progress, index) => {
           checkPageBreak(30);
-          
-          // Date and score
-          writeSubsectionHeader(`${fmtDate(progress.recorded_at)} - ${progress.subject_name || 'Subject'}`);
-          
-          if (progress.score) {
-            const scoreText = `During this assessment period, the student achieved a performance score of ${progress.score}%, reflecting their current understanding and application of subject material.`;
-            writeParagraph(scoreText, 12, [0, 0, 0], 10); // 12pt font, justified
-          }
+        
           
           // Strengths
           if (progress.strengths) {
@@ -2994,24 +2987,6 @@ async function generatePDFReport() {
         });
       }
       
-      // ASSESSMENT FEEDBACK SECTION
-      const feedbackAssessments = childAssessments.filter(a => a.feedback && a.feedback.trim());
-      if (feedbackAssessments.length > 0) {
-        writeSectionHeader('ASSESSMENT FEEDBACK', [29, 181, 132], 16);
-        
-        feedbackAssessments.slice(0, 3).forEach((assessment) => {
-          checkPageBreak(25);
-          writeSubsectionHeader(`${assessment.subjects?.name || 'Subject'} - ${fmtDate(assessment.conducted_at)}`);
-          
-          if (assessment.grade && assessment.max_grade) {
-            const gradeText = `Assessment score: ${assessment.grade} out of ${assessment.max_grade} marks, demonstrating the student's current level of understanding in this subject area.`;
-            writeParagraph(gradeText, 12, [0, 0, 0], 10); // 12pt font, justified
-          }
-          
-          writeParagraph(assessment.feedback, 12, [60, 60, 60], 15); // 12pt font, justified
-          yPosition += 8;
-        });
-      }
       
       // RECOMMENDATIONS SECTION
       writeSectionHeader('RECOMMENDATIONS', [255, 152, 0], 16);
@@ -3025,11 +3000,9 @@ async function generatePDFReport() {
         } else {
           recommendationText = 'To support continued academic growth, we recommend implementing additional support structures including more frequent check-ins, alternative learning approaches, and collaborative goal-setting to build confidence.';
         }
-        writeParagraph(recommendationText, 12, [0, 0, 0], 10); // 12pt font, justified
+        writeParagraph(recommendationText, 12, [0, 0, 0], 10, "left"); // 12pt font, justified
       }
       
-      const learningFormatText = `We recommend continuing with ${child.class_type === 'private' ? 'individual tutoring sessions to maintain personalized attention and customized learning pace' : 'group learning sessions to foster collaborative engagement and peer interaction'}, as this format best supports the student's learning style and academic needs.`;
-      writeParagraph(learningFormatText, 12, [0, 0, 0], 10); // 12pt font, justified
       
       // Summary Box
       if (performanceData) {
@@ -3070,7 +3043,7 @@ async function generatePDFReport() {
     doc.setFont(undefined, 'normal');
     doc.text('Baobab Online Academy - Excellence in Digital Education', pageWidth/2, yPosition, { align: 'center' });
     yPosition += 8;
-    doc.text('support@baobabackademy.com | www.baobabackademy.com', pageWidth/2, yPosition, { align: 'center' });
+    doc.text('admin@baobabonlineacademy.com.com | www.baobabonlineacademy.com', pageWidth/2, yPosition, { align: 'center' });
     
     // Save the PDF
     const studentNames = children.map(child => child.name).join('_');
