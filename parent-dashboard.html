@@ -2901,9 +2901,66 @@ async function generatePDFReport() {
       if (performanceData) {
         writeSectionHeader('ACADEMIC PERFORMANCE', [0, 102, 255], 16);
         
-        writeSubsectionHeader('Overall Score Summary');
-        const scoreText = `${child.name} completed ${performanceData.total} assessments with an average score of ${performanceData.average}%. This performance demonstrates consistent engagement with academic material and shows areas of both strength and opportunity for continued growth.`;
-        writeParagraph(scoreText, 12, [0, 0, 0], 10); // 12pt font, justified
+        // helper: returns a small summary + suggestion based on average percent
+function getScoreSummary(average) {
+  const avg = Number(average ?? 0);
+
+  if (avg >= 90) {
+    return {
+      label: 'Excellent',
+      message: 'Outstanding performance — the student demonstrates mastery of material.',
+      suggestion: 'Keep challenging them with higher-level problems and enrichment activities.'
+    };
+  }
+
+  if (avg >= 75) {
+    return {
+      label: 'Very Good',
+      message: 'Strong performance with solid understanding in most areas.',
+      suggestion: 'Focus on targeted practice for the small gaps to push this even higher.'
+    };
+  }
+
+  if (avg >= 60) {
+    return {
+      label: 'Satisfactory',
+      message: 'Satisfactory performance; there is consistent engagement but room to improve.',
+      suggestion: 'Prioritise regular revision of weaker topics and short weekly assessments.'
+    };
+  }
+
+  if (avg >= 40) {
+    return {
+      label: 'Below Expectations',
+      message: 'Performance is below expectations and shows gaps in foundational topics.',
+      suggestion: 'Introduce focused remediation sessions and break concepts into smaller steps.'
+    };
+  }
+
+  // avg < 40
+  return {
+    label: 'Needs Intervention',
+    message: 'Performance is low and indicates the need for immediate support.',
+    suggestion: 'Arrange one-on-one support, re-teach fundamentals, and monitor progress closely.'
+  };
+}
+
+// usage — build the paragraph and write it
+writeSubsectionHeader('Overall Score Summary');
+
+const avg = Number(performanceData.average ?? 0);
+const roundedAvg = Math.round(avg * 10) / 10; // one decimal place
+const summary = getScoreSummary(avg);
+
+const scoreText =
+  `${child.name} completed ${performanceData.total} assessments with an average score of ${roundedAvg}%. ` +
+  `${summary.message} ${summary.suggestion}`;
+
+//
+// If your writeParagraph supports an alignment parameter, pass "left" (preferred).
+// If it doesn't, remove the last argument or update writeParagraph definition to accept alignment.
+writeParagraph(scoreText, 12, [0, 0, 0], 10, 'left'); // 12pt font, left-aligned
+
         
         // Subject breakdown
         const subjectGroups = {};
