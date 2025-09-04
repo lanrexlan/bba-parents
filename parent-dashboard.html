@@ -2729,8 +2729,7 @@
   }
 }
 
-    // Enhanced PDF Generation Function with Comprehensive Reporting
-// Enhanced PDF Generation Function with Professional Formatting
+    
 async function generatePDFReport() {
   if (!children.length) {
     alert('No children data available to generate report.');
@@ -3675,7 +3674,7 @@ async function generatePDFReport() {
       }).join('');
     }
 
-    function renderProgressTable(rows) {
+  function renderProgressTable(rows) {
   const tb = document.getElementById('progressTbody');
   if (!rows?.length) { 
     tb.innerHTML = `<tr><td colspan="8"><div class="empty-state"><i class="fas fa-chart-line"></i><div>No progress records yet.</div></div></td></tr>`; 
@@ -3684,12 +3683,24 @@ async function generatePDFReport() {
   tb.innerHTML = rows.map(p => `
     <tr>
       <td data-label="Date">${fmtDate(p.recorded_at)}</td>
-      <td data-label="Child">${p.child_name || ''}</td>
-      <td data-label="Subject">${p.subject_name || ''}</td>
+      <td data-label="Child">${p.child_name || '—'}</td>
+      <td data-label="Subject">${p.subject_name || '—'}</td>
       <td data-label="Score">${p.score != null ? p.score + '%' : '—'}</td>
-      <td data-label="Strengths">${createExpandableText(p.strengths, 100)}</td>
-      <td data-label="Improvement">${createExpandableText(p.areas_of_improvement, 100)}</td>
-      <td data-label="Notes">${createExpandableText(p.notes, 100)}</td>
+      <td data-label="Strengths">
+        <div style="max-width: 200px; word-wrap: break-word; white-space: pre-wrap;">
+          ${p.strengths || '—'}
+        </div>
+      </td>
+      <td data-label="Improvement">
+        <div style="max-width: 200px; word-wrap: break-word; white-space: pre-wrap;">
+          ${p.areas_of_improvement || '—'}
+        </div>
+      </td>
+      <td data-label="Notes">
+        <div style="max-width: 200px; word-wrap: break-word; white-space: pre-wrap;">
+          ${p.notes || '—'}
+        </div>
+      </td>
       <td data-label="Recorded By">${p.tutor_name || '—'}</td>
     </tr>
   `).join('');
