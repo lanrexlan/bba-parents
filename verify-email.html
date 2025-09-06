@@ -125,7 +125,7 @@
     
     const verificationData = {
       email: email.toLowerCase(),
-      userId: userData.userId,
+      userId: userData.userId || 'temp_user_' + Date.now(),
       verified: true,
       verifiedAt: new Date().toISOString(),
       userData: userData
@@ -135,12 +135,33 @@
     console.log('User verification cached locally:', email);
   }
 
-  // Validate verification token against Supabase database
-  async function validateVerificationToken(token, email) {
+  // Check localStorage for verification token (fallback method)
+  function validateTokenFromLocalStorage(token, email) {
     try {
-      console.log('Validating token in Supabase:', token);
+      const storedData = localStorage.getItem(`verification_${token}`);
+      if (!storedData) return null;
       
-      // Query the verification_tokens table in Supabase
+      const data = JSON.parse(storedData);
+      if (data.expires < Date.now()) {
+        localStorage.removeItem(`verification_${token}`);
+        return null;
+      }
+      
+      if (data.email !== email.toLowerCase()) return null;
+      
+      return data;
+    } catch (error) {
+      console.error('LocalStorage token validation error:', error);
+      return null;
+    }
+  }
+
+  // Try to validate token from Supabase first, fall back to localStorage
+  async function validateVerificationToken(token, email) {
+    console.log('Validating token:', token, 'for email:', email);
+    
+    // First try Supabase
+    try {
       const { data, error } = await supabase
         .from('verification_tokens')
         .select('*')
@@ -148,67 +169,88 @@
         .eq('email', email.toLowerCase())
         .single();
 
-      if (error) {
-        console.error('Supabase query error:', error);
-        if (error.code === 'PGRST116') {
-          // No rows returned - token not found
+      if (!error && data) {
+        console.log('Token found in Supabase database');
+        
+        // Check if token has expired
+        const expiresAt = new Date(data.expires_at);
+        if (expiresAt < new Date()) {
+          console.log('Token has expired');
+          
+          // Delete expired token
+          await supabase
+            .from('verification_tokens')
+            .delete()
+            .eq('token', token);
+          
           return null;
         }
-        throw error;
-      }
 
-      if (!data) {
-        console.log('No verification token found');
-        return null;
+        console.log('Token validation successful from Supabase');
+        return {
+          source: 'supabase',
+          userData: data.user_data || { userId: data.user_id || 'temp_user_' + Date.now() },
+          ...data
+        };
       }
+    } catch (supabaseError) {
+      console.log('Supabase validation failed, trying localStorage fallback:', supabaseError.message);
+    }
 
-      // Check if token has expired
-      const expiresAt = new Date(data.expires_at);
-      if (expiresAt < new Date()) {
-        console.log('Token has expired');
-        
-        // Delete expired token
+    // Fallback to localStorage
+    console.log('Attempting localStorage validation...');
+    const localData = validateTokenFromLocalStorage(token, email);
+    if (localData) {
+      console.log('Token validation successful from localStorage');
+      return {
+        source: 'localStorage',
+        userData: localData.userData || { userId: 'temp_user_' + Date.now() },
+        ...localData
+      };
+    }
+
+    console.log('Token validation failed from both sources');
+    return null;
+  }
+
+  // Mark token as used
+  async function markTokenAsUsed(token, source) {
+    try {
+      if (source === 'supabase') {
+        // Delete from Supabase
         await supabase
           .from('verification_tokens')
           .delete()
           .eq('token', token);
-        
-        return null;
+        console.log('Token removed from Supabase');
+      } else if (source === 'localStorage') {
+        // Delete from localStorage
+        localStorage.removeItem(`verification_${token}`);
+        console.log('Token removed from localStorage');
       }
-
-      console.log('Token validation successful');
-      return data;
     } catch (error) {
-      console.error('Token validation error:', error);
-      return null;
+      console.error('Error marking token as used:', error);
     }
   }
 
-  // Mark token as used and user as verified in Supabase
-  async function markTokenUsedAndUserVerified(token, email, userData) {
+  // Update user verification status if possible
+  async function updateUserVerificationStatus(email) {
     try {
-      // Delete the verification token (one-time use)
-      await supabase
-        .from('verification_tokens')
-        .delete()
-        .eq('token', token);
-
-      // Update user verification status
-      const { error: updateError } = await supabase
-        .from('users') // Assuming you have a users table
+      const { error } = await supabase
+        .from('users')
         .update({ 
           email_verified: true,
           email_verified_at: new Date().toISOString()
         })
         .eq('email', email.toLowerCase());
 
-      if (updateError) {
-        console.error('Error updating user verification status:', updateError);
+      if (error) {
+        console.log('Could not update user verification status in database:', error.message);
+      } else {
+        console.log('User verification status updated in database');
       }
-
-      console.log('Token marked as used and user verified in database');
     } catch (error) {
-      console.error('Error marking token as used:', error);
+      console.log('Database update not available, verification cached locally only');
     }
   }
 
@@ -221,21 +263,24 @@
       return { alreadyVerified: true };
     }
 
-    // Validate token against Supabase database
+    // Validate token from either Supabase or localStorage
     const validationData = await validateVerificationToken(token, email);
     if (!validationData) {
       throw new Error('Invalid or expired verification token. Please request a new verification email.');
     }
 
-    const userData = validationData.user_data || { userId: validationData.user_id };
+    const userData = validationData.userData;
 
-    // Mark token as used and user as verified in database
-    await markTokenUsedAndUserVerified(token, email, userData);
+    // Mark token as used
+    await markTokenAsUsed(token, validationData.source);
+
+    // Try to update database, but don't fail if it doesn't work
+    await updateUserVerificationStatus(email);
 
     // Cache verification status locally
     markUserVerified(email.toLowerCase(), userData);
 
-    console.log('User successfully verified');
+    console.log('User successfully verified via', validationData.source);
     return { userData, newlyVerified: true };
   }
 
