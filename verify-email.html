@@ -76,7 +76,6 @@
         <ul>
           <li><i class="fas fa-envelope"></i> Open the newest verification email</li>
           <li><i class="fas fa-link"></i> Click the link again from this device</li>
-          <li><i class="fas fa-refresh"></i> Request a new verification email</li>
         </ul>
       </div>
       <a class="btn btn-outline" href="/"><i class="fas fa-home"></i> Return home</a>
@@ -103,7 +102,7 @@
     };
   }
 
-  // Check if user is already verified in localStorage (cache)
+  // Check if user is already verified
   function isUserAlreadyVerified(email) {
     try {
       const userVerificationKey = `user_verification_${email.toLowerCase()}`;
@@ -119,7 +118,7 @@
     }
   }
 
-  // Mark user as verified in localStorage (cache)
+  // Mark user as verified permanently
   function markUserVerified(email, userData) {
     const userVerificationKey = `user_verification_${email.toLowerCase()}`;
     
@@ -132,51 +131,22 @@
     };
     
     localStorage.setItem(userVerificationKey, JSON.stringify(verificationData));
-    console.log('User verification cached locally:', email);
+    console.log('User permanently marked as verified:', email);
   }
 
-  // Validate verification token against Supabase database
-  async function validateVerificationToken(token, email) {
+  function validateVerificationToken(token, email) {
     try {
-      console.log('Validating token in Supabase:', token);
+      const storedData = localStorage.getItem(`verification_${token}`);
+      if (!storedData) return null;
       
-      // Query the verification_tokens table in Supabase
-      const { data, error } = await supabase
-        .from('verification_tokens')
-        .select('*')
-        .eq('token', token)
-        .eq('email', email.toLowerCase())
-        .single();
-
-      if (error) {
-        console.error('Supabase query error:', error);
-        if (error.code === 'PGRST116') {
-          // No rows returned - token not found
-          return null;
-        }
-        throw error;
-      }
-
-      if (!data) {
-        console.log('No verification token found');
+      const data = JSON.parse(storedData);
+      if (data.expires < Date.now()) {
+        localStorage.removeItem(`verification_${token}`);
         return null;
       }
-
-      // Check if token has expired
-      const expiresAt = new Date(data.expires_at);
-      if (expiresAt < new Date()) {
-        console.log('Token has expired');
-        
-        // Delete expired token
-        await supabase
-          .from('verification_tokens')
-          .delete()
-          .eq('token', token);
-        
-        return null;
-      }
-
-      console.log('Token validation successful');
+      
+      if (data.email !== email.toLowerCase()) return null;
+      
       return data;
     } catch (error) {
       console.error('Token validation error:', error);
@@ -184,58 +154,27 @@
     }
   }
 
-  // Mark token as used and user as verified in Supabase
-  async function markTokenUsedAndUserVerified(token, email, userData) {
-    try {
-      // Delete the verification token (one-time use)
-      await supabase
-        .from('verification_tokens')
-        .delete()
-        .eq('token', token);
-
-      // Update user verification status
-      const { error: updateError } = await supabase
-        .from('users') // Assuming you have a users table
-        .update({ 
-          email_verified: true,
-          email_verified_at: new Date().toISOString()
-        })
-        .eq('email', email.toLowerCase());
-
-      if (updateError) {
-        console.error('Error updating user verification status:', updateError);
-      }
-
-      console.log('Token marked as used and user verified in database');
-    } catch (error) {
-      console.error('Error marking token as used:', error);
-    }
-  }
-
-  async function handleVerification(token, email) {
-    console.log('Starting verification process for:', email);
-    
-    // Check if user is already verified (cache check)
+  async function handleCustomTokenVerification(token, email) {
+    // Check if user is already verified
     if (isUserAlreadyVerified(email)) {
-      console.log('User is already verified (cached), proceeding to dashboard');
+      console.log('User is already verified, proceeding to dashboard');
       return { alreadyVerified: true };
     }
 
-    // Validate token against Supabase database
-    const validationData = await validateVerificationToken(token, email);
+    const validationData = validateVerificationToken(token, email);
     if (!validationData) {
-      throw new Error('Invalid or expired verification token. Please request a new verification email.');
+      throw new Error('Invalid or expired verification token');
     }
 
-    const userData = validationData.user_data || { userId: validationData.user_id };
+    const userData = validationData.userData;
 
-    // Mark token as used and user as verified in database
-    await markTokenUsedAndUserVerified(token, email, userData);
-
-    // Cache verification status locally
+    // Mark user as verified permanently
     markUserVerified(email.toLowerCase(), userData);
 
-    console.log('User successfully verified');
+    // Clean up the one-time verification token
+    localStorage.removeItem(`verification_${token}`);
+
+    console.log('User successfully verified via custom token');
     return { userData, newlyVerified: true };
   }
 
@@ -243,39 +182,38 @@
     try {
       const p = params();
 
-      if (!p.token || !p.email) {
-        throw new Error('Missing verification parameters. Please use the verification link sent to your email.');
+      if (p.token && p.email) {
+        console.log('Processing verification for:', p.email);
+        
+        const result = await handleCustomTokenVerification(p.token, p.email.toLowerCase());
+        
+        hide('loading');
+        show('ok');
+        
+        if (result.alreadyVerified) {
+          $('ok').innerHTML = `
+            <i class="fas fa-check-circle bigicon success"></i>
+            <h1 class="title">Already verified!</h1>
+            <p class="msg">Your account is already verified. Redirecting to dashboard...</p>
+            <a class="btn btn-primary" href="/parent-dashboard.html"><i class="fas fa-tachometer-alt"></i> Go to dashboard</a>
+          `;
+        }
+        
+        // Redirect to dashboard
+        setTimeout(() => { 
+          window.location.href = '/parent-dashboard.html'; 
+        }, 2000);
+        return;
       }
 
-      console.log('Processing verification for:', p.email);
-      
-      const result = await handleVerification(p.token, p.email.toLowerCase());
-      
-      hide('loading');
-      show('ok');
-      
-      if (result.alreadyVerified) {
-        $('ok').innerHTML = `
-          <i class="fas fa-check-circle bigicon success"></i>
-          <h1 class="title">Already verified!</h1>
-          <p class="msg">Your account is already verified. Redirecting to dashboard...</p>
-          <a class="btn btn-primary" href="/parent-dashboard.html"><i class="fas fa-tachometer-alt"></i> Go to dashboard</a>
-        `;
-      }
-      
-      // Redirect to dashboard
-      setTimeout(() => { 
-        window.location.href = '/parent-dashboard.html'; 
-      }, 2000);
-      
+      throw new Error('Missing verification parameters. Please use the verification link sent to your email.');
+
     } catch (err) {
       console.error('Verify error:', err);
       hide('loading'); 
       show('fail');
       const t = $('errText'); 
-      if (t) {
-        t.textContent = err.message || 'Verification failed. Please try again or request a new verification email.';
-      }
+      if (t) t.textContent = err.message || 'Verification failed. Please try again.';
     }
   }
 
