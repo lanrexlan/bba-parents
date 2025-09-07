@@ -76,7 +76,6 @@
         <ul>
           <li><i class="fas fa-envelope"></i> Request a new verification email</li>
           <li><i class="fas fa-link"></i> Make sure you're using the latest email</li>
-          <li><i class="fas fa-refresh"></i> Check your spam folder</li>
         </ul>
       </div>
       <a class="btn btn-outline" href="/"><i class="fas fa-home"></i> Return home</a>
@@ -102,69 +101,120 @@
     };
   }
 
-  async function verifyEmail(token, email) {
+  async function verifyEmailWithToken(token, email) {
     console.log('Verifying token:', token, 'for email:', email);
     
     try {
-      // Look up the verification token
-      const { data: tokenData, error: fetchError } = await supabase
-        .from('verification_tokens')
+      // Check if email exists in authorised_emails and is already used
+      const { data: authData, error: authError } = await supabase
+        .from('authorised_emails')
         .select('*')
-        .eq('token', token)
         .eq('email', email.toLowerCase())
+        .eq('is_used', true)
         .single();
 
-      if (fetchError) {
-        console.error('Database error:', fetchError);
-        throw new Error('Invalid verification link or token not found');
+      if (authError && authError.code !== 'PGRST116') {
+        throw authError;
       }
 
-      if (!tokenData) {
+      // If user is already verified, just proceed
+      if (authData) {
+        console.log('Email already verified, checking for existing user...');
+        
+        // Get the user data
+        const { data: userData, error: userError } = await supabase.auth.getUser();
+        
+        if (!userError && userData.user) {
+          // Create parent profile if it doesn't exist
+          await createParentProfileIfNeeded(userData.user, email);
+          return { success: true, alreadyVerified: true };
+        }
+      }
+
+      // Check if we have a valid token in authorised_emails
+      const { data: emailData, error: emailError } = await supabase
+        .from('authorised_emails')
+        .select('*')
+        .eq('email', email.toLowerCase())
+        .eq('verification_token', token)
+        .single();
+
+      if (emailError) {
+        console.error('Token lookup error:', emailError);
+        throw new Error('Invalid verification token or email not found');
+      }
+
+      if (!emailData) {
         throw new Error('Verification token not found');
       }
 
-      // Check if token expired
-      const now = new Date();
-      const expiresAt = new Date(tokenData.expires_at);
-      
-      if (now > expiresAt) {
-        // Delete expired token
-        await supabase
-          .from('verification_tokens')
-          .delete()
-          .eq('token', token);
-        
-        throw new Error('Verification link has expired. Please request a new one.');
+      // Check if token is already used
+      if (emailData.is_used) {
+        console.log('Token already used, but proceeding anyway...');
+        return { success: true, alreadyVerified: true };
       }
 
-      // Token is valid - mark user as verified
-      console.log('Token is valid, marking user as verified');
-      
-      // Update user verification status (if users table exists)
-      try {
-        await supabase
-          .from('users')
-          .update({ 
-            email_verified: true,
-            email_verified_at: new Date().toISOString()
-          })
-          .eq('email', email.toLowerCase());
-      } catch (userUpdateError) {
-        console.log('Could not update user table (may not exist yet)');
+      // Mark as used and verified
+      const { error: updateError } = await supabase
+        .from('authorised_emails')
+        .update({ 
+          is_used: true,
+          verified_at: new Date().toISOString()
+        })
+        .eq('email', email.toLowerCase())
+        .eq('verification_token', token);
+
+      if (updateError) {
+        throw updateError;
       }
 
-      // Delete the used token
-      await supabase
-        .from('verification_tokens')
-        .delete()
-        .eq('token', token);
+      // Get current user and create profile
+      const { data: userData, error: userError } = await supabase.auth.getUser();
+      
+      if (!userError && userData.user) {
+        await createParentProfileIfNeeded(userData.user, email);
+      }
 
       console.log('Email verification successful');
-      return { success: true, userData: tokenData.user_data };
+      return { success: true, newlyVerified: true };
 
     } catch (error) {
       console.error('Verification error:', error);
       throw error;
+    }
+  }
+
+  async function createParentProfileIfNeeded(user, email) {
+    try {
+      // Check if profile already exists
+      const { data: existingProfile } = await supabase
+        .from('parent_profiles')
+        .select('id')
+        .eq('user_id', user.id)
+        .single();
+
+      if (existingProfile) {
+        console.log('Parent profile already exists');
+        return;
+      }
+
+      // Create parent profile
+      const { error: profileError } = await supabase
+        .from('parent_profiles')
+        .insert({
+          user_id: user.id,
+          email: email.toLowerCase(),
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        });
+
+      if (profileError) {
+        console.error('Error creating parent profile:', profileError);
+      } else {
+        console.log('Parent profile created successfully');
+      }
+    } catch (error) {
+      console.error('Error in createParentProfileIfNeeded:', error);
     }
   }
 
@@ -178,11 +228,20 @@
 
       console.log('Starting verification for:', params.email);
       
-      const result = await verifyEmail(params.token, params.email);
+      const result = await verifyEmailWithToken(params.token, params.email);
       
       // Show success
       hide('loading');
       show('ok');
+      
+      if (result.alreadyVerified) {
+        $('ok').innerHTML = `
+          <i class="fas fa-check-circle bigicon success"></i>
+          <h1 class="title">Already verified!</h1>
+          <p class="msg">Your account is already verified. Redirecting to dashboard...</p>
+          <a class="btn btn-primary" href="/parent-dashboard.html"><i class="fas fa-tachometer-alt"></i> Go to dashboard</a>
+        `;
+      }
       
       // Redirect after 2 seconds
       setTimeout(() => {
