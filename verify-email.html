@@ -5,265 +5,404 @@
   <link rel="icon" type="image/png" sizes="32x32" href="/Images/logo.jpg">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Email Verification - Baobab Online Academy</title>
+  <meta name="theme-color" content="#2E7D32">
+  <meta name="description" content="Verify your email to access your Baobab Online Academy dashboard.">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@300;400;700;900&family=Open+Sans:wght@300;400;600;700&family=Kalam:wght@400;700&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
-    :root {
+    :root{
       --baobab-brown:#8D4004;--canopy-green:#2E7D32;--sunset-gold:#F57C00;--trunk-gray:#5D4037;
       --earth-cream:#FFF8E1;--desert-orange:#FF5722;--white:#FFFFFF;--deep-charcoal:#263238;
+      --muted:#6b7280;--ring:rgba(245,124,0,.35)
     }
-    *{margin:0;padding:0;box-sizing:border-box}
-    body{font-family:'Open Sans',sans-serif;color:var(--deep-charcoal);
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family:'Open Sans',sans-serif;
+      color:var(--deep-charcoal);
       background:linear-gradient(135deg,var(--canopy-green),var(--baobab-brown));
-      min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
-    .card{background:var(--white);border-radius:24px;padding:40px;max-width:680px;width:100%;
-      text-align:center;border:3px solid var(--sunset-gold);box-shadow:0 20px 50px rgba(0,0,0,.3)}
-    .logo{display:inline-flex;align-items:center;gap:12px;margin-bottom:10px}
-    .logo-icon{width:44px;height:44px;background:var(--canopy-green);color:#fff;border-radius:10px;display:grid;place-items:center}
-    .logo-text{font-family:'Merriweather',serif;color:var(--baobab-brown);font-weight:700;font-size:22px}
-    .title{font-family:'Merriweather',serif;color:var(--baobab-brown);font-size:26px;margin:8px 0 12px}
-    .msg{color:var(--trunk-gray);line-height:1.7;margin-bottom:16px}
-    .bigicon{font-size:3.4rem;margin-bottom:10px}
+      display:flex;align-items:center;justify-content:center;padding:20px
+    }
+    .card{
+      background:var(--white);
+      border-radius:24px;
+      padding:36px 28px;
+      max-width:760px;width:100%;
+      text-align:center;
+      border:3px solid var(--sunset-gold);
+      box-shadow:0 20px 50px rgba(0,0,0,.25)
+    }
+    header.logo{display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:8px}
+    .logo-icon{width:48px;height:48px;background:var(--canopy-green);color:#fff;border-radius:12px;display:grid;place-items:center}
+    .logo-text{font-family:'Merriweather',serif;color:var(--baobab-brown);font-weight:900;font-size:22px;letter-spacing:.2px}
+    h1.title{font-family:'Merriweather',serif;color:var(--baobab-brown);font-size:28px;margin:8px 0 10px}
+    p.msg{color:var(--trunk-gray);line-height:1.7;margin:0 auto 14px;max-width:58ch}
+    .bigicon{font-size:3.4rem;margin-bottom:8px}
     .loading{color:var(--sunset-gold);animation:spin 1s linear infinite}
+    @media (prefers-reduced-motion: reduce){
+      .loading{animation:none}
+    }
     .success{color:var(--canopy-green)}
     .error{color:var(--desert-orange)}
     @keyframes spin{to{transform:rotate(360deg)}}
     .hidden{display:none}
-    .details{background:var(--earth-cream);border:2px solid rgba(245,124,0,.3);padding:16px;border-radius:14px;text-align:left;margin:14px 0}
-    .details h4{color:var(--sunset-gold);margin-bottom:8px;font-family:'Merriweather',serif}
-    .details ul{list-style:none}
-    .details li{margin:8px 0;display:flex;gap:10px;align-items:center;color:var(--trunk-gray)}
-    .btn{display:inline-flex;align-items:center;gap:10px;padding:12px 22px;border-radius:26px;
-      font-weight:600;text-decoration:none;cursor:pointer;border:2px solid transparent;margin:6px;transition:.25s}
+    .details{
+      background:var(--earth-cream);
+      border:2px solid var(--ring);
+      padding:16px;border-radius:14px;text-align:left;margin:14px 0
+    }
+    .details h2,.details h3,.details h4{
+      color:var(--sunset-gold);margin:0 0 8px;font-family:'Merriweather',serif;font-size:18px
+    }
+    .details ul{list-style:none;padding-left:0;margin:0}
+    .details li{margin:8px 0;display:flex;gap:10px;align-items:flex-start;color:var(--trunk-gray)}
+    .btn{
+      display:inline-flex;align-items:center;gap:10px;
+      padding:12px 22px;border-radius:26px;
+      font-weight:700;text-decoration:none;cursor:pointer;border:2px solid transparent;margin:6px;
+      transition:filter .25s,transform .2s,background-color .2s,color .2s,border-color .2s
+    }
+    .btn:disabled{opacity:.6;cursor:not-allowed}
     .btn-primary{background:var(--baobab-brown);color:#fff;border-color:var(--baobab-brown)}
-    .btn-primary:hover{filter:brightness(.92);transform:translateY(-2px)}
+    .btn-primary:hover{filter:brightness(.94);transform:translateY(-2px)}
     .btn-outline{background:transparent;color:var(--baobab-brown);border-color:var(--baobab-brown)}
     .btn-outline:hover{background:var(--baobab-brown);color:#fff}
-    .muted{opacity:.85;font-size:.95rem;margin-top:14px}
-    @media (max-width:576px){.card{padding:24px}.title{font-size:22px}.bigicon{font-size:3rem}}
+    .muted{opacity:.9;font-size:.95rem;margin-top:14px;color:var(--muted)}
+    .grid{
+      display:grid;gap:16px;
+      grid-template-columns:1fr 1fr;
+    }
+    .grid > *{min-width:0}
+    .field{
+      display:flex;flex-direction:column;gap:8px;text-align:left
+    }
+    label{font-weight:600;color:var(--trunk-gray)}
+    input[type="email"]{
+      width:100%;padding:12px 14px;border-radius:12px;border:2px solid #e5e7eb;outline:none;
+      font-size:16px;
+      transition:border-color .2s,box-shadow .2s
+    }
+    input[type="email"]:focus{border-color:var(--sunset-gold);box-shadow:0 0 0 4px var(--ring)}
+    small.help{color:var(--muted)}
+    .actions{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:8px;margin-top:8px}
+    .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0}
+    @media (max-width:720px){
+      .card{padding:24px 18px}
+      h1.title{font-size:24px}
+      .bigicon{font-size:3rem}
+      .grid{grid-template-columns:1fr}
+    }
   </style>
 </head>
 <body>
-  <div class="card">
-    <div class="logo">
-      <div class="logo-icon"><i class="fas fa-tree"></i></div>
-      <div class="logo-text">Baobab Academy</div>
-    </div>
+  <main class="card" aria-labelledby="pageTitle">
+    <header class="logo" aria-label="Baobab Online Academy">
+      <div class="logo-icon" aria-hidden="true"><i class="fas fa-tree"></i></div>
+      <div class="logo-text">Baobab Online Academy</div>
+    </header>
 
-    <!-- Loading -->
-    <div id="loading">
-      <i class="fas fa-spinner bigicon loading"></i>
-      <h1 class="title">Verifying your email…</h1>
-      <p class="msg">Please wait while we process your verification.</p>
-    </div>
+    <section id="loading" aria-live="polite" aria-busy="true">
+      <i class="fas fa-spinner bigicon loading" aria-hidden="true"></i>
+      <h1 id="pageTitle" class="title">Verifying your email…</h1>
+      <p class="msg">Please wait while we securely process your verification. This only takes a moment.</p>
+      <p class="sr-only">Status: verifying</p>
+    </section>
 
-    <!-- Success -->
-    <div id="ok" class="hidden">
-      <i class="fas fa-check-circle bigicon success"></i>
-      <h1 class="title">Email verified!</h1>
-      <p class="msg">Your account is active. Redirecting to your dashboard…</p>
-      <a class="btn btn-primary" href="/parent-dashboard.html"><i class="fas fa-tachometer-alt"></i> Go to dashboard</a>
-    </div>
+    <section id="ok" class="hidden" aria-live="polite">
+      <i class="fas fa-check-circle bigicon success" aria-hidden="true"></i>
+      <h1 class="title" id="okTitle">Email verified!</h1>
+      <p class="msg" id="okMsg">Your account is active. Redirecting to your dashboard…</p>
+      <div class="actions">
+        <a class="btn btn-primary" href="/parent-dashboard.html" id="okCta"><i class="fas fa-tachometer-alt"></i> Go to dashboard</a>
+        <a class="btn btn-outline" href="/" id="homeCta"><i class="fas fa-home"></i> Home</a>
+      </div>
+    </section>
 
-    <!-- Error -->
-    <div id="fail" class="hidden">
-      <i class="fas fa-exclamation-triangle bigicon error"></i>
-      <h1 class="title">Verification failed</h1>
+    <section id="fail" class="hidden" aria-live="assertive" role="alert">
+      <i class="fas fa-exclamation-triangle bigicon error" aria-hidden="true"></i>
+      <h1 class="title" id="failTitle">Verification failed</h1>
       <p class="msg" id="errText">The link seems invalid or expired.</p>
-      <div class="details">
-        <h4><i class="fas fa-tools"></i> Try this:</h4>
+
+      <div class="details" aria-labelledby="tryThisHeading">
+        <h4 id="tryThisHeading"><i class="fas fa-tools" aria-hidden="true"></i> Try this:</h4>
         <ul>
-          <li><i class="fas fa-envelope"></i> Request a new verification email</li>
-          <li><i class="fas fa-link"></i> Make sure you're using the latest email</li>
+          <li><i class="fas fa-envelope" aria-hidden="true"></i> Open the newest verification email (older links can expire)</li>
+          <li><i class="fas fa-link" aria-hidden="true"></i> Click the link again on this device</li>
+          <li><i class="fas fa-shield-alt" aria-hidden="true"></i> If you use an email app, try opening the link in your browser instead</li>
         </ul>
       </div>
-      <a class="btn btn-outline" href="/"><i class="fas fa-home"></i> Return home</a>
-    </div>
+
+      <div class="details" aria-labelledby="resendHeading">
+        <h4 id="resendHeading"><i class="fas fa-paper-plane" aria-hidden="true"></i> Resend verification email</h4>
+        <form id="resendForm" class="grid" novalidate>
+          <div class="field">
+            <label for="resendEmail">Email address</label>
+            <input id="resendEmail" name="email" type="email" autocomplete="email" placeholder="you@example.com" required inputmode="email" />
+            <small class="help">We’ll send a fresh link that works on any device.</small>
+          </div>
+          <div class="field" style="align-self:end">
+            <button id="resendBtn" type="submit" class="btn btn-primary" aria-live="polite">
+              <i class="fas fa-paper-plane"></i>
+              <span>Send new link</span>
+            </button>
+          </div>
+        </form>
+        <p id="resendStatus" class="muted" role="status" aria-live="polite"></p>
+      </div>
+
+      <div class="actions">
+        <a class="btn btn-outline" href="/" id="failHome"><i class="fas fa-home"></i> Return home</a>
+        <button class="btn btn-outline" id="retryBtn" type="button"><i class="fas fa-sync"></i> Retry verification</button>
+      </div>
+    </section>
 
     <p class="muted">Need help? Email parents@baobabonlineacademy.com or call +234 (0) 816 501 1291</p>
-  </div>
+  </main>
+
+  <noscript>
+    <div style="max-width:760px;margin:12px auto;color:#fff;text-align:center">
+      JavaScript is required to verify your email. Please enable JavaScript and reload this page.
+    </div>
+  </noscript>
 
   <script>
-  const SUPABASE_URL = 'https://vcxdkacxbjsgaoxbhsip.supabase.co';
-  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZjeGRrYWN4YmpzZ2FveGJoc2lwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI5MDQ5ODMsImV4cCI6MjA2ODQ4MDk4M30.T9KhHWzHZWyaZvyeFXtBu8tPLY9JOn6_wCHcH8B46FU';
-  const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    // Supabase config
+    const SUPABASE_URL = 'https://vcxdkacxbjsgaoxbhsip.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZjeGRrYWN4YmpzZ2FveGJoc2lwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI5MDQ5ODMsImV4cCI6MjA2ODQ4MDk4M30.T9KhHWzHZWyaZvyeFXtBu8tPLY9JOn6_wCHcH8B46FU';
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-  const $ = id => document.getElementById(id);
-  const show = id => $(id).classList.remove('hidden');
-  const hide = id => $(id).classList.add('hidden');
+    // Helpers
+    const $ = (id) => document.getElementById(id);
+    const show = (id) => $(id)?.classList.remove('hidden');
+    const hide = (id) => $(id)?.classList.add('hidden');
+    const setText = (id, txt) => { const el = $(id); if (el) el.textContent = txt; };
+    const disableEl = (el, dis=true) => { if (el) el.disabled = !!dis; };
+    const redirectSoon = (url, ms=1800) => setTimeout(() => { window.location.href = url; }, ms);
+    const dashboardUrl = '/parent-dashboard.html';
+    const verifyPageUrl = () => `${window.location.origin}${window.location.pathname}`;
 
-  function getParams() {
-    const urlParams = new URLSearchParams(window.location.search);
-    return {
-      token: urlParams.get('token'),
-      email: urlParams.get('email')
-    };
-  }
+    function parseAuthParams() {
+      const url = new URL(window.location.href);
+      const search = new URLSearchParams(url.search);
+      const hashStr = url.hash.startsWith('#') ? url.hash.slice(1) : url.hash;
+      const hash = new URLSearchParams(hashStr);
 
-  async function verifyEmailWithToken(token, email) {
-    console.log('Verifying token:', token, 'for email:', email);
-    
-    try {
-      // Check if email exists in authorised_emails and is already used
-      const { data: authData, error: authError } = await supabase
-        .from('authorised_emails')
-        .select('*')
-        .eq('email', email.toLowerCase())
-        .eq('is_used', true)
-        .single();
+      const get = (k) => search.get(k) || hash.get(k);
+      return {
+        code: get('code'),
+        access_token: get('access_token'),
+        refresh_token: get('refresh_token'),
+        token_hash: get('token_hash'),
+        token: get('token'),
+        type: get('type'),
+        email: get('email'),
+        error_description: get('error_description'),
+        error_code: get('error_code'),
+      };
+    }
 
-      if (authError && authError.code !== 'PGRST116') {
-        throw authError;
+    function cleanSensitiveUrl() {
+      // Remove tokens from the URL without reloading (keeps a clean history)
+      const cleaned = verifyPageUrl();
+      window.history.replaceState({}, document.title, cleaned);
+    }
+
+    function mapSupabaseError(err) {
+      if (!err) return null;
+      const code = (err.code || err.error_code || '').toString().toLowerCase();
+      const msg = (err.message || err.error_description || '').toString();
+
+      // Friendlier messages for common cases
+      if (msg.includes('user already confirmed') || code === 'user_already_confirmed') {
+        return 'This email was already verified. Redirecting to your dashboard…';
       }
+      if (code.includes('token') || msg.toLowerCase().includes('token')) {
+        if (msg.toLowerCase().includes('expired')) return 'This verification link has expired. Please resend a fresh link.';
+        return 'This verification link is invalid. Please resend a fresh link.';
+      }
+      if (code === 'invalid_grant') return 'The link is no longer valid. Please resend a new verification email.';
+      return msg || 'Verification failed. Please try again.';
+    }
 
-      // If user is already verified, just proceed
-      if (authData) {
-        console.log('Email already verified, checking for existing user...');
-        
-        // Get the user data
-        const { data: userData, error: userError } = await supabase.auth.getUser();
-        
-        if (!userError && userData.user) {
-          // Create parent profile if it doesn't exist
-          await createParentProfileIfNeeded(userData.user, email);
-          return { success: true, alreadyVerified: true };
+    async function verifyWithSupabase() {
+      const p = parseAuthParams();
+
+      // 1) Try exchanging code for a session (PKCE/magic link style)
+      try {
+        const { data, error } = await supabase.auth.exchangeCodeForSession();
+        if (!error && data?.session) {
+          cleanSensitiveUrl();
+          return { ok: true, method: 'exchangeCodeForSession', already: false };
+        }
+      } catch (_) { /* fall through */ }
+
+      // 2) If the URL provided direct access/refresh tokens (legacy hash links)
+      if (p.access_token && p.refresh_token) {
+        const { data, error } = await supabase.auth.setSession({
+          access_token: p.access_token,
+          refresh_token: p.refresh_token
+        });
+        if (error) throw error;
+        if (data?.session) {
+          cleanSensitiveUrl();
+          return { ok: true, method: 'setSession', already: false };
         }
       }
 
-      // Check if we have a valid token in authorised_emails
-      const { data: emailData, error: emailError } = await supabase
-        .from('authorised_emails')
-        .select('*')
-        .eq('email', email.toLowerCase())
-        .eq('verification_token', token)
-        .single();
-
-      if (emailError) {
-        console.error('Token lookup error:', emailError);
-        throw new Error('Invalid verification token or email not found');
+      // 3) OTP verification via token_hash (preferred) + type
+      if (p.token_hash && p.type) {
+        const { data, error } = await supabase.auth.verifyOtp({
+          type: p.type, // 'signup' | 'magiclink' | 'recovery' | 'email_change' | 'invite'
+          token_hash: p.token_hash
+        });
+        if (error) throw error;
+        if (data?.user || data?.session) {
+          cleanSensitiveUrl();
+          return { ok: true, method: 'verifyOtp_token_hash', already: false };
+        }
       }
 
-      if (!emailData) {
-        throw new Error('Verification token not found');
+      // 4) OTP verification via token + type (+ email if present)
+      if (p.token && p.type) {
+        const args = { type: p.type, token: p.token };
+        if (p.email) args.email = p.email;
+        const { data, error } = await supabase.auth.verifyOtp(args);
+        if (error) throw error;
+        if (data?.user || data?.session) {
+          cleanSensitiveUrl();
+          return { ok: true, method: 'verifyOtp_token', already: false };
+        }
       }
 
-      // Check if token is already used
-      if (emailData.is_used) {
-        console.log('Token already used, but proceeding anyway...');
-        return { success: true, alreadyVerified: true };
+      // 5) If we're already logged in and confirmed, treat as success
+      const { data: sessData } = await supabase.auth.getSession();
+      if (sessData?.session) {
+        const { data: userData } = await supabase.auth.getUser();
+        if (userData?.user?.email_confirmed_at) {
+          cleanSensitiveUrl();
+          return { ok: true, method: 'existingSession', already: true };
+        }
       }
 
-      // Mark as used and verified
-      const { error: updateError } = await supabase
-        .from('authorised_emails')
-        .update({ 
-          is_used: true,
-          verified_at: new Date().toISOString()
-        })
-        .eq('email', email.toLowerCase())
-        .eq('verification_token', token);
-
-      if (updateError) {
-        throw updateError;
+      // If there are hints embedded in URL
+      if (p.error_description) {
+        throw new Error(p.error_description);
       }
 
-      // Get current user and create profile
-      const { data: userData, error: userError } = await supabase.auth.getUser();
-      
-      if (!userError && userData.user) {
-        await createParentProfileIfNeeded(userData.user, email);
-      }
-
-      console.log('Email verification successful');
-      return { success: true, newlyVerified: true };
-
-    } catch (error) {
-      console.error('Verification error:', error);
-      throw error;
+      throw new Error('Missing or invalid verification parameters. Please use the link from your email.');
     }
-  }
 
-  async function createParentProfileIfNeeded(user, email) {
-    try {
-      // Check if profile already exists
-      const { data: existingProfile } = await supabase
-        .from('parent_profiles')
-        .select('id')
-        .eq('user_id', user.id)
-        .single();
+    function showSuccess(message, already=false) {
+      hide('loading');
+      show('ok');
+      setText('okTitle', already ? 'Already verified' : 'Email verified!');
+      setText('okMsg', message || (already ? 'Your email is already verified. Redirecting to your dashboard…' : 'Your account is active. Redirecting to your dashboard…'));
+      redirectSoon(dashboardUrl, 1800);
+    }
 
-      if (existingProfile) {
-        console.log('Parent profile already exists');
+    function showError(err) {
+      hide('loading');
+      show('fail');
+      const friendly = mapSupabaseError(err);
+      setText('failTitle', 'Verification failed');
+      setText('errText', friendly || 'Verification failed. Please try again.');
+    }
+
+    async function onResend(e) {
+      e.preventDefault();
+      const emailInput = $('resendEmail');
+      const btn = $('resendBtn');
+      const status = $('resendStatus');
+      if (!emailInput) return;
+
+      const email = (emailInput.value || '').trim().toLowerCase();
+      if (!email) {
+        status.textContent = 'Please enter your email address.';
         return;
       }
 
-      // Create parent profile
-      const { error: profileError } = await supabase
-        .from('parent_profiles')
-        .insert({
-          user_id: user.id,
-          email: email.toLowerCase(),
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString()
+      disableEl(btn, true);
+      status.textContent = 'Sending a new verification link…';
+
+      try {
+        const { data, error } = await supabase.auth.resend({
+          type: 'signup',
+          email,
+          options: { emailRedirectTo: verifyPageUrl() }
         });
-
-      if (profileError) {
-        console.error('Error creating parent profile:', profileError);
-      } else {
-        console.log('Parent profile created successfully');
-      }
-    } catch (error) {
-      console.error('Error in createParentProfileIfNeeded:', error);
-    }
-  }
-
-  async function main() {
-    try {
-      const params = getParams();
-
-      if (!params.token || !params.email) {
-        throw new Error('Invalid verification link. Missing token or email.');
-      }
-
-      console.log('Starting verification for:', params.email);
-      
-      const result = await verifyEmailWithToken(params.token, params.email);
-      
-      // Show success
-      hide('loading');
-      show('ok');
-      
-      if (result.alreadyVerified) {
-        $('ok').innerHTML = `
-          <i class="fas fa-check-circle bigicon success"></i>
-          <h1 class="title">Already verified!</h1>
-          <p class="msg">Your account is already verified. Redirecting to dashboard...</p>
-          <a class="btn btn-primary" href="/parent-dashboard.html"><i class="fas fa-tachometer-alt"></i> Go to dashboard</a>
-        `;
-      }
-      
-      // Redirect after 2 seconds
-      setTimeout(() => {
-        window.location.href = '/parent-dashboard.html';
-      }, 2000);
-      
-    } catch (error) {
-      console.error('Main error:', error);
-      
-      // Show error
-      hide('loading');
-      show('fail');
-      
-      const errorText = $('errText');
-      if (errorText) {
-        errorText.textContent = error.message || 'Verification failed. Please try again.';
+        if (error) throw error;
+        status.textContent = 'A new verification email has been sent. Please check your inbox (and spam folder).';
+      } catch (err) {
+        status.textContent = mapSupabaseError(err) || 'Could not resend verification. Please try again.';
+      } finally {
+        disableEl(btn, false);
       }
     }
-  }
 
-  // Start verification when page loads
-  window.addEventListener('DOMContentLoaded', main);
-</script>
+    function prefillEmailIfPresent() {
+      const p = parseAuthParams();
+      if (p.email) {
+        const input = $('resendEmail');
+        if (input && !input.value) {
+          input.value = p.email;
+        }
+      }
+    }
+
+    function bindEvents() {
+      const form = $('resendForm');
+      if (form) form.addEventListener('submit', onResend);
+
+      const retry = $('retryBtn');
+      if (retry) {
+        retry.addEventListener('click', async () => {
+          hide('fail'); show('loading');
+          setText('pageTitle', 'Verifying your email…');
+          setText('okTitle', 'Email verified!');
+          setText('okMsg', 'Your account is active. Redirecting to your dashboard…');
+          setText('errText', 'The link seems invalid or expired.');
+          try {
+            const res = await verifyWithSupabase();
+            if (res?.ok) {
+              showSuccess(res.method === 'existingSession'
+                ? 'Your email is already verified. Redirecting to your dashboard…'
+                : 'Your email has been verified successfully. Redirecting now…',
+                res.method === 'existingSession'
+              );
+            } else {
+              showError(new Error('Verification failed.'));
+            }
+          } catch (err) {
+            showError(err);
+          }
+        });
+      }
+    }
+
+    async function main() {
+      try {
+        bindEvents();
+        prefillEmailIfPresent();
+        const result = await verifyWithSupabase();
+        if (result?.ok) {
+          const already = result.method === 'existingSession';
+          showSuccess(
+            already
+              ? 'Your email is already verified. Redirecting to your dashboard…'
+              : 'Your email has been verified successfully. Redirecting now…',
+            already
+          );
+        } else {
+          showError(new Error('Verification failed.'));
+        }
+      } catch (err) {
+        showError(err);
+      }
+    }
+
+    window.addEventListener('DOMContentLoaded', main);
+  </script>
 </body>
 </html>
