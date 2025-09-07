@@ -41,9 +41,7 @@
     p.msg{color:var(--trunk-gray);line-height:1.7;margin:0 auto 14px;max-width:58ch}
     .bigicon{font-size:3.4rem;margin-bottom:8px}
     .loading{color:var(--sunset-gold);animation:spin 1s linear infinite}
-    @media (prefers-reduced-motion: reduce){
-      .loading{animation:none}
-    }
+    @media (prefers-reduced-motion: reduce){.loading{animation:none}}
     .success{color:var(--canopy-green)}
     .error{color:var(--desert-orange)}
     @keyframes spin{to{transform:rotate(360deg)}}
@@ -70,24 +68,19 @@
     .btn-outline{background:transparent;color:var(--baobab-brown);border-color:var(--baobab-brown)}
     .btn-outline:hover{background:var(--baobab-brown);color:#fff}
     .muted{opacity:.9;font-size:.95rem;margin-top:14px;color:var(--muted)}
-    .grid{
-      display:grid;gap:16px;
-      grid-template-columns:1fr 1fr;
-    }
+    .grid{display:grid;gap:16px;grid-template-columns:1fr 1fr;}
     .grid > *{min-width:0}
-    .field{
-      display:flex;flex-direction:column;gap:8px;text-align:left
-    }
+    .field{display:flex;flex-direction:column;gap:8px;text-align:left}
     label{font-weight:600;color:var(--trunk-gray)}
     input[type="email"]{
       width:100%;padding:12px 14px;border-radius:12px;border:2px solid #e5e7eb;outline:none;
-      font-size:16px;
-      transition:border-color .2s,box-shadow .2s
+      font-size:16px;transition:border-color .2s,box-shadow .2s
     }
     input[type="email"]:focus{border-color:var(--sunset-gold);box-shadow:0 0 0 4px var(--ring)}
     small.help{color:var(--muted)}
     .actions{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:8px;margin-top:8px}
     .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0}
+    .debug{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;color:#374151;background:#F9FAFB;border:1px dashed #D1D5DB;padding:10px;border-radius:8px;margin-top:10px;text-align:left}
     @media (max-width:720px){
       .card{padding:24px 18px}
       h1.title{font-size:24px}
@@ -152,6 +145,11 @@
         <p id="resendStatus" class="muted" role="status" aria-live="polite"></p>
       </div>
 
+      <div class="details hidden" id="debugBox">
+        <h4><i class="fas fa-bug" aria-hidden="true"></i> Debug details (for setup)</h4>
+        <div class="debug" id="debugText"></div>
+      </div>
+
       <div class="actions">
         <a class="btn btn-outline" href="/" id="failHome"><i class="fas fa-home"></i> Return home</a>
         <button class="btn btn-outline" id="retryBtn" type="button"><i class="fas fa-sync"></i> Retry verification</button>
@@ -188,7 +186,6 @@
       const search = new URLSearchParams(url.search);
       const hashStr = url.hash.startsWith('#') ? url.hash.slice(1) : url.hash;
       const hash = new URLSearchParams(hashStr);
-
       const get = (k) => search.get(k) || hash.get(k);
       return {
         code: get('code'),
@@ -200,13 +197,41 @@
         email: get('email'),
         error_description: get('error_description'),
         error_code: get('error_code'),
+        rawHref: window.location.href
       };
     }
 
     function cleanSensitiveUrl() {
-      // Remove tokens from the URL without reloading (keeps a clean history)
       const cleaned = verifyPageUrl();
       window.history.replaceState({}, document.title, cleaned);
+    }
+
+    function mask(value, keep=4) {
+      if (!value) return '';
+      const v = value.toString();
+      if (v.length <= keep) return '***';
+      return v.slice(0, keep) + '…' + '***';
+    }
+
+    function showDebug(p, note='') {
+      const box = $('debugBox');
+      const out = $('debugText');
+      if (!box || !out) return;
+      const lines = [
+        note ? `Note: ${note}` : '',
+        `URL seen: ${p.rawHref}`,
+        `Params present:`,
+        `  code: ${p.code ? 'yes ('+mask(p.code)+')' : 'no'}`,
+        `  token_hash: ${p.token_hash ? 'yes ('+mask(p.token_hash)+')' : 'no'}`,
+        `  token: ${p.token ? 'yes ('+mask(p.token)+')' : 'no'}`,
+        `  type: ${p.type || 'none'}`,
+        `  access_token: ${p.access_token ? 'yes' : 'no'}`,
+        `  refresh_token: ${p.refresh_token ? 'yes' : 'no'}`,
+        `  error_code: ${p.error_code || 'none'}`,
+        `  error_description: ${p.error_description || 'none'}`
+      ].filter(Boolean);
+      out.textContent = lines.join('\n');
+      show('debugBox');
     }
 
     function mapSupabaseError(err) {
@@ -214,7 +239,6 @@
       const code = (err.code || err.error_code || '').toString().toLowerCase();
       const msg = (err.message || err.error_description || '').toString();
 
-      // Friendlier messages for common cases
       if (msg.includes('user already confirmed') || code === 'user_already_confirmed') {
         return 'This email was already verified. Redirecting to your dashboard…';
       }
@@ -226,19 +250,24 @@
       return msg || 'Verification failed. Please try again.';
     }
 
+    function hasAnyAuthParams(p) {
+      return !!(p.code || (p.access_token && p.refresh_token) || (p.token_hash && p.type) || (p.token && p.type));
+    }
+
     async function verifyWithSupabase() {
       const p = parseAuthParams();
 
-      // 1) Try exchanging code for a session (PKCE/magic link style)
-      try {
+      // 1) PKCE: only try if ?code= is present (avoids noisy 400s)
+      if (p.code) {
         const { data, error } = await supabase.auth.exchangeCodeForSession();
-        if (!error && data?.session) {
+        if (error) throw error;
+        if (data?.session) {
           cleanSensitiveUrl();
-          return { ok: true, method: 'exchangeCodeForSession', already: false };
+          return { ok: true, method: 'exchangeCodeForSession' };
         }
-      } catch (_) { /* fall through */ }
+      }
 
-      // 2) If the URL provided direct access/refresh tokens (legacy hash links)
+      // 2) Legacy implicit: access_token + refresh_token in hash
       if (p.access_token && p.refresh_token) {
         const { data, error } = await supabase.auth.setSession({
           access_token: p.access_token,
@@ -247,50 +276,52 @@
         if (error) throw error;
         if (data?.session) {
           cleanSensitiveUrl();
-          return { ok: true, method: 'setSession', already: false };
+          return { ok: true, method: 'setSession' };
         }
       }
 
-      // 3) OTP verification via token_hash (preferred) + type
+      // 3) OTP verify with token_hash + type
       if (p.token_hash && p.type) {
         const { data, error } = await supabase.auth.verifyOtp({
           type: p.type, // 'signup' | 'magiclink' | 'recovery' | 'email_change' | 'invite'
           token_hash: p.token_hash
         });
         if (error) throw error;
-        if (data?.user || data?.session) {
+        if (data?.session || data?.user) {
           cleanSensitiveUrl();
-          return { ok: true, method: 'verifyOtp_token_hash', already: false };
+          return { ok: true, method: 'verifyOtp_token_hash' };
         }
       }
 
-      // 4) OTP verification via token + type (+ email if present)
+      // 4) OTP verify with token + type (+ email if provided)
       if (p.token && p.type) {
         const args = { type: p.type, token: p.token };
         if (p.email) args.email = p.email;
         const { data, error } = await supabase.auth.verifyOtp(args);
         if (error) throw error;
-        if (data?.user || data?.session) {
+        if (data?.session || data?.user) {
           cleanSensitiveUrl();
-          return { ok: true, method: 'verifyOtp_token', already: false };
+          return { ok: true, method: 'verifyOtp_token' };
         }
       }
 
-      // 5) If we're already logged in and confirmed, treat as success
+      // 5) If we already have a logged-in, confirmed user, treat as success
       const { data: sessData } = await supabase.auth.getSession();
       if (sessData?.session) {
         const { data: userData } = await supabase.auth.getUser();
         if (userData?.user?.email_confirmed_at) {
           cleanSensitiveUrl();
-          return { ok: true, method: 'existingSession', already: true };
+          return { ok: true, method: 'existingSession' };
         }
       }
 
-      // If there are hints embedded in URL
+      // 6) If Supabase forwarded an explicit error in URL, surface it
       if (p.error_description) {
         throw new Error(p.error_description);
       }
 
+      // 7) No usable parameters — show debug to help fix config
+      showDebug(p, 'No verification parameters detected on this page.');
       throw new Error('Missing or invalid verification parameters. Please use the link from your email.');
     }
 
@@ -345,9 +376,7 @@
       const p = parseAuthParams();
       if (p.email) {
         const input = $('resendEmail');
-        if (input && !input.value) {
-          input.value = p.email;
-        }
+        if (input && !input.value) input.value = p.email;
       }
     }
 
@@ -366,9 +395,10 @@
           try {
             const res = await verifyWithSupabase();
             if (res?.ok) {
-              showSuccess(res.method === 'existingSession'
-                ? 'Your email is already verified. Redirecting to your dashboard…'
-                : 'Your email has been verified successfully. Redirecting now…',
+              showSuccess(
+                res.method === 'existingSession'
+                  ? 'Your email is already verified. Redirecting to your dashboard…'
+                  : 'Your email has been verified successfully. Redirecting now…',
                 res.method === 'existingSession'
               );
             } else {

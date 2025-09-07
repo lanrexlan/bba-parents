@@ -9,11 +9,10 @@
     <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@300;400;700;900&family=Open+Sans:wght@300;400;600;700&family=Kalam:wght@400;700&display=swap" rel="stylesheet">
     <!-- Supabase -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <!-- EmailJS -->
+    <!-- EmailJS (optional for non-verification emails) -->
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
     <style>
         :root {
-            /* Using main homepage colors */
             --baobab-brown: #8D4004;
             --canopy-green: #2E7D32;
             --sunset-gold: #F57C00;
@@ -25,23 +24,15 @@
             --deep-charcoal: #263238;
             --white: #FFFFFF;
             --glow-color: rgba(245, 124, 0, 0.6);
-            
             --transition-slow: all 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
             --transition-medium: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
             --transition-fast: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
-            
             --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
             --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
             --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
             --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
         }
-        
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Open Sans', sans-serif;
             color: var(--deep-charcoal);
@@ -49,870 +40,209 @@
             overflow-x: hidden;
             background-color: var(--white);
         }
-        
-        h1, h2, h3, h4, h5 {
-            font-family: 'Merriweather', serif;
-            font-weight: 700;
-            line-height: 1.3;
-        }
-        
-        .container {
-            width: 100%;
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
-            position: relative;
-        }
-        
-        .section {
-            padding: 80px 0;
-            position: relative;
-        }
-        
+        h1, h2, h3, h4, h5 { font-family: 'Merriweather', serif; font-weight: 700; line-height: 1.3; }
+        .container { width: 100%; max-width: 1200px; margin: 0 auto; padding: 0 20px; position: relative; }
+        .section { padding: 80px 0; position: relative; }
         .btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            padding: 14px 32px;
-            border-radius: 30px;
-            font-weight: 600;
-            text-align: center;
-            transition: var(--transition-fast);
-            border: 2px solid transparent;
-            font-family: 'Open Sans', sans-serif;
-            text-decoration: none;
-            cursor: pointer;
+            display: inline-flex; align-items: center; gap: 10px;
+            padding: 14px 32px; border-radius: 30px; font-weight: 600; text-align: center;
+            transition: var(--transition-fast); border: 2px solid transparent; font-family: 'Open Sans', sans-serif;
+            text-decoration: none; cursor: pointer;
         }
-        
-        .btn-primary {
-            background-color: var(--baobab-brown);
-            color: var(--white);
-            border-color: var(--baobab-brown);
-        }
-        
-        .btn-primary:hover {
-            background-color: var(--trunk-gray);
-            border-color: var(--trunk-gray);
-            transform: translateY(-3px);
-            box-shadow: var(--shadow-md);
-        }
-        
-        .btn-secondary {
-            background-color: var(--sunset-gold);
-            color: var(--deep-charcoal);
-            border-color: var(--sunset-gold);
-        }
-        
-        .btn-outlined {
-            background-color: transparent;
-            color: var(--baobab-brown);
-            border-color: var(--baobab-brown);
-        }
-        
-        .btn-outlined:hover {
-            background-color: var(--baobab-brown);
-            color: var(--white);
-        }
-        
-        /* Header */
+        .btn-primary { background-color: var(--baobab-brown); color: var(--white); border-color: var(--baobab-brown); }
+        .btn-primary:hover { background-color: var(--trunk-gray); border-color: var(--trunk-gray); transform: translateY(-3px); box-shadow: var(--shadow-md); }
+        .btn-secondary { background-color: var(--sunset-gold); color: var(--deep-charcoal); border-color: var(--sunset-gold); }
+        .btn-outlined { background-color: transparent; color: var(--baobab-brown); border-color: var(--baobab-brown); }
+        .btn-outlined:hover { background-color: var(--baobab-brown); color: var(--white); }
         .header {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            z-index: 1000;
-            background-color: var(--white);
-            box-shadow: var(--shadow-md);
-            padding: 10px 0;
+            position: fixed; top: 0; left: 0; width: 100%; z-index: 1000; background-color: var(--white);
+            box-shadow: var(--shadow-md); padding: 10px 0;
         }
-        
-        .nav-wrapper {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
+        .nav-wrapper { display: flex; justify-content: space-between; align-items: center; }
+        .logo { display: flex; align-items: center; gap: 10px; }
         .logo-icon {
-            width: 32px;
-            height: 32px;
-            background-color: var(--canopy-green);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 8px;
-            font-size: 20px;
-            color: var(--white);
+            width: 32px; height: 32px; background-color: var(--canopy-green);
+            display: flex; align-items: center; justify-content: center; border-radius: 8px; font-size: 20px; color: var(--white);
         }
-        
-        .logo-text {
-            font-weight: 700;
-            font-size: 20px;
-            color: var(--baobab-brown);
-        }
-        
-        .nav-menu {
-            display: flex;
-            gap: 30px;
-            list-style: none;
-        }
-        
-        .nav-link {
-            font-weight: 500;
-            color: var(--deep-charcoal);
-            text-decoration: none;
-            padding: 5px 0;
-            transition: var(--transition-fast);
-        }
-        
-        .nav-link:hover,
-        .nav-link.active {
-            color: var(--sunset-gold);
-        }
-        
-        .nav-buttons {
-            display: flex;
-            gap: 15px;
-        }
-        
-        .menu-toggle {
-            display: none;
-            font-size: 24px;
-            cursor: pointer;
-            color: var(--baobab-brown);
-            z-index: 1001;
-            transition: var(--transition-fast);
-        }
-        
-        /* Mobile Menu */
+        .logo-text { font-weight: 700; font-size: 20px; color: var(--baobab-brown); }
+        .nav-menu { display: flex; gap: 30px; list-style: none; }
+        .nav-link { font-weight: 500; color: var(--deep-charcoal); text-decoration: none; padding: 5px 0; transition: var(--transition-fast); }
+        .nav-link:hover, .nav-link.active { color: var(--sunset-gold); }
+        .nav-buttons { display: flex; gap: 15px; }
+        .menu-toggle { display: none; font-size: 24px; cursor: pointer; color: var(--baobab-brown); z-index: 1001; transition: var(--transition-fast); }
         .mobile-menu-panel {
-            position: fixed;
-            top: 0;
-            right: -100%;
-            width: 300px;
-            height: 100vh;
-            background-color: var(--white);
-            z-index: 1000;
-            padding: 80px 40px 40px;
-            transition: var(--transition-medium);
-            box-shadow: var(--shadow-xl);
-            overflow-y: auto;
+            position: fixed; top: 0; right: -100%; width: 300px; height: 100vh; background-color: var(--white); z-index: 1000;
+            padding: 80px 40px 40px; transition: var(--transition-medium); box-shadow: var(--shadow-xl); overflow-y: auto;
         }
-        
-        .mobile-menu-panel.active {
-            right: 0;
-        }
-        
-        .mobile-menu {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-        
+        .mobile-menu-panel.active { right: 0; }
+        .mobile-menu { display: flex; flex-direction: column; gap: 15px; }
         .mobile-link {
-            font-weight: 500;
-            color: var(--deep-charcoal);
-            padding: 12px 0;
-            border-bottom: 1px solid var(--earth-cream);
-            display: block;
-            transition: var(--transition-fast);
-            text-decoration: none;
+            font-weight: 500; color: var(--deep-charcoal); padding: 12px 0; border-bottom: 1px solid var(--earth-cream);
+            display: block; transition: var(--transition-fast); text-decoration: none;
         }
-        
-        .mobile-link:hover {
-            color: var(--sunset-gold);
-            padding-left: 10px;
-        }
-        
-        .mobile-link.active {
-            color: var(--sunset-gold);
-        }
-        
-        .mobile-buttons {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            margin-top: 30px;
-        }
-        
+        .mobile-link:hover { color: var(--sunset-gold); padding-left: 10px; }
+        .mobile-link.active { color: var(--sunset-gold); }
+        .mobile-buttons { display: flex; flex-direction: column; gap: 15px; margin-top: 30px; }
         .menu-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.7);
-            z-index: 999;
-            opacity: 0;
-            visibility: hidden;
-            transition: var(--transition-medium);
-            backdrop-filter: blur(5px);
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(0, 0, 0, 0.7); z-index: 999; opacity: 0; visibility: hidden; transition: var(--transition-medium); backdrop-filter: blur(5px);
         }
-        
-        .menu-overlay.active {
-            opacity: 1;
-            visibility: visible;
-        }
-        
-        /* Hero Section */
+        .menu-overlay.active { opacity: 1; visibility: visible; }
         .hero {
-            min-height: 100vh;
-            background: linear-gradient(135deg, var(--canopy-green), var(--baobab-brown));
-            display: flex;
-            align-items: center;
-            color: var(--white);
-            padding-top: 80px;
+            min-height: 100vh; background: linear-gradient(135deg, var(--canopy-green), var(--baobab-brown));
+            display: flex; align-items: center; color: var(--white); padding-top: 80px;
         }
-        
-        .hero-content {
-            max-width: 700px;
-        }
-        
+        .hero-content { max-width: 700px; }
         .hero-badge {
-            background: rgba(255, 255, 255, 0.2);
-            padding: 8px 20px;
-            border-radius: 20px;
-            font-size: 0.9rem;
-            font-weight: 600;
-            margin-bottom: 20px;
-            display: inline-block;
+            background: rgba(255, 255, 255, 0.2); padding: 8px 20px; border-radius: 20px; font-size: 0.9rem;
+            font-weight: 600; margin-bottom: 20px; display: inline-block;
         }
-        
-        .hero-title {
-            font-size: 3.2rem;
-            margin-bottom: 20px;
-            line-height: 1.2;
-        }
-        
-        .hero-subtitle {
-            font-size: 1.2rem;
-            opacity: 0.9;
-            margin-bottom: 40px;
-            line-height: 1.6;
-        }
-        
-        .hero-buttons {
-            display: flex;
-            gap: 20px;
-            flex-wrap: wrap;
-        }
-        
-        .btn-hero {
-            padding: 18px 35px;
-            font-size: 1.1rem;
-        }
-        
-        .btn-white {
-            background-color: var(--white);
-            color: var(--baobab-brown);
-            border-color: var(--white);
-        }
-        
-        .btn-white:hover {
-            background-color: transparent;
-            color: var(--white);
-            border-color: var(--white);
-        }
-        
-        /* Features Preview */
-        .features-preview {
-            background: var(--earth-cream);
-            padding: 100px 0;
-        }
-        
-        .section-title {
-            text-align: center;
-            font-size: 2.8rem;
-            color: var(--baobab-brown);
-            margin-bottom: 20px;
-        }
-        
+        .hero-title { font-size: 3.2rem; margin-bottom: 20px; line-height: 1.2; }
+        .hero-subtitle { font-size: 1.2rem; opacity: 0.9; margin-bottom: 40px; line-height: 1.6; }
+        .hero-buttons { display: flex; gap: 20px; flex-wrap: wrap; }
+        .btn-hero { padding: 18px 35px; font-size: 1.1rem; }
+        .btn-white { background-color: var(--white); color: var(--baobab-brown); border-color: var(--white); }
+        .btn-white:hover { background-color: transparent; color: var(--white); border-color: var(--white); }
+        .features-preview { background: var(--earth-cream); padding: 100px 0; }
+        .section-title { text-align: center; font-size: 2.8rem; color: var(--baobab-brown); margin-bottom: 20px; }
         .section-subtitle {
-            text-align: center;
-            color: var(--trunk-gray);
-            margin-bottom: 60px;
-            max-width: 700px;
-            margin-left: auto;
-            margin-right: auto;
-            font-size: 1.1rem;
+            text-align: center; color: var(--trunk-gray); margin-bottom: 60px; max-width: 700px; margin-left: auto; margin-right: auto; font-size: 1.1rem;
         }
-        
-        .features-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 40px;
-        }
-        
+        .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 40px; }
         .feature-card {
-            background: var(--white);
-            border-radius: 20px;
-            padding: 40px;
-            box-shadow: var(--shadow-lg);
-            transition: var(--transition-medium);
-            border: 3px solid transparent;
-            text-align: center;
+            background: var(--white); border-radius: 20px; padding: 40px; box-shadow: var(--shadow-lg);
+            transition: var(--transition-medium); border: 3px solid transparent; text-align: center;
         }
-        
-        .feature-card:hover {
-            transform: translateY(-10px);
-            border-color: var(--sunset-gold);
-            box-shadow: var(--shadow-xl);
-        }
-        
+        .feature-card:hover { transform: translateY(-10px); border-color: var(--sunset-gold); box-shadow: var(--shadow-xl); }
         .feature-icon {
-            width: 80px;
-            height: 80px;
-            background: linear-gradient(135deg, var(--canopy-green), var(--sage-green));
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--white);
-            font-size: 2.2rem;
-            margin: 0 auto 25px;
+            width: 80px; height: 80px; background: linear-gradient(135deg, var(--canopy-green), var(--sage-green));
+            border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--white); font-size: 2.2rem; margin: 0 auto 25px;
         }
-        
-        .feature-card:nth-child(2) .feature-icon {
-            background: linear-gradient(135deg, var(--sunset-gold), var(--desert-orange));
-            color: var(--deep-charcoal);
-        }
-        
-        .feature-card:nth-child(3) .feature-icon {
-            background: linear-gradient(135deg, var(--baobab-brown), var(--trunk-gray));
-            color: var(--white);
-        }
-        
-        .feature-title {
-            font-size: 1.6rem;
-            color: var(--deep-charcoal);
-            margin-bottom: 15px;
-        }
-        
-        .feature-description {
-            color: var(--trunk-gray);
-            line-height: 1.7;
-            margin-bottom: 20px;
-        }
-        
-        .feature-benefits {
-            list-style: none;
-            text-align: left;
-        }
-        
+        .feature-card:nth-child(2) .feature-icon { background: linear-gradient(135deg, var(--sunset-gold), var(--desert-orange)); color: var(--deep-charcoal); }
+        .feature-card:nth-child(3) .feature-icon { background: linear-gradient(135deg, var(--baobab-brown), var(--trunk-gray)); color: var(--white); }
+        .feature-title { font-size: 1.6rem; color: var(--deep-charcoal); margin-bottom: 15px; }
+        .feature-description { color: var(--trunk-gray); line-height: 1.7; margin-bottom: 20px; }
+        .feature-benefits { list-style: none; text-align: left; }
         .feature-benefits li {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 10px;
-            font-size: 0.95rem;
-            color: var(--trunk-gray);
+            display: flex; align-items: center; gap: 10px; margin-bottom: 10px; font-size: 0.95rem; color: var(--trunk-gray);
         }
-        
-        .feature-benefits i {
-            color: var(--canopy-green);
-            font-size: 1.1rem;
-        }
-        
-        /* How It Works */
-        .how-it-works {
-            background: var(--white);
-            padding: 100px 0;
-        }
-        
-        .steps-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 40px;
-            margin-top: 60px;
-        }
-        
-        .step-card {
-            text-align: center;
-            position: relative;
-        }
-        
+        .feature-benefits i { color: var(--canopy-green); font-size: 1.1rem; }
+        .how-it-works { background: var(--white); padding: 100px 0; }
+        .steps-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 40px; margin-top: 60px; }
+        .step-card { text-align: center; position: relative; }
         .step-number {
-            width: 60px;
-            height: 60px;
-            background: var(--sunset-gold);
-            color: var(--deep-charcoal);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-            font-weight: 700;
-            margin: 0 auto 20px;
+            width: 60px; height: 60px; background: var(--sunset-gold); color: var(--deep-charcoal); border-radius: 50%;
+            display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: 700; margin: 0 auto 20px;
         }
-        
-        .step-title {
-            font-size: 1.4rem;
-            color: var(--deep-charcoal);
-            margin-bottom: 15px;
-        }
-        
-        .step-description {
-            color: var(--trunk-gray);
-            line-height: 1.6;
-        }
-        
-        /* Security & Trust */
-        .security-section {
-            background: linear-gradient(135deg, var(--baobab-brown), var(--trunk-gray));
-            color: var(--white);
-            padding: 80px 0;
-        }
-        
-        .security-content {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 60px;
-            align-items: center;
-        }
-        
-        .security-text h2 {
-            font-size: 2.5rem;
-            margin-bottom: 20px;
-        }
-        
-        .security-text p {
-            font-size: 1.1rem;
-            opacity: 0.9;
-            margin-bottom: 30px;
-            line-height: 1.7;
-        }
-        
-        .security-features {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 25px;
-        }
-        
+        .step-title { font-size: 1.4rem; color: var(--deep-charcoal); margin-bottom: 15px; }
+        .step-description { color: var(--trunk-gray); line-height: 1.6; }
+        .security-section { background: linear-gradient(135deg, var(--baobab-brown), var(--trunk-gray)); color: var(--white); padding: 80px 0; }
+        .security-content { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center; }
+        .security-text h2 { font-size: 2.5rem; margin-bottom: 20px; }
+        .security-text p { font-size: 1.1rem; opacity: 0.9; margin-bottom: 30px; line-height: 1.7; }
+        .security-features { display: grid; grid-template-columns: repeat(2, 1fr); gap: 25px; }
         .security-item {
-            background: rgba(255, 255, 255, 0.1);
-            padding: 25px;
-            border-radius: 15px;
-            text-align: center;
-            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.1); padding: 25px; border-radius: 15px; text-align: center; backdrop-filter: blur(10px);
         }
-        
-        .security-icon {
-            font-size: 2.5rem;
-            margin-bottom: 15px;
-            color: var(--sunset-gold);
-        }
-        
-        .security-item-title {
-            font-size: 1.1rem;
-            margin-bottom: 8px;
-        }
-        
-        .security-item-desc {
-            font-size: 0.9rem;
-            opacity: 0.8;
-        }
-        
-        /* CTA Section */
-        .cta-section {
-            background: var(--earth-cream);
-            padding: 100px 0;
-            text-align: center;
-        }
-        
-        .cta-content {
-            max-width: 800px;
-            margin: 0 auto;
-        }
-        
-        .cta-title {
-            font-size: 3rem;
-            color: var(--baobab-brown);
-            margin-bottom: 20px;
-        }
-        
-        .cta-subtitle {
-            font-size: 1.2rem;
-            color: var(--trunk-gray);
-            margin-bottom: 40px;
-            line-height: 1.6;
-        }
-        
-        .cta-buttons {
-            display: flex;
-            gap: 25px;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-        
-        /* Footer */
-        .footer {
-            background: var(--deep-charcoal);
-            color: var(--white);
-            padding: 60px 0 30px;
-        }
-        
-        .footer-content {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 40px;
-            margin-bottom: 40px;
-        }
-        
-        .footer-section h4 {
-            color: var(--sunset-gold);
-            margin-bottom: 20px;
-            font-size: 1.2rem;
-        }
-        
+        .security-icon { font-size: 2.5rem; margin-bottom: 15px; color: var(--sunset-gold); }
+        .security-item-title { font-size: 1.1rem; margin-bottom: 8px; }
+        .security-item-desc { font-size: 0.9rem; opacity: 0.8; }
+        .cta-section { background: var(--earth-cream); padding: 100px 0; text-align: center; }
+        .cta-content { max-width: 800px; margin: 0 auto; }
+        .cta-title { font-size: 3rem; color: var(--baobab-brown); margin-bottom: 20px; }
+        .cta-subtitle { font-size: 1.2rem; color: var(--trunk-gray); margin-bottom: 40px; line-height: 1.6; }
+        .cta-buttons { display: flex; gap: 25px; justify-content: center; flex-wrap: wrap; }
+        .footer { background: var(--deep-charcoal); color: var(--white); padding: 60px 0 30px; }
+        .footer-content { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 40px; margin-bottom: 40px; }
+        .footer-section h4 { color: var(--sunset-gold); margin-bottom: 20px; font-size: 1.2rem; }
         .footer-link {
-            color: rgba(255, 255, 255, 0.7);
-            text-decoration: none;
-            display: block;
-            padding: 8px 0;
-            transition: var(--transition-fast);
+            color: rgba(255, 255, 255, 0.7); text-decoration: none; display: block; padding: 8px 0; transition: var(--transition-fast);
         }
-        
-        .footer-link:hover {
-            color: var(--sunset-gold);
-            padding-left: 5px;
-        }
-        
+        .footer-link:hover { color: var(--sunset-gold); padding-left: 5px; }
         .footer-bottom {
-            text-align: center;
-            padding-top: 30px;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-            color: rgba(255, 255, 255, 0.7);
+            text-align: center; padding-top: 30px; border-top: 1px solid rgba(255, 255, 255, 0.1); color: rgba(255, 255, 255, 0.7);
         }
-        
-        /* Modal Styles */
         .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.85);
-            z-index: 2000;
-            align-items: center;
-            justify-content: center;
-            backdrop-filter: blur(5px);
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.85); z-index: 2000; align-items: center; justify-content: center; backdrop-filter: blur(5px);
         }
-
         .modal-content {
-            background: var(--white);
-            border: 2px solid var(--sunset-gold);
-            border-radius: 25px;
-            padding: 45px;
-            max-width: 500px;
-            width: 95%;
-            max-height: 90vh;
-            overflow-y: auto;
-            position: relative;
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+            background: var(--white); border: 2px solid var(--sunset-gold); border-radius: 25px; padding: 45px; max-width: 500px; width: 95%;
+            max-height: 90vh; overflow-y: auto; position: relative; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
         }
-
-        .modal-close {
-            position: absolute;
-            top: 20px;
-            right: 25px;
-            background: none;
-            border: none;
-            font-size: 1.8rem;
-            cursor: pointer;
-            color: var(--trunk-gray);
-        }
-
-        .modal-title {
-            color: var(--baobab-brown);
-            margin-bottom: 25px;
-            text-align: center;
-            font-family: 'Merriweather', serif;
-            font-size: 1.8rem;
-        }
-
-        .form-group {
-            margin-bottom: 25px;
-        }
-
-        .form-label {
-            display: block;
-            margin-bottom: 8px;
-            color: var(--deep-charcoal);
-            font-weight: 600;
-        }
-
+        .modal-close { position: absolute; top: 20px; right: 25px; background: none; border: none; font-size: 1.8rem; cursor: pointer; color: var(--trunk-gray); }
+        .modal-title { color: var(--baobab-brown); margin-bottom: 25px; text-align: center; font-family: 'Merriweather', serif; font-size: 1.8rem; }
+        .form-group { margin-bottom: 25px; }
+        .form-label { display: block; margin-bottom: 8px; color: var(--deep-charcoal); font-weight: 600; }
         .form-input {
-            width: 100%;
-            padding: 15px 18px;
-            border: 2px solid rgba(245, 124, 0, 0.3);
-            border-radius: 12px;
-            font-size: 1rem;
-            background: rgba(141, 64, 4, 0.05);
-            color: var(--deep-charcoal);
-            transition: border-color 0.3s ease;
+            width: 100%; padding: 15px 18px; border: 2px solid rgba(245, 124, 0, 0.3); border-radius: 12px; font-size: 1rem;
+            background: rgba(141, 64, 4, 0.05); color: var(--deep-charcoal); transition: border-color 0.3s ease;
         }
-
-        .form-input:focus {
-            outline: none;
-            border-color: var(--sunset-gold);
-            background: var(--white);
-        }
-
+        .form-input:focus { outline: none; border-color: var(--sunset-gold); background: var(--white); }
         .form-submit {
-            width: 100%;
-            background: var(--baobab-brown);
-            color: var(--white);
-            border: none;
-            padding: 18px;
-            border-radius: 12px;
-            font-size: 1.1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: var(--transition-fast);
-            font-family: 'Open Sans', sans-serif;
+            width: 100%; background: var(--baobab-brown); color: var(--white); border: none; padding: 18px; border-radius: 12px; font-size: 1.1rem;
+            font-weight: 600; cursor: pointer; transition: var(--transition-fast); font-family: 'Open Sans', sans-serif;
         }
-
-        .form-submit:hover {
-            background: var(--trunk-gray);
-            transform: translateY(-2px);
-        }
-
-        .form-submit:disabled {
-            background: var(--trunk-gray);
-            opacity: 0.7;
-            cursor: not-allowed;
-            transform: none;
-        }
-
+        .form-submit:hover { background: var(--trunk-gray); transform: translateY(-2px); }
+        .form-submit:disabled { background: var(--trunk-gray); opacity: 0.7; cursor: not-allowed; transform: none; }
         .error-message {
-            background: rgba(255, 87, 34, 0.1);
-            border: 1px solid var(--desert-orange);
-            color: var(--desert-orange);
-            padding: 15px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            display: none;
+            background: rgba(255, 87, 34, 0.1); border: 1px solid var(--desert-orange); color: var(--desert-orange); padding: 15px; border-radius: 10px;
+            margin-bottom: 20px; display: none;
         }
-
         .success-message {
-            background: rgba(46, 125, 50, 0.1);
-            border: 1px solid var(--canopy-green);
-            color: var(--canopy-green);
-            padding: 15px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            display: none;
+            background: rgba(46, 125, 50, 0.1); border: 1px solid var(--canopy-green); color: var(--canopy-green); padding: 15px; border-radius: 10px;
+            margin-bottom: 20px; display: none;
         }
-
         .loading-spinner {
-            display: none;
-            width: 20px;
-            height: 20px;
-            border: 2px solid var(--earth-cream);
-            border-top: 2px solid var(--sunset-gold);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin-left: 10px;
+            display: none; width: 20px; height: 20px; border: 2px solid var(--earth-cream); border-top: 2px solid var(--sunset-gold);
+            border-radius: 50%; animation: spin 1s linear infinite; margin-left: 10px;
         }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        .form-toggle {
-            text-align: center;
-            margin-top: 20px;
-            color: var(--trunk-gray);
-        }
-
-        .form-toggle a {
-            color: var(--sunset-gold);
-            text-decoration: none;
-            font-weight: 600;
-        }
-
-        .form-toggle a:hover {
-            text-decoration: underline;
-        }
-
-        /* Email Verification Notice */
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .form-toggle { text-align: center; margin-top: 20px; color: var(--trunk-gray); }
+        .form-toggle a { color: var(--sunset-gold); text-decoration: none; font-weight: 600; }
+        .form-toggle a:hover { text-decoration: underline; }
         .verification-notice {
-            background: linear-gradient(135deg, var(--canopy-green), var(--sage-green));
-            color: var(--white);
-            padding: 30px;
-            border-radius: 20px;
-            margin: 20px 0;
-            text-align: center;
-            border: 3px solid var(--sunset-gold);
+            background: linear-gradient(135deg, var(--canopy-green), var(--sage-green)); color: var(--white); padding: 30px; border-radius: 20px; margin: 20px 0;
+            text-align: center; border: 3px solid var(--sunset-gold);
         }
-
-        .verification-notice h4 {
-            margin-bottom: 15px;
-            font-size: 1.5rem;
-        }
-
-        .verification-notice p {
-            margin-bottom: 12px;
-            line-height: 1.6;
-        }
-
-        .verification-notice .email-icon {
-            font-size: 3.5rem;
-            margin-bottom: 20px;
-            color: var(--sunset-gold);
-        }
-
-        .resend-link {
-            color: var(--sunset-gold);
-            text-decoration: underline;
-            cursor: pointer;
-            font-weight: 600;
-        }
-
-        .resend-link:hover {
-            color: var(--white);
-        }
-        
-        /* Responsive */
+        .verification-notice h4 { margin-bottom: 15px; font-size: 1.5rem; }
+        .verification-notice p { margin-bottom: 12px; line-height: 1.6; }
+        .verification-notice .email-icon { font-size: 3.5rem; margin-bottom: 20px; color: var(--sunset-gold); }
+        .resend-link { color: var(--sunset-gold); text-decoration: underline; cursor: pointer; font-weight: 600; }
+        .resend-link:hover { color: var(--white); }
         @media (max-width: 992px) {
-            .menu-toggle {
-                display: block;
-            }
-            
-            .nav-menu,
-            .nav-buttons {
-                display: none;
-            }
-            
-            .section {
-                padding: 60px 0;
-            }
+            .menu-toggle { display: block; }
+            .nav-menu, .nav-buttons { display: none; }
+            .section { padding: 60px 0; }
         }
-        
         @media (max-width: 768px) {
-            .hero-title {
-                font-size: 2.5rem;
-            }
-            
-            .section-title {
-                font-size: 2.2rem;
-            }
-            
-            .features-grid {
-                grid-template-columns: 1fr;
-                gap: 30px;
-            }
-            
-            .feature-card {
-                padding: 30px;
-            }
-            
-            .security-content {
-                grid-template-columns: 1fr;
-                gap: 40px;
-            }
-            
-            .security-features {
-                grid-template-columns: 1fr;
-                gap: 20px;
-            }
-            
-            .hero-buttons {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-            
-            .cta-buttons {
-                flex-direction: column;
-                align-items: center;
-            }
-            
-            .steps-container {
-                grid-template-columns: 1fr;
-                gap: 30px;
-            }
-            
-            .hero {
-                padding: 100px 0 50px;
-            }
-            
-            .hero-content {
-                text-align: center;
-            }
-            
-            .container {
-                padding: 0 15px;
-            }
+            .hero-title { font-size: 2.5rem; }
+            .section-title { font-size: 2.2rem; }
+            .features-grid { grid-template-columns: 1fr; gap: 30px; }
+            .feature-card { padding: 30px; }
+            .security-content { grid-template-columns: 1fr; gap: 40px; }
+            .security-features { grid-template-columns: 1fr; gap: 20px; }
+            .hero-buttons { flex-direction: column; align-items: flex-start; }
+            .cta-buttons { flex-direction: column; align-items: center; }
+            .steps-container { grid-template-columns: 1fr; gap: 30px; }
+            .hero { padding: 100px 0 50px; }
+            .hero-content { text-align: center; }
+            .container { padding: 0 15px; }
         }
-        
         @media (max-width: 576px) {
-            .hero-title {
-                font-size: 2rem;
-            }
-            
-            .section-title {
-                font-size: 1.8rem;
-            }
-            
-            .cta-title {
-                font-size: 2.2rem;
-            }
-            
-            .hero-subtitle,
-            .section-subtitle,
-            .cta-subtitle {
-                font-size: 1rem;
-            }
-            
-            .btn-hero {
-                padding: 16px 30px;
-                font-size: 1rem;
-            }
-            
-            .feature-icon {
-                width: 70px;
-                height: 70px;
-                font-size: 2rem;
-            }
-            
-            .feature-title {
-                font-size: 1.4rem;
-            }
-            
-            .mobile-menu-panel {
-                width: 280px;
-                padding: 70px 30px 30px;
-            }
-            
-            .logo-text {
-                font-size: 18px;
-            }
-
-            .modal-content {
-                padding: 30px;
-                margin: 10px;
-            }
-
-            .verification-notice {
-                padding: 25px;
-                margin: 15px 0;
-            }
-
-            .verification-notice .email-icon {
-                font-size: 3rem;
-                margin-bottom: 15px;
-            }
-
-            .verification-notice h4 {
-                font-size: 1.3rem;
-            }
+            .hero-title { font-size: 2rem; }
+            .section-title { font-size: 1.8rem; }
+            .cta-title { font-size: 2.2rem; }
+            .hero-subtitle, .section-subtitle, .cta-subtitle { font-size: 1rem; }
+            .btn-hero { padding: 16px 30px; font-size: 1rem; }
+            .feature-icon { width: 70px; height: 70px; font-size: 2rem; }
+            .feature-title { font-size: 1.4rem; }
+            .mobile-menu-panel { width: 280px; padding: 70px 30px 30px; }
+            .logo-text { font-size: 18px; }
+            .modal-content { padding: 30px; margin: 10px; }
+            .verification-notice { padding: 25px; margin: 15px 0; }
+            .verification-notice .email-icon { font-size: 3rem; margin-bottom: 15px; }
+            .verification-notice h4 { font-size: 1.3rem; }
         }
     </style>
 </head>
@@ -925,18 +255,13 @@
                     <div class="logo-icon"><i class="fas fa-heart"></i></div>
                     <div class="logo-text">Parent Portal</div>
                 </div>
-                
-                <div class="menu-toggle" id="menuToggle">
-                    <i class="fas fa-bars"></i>
-                </div>
-                
+                <div class="menu-toggle" id="menuToggle"><i class="fas fa-bars"></i></div>
                 <ul class="nav-menu">
                     <li><a href="#features" class="nav-link">Features</a></li>
                     <li><a href="#how-it-works" class="nav-link">How It Works</a></li>
                     <li><a href="#security" class="nav-link">Safety & Security</a></li>
                     <li><a href="https://baobabonlineacademy.com" class="nav-link">Main Site</a></li>
                 </ul>
-                
                 <div class="nav-buttons">
                     <a href="#" class="btn btn-outlined" onclick="openLoginModal()">Login</a>
                     <a href="#" class="btn btn-primary" onclick="openRegistrationModal()">Register</a>
@@ -944,7 +269,7 @@
             </div>
         </div>
     </header>
-    
+
     <!-- Mobile Menu -->
     <div class="mobile-menu-panel" id="mobileMenuPanel">
         <ul class="mobile-menu">
@@ -958,7 +283,6 @@
             <a href="#" class="btn btn-primary" onclick="openRegistrationModal()">Register</a>
         </div>
     </div>
-    
     <div class="menu-overlay" id="menuOverlay"></div>
 
     <!-- Hero Section -->
@@ -993,63 +317,54 @@
     <section class="features-preview" id="features">
         <div class="container">
             <h2 class="section-title">Everything You Need as a Parent</h2>
-            <p class="section-subtitle">
-                Designed by parents, for parents - our portal gives you unprecedented insight and control 
-                over your child's educational journey while celebrating their cultural heritage.
-            </p>
-            
-            <div class="features-grid">
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-chart-line"></i>
-                    </div>
-                    <h3 class="feature-title">Real-Time Progress Tracking</h3>
-                    <p class="feature-description">
-                        Watch your child grow with detailed academic analytics, cultural milestone tracking, 
-                        and visual progress reports that show both achievements and areas for support.
-                    </p>
-                    <ul class="feature-benefits">
-                        <li><i class="fas fa-check-circle"></i> Live grade updates and assignment scores</li>
-                        <li><i class="fas fa-check-circle"></i> Cultural heritage learning progress</li>
-                        <li><i class="fas fa-check-circle"></i> Detailed subject-by-subject analytics</li>
-                        <li><i class="fas fa-check-circle"></i> Milestone celebrations and achievements</li>
-                    </ul>
-                </div>
-                
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-comments"></i>
-                    </div>
-                    <h3 class="feature-title">Direct Tutor Communication</h3>
-                    <p class="feature-description">
-                        Connect seamlessly with your child's Nigeria-based tutors through secure messaging, 
-                        scheduled calls, and regular feedback sessions that keep you in the loop.
-                    </p>
-                    <ul class="feature-benefits">
-                        <li><i class="fas fa-check-circle"></i> Secure messaging with all tutors</li>
-                        <li><i class="fas fa-check-circle"></i> Weekly progress video calls</li>
-                        <li><i class="fas fa-check-circle"></i> Cultural context discussions</li>
-                        <li><i class="fas fa-check-circle"></i> Instant notifications for important updates</li>
-                    </ul>
-                </div>
-                
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-shield-alt"></i>
-                    </div>
-                    <h3 class="feature-title">Complete Safety Monitoring</h3>
-                    <p class="feature-description">
-                        Monitor your child's online learning environment with full transparency, 
-                        secure interactions, and comprehensive safety features for peace of mind.
-                    </p>
-                    <ul class="feature-benefits">
-                        <li><i class="fas fa-check-circle"></i> Full session monitoring capabilities</li>
-                        <li><i class="fas fa-check-circle"></i> Secure, encrypted communications</li>
-                        <li><i class="fas fa-check-circle"></i> Tutor background verification status</li>
-                        <li><i class="fas fa-check-circle"></i> Emergency contact protocols</li>
-                    </ul>
-                </div>
+        <p class="section-subtitle">
+            Designed by parents, for parents - our portal gives you unprecedented insight and control 
+            over your child's educational journey while celebrating their cultural heritage.
+        </p>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon"><i class="fas fa-chart-line"></i></div>
+                <h3 class="feature-title">Real-Time Progress Tracking</h3>
+                <p class="feature-description">
+                    Watch your child grow with detailed academic analytics, cultural milestone tracking, 
+                    and visual progress reports that show both achievements and areas for support.
+                </p>
+                <ul class="feature-benefits">
+                    <li><i class="fas fa-check-circle"></i> Live grade updates and assignment scores</li>
+                    <li><i class="fas fa-check-circle"></i> Cultural heritage learning progress</li>
+                    <li><i class="fas fa-check-circle"></i> Detailed subject-by-subject analytics</li>
+                    <li><i class="fas fa-check-circle"></i> Milestone celebrations and achievements</li>
+                </ul>
             </div>
+            <div class="feature-card">
+                <div class="feature-icon"><i class="fas fa-comments"></i></div>
+                <h3 class="feature-title">Direct Tutor Communication</h3>
+                <p class="feature-description">
+                    Connect seamlessly with your child's Nigeria-based tutors through secure messaging, 
+                    scheduled calls, and regular feedback sessions that keep you in the loop.
+                </p>
+                <ul class="feature-benefits">
+                    <li><i class="fas fa-check-circle"></i> Secure messaging with all tutors</li>
+                    <li><i class="fas fa-check-circle"></i> Weekly progress video calls</li>
+                    <li><i class="fas fa-check-circle"></i> Cultural context discussions</li>
+                    <li><i class="fas fa-check-circle"></i> Instant notifications for important updates</li>
+                </ul>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon"><i class="fas fa-shield-alt"></i></div>
+                <h3 class="feature-title">Complete Safety Monitoring</h3>
+                <p class="feature-description">
+                    Monitor your child's online learning environment with full transparency, 
+                    secure interactions, and comprehensive safety features for peace of mind.
+                </p>
+                <ul class="feature-benefits">
+                    <li><i class="fas fa-check-circle"></i> Full session monitoring capabilities</li>
+                    <li><i class="fas fa-check-circle"></i> Secure, encrypted communications</li>
+                    <li><i class="fas fa-check-circle"></i> Tutor background verification status</li>
+                    <li><i class="fas fa-check-circle"></i> Emergency contact protocols</li>
+                </ul>
+            </div>
+        </div>
         </div>
     </section>
 
@@ -1061,7 +376,6 @@
                 Join hundreds of families who trust Baobab Academy with their children's education. 
                 Getting started is simple, secure, and designed with busy parents in mind.
             </p>
-            
             <div class="steps-container">
                 <div class="step-card">
                     <div class="step-number">1</div>
@@ -1071,7 +385,6 @@
                         in just a few minutes.
                     </p>
                 </div>
-                
                 <div class="step-card">
                     <div class="step-number">2</div>
                     <h3 class="step-title">Child Assessment & Matching</h3>
@@ -1080,7 +393,6 @@
                         Nigeria-based tutor for their needs.
                     </p>
                 </div>
-                
                 <div class="step-card">
                     <div class="step-number">3</div>
                     <h3 class="step-title">Begin Learning Journey</h3>
@@ -1089,7 +401,6 @@
                         academically excellent lessons.
                     </p>
                 </div>
-                
                 <div class="step-card">
                     <div class="step-number">4</div>
                     <h3 class="step-title">Track & Celebrate Growth</h3>
@@ -1117,36 +428,24 @@
                         recorded for your peace of mind. You have complete control and visibility.
                     </p>
                 </div>
-                
                 <div class="security-features">
                     <div class="security-item">
-                        <div class="security-icon">
-                            <i class="fas fa-user-shield"></i>
-                        </div>
+                        <div class="security-icon"><i class="fas fa-user-shield"></i></div>
                         <h4 class="security-item-title">Verified Tutors</h4>
                         <p class="security-item-desc">Background checked educators</p>
                     </div>
-                    
                     <div class="security-item">
-                        <div class="security-icon">
-                            <i class="fas fa-lock"></i>
-                        </div>
+                        <div class="security-icon"><i class="fas fa-lock"></i></div>
                         <h4 class="security-item-title">Encrypted Platform</h4>
                         <p class="security-item-desc">Bank-level security protocols</p>
                     </div>
-                    
                     <div class="security-item">
-                        <div class="security-icon">
-                            <i class="fas fa-eye"></i>
-                        </div>
+                        <div class="security-icon"><i class="fas fa-eye"></i></div>
                         <h4 class="security-item-title">Full Monitoring</h4>
                         <p class="security-item-desc">Complete session transparency</p>
                     </div>
-                    
                     <div class="security-item">
-                        <div class="security-icon">
-                            <i class="fas fa-headset"></i>
-                        </div>
+                        <div class="security-icon"><i class="fas fa-headset"></i></div>
                         <h4 class="security-item-title">24/7 Support</h4>
                         <p class="security-item-desc">Always here when you need us</p>
                     </div>
@@ -1188,7 +487,6 @@
                     <a href="supporting-child.html" class="footer-link">Supporting Your Child's Learning</a>
                     <a href="cultural-integration.html" class="footer-link">Cultural Integration at Home</a>
                 </div>
-                
                 <div class="footer-section">
                     <h4><i class="fas fa-shield-alt"></i> Safety & Security</h4>
                     <a href="child-protection.html" class="footer-link">Child Protection Policy</a>
@@ -1196,7 +494,6 @@
                     <a href="#" class="footer-link">Platform Security Features</a>
                     <a href="#" class="footer-link">Privacy Policy</a>
                 </div>
-                
                 <div class="footer-section">
                     <h4><i class="fas fa-headset"></i> Support</h4>
                     <p style="color: rgba(255, 255, 255, 0.7); margin-bottom: 15px;">
@@ -1211,7 +508,6 @@
                     <a href="#" class="footer-link">Live Chat Support</a>
                 </div>
             </div>
-            
             <div class="footer-bottom">
                 <p>&copy; 2025 Baobab Online Academy Parent Portal. Nurturing Growth, Honoring Heritage!</p>
             </div>
@@ -1221,50 +517,39 @@
     <!-- Registration Modal -->
     <div class="modal" id="registrationModal">
         <div class="modal-content">
-            <button class="modal-close" onclick="closeRegistrationModal()">
-                <i class="fas fa-times"></i>
-            </button>
-            
-            <h3 class="modal-title">
-                <i class="fas fa-user-plus"></i>
-                Create Parent Account
-            </h3>
-            
+            <button class="modal-close" onclick="closeRegistrationModal()"><i class="fas fa-times"></i></button>
+            <h3 class="modal-title"><i class="fas fa-user-plus"></i> Create Parent Account</h3>
+
             <div class="error-message" id="regErrorMessage"></div>
             <div class="success-message" id="regSuccessMessage"></div>
-            
+
             <form id="registrationForm" onsubmit="handleRegistration(event)">
                 <div class="form-group">
                     <label class="form-label">Email Address *</label>
                     <input type="email" name="email" required class="form-input" placeholder="Enter your email address">
                 </div>
-                
                 <div class="form-group">
                     <label class="form-label">Full Name *</label>
                     <input type="text" name="full_name" required class="form-input" placeholder="Enter your full name">
                 </div>
-                
                 <div class="form-group">
                     <label class="form-label">Phone Number *</label>
                     <input type="tel" name="phone" required class="form-input" placeholder="Enter your phone number">
                 </div>
-                
                 <div class="form-group">
                     <label class="form-label">Password *</label>
                     <input type="password" name="password" required class="form-input" placeholder="Create a strong password" minlength="6">
                 </div>
-                
                 <div class="form-group">
                     <label class="form-label">Confirm Password *</label>
                     <input type="password" name="confirmPassword" required class="form-input" placeholder="Confirm your password" minlength="6">
                 </div>
-                
                 <button type="submit" class="form-submit" id="regSubmitBtn">
                     <span id="regSubmitText">Create Account</span>
                     <div class="loading-spinner" id="regLoadingSpinner"></div>
                 </button>
             </form>
-            
+
             <div class="form-toggle">
                 Already have an account? <a href="#" onclick="switchToLogin()">Login here</a>
             </div>
@@ -1274,35 +559,27 @@
     <!-- Login Modal -->
     <div class="modal" id="loginModal">
         <div class="modal-content">
-            <button class="modal-close" onclick="closeLoginModal()">
-                <i class="fas fa-times"></i>
-            </button>
-            
-            <h3 class="modal-title">
-                <i class="fas fa-sign-in-alt"></i>
-                Parent Login
-            </h3>
-            
+            <button class="modal-close" onclick="closeLoginModal()"><i class="fas fa-times"></i></button>
+            <h3 class="modal-title"><i class="fas fa-sign-in-alt"></i> Parent Login</h3>
+
             <div class="error-message" id="loginErrorMessage"></div>
             <div class="success-message" id="loginSuccessMessage"></div>
-            
+
             <form id="loginForm" onsubmit="handleLogin(event)">
                 <div class="form-group">
                     <label class="form-label">Email Address *</label>
                     <input type="email" name="email" required class="form-input" placeholder="Enter your email address">
                 </div>
-                
                 <div class="form-group">
                     <label class="form-label">Password *</label>
                     <input type="password" name="password" required class="form-input" placeholder="Enter your password">
                 </div>
-                
                 <button type="submit" class="form-submit" id="loginSubmitBtn">
                     <span id="loginSubmitText">Login</span>
                     <div class="loading-spinner" id="loginLoadingSpinner"></div>
                 </button>
             </form>
-            
+
             <div class="form-toggle">
                 Don't have an account? <a href="#" onclick="switchToRegistration()">Register here</a>
             </div>
@@ -1312,25 +589,17 @@
     <!-- Email Verification Modal -->
     <div class="modal" id="verificationModal">
         <div class="modal-content">
-            <button class="modal-close" onclick="closeVerificationModal()">
-                <i class="fas fa-times"></i>
-            </button>
-            
+            <button class="modal-close" onclick="closeVerificationModal()"><i class="fas fa-times"></i></button>
             <div class="verification-notice">
-                <div class="email-icon">
-                    <i class="fas fa-envelope-open"></i>
-                </div>
+                <div class="email-icon"><i class="fas fa-envelope-open"></i></div>
                 <h4>📧 Check Your Email!</h4>
                 <p><strong>We've sent a verification link to your email address.</strong></p>
                 <p>Please check your inbox and click the verification link to activate your parent account.</p>
                 <p style="font-size: 0.95rem; opacity: 0.9; margin-top: 20px;">
                     Don't see the email? Check your spam folder or 
-                    <span class="resend-link" onclick="resendVerificationEmail()">
-                        click here to resend
-                    </span>
+                    <span class="resend-link" onclick="resendVerificationEmail()">click here to resend</span>
                 </p>
             </div>
-            
             <div style="text-align: center; margin-top: 25px;">
                 <button class="btn btn-primary" onclick="closeVerificationModal()">
                     <i class="fas fa-check"></i>
@@ -1341,41 +610,26 @@
     </div>
 
 <script>
-  // ===== CONFIGURATION SECTION =====
+  // ===== CONFIGURATION =====
   const SUPABASE_URL = 'https://vcxdkacxbjsgaoxbhsip.supabase.co';
   const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZjeGRrYWN4YmpzZ2FveGJoc2lwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI5MDQ5ODMsImV4cCI6MjA2ODQ4MDk4M30.T9KhHWzHZWyaZvyeFXtBu8tPLY9JOn6_wCHcH8B46FU';
-
-  const EMAILJS_CONFIG = {
-    PUBLIC_KEY: 'axzjFvaj8oDzIdLHB',
-    SERVICE_ID: 'service_02brniu',
-    TEMPLATE_ID: 'template_ijjrhov'
-  };
-
   const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-  emailjs.init(EMAILJS_CONFIG.PUBLIC_KEY);
 
-  let pendingUserData = null;
-
-  // ===== AUTHENTICATION STATE MANAGEMENT =====
-  
-  function clearAuthState() {
-    console.log('Clearing authentication state');
-    localStorage.removeItem('sb-vcxdkacxbjsgaoxbhsip-auth-token');
-    sessionStorage.removeItem('sb-vcxdkacxbjsgaoxbhsip-auth-token');
+  // Optional EmailJS init (not used for verification)
+  const EMAILJS_CONFIG = { PUBLIC_KEY: 'axzjFvaj8oDzIdLHB' };
+  if (window.emailjs && EMAILJS_CONFIG.PUBLIC_KEY) {
+    try { emailjs.init(EMAILJS_CONFIG.PUBLIC_KEY); } catch(_) {}
   }
 
+  let pendingUserData = null;
+  let lastAttemptEmail = null;
+
+  // ===== AUTH STATE LOGS =====
   supabase.auth.onAuthStateChange((event, session) => {
-    console.log('Auth state changed:', event, session?.user?.email || 'no user');
-    
-    if (event === 'TOKEN_REFRESHED') {
-      console.log('Token refreshed successfully');
-    } else if (event === 'SIGNED_OUT') {
-      console.log('User signed out');
-      clearAuthState();
-    }
+    console.log('Auth state:', event, session?.user?.email || 'no user');
   });
 
-  // ===== MOBILE MENU FUNCTIONALITY =====
+  // ===== MOBILE MENU =====
   const menuToggle = document.getElementById('menuToggle');
   const mobileMenuPanel = document.getElementById('mobileMenuPanel');
   const menuOverlay = document.getElementById('menuOverlay');
@@ -1386,278 +640,58 @@
     document.body.style.overflow = mobileMenuPanel.classList.contains('active') ? 'hidden' : 'auto';
     menuToggle.innerHTML = mobileMenuPanel.classList.contains('active') ? '<i class="fas fa-times"></i>' : '<i class="fas fa-bars"></i>';
   }
-
   function closeMenu() {
     mobileMenuPanel.classList.remove('active');
     menuOverlay.classList.remove('active');
     document.body.style.overflow = 'auto';
     menuToggle.innerHTML = '<i class="fas fa-bars"></i>';
   }
-
   menuToggle.addEventListener('click', toggleMenu);
   menuOverlay.addEventListener('click', closeMenu);
   document.querySelectorAll('.mobile-link').forEach(link => link.addEventListener('click', closeMenu));
 
-  // ===== MODAL FUNCTIONS =====
-  function openRegistrationModal() {
-    document.getElementById('registrationModal').style.display = 'flex';
-    document.body.style.overflow = 'hidden';
-    clearMessages();
-  }
-
-  function closeRegistrationModal() {
-    document.getElementById('registrationModal').style.display = 'none';
-    document.body.style.overflow = 'auto';
-    clearMessages();
-  }
-
-  function openLoginModal() {
-    document.getElementById('loginModal').style.display = 'flex';
-    document.body.style.overflow = 'hidden';
-    clearMessages();
-  }
-
-  function closeLoginModal() {
-    document.getElementById('loginModal').style.display = 'none';
-    document.body.style.overflow = 'auto';
-    clearMessages();
-  }
-
-  function openVerificationModal() {
-    document.getElementById('verificationModal').style.display = 'flex';
-    document.body.style.overflow = 'hidden';
-  }
-
-  function closeVerificationModal() {
-    document.getElementById('verificationModal').style.display = 'none';
-    document.body.style.overflow = 'auto';
-  }
-
-  function switchToLogin() {
-    closeRegistrationModal();
-    openLoginModal();
-  }
-
-  function switchToRegistration() {
-    closeLoginModal();
-    openRegistrationModal();
-  }
+  // ===== MODALS =====
+  function openRegistrationModal() { document.getElementById('registrationModal').style.display = 'flex'; document.body.style.overflow = 'hidden'; clearMessages(); }
+  function closeRegistrationModal() { document.getElementById('registrationModal').style.display = 'none'; document.body.style.overflow = 'auto'; clearMessages(); }
+  function openLoginModal() { document.getElementById('loginModal').style.display = 'flex'; document.body.style.overflow = 'hidden'; clearMessages(); }
+  function closeLoginModal() { document.getElementById('loginModal').style.display = 'none'; document.body.style.overflow = 'auto'; clearMessages(); }
+  function openVerificationModal() { document.getElementById('verificationModal').style.display = 'flex'; document.body.style.overflow = 'hidden'; }
+  function closeVerificationModal() { document.getElementById('verificationModal').style.display = 'none'; document.body.style.overflow = 'auto'; }
+  function switchToLogin() { closeRegistrationModal(); openLoginModal(); }
+  function switchToRegistration() { closeLoginModal(); openRegistrationModal(); }
 
   function clearMessages() {
-    document.querySelectorAll('.error-message').forEach(msg => {
-      msg.style.display = 'none';
-      msg.textContent = '';
-    });
-    document.querySelectorAll('.success-message').forEach(msg => {
-      msg.style.display = 'none';
-      msg.textContent = '';
-    });
+    document.querySelectorAll('.error-message').forEach(msg => { msg.style.display = 'none'; msg.textContent = ''; });
+    document.querySelectorAll('.success-message').forEach(msg => { msg.style.display = 'none'; msg.textContent = ''; });
+  }
+  function showError(id, message) { const el = document.getElementById(id); el.textContent = message; el.style.display = 'block'; }
+  function showSuccess(id, message) { const el = document.getElementById(id); el.textContent = message; el.style.display = 'block'; }
+
+  // ===== HELPERS =====
+  function verifyRedirectUrl() {
+    // Must be allow-listed in Supabase Auth → URL Configuration
+    return `${window.location.origin}/verify-email.html`;
   }
 
-  function showError(elementId, message) {
-    const el = document.getElementById(elementId);
-    el.textContent = message;
-    el.style.display = 'block';
-  }
-
-  function showSuccess(elementId, message) {
-    const el = document.getElementById(elementId);
-    el.textContent = message;
-    el.style.display = 'block';
-  }
-
-  // ===== VERIFICATION SYSTEM =====
-  
-  function generateVerificationToken() {
-    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-      const r = Math.random() * 16 | 0;
-      const v = c == 'x' ? r : (r & 0x3 | 0x8);
-      return v.toString(16);
-    });
-  }
-
-  function storeVerificationToken(email, token, userData) {
-    const verificationData = {
-      email: email.toLowerCase(),
-      token: token,
-      userData: userData,
-      timestamp: Date.now(),
-      expires: Date.now() + (24 * 60 * 60 * 1000),
-      verified: false
-    };
-    
-    localStorage.setItem(`verification_${token}`, JSON.stringify(verificationData));
-    localStorage.setItem(`user_verification_${email.toLowerCase()}`, JSON.stringify({
-      email: email.toLowerCase(),
-      userId: userData.userId,
-      verified: false,
-      token: token,
-      created: Date.now()
-    }));
-  }
-
-  function markUserVerified(email, userId) {
-    const userVerificationKey = `user_verification_${email.toLowerCase()}`;
-    const existingData = localStorage.getItem(userVerificationKey);
-    
-    let verificationData;
-    if (existingData) {
-      verificationData = JSON.parse(existingData);
-    } else {
-      verificationData = {
-        email: email.toLowerCase(),
-        userId: userId
-      };
-    }
-    
-    verificationData.verified = true;
-    verificationData.verifiedAt = new Date().toISOString();
-    
-    localStorage.setItem(userVerificationKey, JSON.stringify(verificationData));
-    console.log('User marked as verified:', email);
-  }
-
-  function isUserVerified(email) {
-    try {
-      const userVerificationKey = `user_verification_${email.toLowerCase()}`;
-      const verificationData = localStorage.getItem(userVerificationKey);
-      
-      if (!verificationData) return false;
-      
-      const data = JSON.parse(verificationData);
-      return data.verified === true;
-    } catch (error) {
-      console.error('Error checking verification status:', error);
-      return false;
-    }
-  }
-
-  // Check if user exists in authorized_emails (for existing users)
   async function isAuthorizedUser(email) {
     try {
-      const { data, error } = await supabase
-        .from('authorised_emails')
-        .select('*')
-        .eq('email', email.toLowerCase())
-        .single();
-      
+      const { data, error } = await supabase.from('authorised_emails').select('*').eq('email', email.toLowerCase()).single();
       if (error || !data) return false;
-      
-      // If user exists in authorized_emails and is marked as used, they're an existing user
       return data.is_used === true;
-    } catch (error) {
-      console.error('Error checking authorized user:', error);
+    } catch (e) {
+      console.error('authorized_emails check failed:', e);
       return false;
     }
   }
 
-  function validateVerificationToken(token, email) {
-    try {
-      const storedData = localStorage.getItem(`verification_${token}`);
-      if (!storedData) return null;
-      
-      const data = JSON.parse(storedData);
-      if (data.expires < Date.now()) {
-        localStorage.removeItem(`verification_${token}`);
-        return null;
-      }
-      
-      if (data.email !== email.toLowerCase()) return null;
-      
-      return data;
-    } catch (error) {
-      console.error('Token validation error:', error);
-      return null;
-    }
-  }
-
-  async function sendVerificationEmailWithRetry(userData, maxRetries = 3) {
-    for (let attempt = 1; attempt <= maxRetries; attempt++) {
-      console.log(`EmailJS attempt ${attempt}/${maxRetries}`);
-      
-      try {
-        const token = generateVerificationToken();
-        storeVerificationToken(userData.email, token, userData);
-        
-        const verificationLink = `${window.location.origin}/verify-email.html?token=${token}&email=${encodeURIComponent(userData.email)}`;
-
-        const emailData = {
-          to_email: userData.email,
-          to_name: userData.fullName,
-          from_name: 'Baobab Online Academy Parent Portal',
-          subject: 'Welcome to Baobab Parent Portal - Please Verify Your Email',
-          parent_name: userData.fullName,
-          verification_link: verificationLink,
-          portal_url: window.location.origin,
-          support_email: 'parents@baobabonlineacademy.com',
-          current_year: new Date().getFullYear()
-        };
-
-        const result = await Promise.race([
-          new Promise((resolve, reject) => {
-            emailjs.send(
-              EMAILJS_CONFIG.SERVICE_ID, 
-              EMAILJS_CONFIG.TEMPLATE_ID, 
-              emailData,
-              EMAILJS_CONFIG.PUBLIC_KEY
-            ).then(resolve).catch(reject);
-          }),
-          new Promise((_, reject) => 
-            setTimeout(() => reject(new Error('EmailJS request timeout after 30 seconds')), 30000)
-          )
-        ]);
-
-        console.log('EmailJS success:', result);
-        return { success: true, token };
-
-      } catch (error) {
-        console.error(`EmailJS attempt ${attempt} failed:`, error.message || error);
-        
-        if (attempt === maxRetries) {
-          return { success: false, error: error.message || 'Failed to send email' };
-        }
-        
-        const delay = Math.min(1000 * Math.pow(2, attempt - 1), 10000);
-        console.log(`Waiting ${delay}ms before retry...`);
-        await new Promise(resolve => setTimeout(resolve, delay));
-      }
-    }
-    return { success: false, error: 'All retry attempts failed' };
-  }
-
-  async function resendVerificationEmail() {
-    if (!pendingUserData) {
-      alert('No pending verification found. Please try registering again.');
-      return;
-    }
-
-    try {
-      console.log('Resending verification email...');
-      const result = await sendVerificationEmailWithRetry(pendingUserData);
-      
-      if (result.success) {
-        alert('Verification email resent successfully! Please check your inbox.');
-      } else {
-        alert(`Failed to resend verification email: ${result.error}`);
-      }
-    } catch (error) {
-      console.error('Resend error:', error);
-      alert('Failed to resend verification email. Please try again.');
-    }
-  }
-
-  // ===== REGISTRATION FUNCTION =====
+  // ===== REGISTRATION =====
   async function handleRegistration(event) {
     event.preventDefault();
 
     const submitBtn = document.getElementById('regSubmitBtn');
     const submitText = document.getElementById('regSubmitText');
     const loadingSpinner = document.getElementById('regLoadingSpinner');
-
-    submitText.style.display = 'none';
-    loadingSpinner.style.display = 'inline-block';
-    submitBtn.disabled = true;
-    clearMessages();
+    submitText.style.display = 'none'; loadingSpinner.style.display = 'inline-block'; submitBtn.disabled = true; clearMessages();
 
     try {
       const formData = new FormData(event.target);
@@ -1667,98 +701,57 @@
       const password = formData.get('password');
       const confirmPassword = formData.get('confirmPassword');
 
-      if (!email || !fullName || !phone || !password) {
-        throw new Error('Please fill in all required fields');
-      }
+      if (!email || !fullName || !phone || !password) throw new Error('Please fill in all required fields');
+      if (password !== confirmPassword) throw new Error('Passwords do not match');
+      if (password.length < 6) throw new Error('Password must be at least 6 characters long');
 
-      if (password !== confirmPassword) {
-        throw new Error('Passwords do not match');
-      }
-
-      if (password.length < 6) {
-        throw new Error('Password must be at least 6 characters long');
-      }
-
-      // Check authorized email
-      console.log('Checking authorized email...');
+      // Check authorized email allowlist
+      console.log('Checking authorized email…');
       const { data: authorizedEmail, error: authCheckError } = await supabase
         .from('authorised_emails')
-        .select('*')
-        .eq('email', email)
-        .single();
-
+        .select('*').eq('email', email).single();
       if (authCheckError || !authorizedEmail) {
         throw new Error('This email is not authorized to create an account. Please contact support at parents@baobabonlineacademy.com');
       }
+      if (authorizedEmail.is_used) throw new Error('This email has already been used to create an account. Please try logging in instead.');
 
-      if (authorizedEmail.is_used) {
-        throw new Error('This email has already been used to create an account. Please try logging in instead.');
-      }
-
-      // Create user account
-      console.log('Creating user account...');
+      // Create user (Supabase will send verification email)
+      console.log('Creating user account…');
       const { data: authData, error: signUpError } = await supabase.auth.signUp({
         email,
         password,
         options: {
-          data: { 
-            full_name: fullName, 
-            phone: phone,
-            email_confirm: false
-          }
+          emailRedirectTo: verifyRedirectUrl(),
+          data: { full_name: fullName, phone: phone }
         }
       });
+      if (signUpError) throw new Error(signUpError.message || 'Failed to create user account.');
+      if (!authData?.user) throw new Error('Failed to create user account.');
 
-      if (signUpError) {
-        throw new Error(signUpError.message);
-      }
+      // Remember for resend
+      pendingUserData = { email, fullName, phone, userId: authData.user.id };
+      lastAttemptEmail = email;
 
-      if (!authData.user) {
-        throw new Error('Failed to create user account');
-      }
-
-      // Store user data for verification
-      pendingUserData = {
-        email,
-        fullName,
-        phone,
-        userId: authData.user.id
-      };
-
-      // Send verification email
-      console.log('Sending verification email via EmailJS...');
-      const emailResult = await sendVerificationEmailWithRetry(pendingUserData);
-
-      if (!emailResult.success) {
-        throw new Error(`Failed to send verification email: ${emailResult.error}`);
-      }
-
-      // Mark email as used
-      console.log('Marking email as used...');
+      // Mark email as used (optional: you can move this to post-verification if preferred)
+      console.log('Marking email as used…');
       const { error: updateError } = await supabase
         .from('authorised_emails')
-        .update({ 
-          is_used: true, 
-          used_at: new Date().toISOString()
-        })
+        .update({ is_used: true, used_at: new Date().toISOString() })
         .eq('email', email);
+      if (updateError) console.warn('Failed to update authorised_emails:', updateError);
 
-      if (updateError) {
-        console.error('Failed to update authorised_emails:', updateError);
-      } else {
-        console.log('Successfully marked email as used');
-      }
-
-      // Reset form and show verification modal
+      // Show verification instructions
       event.target.reset();
       closeRegistrationModal();
       openVerificationModal();
-
-      console.log('Registration completed successfully');
+      showSuccess('regSuccessMessage', 'Account created. Please verify your email to continue.');
+      console.log('Registration complete. Verification email sent by Supabase.');
 
     } catch (error) {
       console.error('Registration error:', error);
-      showError('regErrorMessage', error.message || 'Registration failed. Please try again.');
+      let msg = error.message || 'Registration failed. Please try again.';
+      if (msg.toLowerCase().includes('user already registered')) msg = 'An account already exists with this email. Please log in instead.';
+      showError('regErrorMessage', msg);
     } finally {
       submitText.style.display = 'inline';
       loadingSpinner.style.display = 'none';
@@ -1766,83 +759,61 @@
     }
   }
 
-  // ===== SIMPLIFIED LOGIN FUNCTION =====
+  // ===== LOGIN =====
   async function handleLogin(event) {
     event.preventDefault();
 
     const submitBtn = document.getElementById('loginSubmitBtn');
     const submitText = document.getElementById('loginSubmitText');
     const loadingSpinner = document.getElementById('loginLoadingSpinner');
+    submitText.style.display = 'none'; loadingSpinner.style.display = 'inline-block'; submitBtn.disabled = true; clearMessages();
 
-    submitText.style.display = 'none';
-    loadingSpinner.style.display = 'inline-block';
-    submitBtn.disabled = true;
-    clearMessages();
-
+    let email = '';
     try {
       const formData = new FormData(event.target);
-      const email = (formData.get('email') || '').toLowerCase().trim();
+      email = (formData.get('email') || '').toLowerCase().trim();
       const password = formData.get('password');
 
-      // Clear any stale auth state first
+      // Ensure any stale session is cleared
       await supabase.auth.signOut();
-      clearAuthState();
 
       console.log('Attempting login for:', email);
-
-      // Try to sign in first
-      const { data: authData, error: signInError } = await supabase.auth.signInWithPassword({
-        email,
-        password
-      });
+      const { data: authData, error: signInError } = await supabase.auth.signInWithPassword({ email, password });
 
       if (signInError) {
-        throw new Error(signInError.message);
+        const msg = (signInError.message || '').toLowerCase();
+        // Handle unconfirmed email: trigger resend and prompt verify
+        if (msg.includes('email not confirmed') || signInError.code === 'email_not_confirmed') {
+          lastAttemptEmail = email;
+          try {
+            await supabase.auth.resend({
+              type: 'signup',
+              email,
+              options: { emailRedirectTo: verifyRedirectUrl() }
+            });
+          } catch (_) {}
+          showError('loginErrorMessage', 'Please verify your email address. We just sent you a fresh verification link.');
+          openVerificationModal();
+          return;
+        }
+        if (msg.includes('invalid login credentials')) {
+          throw new Error('Invalid email or password. Please check your credentials and try again.');
+        }
+        throw signInError;
       }
 
-      if (!authData || !authData.user) {
-        throw new Error('Login failed. Please try again.');
-      }
+      if (!authData?.user) throw new Error('Login failed. Please try again.');
 
-      console.log('Login successful for:', email);
-
-      // For existing users, automatically mark them as verified
-      if (!isUserVerified(email)) {
-        console.log('Automatically verifying existing user:', email);
-        markUserVerified(email, authData.user.id);
-      }
-
-      showSuccess('loginSuccessMessage', 'Login successful! Redirecting to your dashboard...');
+      showSuccess('loginSuccessMessage', 'Login successful! Redirecting to your dashboard…');
       event.target.reset();
-
       setTimeout(() => {
         closeLoginModal();
         window.location.href = '/parent-dashboard.html';
-      }, 2000);
+      }, 1500);
 
     } catch (error) {
       console.error('Login error:', error);
-      let errorMessage = error.message || 'Login failed. Please try again.';
-      
-      // Handle specific error cases
-      if (errorMessage.includes('Invalid login credentials')) {
-        errorMessage = 'Invalid email or password. Please check your credentials and try again.';
-      } else if (errorMessage.includes('Email not confirmed')) {
-        // For new users who haven't verified yet
-        const isNewUser = !await isAuthorizedUser(formData.get('email').toLowerCase().trim());
-        if (isNewUser) {
-          errorMessage = 'Please verify your email address before logging in. Check your inbox for the verification link.';
-        } else {
-          // For existing users, allow them to proceed
-          console.log('Existing user with unconfirmed email, allowing login');
-          setTimeout(() => {
-            window.location.href = '/parent-dashboard.html';
-          }, 1000);
-          return;
-        }
-      }
-      
-      showError('loginErrorMessage', errorMessage);
+      showError('loginErrorMessage', error.message || 'Login failed. Please try again.');
     } finally {
       submitText.style.display = 'inline';
       loadingSpinner.style.display = 'none';
@@ -1850,90 +821,60 @@
     }
   }
 
-  // ===== CHECK AUTHENTICATION STATUS =====
-  async function checkAuthStatus() {
+  // ===== RESEND VERIFICATION =====
+  async function resendVerificationEmail() {
+    const email = (pendingUserData?.email || lastAttemptEmail || '').trim().toLowerCase();
+    let targetEmail = email;
+    if (!targetEmail) {
+      const entered = prompt('Enter the email address to resend the verification link:');
+      if (!entered) return;
+      targetEmail = entered.trim().toLowerCase();
+    }
+
     try {
-      const { data: { user }, error } = await supabase.auth.getUser();
-      
-      if (error) {
-        console.log('Auth check error:', error);
-        if (error.message.includes('session missing')) {
-          // This is normal when not logged in
-          return;
-        }
-        clearAuthState();
-        return;
-      }
-      
-      if (user) {
-        console.log('User session found:', user.email);
-        
-        // Auto-verify existing users
-        if (!isUserVerified(user.email)) {
-          console.log('Auto-verifying existing user:', user.email);
-          markUserVerified(user.email, user.id);
-        }
-      }
-    } catch (error) {
-      console.log('Auth status check failed:', error);
-      // Don't clear auth state on error, might be temporary
+      await supabase.auth.resend({
+        type: 'signup',
+        email: targetEmail,
+        options: { emailRedirectTo: verifyRedirectUrl() }
+      });
+      alert('A new verification email has been sent. Please check your inbox (and spam folder).');
+    } catch (err) {
+      console.error('Resend verification error:', err);
+      alert('Could not resend verification. Please try again.');
     }
   }
 
-  // ===== VERIFICATION FUNCTIONS FOR VERIFY-EMAIL.HTML PAGE =====
-  window.verifyEmailToken = function(token, email) {
-    const validationData = validateVerificationToken(token, email);
-    if (!validationData) {
-      return { success: false, error: 'Invalid or expired verification token' };
-    }
-
-    markUserVerified(email.toLowerCase(), validationData.userData.userId);
-    localStorage.removeItem(`verification_${token}`);
-
-    return { success: true, userData: validationData.userData };
-  };
-
-  // ===== SMOOTH SCROLLING =====
+  // ===== SMOOTH SCROLL =====
   document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     anchor.addEventListener('click', function (e) {
       const href = this.getAttribute('href');
-      if (href === '#' || href === '#login' || href === '#register') {
-        e.preventDefault();
-        return;
-      }
+      if (href === '#' || href === '#login' || href === '#register') { e.preventDefault(); return; }
       e.preventDefault();
       const target = document.querySelector(href);
       if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
     });
   });
 
-  // ===== INTERACTIVE EFFECTS =====
+  // ===== HOVER EFFECTS =====
   document.querySelectorAll('.feature-card').forEach(card => {
-    card.addEventListener('mouseenter', function () {
-      this.style.transform = 'translateY(-15px) scale(1.02)';
-    });
-    card.addEventListener('mouseleave', function () {
-      this.style.transform = 'translateY(0) scale(1)';
-    });
+    card.addEventListener('mouseenter', function () { this.style.transform = 'translateY(-15px) scale(1.02)'; });
+    card.addEventListener('mouseleave', function () { this.style.transform = 'translateY(0) scale(1)'; });
   });
 
-  // ===== CLOSE MODALS ON OUTSIDE CLICK =====
-  document.getElementById('registrationModal').addEventListener('click', (e) => {
-    if (e.target === e.currentTarget) closeRegistrationModal();
-  });
-  document.getElementById('loginModal').addEventListener('click', (e) => {
-    if (e.target === e.currentTarget) closeLoginModal();
-  });
-  document.getElementById('verificationModal').addEventListener('click', (e) => {
-    if (e.target === e.currentTarget) closeVerificationModal();
-  });
+  // ===== CLOSE MODALS ON BACKDROP =====
+  document.getElementById('registrationModal').addEventListener('click', (e) => { if (e.target === e.currentTarget) closeRegistrationModal(); });
+  document.getElementById('loginModal').addEventListener('click', (e) => { if (e.target === e.currentTarget) closeLoginModal(); });
+  document.getElementById('verificationModal').addEventListener('click', (e) => { if (e.target === e.currentTarget) closeVerificationModal(); });
 
-  // ===== INITIALIZE ON PAGE LOAD =====
+  // ===== INITIALIZE =====
   document.addEventListener('DOMContentLoaded', function () {
-    checkAuthStatus();
+    // Optionally check for existing session
+    supabase.auth.getUser().then(({ data }) => {
+      if (data?.user) console.log('Session found for:', data.user.email);
+    });
   });
 
-  // Expose functions used by HTML attributes
+  // Expose functions
   window.openRegistrationModal = openRegistrationModal;
   window.closeRegistrationModal = closeRegistrationModal;
   window.openLoginModal = openLoginModal;
