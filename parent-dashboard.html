@@ -3467,25 +3467,12 @@ async function generatePDFReport() {
       }
       const ids = children.map(c => c.id);
 
-      // In your React component
-const [completionStats, setCompletionStats] = useState([]);
-
-useEffect(() => {
-  async function fetchStats() {
-    const { data } = await getCurrentWeekStats(supabase, user.id);
-    setCompletionStats(data || []);
-  }
-  fetchStats();
-}, []);
-
-// Display in your dashboard
-{completionStats.map(child => (
-  <div key={child.child_id}>
-    <h3>{child.child_name}</h3>
-    <p>Completed: {child.completed_lessons}/{child.expected_lessons}</p>
-    <p>Progress: {child.completion_percentage}%</p>
-  </div>
-))}
+      const { data: lessons } = await supabase
+        .from('lessons')
+        .select('id')
+        .in('child_id', ids)
+        .eq('status', 'completed');
+      document.getElementById('totalLessons').textContent = lessons?.length || 0;
 
       const { data: grades } = await supabase
         .from('assessments')
