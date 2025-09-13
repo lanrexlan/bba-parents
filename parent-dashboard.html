@@ -1770,23 +1770,27 @@
             <p class="welcome-subtitle">Your children are making amazing progress. Here's a quick snapshot of today.</p>
             
             <div class="stats-grid">
-              <div class="stat-card">
-                <div class="stat-number" id="totalLessons">0</div>
-                <div class="stat-label">Lessons Completed</div>
-              </div>
-              <div class="stat-card">
-                <div class="stat-number" id="averageGrade">0%</div>
-                <div class="stat-label">Average Grade</div>
-              </div>
-              <div class="stat-card">
-                <div class="stat-number" id="culturalMilestones">0</div>
-                <div class="stat-label">Cultural Milestones</div>
-              </div>
-              <div class="stat-card">
-                <div class="stat-number" id="activeTutors">0</div>
-                <div class="stat-label">Active Tutors</div>
-              </div>
-            </div>
+    <div class="stat-card">
+        <div class="stat-value" id="lessons-completed">0</div>
+        <div class="stat-label">Lessons Completed This Week</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value" id="completion-percentage">0%</div>
+        <div class="stat-label">Weekly Completion Rate</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value" id="total-completed">0</div>
+        <div class="stat-label">Total Lessons Completed</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value">0%</div>
+        <div class="stat-label">Average Grade</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value">0</div>
+        <div class="stat-label">Active Tutors</div>
+    </div>
+</div>
           </div>
         </div>
 
@@ -2730,45 +2734,60 @@
   }
 }
 
-// Get current week completion stats for dashboard
-export async function getCurrentWeekStats(supabase, parentId) {
-  const { data, error } = await supabase
-    .from('lesson_completion_dashboard')
-    .select('*')
-    .eq('parent_id', parentId)
-    .eq('week_type', 'current_week');
-    
-  return { data, error };
+// Add these functions to fetch completion data
+async function fetchCompletionStats() {
+    try {
+        const { data: user } = await supabase.auth.getUser();
+        if (!user?.user) return;
+
+        // Get current week completion stats
+        const { data: weeklyStats, error: weeklyError } = await supabase
+            .from('lesson_completion_stats')
+            .select(`
+                completed_lessons,
+                expected_lessons,
+                completion_percentage,
+                children!inner(parent_id)
+            `)
+            .eq('children.parent_id', user.user.id)
+            .eq('week_start_date', new Date().toISOString().split('T')[0].replace(/\d{2}$/, '01')); // This week
+
+        // Get total completed lessons
+        const { data: totalStats, error: totalError } = await supabase
+            .from('lesson_completion_stats')
+            .select(`
+                completed_lessons,
+                children!inner(parent_id)
+            `)
+            .eq('children.parent_id', user.user.id);
+
+        if (!weeklyError && weeklyStats) {
+            const weeklyCompleted = weeklyStats.reduce((sum, stat) => sum + stat.completed_lessons, 0);
+            const weeklyExpected = weeklyStats.reduce((sum, stat) => sum + stat.expected_lessons, 0);
+            const avgCompletion = weeklyExpected > 0 ? Math.round((weeklyCompleted / weeklyExpected) * 100) : 0;
+
+            document.getElementById('lessons-completed').textContent = weeklyCompleted;
+            document.getElementById('completion-percentage').textContent = avgCompletion + '%';
+        }
+
+        if (!totalError && totalStats) {
+            const totalCompleted = totalStats.reduce((sum, stat) => sum + stat.completed_lessons, 0);
+            document.getElementById('total-completed').textContent = totalCompleted;
+        }
+
+    } catch (error) {
+        console.error('Error fetching completion stats:', error);
+    }
 }
 
-// Get total completed lessons for a specific child
-export async function getTotalCompletedLessons(supabase, childId) {
-  const { data, error } = await supabase
-    .from('lesson_completion_stats')
-    .select('completed_lessons')
-    .eq('child_id', childId);
+// Update the existing loadDashboard function
+async function loadDashboard() {
+    // Your existing dashboard loading code...
     
-  const total = data?.reduce((sum, week) => sum + week.completed_lessons, 0) || 0;
-  return { total, error };
-}
+    // Add this line to load completion stats
+    await fetchCompletionStats();
+}   
 
-// Get completion percentage for current week
-export async function getCurrentWeekCompletion(supabase, childId) {
-  const { data, error } = await supabase
-    .from('lesson_completion_dashboard')
-    .select('completion_percentage, completed_lessons, expected_lessons')
-    .eq('child_id', childId)
-    .eq('week_type', 'current_week')
-    .single();
-    
-  return { data, error };
-}
-
-// Manually trigger stats update (useful for admin)
-export async function updateLessonStats(supabase) {
-  const { data, error } = await supabase.rpc('update_lesson_completion_stats');
-  return { data, error };
-}
 
 
 // Enhanced PDF Generation Function (drop-in replacement)
@@ -3467,25 +3486,12 @@ async function generatePDFReport() {
       }
       const ids = children.map(c => c.id);
 
-      // In your React component
-const [completionStats, setCompletionStats] = useState([]);
-
-useEffect(() => {
-  async function fetchStats() {
-    const { data } = await getCurrentWeekStats(supabase, user.id);
-    setCompletionStats(data || []);
-  }
-  fetchStats();
-}, []);
-
-// Display in your dashboard
-{completionStats.map(child => (
-  <div key={child.child_id}>
-    <h3>{child.child_name}</h3>
-    <p>Completed: {child.completed_lessons}/{child.expected_lessons}</p>
-    <p>Progress: {child.completion_percentage}%</p>
-  </div>
-))};
+      const { data: lessons } = await supabase
+        .from('lessons')
+        .select('id')
+        .in('child_id', ids)
+        .eq('status', 'completed');
+      document.getElementById('totalLessons').textContent = lessons?.length || 0;
 
       const { data: grades } = await supabase
         .from('assessments')
