@@ -1770,23 +1770,23 @@
             <p class="welcome-subtitle">Your children are making amazing progress. Here's a quick snapshot of today.</p>
             
             <div class="stats-grid">
-    <div class="stat-card">
-        <div class="stat-value" id="lessons-completed">0</div>
-        <div class="stat-label">Lessons Completed This Week</div>
-    </div>
-    <div class="stat-card">
-        <div class="stat-value" id="completion-percentage">0%</div>
-        <div class="stat-label">Weekly Completion Rate</div>
-    </div>
-    <div class="stat-card">
-        <div class="stat-value" id="total-completed">0</div>
-        <div class="stat-label">Total Lessons Completed</div>
-    </div>
-    <div class="stat-card">
-        <div class="stat-value">0</div>
-        <div class="stat-label">Active Tutors</div>
-    </div>
-</div>
+              <div class="stat-card">
+                <div class="stat-number" id="totalLessons">0</div>
+                <div class="stat-label">Lessons Completed</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-number" id="averageGrade">0%</div>
+                <div class="stat-label">Average Grade</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-number" id="culturalMilestones">0</div>
+                <div class="stat-label">Cultural Milestones</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-number" id="activeTutors">0</div>
+                <div class="stat-label">Active Tutors</div>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -2406,95 +2406,6 @@
       subjects: []
     };
 
-// Fetch completion statistics
-async function fetchCompletionStats() {
-    try {
-        const { data: user } = await supabase.auth.getUser();
-        if (!user?.user) return;
-
-        // Get current week start (Monday)
-        const now = new Date();
-        const monday = new Date(now);
-        monday.setDate(now.getDate() - (now.getDay() + 6) % 7);
-        const weekStart = monday.toISOString().split('T')[0];
-
-        // Get current week completion stats
-        const { data: weeklyStats, error: weeklyError } = await supabase
-            .from('lesson_completion_stats')
-            .select(`
-                completed_lessons,
-                expected_lessons,
-                completion_percentage,
-                children!inner(parent_id)
-            `)
-            .eq('children.parent_id', user.user.id)
-            .eq('week_start_date', weekStart);
-
-        // Get total completed lessons
-        const { data: totalStats, error: totalError } = await supabase
-            .from('lesson_completion_stats')
-            .select(`
-                completed_lessons,
-                children!inner(parent_id)
-            `)
-            .eq('children.parent_id', user.user.id);
-
-        // Get active tutors count
-        const { data: tutorStats, error: tutorError } = await supabase
-            .from('lessons')
-            .select(`
-                tutor_id,
-                children!inner(parent_id)
-            `)
-            .eq('children.parent_id', user.user.id)
-            .eq('status', 'scheduled');
-
-        if (!weeklyError && weeklyStats) {
-            const weeklyCompleted = weeklyStats.reduce((sum, stat) => sum + stat.completed_lessons, 0);
-            const weeklyExpected = weeklyStats.reduce((sum, stat) => sum + stat.expected_lessons, 0);
-            const avgCompletion = weeklyExpected > 0 ? Math.round((weeklyCompleted / weeklyExpected) * 100) : 0;
-
-            document.getElementById('lessons-completed').textContent = weeklyCompleted;
-            document.getElementById('completion-percentage').textContent = avgCompletion + '%';
-            
-            // Update progress bar
-            const progressBar = document.getElementById('weekly-progress');
-            if (progressBar) {
-                progressBar.style.width = avgCompletion + '%';
-            }
-        }
-
-        if (!totalError && totalStats) {
-            const totalCompleted = totalStats.reduce((sum, stat) => sum + stat.completed_lessons, 0);
-            document.getElementById('total-completed').textContent = totalCompleted;
-        }
-
-        if (!tutorError && tutorStats) {
-            const uniqueTutors = new Set(tutorStats.map(lesson => lesson.tutor_id));
-            document.getElementById('active-tutors').textContent = uniqueTutors.size;
-        }
-
-    } catch (error) {
-        console.error('Error fetching completion stats:', error);
-        // Fallback to show 0 values
-        document.getElementById('lessons-completed').textContent = '0';
-        document.getElementById('completion-percentage').textContent = '0%';
-        document.getElementById('total-completed').textContent = '0';
-        document.getElementById('active-tutors').textContent = '0';
-    }
-}
-
-// Update your existing DOMContentLoaded event listener
-document.addEventListener('DOMContentLoaded', function() {
-    // Your existing initialization code...
-    
-    // Add these new lines:
-    fetchCompletionStats();
-    
-    // Refresh completion stats every 30 seconds
-    setInterval(fetchCompletionStats, 30000);
-});
-    
     // UI elements
     const menuToggle = document.getElementById('menuToggle');
     const sidebar = document.getElementById('sidebar');
