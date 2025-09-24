@@ -1268,61 +1268,6 @@
       display: block;
     }
 
-    .schedule-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 1rem;
-}
-
-.schedule-card {
-    background: #f8fafc;
-    border: 1px solid #e2e8f0;
-    border-radius: 8px;
-    padding: 1rem;
-}
-
-.schedule-card h4 {
-    font-size: 1.1rem;
-    font-weight: 600;
-    color: #1e293b;
-    margin-bottom: 0.75rem;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-}
-
-.schedule-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0.5rem 0;
-    border-bottom: 1px solid #e2e8f0;
-}
-
-.schedule-item:last-child {
-    border-bottom: none;
-}
-
-.schedule-time {
-    font-weight: 500;
-    color: #059669;
-}
-
-.schedule-meta {
-    margin-top: 0.5rem;
-    font-size: 0.875rem;
-    color: #64748b;
-}
-
-.error-message {
-    padding: 1rem;
-    background: #fef2f2;
-    border: 1px solid #fecaca;
-    border-radius: 8px;
-    color: #dc2626;
-}
-
-
     /* Chart containers */
     .chart-container {
       background: var(--white);
@@ -1935,37 +1880,32 @@
         </div>
       </section>
 
-
-<!-- Dynamic Lesson Schedules Section -->
-<div class="section">
-    <div class="section-header">
-        <h2>Lesson Schedules</h2>
-        <div>
-            <button class="btn btn-secondary" onclick="refreshSchedules()">Refresh</button>
-            <button class="btn btn-primary" onclick="addNewSchedule()">Add Schedule</button>
-        </div>
-    </div>
-    <div class="section-content">
-        <div id="schedules-loading">Loading schedules...</div>
-        <div id="schedules-content" style="display: none;">
-            <div id="schedules-grid" class="schedule-grid">
-                <!-- Dynamic content populated by JavaScript -->
+      <!-- Lessons Section -->
+      <section id="lessons" class="section">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">
+              <div class="card-icon" style="background: linear-gradient(135deg, var(--warning), #FF9800);">
+                <i class="fas fa-calendar-days"></i>
+              </div>
+              Upcoming Lessons
             </div>
-        </div>
-    </div>
-</div>
-
-<!-- Modified Upcoming Lessons Section -->
-<div class="section">
-    <div class="section-header">
-        <h2>Upcoming Lessons</h2>
-        <button class="btn btn-secondary" onclick="refreshUpcomingLessons()">Refresh</button>
-    </div>
-    <div class="section-content">
-        <div id="upcoming-loading">Loading lessons...</div>
-        <table class="table" id="upcoming-lessons-table" style="display: none;">
-            <thead>
-                <tr>
+            <div class="card-actions">
+              <div class="search-wrapper" style="min-width: 200px;">
+                <i class="fas fa-search search-icon"></i>
+                <input type="search" class="search-input" id="lessonsSearch" placeholder="Search lessons...">
+              </div>
+              <button class="btn btn-secondary" id="lessonsExport">
+                <i class="fas fa-download"></i>
+                Export CSV
+              </button>
+            </div>
+          </div>
+          <div class="card-content">
+            <div class="table-container">
+              <table class="table" id="lessonsTable">
+                <thead>
+                  <tr>
                     <th>Date</th>
                     <th>Time</th>
                     <th>Child</th>
@@ -1973,14 +1913,14 @@
                     <th>Tutor</th>
                     <th>Status</th>
                     <th>Join</th>
-                </tr>
-            </thead>
-            <tbody id="upcoming-lessons-tbody">
-                <!-- Dynamic content populated by JavaScript -->
-            </tbody>
-        </table>
-    </div>
-</div>
+                  </tr>
+                </thead>
+                <tbody id="lessonsTbody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
 
       <!-- Tutors Section -->
       <section id="tutors" class="section">
@@ -3924,225 +3864,6 @@ async function generatePDFReport() {
     async function loadChildrenSection() {
       renderChildrenTable(cache.children);
     }
-
-    // Day names mapping
-const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-
-// Subject emoji mapping
-const subjectEmojis = {
-    'English': '📚',
-    'Biology': '🧬',
-    'Mathematics': '🔢',
-    'Physics': '⚛️',
-    'Chemistry': '🧪',
-    'Math': '🔢',
-    'Maths': '🔢'
-};
-
-// Fetch recurring lesson templates from Supabase
-async function loadRecurringSchedules() {
-    try {
-        const response = await fetch(`${SUPABASE_URL}/rest/v1/recurring_lesson_templates?select=*,tutor_profiles(full_name),subjects(name),children(full_name)&is_active=eq.true&order=day_of_week,time_of_day`, {
-            headers: {
-                'apikey': SUPABASE_ANON_KEY,
-                'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
-                'Content-Type': 'application/json'
-            }
-        });
-        
-        if (!response.ok) {
-            throw new Error('Failed to fetch schedules');
-        }
-        
-        const schedules = await response.json();
-        renderSchedules(schedules);
-        
-        document.getElementById('schedules-loading').style.display = 'none';
-        document.getElementById('schedules-content').style.display = 'block';
-    } catch (error) {
-        console.error('Error loading schedules:', error);
-        document.getElementById('schedules-loading').innerHTML = 
-            '<div class="error-message">Failed to load schedules. Please try again.</div>';
-    }
-}
-
-// Generate upcoming lessons from recurring templates
-async function loadUpcomingLessons() {
-    try {
-        // First get recurring templates
-        const templatesResponse = await fetch(`${SUPABASE_URL}/rest/v1/recurring_lesson_templates?select=*,tutor_profiles(full_name),subjects(name),children(full_name)&is_active=eq.true`, {
-            headers: {
-                'apikey': SUPABASE_ANON_KEY,
-                'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
-                'Content-Type': 'application/json'
-            }
-        });
-        
-        if (!templatesResponse.ok) {
-            throw new Error('Failed to fetch templates');
-        }
-        
-        const templates = await templatesResponse.json();
-        const upcomingLessons = generateUpcomingLessonsFromTemplates(templates);
-        
-        renderUpcomingLessons(upcomingLessons);
-        
-        document.getElementById('upcoming-loading').style.display = 'none';
-        document.getElementById('upcoming-lessons-table').style.display = 'table';
-    } catch (error) {
-        console.error('Error loading upcoming lessons:', error);
-        document.getElementById('upcoming-loading').innerHTML = 
-            '<div class="error-message">Failed to load upcoming lessons. Please try again.</div>';
-    }
-}
-
-// Generate upcoming lesson instances from templates for next 4 weeks
-function generateUpcomingLessonsFromTemplates(templates) {
-    const upcomingLessons = [];
-    const today = new Date();
-    const endDate = new Date(today.getTime() + (28 * 24 * 60 * 60 * 1000)); // Next 4 weeks
-    
-    templates.forEach(template => {
-        const targetDayOfWeek = template.day_of_week;
-        const timeOfDay = template.time_of_day;
-        
-        // Find next occurrence of this day
-        let currentDate = new Date(today);
-        while (currentDate <= endDate) {
-            if (currentDate.getDay() === targetDayOfWeek && currentDate >= today) {
-                const lessonDateTime = new Date(currentDate);
-                const [hours, minutes] = timeOfDay.split(':');
-                lessonDateTime.setHours(parseInt(hours), parseInt(minutes), 0, 0);
-                
-                // Only include if it's in the future
-                if (lessonDateTime > new Date()) {
-                    upcomingLessons.push({
-                        date: lessonDateTime,
-                        child_name: template.children?.full_name || 'Unknown Child',
-                        subject_name: template.subjects?.name || 'Unknown Subject',
-                        tutor_name: template.tutor_profiles?.full_name || 'Unknown Tutor',
-                        meeting_url: template.meeting_url,
-                        duration_minutes: template.duration_minutes || 60,
-                        template_id: template.id
-                    });
-                }
-            }
-            currentDate.setDate(currentDate.getDate() + 1);
-        }
-    });
-    
-    // Sort by date
-    return upcomingLessons.sort((a, b) => a.date - b.date);
-}
-
-// Render lesson schedules grouped by subject
-function renderSchedules(schedules) {
-    const schedulesGrid = document.getElementById('schedules-grid');
-    
-    // Group schedules by subject
-    const groupedSchedules = schedules.reduce((acc, schedule) => {
-        const subjectName = schedule.subjects?.name || 'Unknown Subject';
-        if (!acc[subjectName]) {
-            acc[subjectName] = [];
-        }
-        acc[subjectName].push(schedule);
-        return acc;
-    }, {});
-    
-    let html = '';
-    
-    Object.entries(groupedSchedules).forEach(([subject, subjectSchedules]) => {
-        const emoji = subjectEmojis[subject] || '📖';
-        const tutorName = subjectSchedules[0]?.tutor_profiles?.full_name || 'Unknown Tutor';
-        const meetingUrl = subjectSchedules[0]?.meeting_url;
-        
-        html += `
-            <div class="schedule-card">
-                <h4>${emoji} ${subject}</h4>
-                ${subjectSchedules.map(schedule => `
-                    <div class="schedule-item">
-                        <span>${dayNames[schedule.day_of_week]}</span>
-                        <span class="schedule-time">${formatTime(schedule.time_of_day)}</span>
-                    </div>
-                `).join('')}
-                <div class="schedule-meta">
-                    Tutor: ${tutorName}<br>
-                    Duration: ${subjectSchedules[0]?.duration_minutes || 60} minutes
-                    ${meetingUrl ? `<br><a href="${meetingUrl}" target="_blank" style="color: #059669;">Join Meeting</a>` : ''}
-                </div>
-            </div>
-        `;
-    });
-    
-    schedulesGrid.innerHTML = html;
-}
-
-// Render upcoming lessons table
-function renderUpcomingLessons(lessons) {
-    const tbody = document.getElementById('upcoming-lessons-tbody');
-    
-    const html = lessons.slice(0, 10).map(lesson => `
-        <tr>
-            <td>${formatDate(lesson.date)}</td>
-            <td>${formatTime(lesson.date.toTimeString().substring(0, 5))}</td>
-            <td>${lesson.child_name}</td>
-            <td>${lesson.subject_name}</td>
-            <td>${lesson.tutor_name}</td>
-            <td><span class="status-badge status-scheduled">Scheduled</span></td>
-            <td>
-                ${lesson.meeting_url ? 
-                    `<a href="${lesson.meeting_url}" target="_blank" class="btn btn-primary">Join</a>` : 
-                    '<span style="color: #64748b;">No link</span>'
-                }
-            </td>
-        </tr>
-    `).join('');
-    
-    tbody.innerHTML = html;
-}
-
-// Utility functions
-function formatTime(timeString) {
-    const [hours, minutes] = timeString.split(':');
-    const hour = parseInt(hours);
-    const ampm = hour >= 12 ? 'PM' : 'AM';
-    const displayHour = hour % 12 || 12;
-    return `${displayHour}:${minutes} ${ampm}`;
-}
-
-function formatDate(date) {
-    return date.toLocaleDateString('en-US', {
-        weekday: 'short',
-        month: 'short',
-        day: 'numeric',
-        year: 'numeric'
-    });
-}
-
-// Refresh functions
-function refreshSchedules() {
-    document.getElementById('schedules-loading').style.display = 'block';
-    document.getElementById('schedules-content').style.display = 'none';
-    loadRecurringSchedules();
-}
-
-function refreshUpcomingLessons() {
-    document.getElementById('upcoming-loading').style.display = 'block';
-    document.getElementById('upcoming-lessons-table').style.display = 'none';
-    loadUpcomingLessons();
-}
-
-function addNewSchedule() {
-    // Implement add new schedule functionality
-    alert('Add new schedule functionality to be implemented');
-}
-
-// Load data on page load
-document.addEventListener('DOMContentLoaded', function() {
-    loadRecurringSchedules();
-    loadUpcomingLessons();
-});
-
 
     async function loadLessonsSection() {
       if (!children.length) { 
