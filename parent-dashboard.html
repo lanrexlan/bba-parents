@@ -1267,7 +1267,104 @@
     .tab-content.active {
       display: block;
     }
+    /* Lessons Schedule Styles */
+.filter-bar {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
 
+.form-select {
+    padding: 0.5rem 1rem;
+    border: 1px solid #e5e5e5;
+    border-radius: 0.5rem;
+    background: white;
+    min-width: 150px;
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.5);
+}
+
+.modal.active {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-content {
+    background: white;
+    border-radius: 1rem;
+    width: 90%;
+    max-width: 500px;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem;
+    border-bottom: 1px solid #e5e5e5;
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #666;
+}
+
+.form-group {
+    margin-bottom: 1rem;
+    padding: 0 1.5rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+}
+
+.form-input, .form-select {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid #e5e5e5;
+    border-radius: 0.5rem;
+}
+
+.form-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+    padding: 1.5rem;
+    border-top: 1px solid #e5e5e5;
+    margin-top: 1.5rem;
+}
+
+.day-badge {
+    padding: 0.25rem 0.75rem;
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.day-badge.monday { background: #fee2e2; color: #991b1b; }
+.day-badge.tuesday { background: #fed7aa; color: #9a3412; }
+.day-badge.wednesday { background: #fef3c7; color: #92400e; }
+.day-badge.thursday { background: #d9f99d; color: #365314; }
+.day-badge.friday { background: #bfdbfe; color: #1e3a8a; }
+.day-badge.saturday { background: #e9d5ff; color: #581c87; }
+.day-badge.sunday { background: #fce7f3; color: #831843; }
     /* Chart containers */
     .chart-container {
       background: var(--white);
@@ -1720,6 +1817,13 @@
               Upcoming Lessons
             </a>
           </li>
+                  <!-- Add this after the Upcoming Lessons link -->
+        <a href="#lessons-schedule" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-white/10 transition-all">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+            <span>Lessons Schedule</span>
+        </a>
           <li class="nav-item">
             <a href="#tutors" class="nav-link" data-section="tutors">
               <i class="fas fa-chalkboard-teacher nav-icon"></i>
