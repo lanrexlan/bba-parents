@@ -498,7 +498,7 @@
                     <h4><i class="fas fa-headset"></i> Support</h4>
                     <p style="color: rgba(255, 255, 255, 0.7); margin-bottom: 15px;">
                         <i class="fas fa-envelope"></i>
-                        parents@baobabonlineacademy.com
+                        <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="13637261767d67605371727c7172717c7d7f7a7d7672707277767e6a3d707c7e">[email&#160;protected]</a>
                     </p>
                     <p style="color: rgba(255, 255, 255, 0.7); margin-bottom: 15px;">
                         <i class="fas fa-phone"></i>
@@ -581,7 +581,40 @@
             </form>
 
             <div class="form-toggle">
+                <a href="#" onclick="openForgotPasswordModal()" style="color: var(--sunset-gold); font-weight: 600;">Forgot Password?</a>
+            </div>
+            <div class="form-toggle">
                 Don't have an account? <a href="#" onclick="switchToRegistration()">Register here</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Forgot Password Modal -->
+    <div class="modal" id="forgotPasswordModal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeForgotPasswordModal()"><i class="fas fa-times"></i></button>
+            <h3 class="modal-title"><i class="fas fa-key"></i> Reset Password</h3>
+
+            <div class="error-message" id="forgotErrorMessage"></div>
+            <div class="success-message" id="forgotSuccessMessage"></div>
+
+            <p style="text-align: center; color: var(--trunk-gray); margin-bottom: 25px;">
+                Enter your email address and we'll send you a link to reset your password.
+            </p>
+
+            <form id="forgotPasswordForm" onsubmit="handleForgotPassword(event)">
+                <div class="form-group">
+                    <label class="form-label">Email Address *</label>
+                    <input type="email" name="email" required class="form-input" placeholder="Enter your email address">
+                </div>
+                <button type="submit" class="form-submit" id="forgotSubmitBtn">
+                    <span id="forgotSubmitText">Send Reset Link</span>
+                    <div class="loading-spinner" id="forgotLoadingSpinner"></div>
+                </button>
+            </form>
+
+            <div class="form-toggle">
+                Remember your password? <a href="#" onclick="switchToLoginFromForgot()">Back to Login</a>
             </div>
         </div>
     </div>
@@ -609,7 +642,7 @@
         </div>
     </div>
 
-<script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
   // ===== CONFIGURATION =====
   const SUPABASE_URL = 'https://vcxdkacxbjsgaoxbhsip.supabase.co';
   const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZjeGRrYWN4YmpzZ2FveGJoc2lwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI5MDQ5ODMsImV4cCI6MjA2ODQ4MDk4M30.T9KhHWzHZWyaZvyeFXtBu8tPLY9JOn6_wCHcH8B46FU';
@@ -874,6 +907,49 @@
     });
   });
 
+  // ===== FORGOT PASSWORD =====
+  function openForgotPasswordModal() { closeLoginModal(); document.getElementById('forgotPasswordModal').style.display = 'flex'; document.body.style.overflow = 'hidden'; clearMessages(); }
+  function closeForgotPasswordModal() { document.getElementById('forgotPasswordModal').style.display = 'none'; document.body.style.overflow = 'auto'; clearMessages(); }
+  function switchToLoginFromForgot() { closeForgotPasswordModal(); openLoginModal(); }
+
+  async function handleForgotPassword(event) {
+    event.preventDefault();
+
+    const submitBtn = document.getElementById('forgotSubmitBtn');
+    const submitText = document.getElementById('forgotSubmitText');
+    const loadingSpinner = document.getElementById('forgotLoadingSpinner');
+    submitText.style.display = 'none'; loadingSpinner.style.display = 'inline-block'; submitBtn.disabled = true; clearMessages();
+
+    try {
+      const formData = new FormData(event.target);
+      const email = (formData.get('email') || '').toLowerCase().trim();
+
+      if (!email) throw new Error('Please enter your email address.');
+
+      console.log('Sending password reset email to:', email);
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: 'https://www.parent.baobabonlineacademy.com/reset-password.html'
+      });
+
+      if (error) throw error;
+
+      showSuccess('forgotSuccessMessage', 'Password reset link sent! Please check your email inbox (and spam folder).');
+      event.target.reset();
+      console.log('Password reset email sent successfully.');
+
+    } catch (error) {
+      console.error('Forgot password error:', error);
+      showError('forgotErrorMessage', error.message || 'Failed to send reset link. Please try again.');
+    } finally {
+      submitText.style.display = 'inline';
+      loadingSpinner.style.display = 'none';
+      submitBtn.disabled = false;
+    }
+  }
+
+  // Close forgot password modal on backdrop click
+  document.getElementById('forgotPasswordModal').addEventListener('click', (e) => { if (e.target === e.currentTarget) closeForgotPasswordModal(); });
+
   // Expose functions
   window.openRegistrationModal = openRegistrationModal;
   window.closeRegistrationModal = closeRegistrationModal;
@@ -886,6 +962,10 @@
   window.resendVerificationEmail = resendVerificationEmail;
   window.handleRegistration = handleRegistration;
   window.handleLogin = handleLogin;
+  window.openForgotPasswordModal = openForgotPasswordModal;
+  window.closeForgotPasswordModal = closeForgotPasswordModal;
+  window.switchToLoginFromForgot = switchToLoginFromForgot;
+  window.handleForgotPassword = handleForgotPassword;
 </script>
 </body>
 </html>
