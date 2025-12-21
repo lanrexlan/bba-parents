@@ -642,10 +642,13 @@
         </div>
     </div>
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script>
+<script>
   // ===== CONFIGURATION =====
   const SUPABASE_URL = 'https://vcxdkacxbjsgaoxbhsip.supabase.co';
   const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZjeGRrYWN4YmpzZ2FveGJoc2lwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI5MDQ5ODMsImV4cCI6MjA2ODQ4MDk4M30.T9KhHWzHZWyaZvyeFXtBu8tPLY9JOn6_wCHcH8B46FU';
+  
+  // Create Supabase client (only once)
   const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
   // Optional EmailJS init (not used for verification)
@@ -656,6 +659,75 @@
 
   let pendingUserData = null;
   let lastAttemptEmail = null;
+
+  // ===== MODAL FUNCTIONS (Define early) =====
+  function openRegistrationModal() { 
+    document.getElementById('registrationModal').style.display = 'flex'; 
+    document.body.style.overflow = 'hidden'; 
+    clearMessages(); 
+  }
+  
+  function closeRegistrationModal() { 
+    document.getElementById('registrationModal').style.display = 'none'; 
+    document.body.style.overflow = 'auto'; 
+    clearMessages(); 
+  }
+  
+  function openLoginModal() { 
+    document.getElementById('loginModal').style.display = 'flex'; 
+    document.body.style.overflow = 'hidden'; 
+    clearMessages(); 
+  }
+  
+  function closeLoginModal() { 
+    document.getElementById('loginModal').style.display = 'none'; 
+    document.body.style.overflow = 'auto'; 
+    clearMessages(); 
+  }
+  
+  function openVerificationModal() { 
+    document.getElementById('verificationModal').style.display = 'flex'; 
+    document.body.style.overflow = 'hidden'; 
+  }
+  
+  function closeVerificationModal() { 
+    document.getElementById('verificationModal').style.display = 'none'; 
+    document.body.style.overflow = 'auto'; 
+  }
+  
+  function openForgotPasswordModal() { 
+    closeLoginModal(); 
+    document.getElementById('forgotPasswordModal').style.display = 'flex'; 
+    document.body.style.overflow = 'hidden'; 
+    clearMessages(); 
+  }
+  
+  function closeForgotPasswordModal() { 
+    document.getElementById('forgotPasswordModal').style.display = 'none'; 
+    document.body.style.overflow = 'auto'; 
+    clearMessages(); 
+  }
+  
+  function switchToLogin() { closeRegistrationModal(); openLoginModal(); }
+  function switchToRegistration() { closeLoginModal(); openRegistrationModal(); }
+  function switchToLoginFromForgot() { closeForgotPasswordModal(); openLoginModal(); }
+
+  function clearMessages() {
+    document.querySelectorAll('.error-message').forEach(msg => { msg.style.display = 'none'; msg.textContent = ''; });
+    document.querySelectorAll('.success-message').forEach(msg => { msg.style.display = 'none'; msg.textContent = ''; });
+  }
+  
+  function showError(id, message) { 
+    const el = document.getElementById(id); 
+    el.textContent = message; 
+    el.style.display = 'block'; 
+  }
+  
+  function showSuccess(id, message) { 
+    const el = document.getElementById(id); 
+    el.textContent = message; 
+    el.style.display = 'block'; 
+  }
 
   // ===== AUTH STATE LOGS =====
   supabase.auth.onAuthStateChange((event, session) => {
@@ -673,36 +745,20 @@
     document.body.style.overflow = mobileMenuPanel.classList.contains('active') ? 'hidden' : 'auto';
     menuToggle.innerHTML = mobileMenuPanel.classList.contains('active') ? '<i class="fas fa-times"></i>' : '<i class="fas fa-bars"></i>';
   }
+  
   function closeMenu() {
     mobileMenuPanel.classList.remove('active');
     menuOverlay.classList.remove('active');
     document.body.style.overflow = 'auto';
     menuToggle.innerHTML = '<i class="fas fa-bars"></i>';
   }
+  
   menuToggle.addEventListener('click', toggleMenu);
   menuOverlay.addEventListener('click', closeMenu);
   document.querySelectorAll('.mobile-link').forEach(link => link.addEventListener('click', closeMenu));
 
-  // ===== MODALS =====
-  function openRegistrationModal() { document.getElementById('registrationModal').style.display = 'flex'; document.body.style.overflow = 'hidden'; clearMessages(); }
-  function closeRegistrationModal() { document.getElementById('registrationModal').style.display = 'none'; document.body.style.overflow = 'auto'; clearMessages(); }
-  function openLoginModal() { document.getElementById('loginModal').style.display = 'flex'; document.body.style.overflow = 'hidden'; clearMessages(); }
-  function closeLoginModal() { document.getElementById('loginModal').style.display = 'none'; document.body.style.overflow = 'auto'; clearMessages(); }
-  function openVerificationModal() { document.getElementById('verificationModal').style.display = 'flex'; document.body.style.overflow = 'hidden'; }
-  function closeVerificationModal() { document.getElementById('verificationModal').style.display = 'none'; document.body.style.overflow = 'auto'; }
-  function switchToLogin() { closeRegistrationModal(); openLoginModal(); }
-  function switchToRegistration() { closeLoginModal(); openRegistrationModal(); }
-
-  function clearMessages() {
-    document.querySelectorAll('.error-message').forEach(msg => { msg.style.display = 'none'; msg.textContent = ''; });
-    document.querySelectorAll('.success-message').forEach(msg => { msg.style.display = 'none'; msg.textContent = ''; });
-  }
-  function showError(id, message) { const el = document.getElementById(id); el.textContent = message; el.style.display = 'block'; }
-  function showSuccess(id, message) { const el = document.getElementById(id); el.textContent = message; el.style.display = 'block'; }
-
   // ===== HELPERS =====
   function verifyRedirectUrl() {
-    // Must be allow-listed in Supabase Auth → URL Configuration
     return `${window.location.origin}/verify-email.html`;
   }
 
@@ -724,7 +780,10 @@
     const submitBtn = document.getElementById('regSubmitBtn');
     const submitText = document.getElementById('regSubmitText');
     const loadingSpinner = document.getElementById('regLoadingSpinner');
-    submitText.style.display = 'none'; loadingSpinner.style.display = 'inline-block'; submitBtn.disabled = true; clearMessages();
+    submitText.style.display = 'none'; 
+    loadingSpinner.style.display = 'inline-block'; 
+    submitBtn.disabled = true; 
+    clearMessages();
 
     try {
       const formData = new FormData(event.target);
@@ -738,17 +797,16 @@
       if (password !== confirmPassword) throw new Error('Passwords do not match');
       if (password.length < 6) throw new Error('Password must be at least 6 characters long');
 
-      // Check authorized email allowlist
       console.log('Checking authorized email…');
       const { data: authorizedEmail, error: authCheckError } = await supabase
         .from('authorised_emails')
         .select('*').eq('email', email).single();
+      
       if (authCheckError || !authorizedEmail) {
         throw new Error('This email is not authorized to create an account. Please contact support at parents@baobabonlineacademy.com');
       }
       if (authorizedEmail.is_used) throw new Error('This email has already been used to create an account. Please try logging in instead.');
 
-      // Create user (Supabase will send verification email)
       console.log('Creating user account…');
       const { data: authData, error: signUpError } = await supabase.auth.signUp({
         email,
@@ -758,22 +816,21 @@
           data: { full_name: fullName, phone: phone }
         }
       });
+      
       if (signUpError) throw new Error(signUpError.message || 'Failed to create user account.');
       if (!authData?.user) throw new Error('Failed to create user account.');
 
-      // Remember for resend
       pendingUserData = { email, fullName, phone, userId: authData.user.id };
       lastAttemptEmail = email;
 
-      // Mark email as used (optional: you can move this to post-verification if preferred)
       console.log('Marking email as used…');
       const { error: updateError } = await supabase
         .from('authorised_emails')
         .update({ is_used: true, used_at: new Date().toISOString() })
         .eq('email', email);
+      
       if (updateError) console.warn('Failed to update authorised_emails:', updateError);
 
-      // Show verification instructions
       event.target.reset();
       closeRegistrationModal();
       openVerificationModal();
@@ -799,7 +856,10 @@
     const submitBtn = document.getElementById('loginSubmitBtn');
     const submitText = document.getElementById('loginSubmitText');
     const loadingSpinner = document.getElementById('loginLoadingSpinner');
-    submitText.style.display = 'none'; loadingSpinner.style.display = 'inline-block'; submitBtn.disabled = true; clearMessages();
+    submitText.style.display = 'none'; 
+    loadingSpinner.style.display = 'inline-block'; 
+    submitBtn.disabled = true; 
+    clearMessages();
 
     let email = '';
     try {
@@ -807,7 +867,6 @@
       email = (formData.get('email') || '').toLowerCase().trim();
       const password = formData.get('password');
 
-      // Ensure any stale session is cleared
       await supabase.auth.signOut();
 
       console.log('Attempting login for:', email);
@@ -815,7 +874,6 @@
 
       if (signInError) {
         const msg = (signInError.message || '').toLowerCase();
-        // Handle unconfirmed email: trigger resend and prompt verify
         if (msg.includes('email not confirmed') || signInError.code === 'email_not_confirmed') {
           lastAttemptEmail = email;
           try {
@@ -847,6 +905,45 @@
     } catch (error) {
       console.error('Login error:', error);
       showError('loginErrorMessage', error.message || 'Login failed. Please try again.');
+    } finally {
+      submitText.style.display = 'inline';
+      loadingSpinner.style.display = 'none';
+      submitBtn.disabled = false;
+    }
+  }
+
+  // ===== FORGOT PASSWORD =====
+  async function handleForgotPassword(event) {
+    event.preventDefault();
+
+    const submitBtn = document.getElementById('forgotSubmitBtn');
+    const submitText = document.getElementById('forgotSubmitText');
+    const loadingSpinner = document.getElementById('forgotLoadingSpinner');
+    submitText.style.display = 'none'; 
+    loadingSpinner.style.display = 'inline-block'; 
+    submitBtn.disabled = true; 
+    clearMessages();
+
+    try {
+      const formData = new FormData(event.target);
+      const email = (formData.get('email') || '').toLowerCase().trim();
+
+      if (!email) throw new Error('Please enter your email address.');
+
+      console.log('Sending password reset email to:', email);
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: 'https://www.parent.baobabonlineacademy.com/reset-password.html'
+      });
+
+      if (error) throw error;
+
+      showSuccess('forgotSuccessMessage', 'Password reset link sent! Please check your email inbox (and spam folder).');
+      event.target.reset();
+      console.log('Password reset email sent successfully.');
+
+    } catch (error) {
+      console.error('Forgot password error:', error);
+      showError('forgotErrorMessage', error.message || 'Failed to send reset link. Please try again.');
     } finally {
       submitText.style.display = 'inline';
       loadingSpinner.style.display = 'none';
@@ -895,77 +992,25 @@
   });
 
   // ===== CLOSE MODALS ON BACKDROP =====
-  document.getElementById('registrationModal').addEventListener('click', (e) => { if (e.target === e.currentTarget) closeRegistrationModal(); });
-  document.getElementById('loginModal').addEventListener('click', (e) => { if (e.target === e.currentTarget) closeLoginModal(); });
-  document.getElementById('verificationModal').addEventListener('click', (e) => { if (e.target === e.currentTarget) closeVerificationModal(); });
+  document.getElementById('registrationModal').addEventListener('click', (e) => { 
+    if (e.target === e.currentTarget) closeRegistrationModal(); 
+  });
+  document.getElementById('loginModal').addEventListener('click', (e) => { 
+    if (e.target === e.currentTarget) closeLoginModal(); 
+  });
+  document.getElementById('verificationModal').addEventListener('click', (e) => { 
+    if (e.target === e.currentTarget) closeVerificationModal(); 
+  });
+  document.getElementById('forgotPasswordModal').addEventListener('click', (e) => { 
+    if (e.target === e.currentTarget) closeForgotPasswordModal(); 
+  });
 
   // ===== INITIALIZE =====
   document.addEventListener('DOMContentLoaded', function () {
-    // Optionally check for existing session
     supabase.auth.getUser().then(({ data }) => {
       if (data?.user) console.log('Session found for:', data.user.email);
     });
   });
-
-  // ===== FORGOT PASSWORD =====
-  function openForgotPasswordModal() { closeLoginModal(); document.getElementById('forgotPasswordModal').style.display = 'flex'; document.body.style.overflow = 'hidden'; clearMessages(); }
-  function closeForgotPasswordModal() { document.getElementById('forgotPasswordModal').style.display = 'none'; document.body.style.overflow = 'auto'; clearMessages(); }
-  function switchToLoginFromForgot() { closeForgotPasswordModal(); openLoginModal(); }
-
-  async function handleForgotPassword(event) {
-    event.preventDefault();
-
-    const submitBtn = document.getElementById('forgotSubmitBtn');
-    const submitText = document.getElementById('forgotSubmitText');
-    const loadingSpinner = document.getElementById('forgotLoadingSpinner');
-    submitText.style.display = 'none'; loadingSpinner.style.display = 'inline-block'; submitBtn.disabled = true; clearMessages();
-
-    try {
-      const formData = new FormData(event.target);
-      const email = (formData.get('email') || '').toLowerCase().trim();
-
-      if (!email) throw new Error('Please enter your email address.');
-
-      console.log('Sending password reset email to:', email);
-      const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: 'https://www.parent.baobabonlineacademy.com/reset-password.html'
-      });
-
-      if (error) throw error;
-
-      showSuccess('forgotSuccessMessage', 'Password reset link sent! Please check your email inbox (and spam folder).');
-      event.target.reset();
-      console.log('Password reset email sent successfully.');
-
-    } catch (error) {
-      console.error('Forgot password error:', error);
-      showError('forgotErrorMessage', error.message || 'Failed to send reset link. Please try again.');
-    } finally {
-      submitText.style.display = 'inline';
-      loadingSpinner.style.display = 'none';
-      submitBtn.disabled = false;
-    }
-  }
-
-  // Close forgot password modal on backdrop click
-  document.getElementById('forgotPasswordModal').addEventListener('click', (e) => { if (e.target === e.currentTarget) closeForgotPasswordModal(); });
-
-  // Expose functions
-  window.openRegistrationModal = openRegistrationModal;
-  window.closeRegistrationModal = closeRegistrationModal;
-  window.openLoginModal = openLoginModal;
-  window.closeLoginModal = closeLoginModal;
-  window.openVerificationModal = openVerificationModal;
-  window.closeVerificationModal = closeVerificationModal;
-  window.switchToLogin = switchToLogin;
-  window.switchToRegistration = switchToRegistration;
-  window.resendVerificationEmail = resendVerificationEmail;
-  window.handleRegistration = handleRegistration;
-  window.handleLogin = handleLogin;
-  window.openForgotPasswordModal = openForgotPasswordModal;
-  window.closeForgotPasswordModal = closeForgotPasswordModal;
-  window.switchToLoginFromForgot = switchToLoginFromForgot;
-  window.handleForgotPassword = handleForgotPassword;
 </script>
 </body>
 </html>
