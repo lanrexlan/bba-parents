@@ -648,10 +648,13 @@
   const SUPABASE_URL = 'https://vcxdkacxbjsgaoxbhsip.supabase.co';
   const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZjeGRrYWN4YmpzZ2FveGJoc2lwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI5MDQ5ODMsImV4cCI6MjA2ODQ4MDk4M30.T9KhHWzHZWyaZvyeFXtBu8tPLY9JOn6_wCHcH8B46FU';
   
-  // Create Supabase client (only once)
-  const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  // Create Supabase client - check if window.supabaseClient doesn't exist
+  if (!window.supabaseClient) {
+    window.supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  }
+  const supabaseClient = window.supabaseClient;
 
-  // Optional EmailJS init (not used for verification)
+  // Optional EmailJS init
   const EMAILJS_CONFIG = { PUBLIC_KEY: 'axzjFvaj8oDzIdLHB' };
   if (window.emailjs && EMAILJS_CONFIG.PUBLIC_KEY) {
     try { emailjs.init(EMAILJS_CONFIG.PUBLIC_KEY); } catch(_) {}
@@ -660,58 +663,7 @@
   let pendingUserData = null;
   let lastAttemptEmail = null;
 
-  // ===== MODAL FUNCTIONS (Define early) =====
-  function openRegistrationModal() { 
-    document.getElementById('registrationModal').style.display = 'flex'; 
-    document.body.style.overflow = 'hidden'; 
-    clearMessages(); 
-  }
-  
-  function closeRegistrationModal() { 
-    document.getElementById('registrationModal').style.display = 'none'; 
-    document.body.style.overflow = 'auto'; 
-    clearMessages(); 
-  }
-  
-  function openLoginModal() { 
-    document.getElementById('loginModal').style.display = 'flex'; 
-    document.body.style.overflow = 'hidden'; 
-    clearMessages(); 
-  }
-  
-  function closeLoginModal() { 
-    document.getElementById('loginModal').style.display = 'none'; 
-    document.body.style.overflow = 'auto'; 
-    clearMessages(); 
-  }
-  
-  function openVerificationModal() { 
-    document.getElementById('verificationModal').style.display = 'flex'; 
-    document.body.style.overflow = 'hidden'; 
-  }
-  
-  function closeVerificationModal() { 
-    document.getElementById('verificationModal').style.display = 'none'; 
-    document.body.style.overflow = 'auto'; 
-  }
-  
-  function openForgotPasswordModal() { 
-    closeLoginModal(); 
-    document.getElementById('forgotPasswordModal').style.display = 'flex'; 
-    document.body.style.overflow = 'hidden'; 
-    clearMessages(); 
-  }
-  
-  function closeForgotPasswordModal() { 
-    document.getElementById('forgotPasswordModal').style.display = 'none'; 
-    document.body.style.overflow = 'auto'; 
-    clearMessages(); 
-  }
-  
-  function switchToLogin() { closeRegistrationModal(); openLoginModal(); }
-  function switchToRegistration() { closeLoginModal(); openRegistrationModal(); }
-  function switchToLoginFromForgot() { closeForgotPasswordModal(); openLoginModal(); }
-
+  // ===== UTILITY FUNCTIONS =====
   function clearMessages() {
     document.querySelectorAll('.error-message').forEach(msg => { msg.style.display = 'none'; msg.textContent = ''; });
     document.querySelectorAll('.success-message').forEach(msg => { msg.style.display = 'none'; msg.textContent = ''; });
@@ -719,43 +671,101 @@
   
   function showError(id, message) { 
     const el = document.getElementById(id); 
-    el.textContent = message; 
-    el.style.display = 'block'; 
+    if (el) {
+      el.textContent = message; 
+      el.style.display = 'block'; 
+    }
   }
   
   function showSuccess(id, message) { 
     const el = document.getElementById(id); 
-    el.textContent = message; 
-    el.style.display = 'block'; 
+    if (el) {
+      el.textContent = message; 
+      el.style.display = 'block'; 
+    }
   }
 
+  // ===== MODAL FUNCTIONS =====
+  window.openRegistrationModal = function() { 
+    document.getElementById('registrationModal').style.display = 'flex'; 
+    document.body.style.overflow = 'hidden'; 
+    clearMessages(); 
+  };
+  
+  window.closeRegistrationModal = function() { 
+    document.getElementById('registrationModal').style.display = 'none'; 
+    document.body.style.overflow = 'auto'; 
+    clearMessages(); 
+  };
+  
+  window.openLoginModal = function() { 
+    document.getElementById('loginModal').style.display = 'flex'; 
+    document.body.style.overflow = 'hidden'; 
+    clearMessages(); 
+  };
+  
+  window.closeLoginModal = function() { 
+    document.getElementById('loginModal').style.display = 'none'; 
+    document.body.style.overflow = 'auto'; 
+    clearMessages(); 
+  };
+  
+  window.openVerificationModal = function() { 
+    document.getElementById('verificationModal').style.display = 'flex'; 
+    document.body.style.overflow = 'hidden'; 
+  };
+  
+  window.closeVerificationModal = function() { 
+    document.getElementById('verificationModal').style.display = 'none'; 
+    document.body.style.overflow = 'auto'; 
+  };
+  
+  window.openForgotPasswordModal = function() { 
+    window.closeLoginModal(); 
+    document.getElementById('forgotPasswordModal').style.display = 'flex'; 
+    document.body.style.overflow = 'hidden'; 
+    clearMessages(); 
+  };
+  
+  window.closeForgotPasswordModal = function() { 
+    document.getElementById('forgotPasswordModal').style.display = 'none'; 
+    document.body.style.overflow = 'auto'; 
+    clearMessages(); 
+  };
+  
+  window.switchToLogin = function() { window.closeRegistrationModal(); window.openLoginModal(); };
+  window.switchToRegistration = function() { window.closeLoginModal(); window.openRegistrationModal(); };
+  window.switchToLoginFromForgot = function() { window.closeForgotPasswordModal(); window.openLoginModal(); };
+
   // ===== AUTH STATE LOGS =====
-  supabase.auth.onAuthStateChange((event, session) => {
+  supabaseClient.auth.onAuthStateChange((event, session) => {
     console.log('Auth state:', event, session?.user?.email || 'no user');
   });
 
   // ===== MOBILE MENU =====
-  const menuToggle = document.getElementById('menuToggle');
-  const mobileMenuPanel = document.getElementById('mobileMenuPanel');
-  const menuOverlay = document.getElementById('menuOverlay');
+  document.addEventListener('DOMContentLoaded', function() {
+    const menuToggle = document.getElementById('menuToggle');
+    const mobileMenuPanel = document.getElementById('mobileMenuPanel');
+    const menuOverlay = document.getElementById('menuOverlay');
 
-  function toggleMenu() {
-    mobileMenuPanel.classList.toggle('active');
-    menuOverlay.classList.toggle('active');
-    document.body.style.overflow = mobileMenuPanel.classList.contains('active') ? 'hidden' : 'auto';
-    menuToggle.innerHTML = mobileMenuPanel.classList.contains('active') ? '<i class="fas fa-times"></i>' : '<i class="fas fa-bars"></i>';
-  }
-  
-  function closeMenu() {
-    mobileMenuPanel.classList.remove('active');
-    menuOverlay.classList.remove('active');
-    document.body.style.overflow = 'auto';
-    menuToggle.innerHTML = '<i class="fas fa-bars"></i>';
-  }
-  
-  menuToggle.addEventListener('click', toggleMenu);
-  menuOverlay.addEventListener('click', closeMenu);
-  document.querySelectorAll('.mobile-link').forEach(link => link.addEventListener('click', closeMenu));
+    function toggleMenu() {
+      mobileMenuPanel.classList.toggle('active');
+      menuOverlay.classList.toggle('active');
+      document.body.style.overflow = mobileMenuPanel.classList.contains('active') ? 'hidden' : 'auto';
+      menuToggle.innerHTML = mobileMenuPanel.classList.contains('active') ? '<i class="fas fa-times"></i>' : '<i class="fas fa-bars"></i>';
+    }
+    
+    function closeMenu() {
+      mobileMenuPanel.classList.remove('active');
+      menuOverlay.classList.remove('active');
+      document.body.style.overflow = 'auto';
+      menuToggle.innerHTML = '<i class="fas fa-bars"></i>';
+    }
+    
+    if (menuToggle) menuToggle.addEventListener('click', toggleMenu);
+    if (menuOverlay) menuOverlay.addEventListener('click', closeMenu);
+    document.querySelectorAll('.mobile-link').forEach(link => link.addEventListener('click', closeMenu));
+  });
 
   // ===== HELPERS =====
   function verifyRedirectUrl() {
@@ -764,7 +774,7 @@
 
   async function isAuthorizedUser(email) {
     try {
-      const { data, error } = await supabase.from('authorised_emails').select('*').eq('email', email.toLowerCase()).single();
+      const { data, error } = await supabaseClient.from('authorised_emails').select('*').eq('email', email.toLowerCase()).single();
       if (error || !data) return false;
       return data.is_used === true;
     } catch (e) {
@@ -774,7 +784,7 @@
   }
 
   // ===== REGISTRATION =====
-  async function handleRegistration(event) {
+  window.handleRegistration = async function(event) {
     event.preventDefault();
 
     const submitBtn = document.getElementById('regSubmitBtn');
@@ -798,7 +808,7 @@
       if (password.length < 6) throw new Error('Password must be at least 6 characters long');
 
       console.log('Checking authorized email…');
-      const { data: authorizedEmail, error: authCheckError } = await supabase
+      const { data: authorizedEmail, error: authCheckError } = await supabaseClient
         .from('authorised_emails')
         .select('*').eq('email', email).single();
       
@@ -808,7 +818,7 @@
       if (authorizedEmail.is_used) throw new Error('This email has already been used to create an account. Please try logging in instead.');
 
       console.log('Creating user account…');
-      const { data: authData, error: signUpError } = await supabase.auth.signUp({
+      const { data: authData, error: signUpError } = await supabaseClient.auth.signUp({
         email,
         password,
         options: {
@@ -824,7 +834,7 @@
       lastAttemptEmail = email;
 
       console.log('Marking email as used…');
-      const { error: updateError } = await supabase
+      const { error: updateError } = await supabaseClient
         .from('authorised_emails')
         .update({ is_used: true, used_at: new Date().toISOString() })
         .eq('email', email);
@@ -832,8 +842,8 @@
       if (updateError) console.warn('Failed to update authorised_emails:', updateError);
 
       event.target.reset();
-      closeRegistrationModal();
-      openVerificationModal();
+      window.closeRegistrationModal();
+      window.openVerificationModal();
       showSuccess('regSuccessMessage', 'Account created. Please verify your email to continue.');
       console.log('Registration complete. Verification email sent by Supabase.');
 
@@ -847,10 +857,10 @@
       loadingSpinner.style.display = 'none';
       submitBtn.disabled = false;
     }
-  }
+  };
 
   // ===== LOGIN =====
-  async function handleLogin(event) {
+  window.handleLogin = async function(event) {
     event.preventDefault();
 
     const submitBtn = document.getElementById('loginSubmitBtn');
@@ -867,24 +877,24 @@
       email = (formData.get('email') || '').toLowerCase().trim();
       const password = formData.get('password');
 
-      await supabase.auth.signOut();
+      await supabaseClient.auth.signOut();
 
       console.log('Attempting login for:', email);
-      const { data: authData, error: signInError } = await supabase.auth.signInWithPassword({ email, password });
+      const { data: authData, error: signInError } = await supabaseClient.auth.signInWithPassword({ email, password });
 
       if (signInError) {
         const msg = (signInError.message || '').toLowerCase();
         if (msg.includes('email not confirmed') || signInError.code === 'email_not_confirmed') {
           lastAttemptEmail = email;
           try {
-            await supabase.auth.resend({
+            await supabaseClient.auth.resend({
               type: 'signup',
               email,
               options: { emailRedirectTo: verifyRedirectUrl() }
             });
           } catch (_) {}
           showError('loginErrorMessage', 'Please verify your email address. We just sent you a fresh verification link.');
-          openVerificationModal();
+          window.openVerificationModal();
           return;
         }
         if (msg.includes('invalid login credentials')) {
@@ -898,7 +908,7 @@
       showSuccess('loginSuccessMessage', 'Login successful! Redirecting to your dashboard…');
       event.target.reset();
       setTimeout(() => {
-        closeLoginModal();
+        window.closeLoginModal();
         window.location.href = '/parent-dashboard.html';
       }, 1500);
 
@@ -910,10 +920,10 @@
       loadingSpinner.style.display = 'none';
       submitBtn.disabled = false;
     }
-  }
+  };
 
   // ===== FORGOT PASSWORD =====
-  async function handleForgotPassword(event) {
+  window.handleForgotPassword = async function(event) {
     event.preventDefault();
 
     const submitBtn = document.getElementById('forgotSubmitBtn');
@@ -931,7 +941,7 @@
       if (!email) throw new Error('Please enter your email address.');
 
       console.log('Sending password reset email to:', email);
-      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      const { error } = await supabaseClient.auth.resetPasswordForEmail(email, {
         redirectTo: 'https://www.parent.baobabonlineacademy.com/reset-password.html'
       });
 
@@ -949,10 +959,10 @@
       loadingSpinner.style.display = 'none';
       submitBtn.disabled = false;
     }
-  }
+  };
 
   // ===== RESEND VERIFICATION =====
-  async function resendVerificationEmail() {
+  window.resendVerificationEmail = async function() {
     const email = (pendingUserData?.email || lastAttemptEmail || '').trim().toLowerCase();
     let targetEmail = email;
     if (!targetEmail) {
@@ -962,7 +972,7 @@
     }
 
     try {
-      await supabase.auth.resend({
+      await supabaseClient.auth.resend({
         type: 'signup',
         email: targetEmail,
         options: { emailRedirectTo: verifyRedirectUrl() }
@@ -972,42 +982,43 @@
       console.error('Resend verification error:', err);
       alert('Could not resend verification. Please try again.');
     }
-  }
-
-  // ===== SMOOTH SCROLL =====
-  document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-    anchor.addEventListener('click', function (e) {
-      const href = this.getAttribute('href');
-      if (href === '#' || href === '#login' || href === '#register') { e.preventDefault(); return; }
-      e.preventDefault();
-      const target = document.querySelector(href);
-      if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    });
-  });
-
-  // ===== HOVER EFFECTS =====
-  document.querySelectorAll('.feature-card').forEach(card => {
-    card.addEventListener('mouseenter', function () { this.style.transform = 'translateY(-15px) scale(1.02)'; });
-    card.addEventListener('mouseleave', function () { this.style.transform = 'translateY(0) scale(1)'; });
-  });
-
-  // ===== CLOSE MODALS ON BACKDROP =====
-  document.getElementById('registrationModal').addEventListener('click', (e) => { 
-    if (e.target === e.currentTarget) closeRegistrationModal(); 
-  });
-  document.getElementById('loginModal').addEventListener('click', (e) => { 
-    if (e.target === e.currentTarget) closeLoginModal(); 
-  });
-  document.getElementById('verificationModal').addEventListener('click', (e) => { 
-    if (e.target === e.currentTarget) closeVerificationModal(); 
-  });
-  document.getElementById('forgotPasswordModal').addEventListener('click', (e) => { 
-    if (e.target === e.currentTarget) closeForgotPasswordModal(); 
-  });
+  };
 
   // ===== INITIALIZE =====
   document.addEventListener('DOMContentLoaded', function () {
-    supabase.auth.getUser().then(({ data }) => {
+    // Smooth scroll
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        const href = this.getAttribute('href');
+        if (href === '#' || href === '#login' || href === '#register') { e.preventDefault(); return; }
+        e.preventDefault();
+        const target = document.querySelector(href);
+        if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    });
+
+    // Hover effects
+    document.querySelectorAll('.feature-card').forEach(card => {
+      card.addEventListener('mouseenter', function () { this.style.transform = 'translateY(-15px) scale(1.02)'; });
+      card.addEventListener('mouseleave', function () { this.style.transform = 'translateY(0) scale(1)'; });
+    });
+
+    // Close modals on backdrop click
+    const modals = ['registrationModal', 'loginModal', 'verificationModal', 'forgotPasswordModal'];
+    modals.forEach(modalId => {
+      const modal = document.getElementById(modalId);
+      if (modal) {
+        modal.addEventListener('click', (e) => { 
+          if (e.target === e.currentTarget) {
+            const closeFunc = window[`close${modalId.charAt(0).toUpperCase() + modalId.slice(1).replace('Modal', 'Modal')}`];
+            if (closeFunc) closeFunc();
+          }
+        });
+      }
+    });
+
+    // Check existing session
+    supabaseClient.auth.getUser().then(({ data }) => {
       if (data?.user) console.log('Session found for:', data.user.email);
     });
   });
