@@ -942,7 +942,7 @@
 
       console.log('Sending password reset email to:', email);
       const { error } = await supabaseClient.auth.resetPasswordForEmail(email, {
-        redirectTo: 'https://www.parent.baobabonlineacademy.com/reset-password.html'
+        redirectTo: 'https://parent.baobabonlineacademy.com/reset-password.html'
       });
 
       if (error) throw error;
