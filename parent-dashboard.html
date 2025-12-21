@@ -2392,6 +2392,9 @@
   </div>
 
   <script>
+    (function() {
+    'use strict';
+
     // Supabase setup
     const SUPABASE_URL = 'https://vcxdkacxbjsgaoxbhsip.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZjeGRrYWN4YmpzZ2FveGJoc2lwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI5MDQ5ODMsImV4cCI6MjA2ODQ4MDk4M30.T9KhHWzHZWyaZvyeFXtBu8tPLY9JOn6_wCHcH8B46FU';
@@ -4405,7 +4408,7 @@ async function generatePDFReport() {
     window.openChildEditModal = openChildEditModal;
     window.closeChildEditModal = closeChildEditModal;
 
-    // Boot
+// Boot
     (async function init() {
       const user = await ensureAuth(); 
       if (!user) return;
@@ -4427,6 +4430,8 @@ async function generatePDFReport() {
       loadBillingSection();
       loadAgreementSection();
     })();
-  </script>
+    
+})(); // End of IIFE
+</script>
 </body>
 </html>
