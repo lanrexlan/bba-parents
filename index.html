@@ -138,9 +138,13 @@
         }
         .nav-brand { display: flex; align-items: center; gap: .7rem; flex-shrink: 0; }
         .nav-logo {
-            width: 46px; height: 46px; border-radius: 50%; object-fit: cover;
-            border: 2px solid var(--sunset-gold); box-shadow: 0 0 0 3px rgba(244,162,97,.22); background: white;
-        }
+    width: 46px; height: 46px; min-width: 46px; border-radius: 50%; 
+    border: 2px solid var(--sunset-gold); box-shadow: 0 0 0 3px rgba(244,162,97,.22); 
+    background: white; overflow: hidden; display: flex; align-items: center; justify-content: center;
+}
+.nav-logo img {
+    width: 100%; height: 100%; object-fit: cover;
+}
         .nav-brand-text { line-height: 1.15; }
         .nav-brand-name { font-family: 'Playfair Display', serif; font-size: 1.1rem; font-weight: 700; color: #fff; display: block; transition: color .3s; }
         #nav.scrolled .nav-brand-name { color: var(--baobab-brown-dark); }
