@@ -2,7 +2,7 @@
 <html lang="en-GB">
 <head>
     <meta charset="UTF-8">
-    <link rel="icon" type="image/png" sizes="32x32" href="/Images/logo.jpg">
+    <link rel="icon" type="image/png" sizes="32x32" href="/Images/Logo_Baobab.svg">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Parent Portal - Baobab Digital Academy</title>
     
@@ -37,7 +37,6 @@
             --text-light:         #8C7066;
             --border-light:       #EDD9C8;
             --shadow-warm:        rgba(107,58,42,0.12);
-            --shadow-deep:        rgba(107,58,42,0.26);
             --max-w:              1280px;
             --section-py:         5rem;
             --section-px:         2rem;
@@ -118,48 +117,71 @@
 
         .btn-white { background: #fff; color: var(--baobab-brown-dark); box-shadow: 0 4px 14px rgba(0,0,0,.08); }
         .btn-white:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,.15); }
+        
+        /* Small nav buttons */
+        .btn-sm { padding: .5rem 1.25rem; font-size: .85rem; }
 
         /* ================================================
-           HEADER & NAV
+           NAVBAR (Re-synced with Main Site)
            ================================================ */
-        .header {
-            position: fixed; top: 0; left: 0; width: 100%; z-index: 1000; 
-            background: rgba(255, 255, 255, 0.96); backdrop-filter: blur(15px);
-            box-shadow: 0 2px 20px var(--shadow-warm); padding: .75rem 0; transition: var(--transition);
+        #nav {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+            transition: all .4s ease; background: transparent;
         }
-        .nav-wrapper { display: flex; justify-content: space-between; align-items: center; }
-        .logo { display: flex; align-items: center; gap: .6rem; }
-        .logo-icon {
-            width: 42px; height: 42px; border-radius: 50%;
-            border: 2px solid var(--sunset-gold); box-shadow: 0 0 0 3px rgba(244,162,97,.22);
-            overflow: hidden; display: flex; align-items: center; justify-content: center; background: #fff;
+        #nav.scrolled {
+            background: rgba(255,255,255,.96); backdrop-filter: blur(18px);
+            box-shadow: 0 2px 22px var(--shadow-warm); padding: .2rem 0;
         }
-        .logo-icon img { width: 100%; height: 100%; object-fit: cover; }
-        .logo-text { font-family: 'Playfair Display', serif; font-weight: 700; font-size: 1.2rem; color: var(--baobab-brown-dark); line-height: 1.1; }
-        .logo-tag { display: block; font-family: 'DM Sans', sans-serif; font-size: .65rem; font-style: italic; color: var(--text-light); }
-        
-        .nav-menu { display: flex; gap: 1.5rem; }
-        .nav-link { font-weight: 600; font-size: .9rem; color: var(--text-medium); transition: var(--transition); }
-        .nav-link:hover { color: var(--sunset-gold); }
-        .nav-buttons { display: flex; gap: 1rem; }
-        
-        .menu-toggle { display: none; font-size: 1.5rem; cursor: pointer; color: var(--baobab-brown); background: none; border: none; }
-        
-        .mobile-menu-panel {
-            position: fixed; top: 0; right: -100%; width: 300px; height: 100vh; background-color: var(--white); z-index: 1000;
-            padding: 5rem 2rem 2rem; transition: var(--transition); box-shadow: -10px 0 30px rgba(0,0,0,.1); overflow-y: auto;
+        .nav-in {
+            max-width: var(--max-w); margin: 0 auto; padding: 1rem 2rem;
+            display: flex; align-items: center; justify-content: space-between; gap: 1rem;
         }
-        .mobile-menu-panel.active { right: 0; }
-        .mobile-menu { display: flex; flex-direction: column; gap: 1rem; }
-        .mobile-link { font-weight: 600; color: var(--text-dark); padding: .8rem 0; border-bottom: 1px solid var(--earth-cream); display: block; transition: var(--transition); }
-        .mobile-link:hover { color: var(--sunset-gold); padding-left: .5rem; }
-        .mobile-buttons { display: flex; flex-direction: column; gap: 1rem; margin-top: 2rem; }
-        
-        .menu-overlay {
-            position: fixed; inset: 0; background: rgba(24,18,15,.7); z-index: 999; 
-            opacity: 0; visibility: hidden; transition: var(--transition); backdrop-filter: blur(4px);
+        .nav-brand { display: flex; align-items: center; gap: .7rem; flex-shrink: 0; }
+        .nav-logo {
+            width: 46px; height: 46px; border-radius: 50%; object-fit: cover;
+            border: 2px solid var(--sunset-gold); box-shadow: 0 0 0 3px rgba(244,162,97,.22); background: white;
         }
-        .menu-overlay.active { opacity: 1; visibility: visible; }
+        .nav-brand-text { line-height: 1.15; }
+        .nav-brand-name { font-family: 'Playfair Display', serif; font-size: 1.1rem; font-weight: 700; color: #fff; display: block; transition: color .3s; }
+        #nav.scrolled .nav-brand-name { color: var(--baobab-brown-dark); }
+        .nav-brand-tag { font-size: .65rem; font-style: italic; color: rgba(255,255,255,.7); display: block; transition: color .3s; }
+        #nav.scrolled .nav-brand-tag { color: var(--text-light); }
+        
+        .nav-links { display: flex; align-items: center; gap: .1rem; }
+        .nav-links a {
+            font-size: .875rem; font-weight: 500; color: rgba(255,255,255,.88);
+            padding: .48rem .8rem; border-radius: 8px; transition: all .25s;
+        }
+        .nav-links a:hover { background: rgba(255,255,255,.15); color: #fff; }
+        #nav.scrolled .nav-links a { color: var(--text-medium); }
+        #nav.scrolled .nav-links a:hover { background: var(--earth-cream); color: var(--baobab-brown); }
+        
+        .nav-buttons { display: flex; gap: .5rem; }
+        #nav:not(.scrolled) .btn-outline { color: white; border-color: rgba(255,255,255,.4); background: rgba(255,255,255,.1); backdrop-filter: blur(4px); }
+        #nav:not(.scrolled) .btn-outline:hover { background: rgba(255,255,255,.2); border-color: rgba(255,255,255,.6); }
+
+        /* Animated Hamburger */
+        .ham { display: none; flex-direction: column; gap: 5px; padding: .4rem; background: none; border: none; cursor: pointer; }
+        .ham span { display: block; width: 24px; height: 2px; background: #fff; border-radius: 2px; transition: all .3s; }
+        #nav.scrolled .ham span { background: var(--baobab-brown); }
+        .ham.open span:nth-child(1) { transform: rotate(45deg) translate(5px, 5px); }
+        .ham.open span:nth-child(2) { opacity: 0; }
+        .ham.open span:nth-child(3) { transform: rotate(-45deg) translate(5px, -5px); }
+
+        /* Top-Down Dropdown Menu */
+        .mob-menu {
+            display: none; flex-direction: column; background: #fff; padding: 1.5rem 2rem 2rem;
+            border-top: 1px solid var(--border-light); box-shadow: 0 12px 30px var(--shadow-warm);
+            position: fixed; top: 78px; left: 0; width: 100%; z-index: 999;
+        }
+        .mob-menu.open { display: flex; animation: slideDown 0.3s ease; }
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .mob-menu a { font-size: 1rem; font-weight: 500; color: var(--text-dark); padding: 1rem 0; border-bottom: 1px solid var(--border-light); }
+        .mob-menu a:hover { color: var(--canopy-green); padding-left: 5px; }
+        
+        .mob-btns { display: flex; flex-direction: column; gap: .75rem; margin-top: 1.5rem; }
+        .mob-btns .btn { width: 100%; justify-content: center; padding: 1rem; font-size: 1rem; }
 
         /* ================================================
            HERO SECTION
@@ -183,7 +205,7 @@
             padding: .5rem 1.25rem; border-radius: var(--r-pill); font-size: .8rem; font-weight: 700; text-transform: uppercase;
             letter-spacing: .05em; display: inline-flex; align-items: center; gap: .5rem; margin-bottom: 1.5rem; color: var(--sunset-gold);
         }
-        .hero-title { font-size: clamp(2.5rem, 5vw, 4rem); margin-bottom: 1.25rem; color: white; }
+        .hero-title { font-family: 'Playfair Display', serif; font-size: clamp(2.5rem, 5vw, 4rem); font-weight: 800; margin-bottom: 1.25rem; color: white; line-height: 1.1; }
         .hero-subtitle { font-size: 1.1rem; opacity: 0.9; margin-bottom: 2.5rem; line-height: 1.7; max-width: 660px; margin-left: auto; margin-right: auto; }
         .hero-btns { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
 
@@ -249,12 +271,13 @@
         .sec-text h2 { color: white; }
         .sec-text p { color: rgba(255,255,255,0.85); font-size: 1rem; margin-bottom: 1.5rem; }
         .sec-features { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
-        .sec-item { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); backdrop-filter: blur(10px); padding: 1.5rem; border-radius: 16px; text-align: center; }
+        .sec-item { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); backdrop-filter: blur(10px); padding: 1.5rem; border-radius: 16px; text-align: center; transition: var(--transition); }
+        .sec-item:hover { transform: translateY(-5px); background: rgba(255,255,255,0.12); border-color: var(--sunset-gold); }
         .sec-icon { font-size: 2rem; color: var(--sunset-gold); margin-bottom: 1rem; }
         .sec-item h4 { color: white; font-size: 1rem; margin-bottom: .5rem; font-family: 'DM Sans', sans-serif; }
         .sec-item p { color: rgba(255,255,255,0.7); font-size: .8rem; margin: 0; }
 
-        @media(max-width: 992px) { .sec-grid { grid-template-columns: 1fr; gap: 2rem; } }
+        @media(max-width: 992px) { .sec-grid { grid-template-columns: 1fr; gap: 3rem; } }
 
         /* ================================================
            MODALS (LOGIN/REGISTER)
@@ -325,11 +348,10 @@
         .footer-link { color: rgba(255,255,255,0.6); display: block; padding: .4rem 0; font-size: .85rem; transition: var(--transition); }
         .footer-link:hover { color: var(--sunset-gold); padding-left: 5px; }
         .footer-bottom { text-align: center; padding-top: 2rem; border-top: 1px solid rgba(255,255,255,0.1); font-size: .8rem; color: rgba(255,255,255,0.4); }
-        .footer-bottom strong { color: var(--sunset-gold); }
 
         @media (max-width: 768px) {
             .nav-menu, .nav-buttons { display: none; }
-            .menu-toggle { display: block; }
+            .ham { display: flex; }
             .hero { padding-top: 7rem; min-height: 80vh; }
             .modal-content { padding: 2rem 1.5rem; }
         }
@@ -337,46 +359,47 @@
 </head>
 <body>
 
-    <header class="header">
-        <div class="container">
-            <div class="nav-wrapper">
-                <a href="https://baobabonlineacademy.com" class="logo">
-                    <div class="logo-icon">
-                        <img src="/Images/Logo_Baobab.svg" alt="Baobab Logo" onerror="this.src='/Images/logo.jpg'">
-                    </div>
-                    <div>
-                        <div class="logo-text">Parent Portal</div>
-                        <span class="logo-tag">Baobab Digital Academy</span>
-                    </div>
-                </a>
-                <button class="menu-toggle" id="menuToggle"><i class="fas fa-bars"></i></button>
-                <ul class="nav-menu">
-                    <li><a href="#features" class="nav-link">Features</a></li>
-                    <li><a href="#how-it-works" class="nav-link">How It Works</a></li>
-                    <li><a href="#security" class="nav-link">Security</a></li>
-                    <li><a href="https://baobabonlineacademy.com" class="nav-link">Main Website</a></li>
-                </ul>
-                <div class="nav-buttons">
-                    <button class="btn btn-outline btn-sm" onclick="openLoginModal()">Login</button>
-                    <button class="btn btn-gold btn-sm" onclick="openRegistrationModal()">Register</button>
+    <nav id="nav" class="header">
+        <div class="nav-in">
+            <a href="https://baobabonlineacademy.com" class="nav-brand">
+                <div class="nav-logo">
+                    <img src="/Images/Logo_Baobab.svg" alt="Baobab Logo" onerror="this.src='/Images/Logo_Baobab.svg'">
                 </div>
+                <div class="nav-brand-text">
+                    <span class="nav-brand-name">Parent Portal</span>
+                    <span class="nav-brand-tag">Baobab Digital Academy</span>
+                </div>
+            </a>
+            
+            <ul class="nav-links nav-menu">
+                <li><a href="#features" class="nav-link">Features</a></li>
+                <li><a href="#how-it-works" class="nav-link">How It Works</a></li>
+                <li><a href="#security" class="nav-link">Security</a></li>
+                <li><a href="https://baobabonlineacademy.com" class="nav-link">Main Website</a></li>
+            </ul>
+            
+            <div class="nav-buttons">
+                <button class="btn btn-outline btn-sm" onclick="openLoginModal()">Login</button>
+                <button class="btn btn-gold btn-sm" onclick="openRegistrationModal()">Register</button>
+            </div>
+            
+            <button class="ham" id="ham" aria-label="Toggle navigation">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
+        
+        <div class="mob-menu" id="mob">
+            <a href="#features" class="mob-link">Features</a>
+            <a href="#how-it-works" class="mob-link">How It Works</a>
+            <a href="#security" class="mob-link">Security</a>
+            <a href="https://baobabonlineacademy.com" class="mob-link">Main Website</a>
+            
+            <div class="mob-btns">
+                <button class="btn btn-outline" onclick="openLoginModal(); document.getElementById('ham').click();">Login</button>
+                <button class="btn btn-gold" onclick="openRegistrationModal(); document.getElementById('ham').click();">Register</button>
             </div>
         </div>
-    </header>
-
-    <div class="mobile-menu-panel" id="mobileMenuPanel">
-        <ul class="mobile-menu">
-            <li><a href="#features" class="mobile-link">Features</a></li>
-            <li><a href="#how-it-works" class="mobile-link">How It Works</a></li>
-            <li><a href="#security" class="mobile-link">Security</a></li>
-            <li><a href="https://baobabonlineacademy.com" class="mobile-link">Main Website</a></li>
-        </ul>
-        <div class="mobile-buttons">
-            <button class="btn btn-outline" style="width:100%;" onclick="openLoginModal()">Login</button>
-            <button class="btn btn-gold" style="width:100%;" onclick="openRegistrationModal()">Register</button>
-        </div>
-    </div>
-    <div class="menu-overlay" id="menuOverlay"></div>
+    </nav>
 
     <section class="hero">
         <div class="container">
@@ -385,7 +408,7 @@
                     <i class="fas fa-shield-alt"></i> Secure Access • Always Connected
                 </div>
                 <h1 class="hero-title">Watch Your Child Flourish Every Step of the Way</h1>
-                <p class="hero-sub" style="color: rgba(255,255,255,0.85);">
+                <p class="hero-subtitle">
                     Stay intimately connected to your child's educational journey with real-time progress tracking, 
                     direct tutor communication, and cultural milestone celebrations — all in a secure, 
                     premium portal designed for peace of mind.
@@ -681,14 +704,17 @@
                     <span class="resend-link" onclick="resendVerificationEmail()">Click here to resend link</span>
                 </p>
             </div>
-            <button class="btn btn-outline" style="margin-top: 1rem; width: 100%;" onclick="closeVerificationModal()">
+            <button class="btn btn-outline" style="margin-top: 1rem; width: 100%; justify-content: center;" onclick="closeVerificationModal()">
                 I'll Check My Email
             </button>
         </div>
     </div>
 
     <script>
-        // ===== UI SCROLL ANIMATIONS =====
+        // ===== UI SCROLL & NAV ANIMATIONS =====
+        const nav = document.getElementById('nav');
+        window.addEventListener('scroll', () => { nav.classList.toggle('scrolled', window.scrollY > 50); }, { passive: true });
+
         const fuEls = document.querySelectorAll('.fu');
         const fuObs = new IntersectionObserver(entries => {
             entries.forEach(entry => {
@@ -701,28 +727,23 @@
         }, { threshold: 0.1 });
         fuEls.forEach(el => fuObs.observe(el));
 
-        // ===== MOBILE MENU =====
-        const menuToggle = document.getElementById('menuToggle');
-        const mobileMenuPanel = document.getElementById('mobileMenuPanel');
-        const menuOverlay = document.getElementById('menuOverlay');
-
-        function toggleMenu() {
-            mobileMenuPanel.classList.toggle('active');
-            menuOverlay.classList.toggle('active');
-            document.body.style.overflow = mobileMenuPanel.classList.contains('active') ? 'hidden' : 'auto';
-            menuToggle.innerHTML = mobileMenuPanel.classList.contains('active') ? '<i class="fas fa-times"></i>' : '<i class="fas fa-bars"></i>';
-        }
-        function closeMenu() {
-            mobileMenuPanel.classList.remove('active');
-            menuOverlay.classList.remove('active');
-            document.body.style.overflow = 'auto';
-            menuToggle.innerHTML = '<i class="fas fa-bars"></i>';
-        }
+        // ===== NEW TOP-DOWN MOBILE MENU =====
+        const ham = document.getElementById('ham');
+        const mob = document.getElementById('mob');
         
-        if (menuToggle) menuToggle.addEventListener('click', toggleMenu);
-        if (menuOverlay) menuOverlay.addEventListener('click', closeMenu);
-        document.querySelectorAll('.mobile-link').forEach(link => link.addEventListener('click', closeMenu));
-
+        if (ham && mob) {
+            ham.addEventListener('click', () => {
+                ham.classList.toggle('open');
+                mob.classList.toggle('open');
+            });
+            // Close menu when a link is clicked
+            mob.querySelectorAll('.mob-link').forEach(link => {
+                link.addEventListener('click', () => {
+                    ham.classList.remove('open');
+                    mob.classList.remove('open');
+                });
+            });
+        }
 
         // ===== SUPABASE & AUTHENTICATION CONFIGURATION (Untouched) =====
         const SUPABASE_URL = 'https://vcxdkacxbjsgaoxbhsip.supabase.co';
