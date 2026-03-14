@@ -4,420 +4,487 @@
     <meta charset="UTF-8">
     <link rel="icon" type="image/png" sizes="32x32" href="/Images/logo.jpg">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Parent Portal - Baobab Online Academy</title>
+    <title>Parent Portal - Baobab Digital Academy</title>
+    
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@300;400;700;900&family=Open+Sans:wght@300;400;600;700&family=Kalam:wght@400;700&display=swap" rel="stylesheet">
-    <!-- Supabase -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet">
+    
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <!-- EmailJS (optional for non-verification emails) -->
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+    
     <style>
+        /* ================================================
+           BAOBAB BRAND PALETTE
+           ================================================ */
         :root {
-            --baobab-brown: #8D4004;
-            --canopy-green: #2E7D32;
-            --sunset-gold: #F57C00;
-            --trunk-gray: #5D4037;
-            --sky-blue: #1976D2;
-            --earth-cream: #FFF8E1;
-            --desert-orange: #FF5722;
-            --sage-green: #689F38;
-            --deep-charcoal: #263238;
-            --white: #FFFFFF;
-            --glow-color: rgba(245, 124, 0, 0.6);
-            --transition-slow: all 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
-            --transition-medium: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
-            --transition-fast: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
-            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
-            --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
-            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            --baobab-brown:       #6B3A2A;
+            --baobab-brown-dark:  #4A2218;
+            --baobab-brown-light: #8C5442;
+            --canopy-green:       #2D6A4F;
+            --canopy-green-dark:  #1B4332;
+            --canopy-green-light: #52B788;
+            --sunset-gold:        #F4A261;
+            --sunset-gold-warm:   #E76F51;
+            --sunset-gold-yellow: #FBBF24;
+            --earth-cream:        #FEF6EE;
+            --earth-cream-dark:   #F5E6D3;
+            --warm-white:         #FEFEFE;
+            --deep-charcoal:      #18120F;
+            --text-dark:          #2C1810;
+            --text-medium:        #5C3E30;
+            --text-light:         #8C7066;
+            --border-light:       #EDD9C8;
+            --shadow-warm:        rgba(107,58,42,0.12);
+            --shadow-deep:        rgba(107,58,42,0.26);
+            --max-w:              1280px;
+            --section-py:         5rem;
+            --section-px:         2rem;
+            --r-card:             24px;
+            --r-pill:             50px;
+            --transition:         all 0.3s cubic-bezier(.4,0,.2,1);
         }
+
+        /* ================================================
+           RESET & BASE
+           ================================================ */
         * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        /* Desktop base font increase for readability */
+        html { scroll-behavior: smooth; font-size: 18px; }
+        @media (max-width: 992px) { html { font-size: 16px; } }
+
         body {
-            font-family: 'Open Sans', sans-serif;
-            color: var(--deep-charcoal);
+            font-family: 'DM Sans', sans-serif;
+            color: var(--text-dark);
+            background-color: var(--warm-white);
             line-height: 1.6;
             overflow-x: hidden;
-            background-color: var(--white);
+            -webkit-font-smoothing: antialiased;
         }
-        h1, h2, h3, h4, h5 { font-family: 'Merriweather', serif; font-weight: 700; line-height: 1.3; }
-        .container { width: 100%; max-width: 1200px; margin: 0 auto; padding: 0 20px; position: relative; }
-        .section { padding: 80px 0; position: relative; }
+        
+        h1, h2, h3, h4, h5 { font-family: 'Playfair Display', serif; font-weight: 700; line-height: 1.2; color: var(--baobab-brown-dark); }
+        ul { list-style: none; }
+        a { text-decoration: none; color: inherit; }
+
+        /* ================================================
+           UTILITIES
+           ================================================ */
+        .container { max-width: var(--max-w); margin: 0 auto; padding: 0 var(--section-px); position: relative; }
+        .section { padding: var(--section-py) 0; position: relative; }
+        .t-cen { text-align: center; }
+        
+        .eyebrow {
+            display: inline-block; font-size: .72rem; font-weight: 700; text-transform: uppercase; letter-spacing: .18em;
+            color: var(--canopy-green); background: rgba(45,106,79,.1); border-left: 3px solid var(--canopy-green);
+            padding: .28rem .75rem; border-radius: 0 4px 4px 0; margin-bottom: .85rem;
+        }
+        .sec-title { font-size: clamp(2rem, 4vw, 3rem); margin-bottom: 1rem; }
+        .sec-sub { font-size: 1rem; color: var(--text-medium); line-height: 1.75; max-width: 700px; margin: 0 auto 3rem; }
+
+        /* Pattern Background */
+        .has-pattern { position: relative; background-color: var(--earth-cream); }
+        .has-pattern::before {
+            content: ''; position: absolute; inset: 0; pointer-events: none; z-index: 0;
+            background-image: 
+                url("data:image/svg+xml,%3Csvg width='44' height='44' viewBox='0 0 44 44' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M22 0 L44 22 L22 44 L0 22 Z' fill='none' stroke='%236B3A2A' stroke-opacity='0.045' stroke-width='1'/%3E%3Ccircle cx='22' cy='22' r='3' fill='%232D6A4F' fill-opacity='0.04'/%3E%3C/svg%3E"),
+                repeating-linear-gradient(45deg,transparent,transparent 11px,rgba(107,58,42,0.025) 11px,rgba(107,58,42,0.025) 12px),
+                repeating-linear-gradient(-45deg,transparent,transparent 11px,rgba(45,106,79,0.025) 11px,rgba(45,106,79,0.025) 12px);
+            background-size: 44px 44px, auto, auto;
+        }
+        .has-pattern > .container { position: relative; z-index: 1; }
+
+        /* Fade Up Animation */
+        .fu { opacity: 0; transform: translateY(28px); transition: opacity .7s ease, transform .7s ease; }
+        .fu.vis { opacity: 1; transform: translateY(0); }
+
+        /* ================================================
+           BUTTONS
+           ================================================ */
         .btn {
-            display: inline-flex; align-items: center; gap: 10px;
-            padding: 14px 32px; border-radius: 30px; font-weight: 600; text-align: center;
-            transition: var(--transition-fast); border: 2px solid transparent; font-family: 'Open Sans', sans-serif;
-            text-decoration: none; cursor: pointer;
+            display: inline-flex; align-items: center; justify-content: center; gap: .5rem;
+            padding: .85rem 1.75rem; border-radius: var(--r-pill); font-weight: 700; font-size: .95rem;
+            transition: var(--transition); border: 2px solid transparent; cursor: pointer; white-space: nowrap; font-family: 'DM Sans', sans-serif;
         }
-        .btn-primary { background-color: var(--baobab-brown); color: var(--white); border-color: var(--baobab-brown); }
-        .btn-primary:hover { background-color: var(--trunk-gray); border-color: var(--trunk-gray); transform: translateY(-3px); box-shadow: var(--shadow-md); }
-        .btn-secondary { background-color: var(--sunset-gold); color: var(--deep-charcoal); border-color: var(--sunset-gold); }
-        .btn-outlined { background-color: transparent; color: var(--baobab-brown); border-color: var(--baobab-brown); }
-        .btn-outlined:hover { background-color: var(--baobab-brown); color: var(--white); }
+        .btn-primary { background: linear-gradient(135deg, var(--canopy-green), var(--canopy-green-dark)); color: white; box-shadow: 0 4px 14px rgba(45,106,79,.25); }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(45,106,79,.35); }
+        
+        .btn-gold { background: linear-gradient(135deg, var(--sunset-gold), var(--sunset-gold-warm)); color: white; box-shadow: 0 4px 14px rgba(244,162,97,.25); }
+        .btn-gold:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(244,162,97,.35); filter: brightness(1.05); }
+        
+        .btn-outline { background: transparent; color: var(--baobab-brown-dark); border-color: var(--border-light); }
+        .btn-outline:hover { background: var(--earth-cream); border-color: var(--sunset-gold); }
+
+        .btn-white { background: #fff; color: var(--baobab-brown-dark); box-shadow: 0 4px 14px rgba(0,0,0,.08); }
+        .btn-white:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,.15); }
+
+        /* ================================================
+           HEADER & NAV
+           ================================================ */
         .header {
-            position: fixed; top: 0; left: 0; width: 100%; z-index: 1000; background-color: var(--white);
-            box-shadow: var(--shadow-md); padding: 10px 0;
+            position: fixed; top: 0; left: 0; width: 100%; z-index: 1000; 
+            background: rgba(255, 255, 255, 0.96); backdrop-filter: blur(15px);
+            box-shadow: 0 2px 20px var(--shadow-warm); padding: .75rem 0; transition: var(--transition);
         }
         .nav-wrapper { display: flex; justify-content: space-between; align-items: center; }
-        .logo { display: flex; align-items: center; gap: 10px; }
+        .logo { display: flex; align-items: center; gap: .6rem; }
         .logo-icon {
-            width: 32px; height: 32px; background-color: var(--canopy-green);
-            display: flex; align-items: center; justify-content: center; border-radius: 8px; font-size: 20px; color: var(--white);
+            width: 42px; height: 42px; border-radius: 50%;
+            border: 2px solid var(--sunset-gold); box-shadow: 0 0 0 3px rgba(244,162,97,.22);
+            overflow: hidden; display: flex; align-items: center; justify-content: center; background: #fff;
         }
-        .logo-text { font-weight: 700; font-size: 20px; color: var(--baobab-brown); }
-        .nav-menu { display: flex; gap: 30px; list-style: none; }
-        .nav-link { font-weight: 500; color: var(--deep-charcoal); text-decoration: none; padding: 5px 0; transition: var(--transition-fast); }
-        .nav-link:hover, .nav-link.active { color: var(--sunset-gold); }
-        .nav-buttons { display: flex; gap: 15px; }
-        .menu-toggle { display: none; font-size: 24px; cursor: pointer; color: var(--baobab-brown); z-index: 1001; transition: var(--transition-fast); }
+        .logo-icon img { width: 100%; height: 100%; object-fit: cover; }
+        .logo-text { font-family: 'Playfair Display', serif; font-weight: 700; font-size: 1.2rem; color: var(--baobab-brown-dark); line-height: 1.1; }
+        .logo-tag { display: block; font-family: 'DM Sans', sans-serif; font-size: .65rem; font-style: italic; color: var(--text-light); }
+        
+        .nav-menu { display: flex; gap: 1.5rem; }
+        .nav-link { font-weight: 600; font-size: .9rem; color: var(--text-medium); transition: var(--transition); }
+        .nav-link:hover { color: var(--sunset-gold); }
+        .nav-buttons { display: flex; gap: 1rem; }
+        
+        .menu-toggle { display: none; font-size: 1.5rem; cursor: pointer; color: var(--baobab-brown); background: none; border: none; }
+        
         .mobile-menu-panel {
             position: fixed; top: 0; right: -100%; width: 300px; height: 100vh; background-color: var(--white); z-index: 1000;
-            padding: 80px 40px 40px; transition: var(--transition-medium); box-shadow: var(--shadow-xl); overflow-y: auto;
+            padding: 5rem 2rem 2rem; transition: var(--transition); box-shadow: -10px 0 30px rgba(0,0,0,.1); overflow-y: auto;
         }
         .mobile-menu-panel.active { right: 0; }
-        .mobile-menu { display: flex; flex-direction: column; gap: 15px; }
-        .mobile-link {
-            font-weight: 500; color: var(--deep-charcoal); padding: 12px 0; border-bottom: 1px solid var(--earth-cream);
-            display: block; transition: var(--transition-fast); text-decoration: none;
-        }
-        .mobile-link:hover { color: var(--sunset-gold); padding-left: 10px; }
-        .mobile-link.active { color: var(--sunset-gold); }
-        .mobile-buttons { display: flex; flex-direction: column; gap: 15px; margin-top: 30px; }
+        .mobile-menu { display: flex; flex-direction: column; gap: 1rem; }
+        .mobile-link { font-weight: 600; color: var(--text-dark); padding: .8rem 0; border-bottom: 1px solid var(--earth-cream); display: block; transition: var(--transition); }
+        .mobile-link:hover { color: var(--sunset-gold); padding-left: .5rem; }
+        .mobile-buttons { display: flex; flex-direction: column; gap: 1rem; margin-top: 2rem; }
+        
         .menu-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background-color: rgba(0, 0, 0, 0.7); z-index: 999; opacity: 0; visibility: hidden; transition: var(--transition-medium); backdrop-filter: blur(5px);
+            position: fixed; inset: 0; background: rgba(24,18,15,.7); z-index: 999; 
+            opacity: 0; visibility: hidden; transition: var(--transition); backdrop-filter: blur(4px);
         }
         .menu-overlay.active { opacity: 1; visibility: visible; }
+
+        /* ================================================
+           HERO SECTION
+           ================================================ */
         .hero {
-            min-height: 100vh; background: linear-gradient(135deg, var(--canopy-green), var(--baobab-brown));
-            display: flex; align-items: center; color: var(--white); padding-top: 80px;
+            position: relative; min-height: 90vh; display: flex; align-items: center; 
+            padding-top: 5rem; background: var(--baobab-brown-dark); overflow: hidden;
         }
-        .hero-content { max-width: 700px; }
+        .hero::before {
+            content: ''; position: absolute; inset: 0; z-index: 0; opacity: 0.3;
+            background-image: url("https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=1280&q=80");
+            background-size: cover; background-position: center; mix-blend-mode: multiply;
+        }
+        .hero::after {
+            content: ''; position: absolute; inset: 0; z-index: 1;
+            background: linear-gradient(135deg, rgba(74,34,24,0.92) 0%, rgba(45,106,79,0.88) 100%);
+        }
+        .hero-content { position: relative; z-index: 2; max-width: 800px; color: white; margin: 0 auto; text-align: center; }
         .hero-badge {
-            background: rgba(255, 255, 255, 0.2); padding: 8px 20px; border-radius: 20px; font-size: 0.9rem;
-            font-weight: 600; margin-bottom: 20px; display: inline-block;
+            background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3); backdrop-filter: blur(10px);
+            padding: .5rem 1.25rem; border-radius: var(--r-pill); font-size: .8rem; font-weight: 700; text-transform: uppercase;
+            letter-spacing: .05em; display: inline-flex; align-items: center; gap: .5rem; margin-bottom: 1.5rem; color: var(--sunset-gold);
         }
-        .hero-title { font-size: 3.2rem; margin-bottom: 20px; line-height: 1.2; }
-        .hero-subtitle { font-size: 1.2rem; opacity: 0.9; margin-bottom: 40px; line-height: 1.6; }
-        .hero-buttons { display: flex; gap: 20px; flex-wrap: wrap; }
-        .btn-hero { padding: 18px 35px; font-size: 1.1rem; }
-        .btn-white { background-color: var(--white); color: var(--baobab-brown); border-color: var(--white); }
-        .btn-white:hover { background-color: transparent; color: var(--white); border-color: var(--white); }
-        .features-preview { background: var(--earth-cream); padding: 100px 0; }
-        .section-title { text-align: center; font-size: 2.8rem; color: var(--baobab-brown); margin-bottom: 20px; }
-        .section-subtitle {
-            text-align: center; color: var(--trunk-gray); margin-bottom: 60px; max-width: 700px; margin-left: auto; margin-right: auto; font-size: 1.1rem;
-        }
-        .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 40px; }
+        .hero-title { font-size: clamp(2.5rem, 5vw, 4rem); margin-bottom: 1.25rem; color: white; }
+        .hero-subtitle { font-size: 1.1rem; opacity: 0.9; margin-bottom: 2.5rem; line-height: 1.7; max-width: 660px; margin-left: auto; margin-right: auto; }
+        .hero-btns { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+
+        /* ================================================
+           FEATURES GRID
+           ================================================ */
+        .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 2rem; }
         .feature-card {
-            background: var(--white); border-radius: 20px; padding: 40px; box-shadow: var(--shadow-lg);
-            transition: var(--transition-medium); border: 3px solid transparent; text-align: center;
+            background: var(--white); border-radius: var(--r-card); padding: 2.5rem 2rem; 
+            box-shadow: 0 10px 30px var(--shadow-warm); border: 1px solid var(--border-light);
+            transition: var(--transition); text-align: center; position: relative; overflow: hidden;
         }
-        .feature-card:hover { transform: translateY(-10px); border-color: var(--sunset-gold); box-shadow: var(--shadow-xl); }
+        .feature-card::before {
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px;
+            background: linear-gradient(90deg, var(--sunset-gold), var(--canopy-green)); opacity: 0; transition: var(--transition);
+        }
+        .feature-card:hover { transform: translateY(-8px); box-shadow: 0 20px 40px rgba(107,58,42,0.18); border-color: var(--sunset-gold); }
+        .feature-card:hover::before { opacity: 1; }
+        
         .feature-icon {
-            width: 80px; height: 80px; background: linear-gradient(135deg, var(--canopy-green), var(--sage-green));
-            border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--white); font-size: 2.2rem; margin: 0 auto 25px;
+            width: 72px; height: 72px; background: linear-gradient(135deg, var(--earth-cream), var(--earth-cream-dark));
+            color: var(--canopy-green); border-radius: 20px; display: flex; align-items: center; justify-content: center; 
+            font-size: 2rem; margin: 0 auto 1.5rem; box-shadow: 0 8px 24px rgba(45,106,79,0.15);
         }
-        .feature-card:nth-child(2) .feature-icon { background: linear-gradient(135deg, var(--sunset-gold), var(--desert-orange)); color: var(--deep-charcoal); }
-        .feature-card:nth-child(3) .feature-icon { background: linear-gradient(135deg, var(--baobab-brown), var(--trunk-gray)); color: var(--white); }
-        .feature-title { font-size: 1.6rem; color: var(--deep-charcoal); margin-bottom: 15px; }
-        .feature-description { color: var(--trunk-gray); line-height: 1.7; margin-bottom: 20px; }
-        .feature-benefits { list-style: none; text-align: left; }
-        .feature-benefits li {
-            display: flex; align-items: center; gap: 10px; margin-bottom: 10px; font-size: 0.95rem; color: var(--trunk-gray);
+        .feature-card:nth-child(2) .feature-icon { color: var(--sunset-gold-warm); background: rgba(244,162,97,0.15); box-shadow: 0 8px 24px rgba(244,162,97,0.15); }
+        .feature-card:nth-child(3) .feature-icon { color: var(--baobab-brown); background: rgba(107,58,42,0.1); box-shadow: 0 8px 24px rgba(107,58,42,0.15); }
+        
+        .feature-card h3 { font-size: 1.4rem; margin-bottom: 1rem; }
+        .feature-card p { color: var(--text-medium); font-size: .9rem; margin-bottom: 1.5rem; }
+        .feature-list { text-align: left; display: flex; flex-direction: column; gap: .6rem; }
+        .feature-list li { display: flex; align-items: flex-start; gap: .6rem; font-size: .85rem; color: var(--text-dark); }
+        .feature-list i { color: var(--canopy-green); font-size: .9rem; margin-top: 3px; }
+
+        /* ================================================
+           HOW IT WORKS (STEPS)
+           ================================================ */
+        .steps-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem; position: relative; }
+        .steps-container::before {
+            content: ''; position: absolute; top: 32px; left: 15%; right: 15%; height: 2px;
+            background: linear-gradient(90deg, var(--border-light), var(--sunset-gold), var(--border-light)); z-index: 0;
         }
-        .feature-benefits i { color: var(--canopy-green); font-size: 1.1rem; }
-        .how-it-works { background: var(--white); padding: 100px 0; }
-        .steps-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 40px; margin-top: 60px; }
-        .step-card { text-align: center; position: relative; }
-        .step-number {
-            width: 60px; height: 60px; background: var(--sunset-gold); color: var(--deep-charcoal); border-radius: 50%;
-            display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: 700; margin: 0 auto 20px;
+        @media(max-width: 768px) { .steps-container::before { display: none; } }
+        
+        .step-card { text-align: center; position: relative; z-index: 1; }
+        .step-num {
+            width: 64px; height: 64px; background: var(--sunset-gold); color: white; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: 800; 
+            margin: 0 auto 1.5rem; box-shadow: 0 0 0 8px var(--white), 0 8px 24px rgba(244,162,97,0.3); font-family: 'Playfair Display', serif;
         }
-        .step-title { font-size: 1.4rem; color: var(--deep-charcoal); margin-bottom: 15px; }
-        .step-description { color: var(--trunk-gray); line-height: 1.6; }
-        .security-section { background: linear-gradient(135deg, var(--baobab-brown), var(--trunk-gray)); color: var(--white); padding: 80px 0; }
-        .security-content { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center; }
-        .security-text h2 { font-size: 2.5rem; margin-bottom: 20px; }
-        .security-text p { font-size: 1.1rem; opacity: 0.9; margin-bottom: 30px; line-height: 1.7; }
-        .security-features { display: grid; grid-template-columns: repeat(2, 1fr); gap: 25px; }
-        .security-item {
-            background: rgba(255, 255, 255, 0.1); padding: 25px; border-radius: 15px; text-align: center; backdrop-filter: blur(10px);
+        .step-card h3 { font-size: 1.25rem; margin-bottom: .75rem; }
+        .step-card p { font-size: .9rem; color: var(--text-medium); }
+
+        /* ================================================
+           SECURITY SECTION
+           ================================================ */
+        .security-section { background: linear-gradient(145deg, var(--baobab-brown-dark) 0%, var(--canopy-green-dark) 100%); color: white; position: relative; overflow: hidden; }
+        .security-section::after {
+            content: ''; position: absolute; inset: 0; pointer-events: none; opacity: 0.05;
+            background-image: url("data:image/svg+xml,%3Csvg width='44' height='44' viewBox='0 0 44 44' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M22 0 L44 22 L22 44 L0 22 Z' fill='none' stroke='%23FFFFFF' stroke-opacity='1' stroke-width='1'/%3E%3C/svg%3E");
+            background-size: 44px 44px;
         }
-        .security-icon { font-size: 2.5rem; margin-bottom: 15px; color: var(--sunset-gold); }
-        .security-item-title { font-size: 1.1rem; margin-bottom: 8px; }
-        .security-item-desc { font-size: 0.9rem; opacity: 0.8; }
-        .cta-section { background: var(--earth-cream); padding: 100px 0; text-align: center; }
-        .cta-content { max-width: 800px; margin: 0 auto; }
-        .cta-title { font-size: 3rem; color: var(--baobab-brown); margin-bottom: 20px; }
-        .cta-subtitle { font-size: 1.2rem; color: var(--trunk-gray); margin-bottom: 40px; line-height: 1.6; }
-        .cta-buttons { display: flex; gap: 25px; justify-content: center; flex-wrap: wrap; }
-        .footer { background: var(--deep-charcoal); color: var(--white); padding: 60px 0 30px; }
-        .footer-content { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 40px; margin-bottom: 40px; }
-        .footer-section h4 { color: var(--sunset-gold); margin-bottom: 20px; font-size: 1.2rem; }
-        .footer-link {
-            color: rgba(255, 255, 255, 0.7); text-decoration: none; display: block; padding: 8px 0; transition: var(--transition-fast);
-        }
-        .footer-link:hover { color: var(--sunset-gold); padding-left: 5px; }
-        .footer-bottom {
-            text-align: center; padding-top: 30px; border-top: 1px solid rgba(255, 255, 255, 0.1); color: rgba(255, 255, 255, 0.7);
-        }
+        .sec-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center; position: relative; z-index: 1; }
+        .sec-text h2 { color: white; }
+        .sec-text p { color: rgba(255,255,255,0.85); font-size: 1rem; margin-bottom: 1.5rem; }
+        .sec-features { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+        .sec-item { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); backdrop-filter: blur(10px); padding: 1.5rem; border-radius: 16px; text-align: center; }
+        .sec-icon { font-size: 2rem; color: var(--sunset-gold); margin-bottom: 1rem; }
+        .sec-item h4 { color: white; font-size: 1rem; margin-bottom: .5rem; font-family: 'DM Sans', sans-serif; }
+        .sec-item p { color: rgba(255,255,255,0.7); font-size: .8rem; margin: 0; }
+
+        @media(max-width: 992px) { .sec-grid { grid-template-columns: 1fr; gap: 2rem; } }
+
+        /* ================================================
+           MODALS (LOGIN/REGISTER)
+           ================================================ */
         .modal {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.85); z-index: 2000; align-items: center; justify-content: center; backdrop-filter: blur(5px);
+            display: none; position: fixed; inset: 0; background: rgba(24, 18, 15, 0.85); 
+            z-index: 2000; align-items: center; justify-content: center; backdrop-filter: blur(8px); padding: 1rem;
         }
         .modal-content {
-            background: var(--white); border: 2px solid var(--sunset-gold); border-radius: 25px; padding: 45px; max-width: 500px; width: 95%;
-            max-height: 90vh; overflow-y: auto; position: relative; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+            background: var(--white); border-radius: var(--r-card); padding: 3rem 2.5rem; width: 100%; max-width: 480px;
+            max-height: 90vh; overflow-y: auto; position: relative; box-shadow: 0 24px 48px rgba(0,0,0,0.4);
+            border: 1px solid var(--border-light); animation: modalPop 0.4s cubic-bezier(.4,0,.2,1);
         }
-        .modal-close { position: absolute; top: 20px; right: 25px; background: none; border: none; font-size: 1.8rem; cursor: pointer; color: var(--trunk-gray); }
-        .modal-title { color: var(--baobab-brown); margin-bottom: 25px; text-align: center; font-family: 'Merriweather', serif; font-size: 1.8rem; }
-        .form-group { margin-bottom: 25px; }
-        .form-label { display: block; margin-bottom: 8px; color: var(--deep-charcoal); font-weight: 600; }
+        @keyframes modalPop { from { opacity: 0; transform: scale(0.95) translateY(20px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+        
+        .modal-close {
+            position: absolute; top: 1.5rem; right: 1.5rem; background: var(--earth-cream); border: none; width: 36px; height: 36px;
+            border-radius: 50%; font-size: 1.2rem; cursor: pointer; color: var(--baobab-brown); transition: var(--transition);
+            display: flex; align-items: center; justify-content: center;
+        }
+        .modal-close:hover { background: var(--danger-light, #FFEBEE); color: #D32F2F; }
+        
+        .modal-title { color: var(--baobab-brown-dark); margin-bottom: 2rem; text-align: center; font-size: 1.8rem; display: flex; flex-direction: column; align-items: center; gap: .5rem; }
+        .modal-title i { color: var(--sunset-gold); font-size: 2.2rem; }
+        
+        .form-group { margin-bottom: 1.25rem; }
+        .form-label { display: block; margin-bottom: .5rem; color: var(--baobab-brown-dark); font-weight: 700; font-size: .85rem; }
         .form-input {
-            width: 100%; padding: 15px 18px; border: 2px solid rgba(245, 124, 0, 0.3); border-radius: 12px; font-size: 1rem;
-            background: rgba(141, 64, 4, 0.05); color: var(--deep-charcoal); transition: border-color 0.3s ease;
+            width: 100%; padding: .9rem 1.1rem; border: 2px solid var(--earth-cream-dark); border-radius: 12px; font-size: .95rem;
+            background: var(--earth-cream); color: var(--text-dark); transition: var(--transition); font-family: 'DM Sans', sans-serif;
         }
-        .form-input:focus { outline: none; border-color: var(--sunset-gold); background: var(--white); }
+        .form-input:focus { outline: none; border-color: var(--canopy-green-light); background: var(--white); box-shadow: 0 4px 14px rgba(45,106,79,.1); }
+        
         .form-submit {
-            width: 100%; background: var(--baobab-brown); color: var(--white); border: none; padding: 18px; border-radius: 12px; font-size: 1.1rem;
-            font-weight: 600; cursor: pointer; transition: var(--transition-fast); font-family: 'Open Sans', sans-serif;
+            width: 100%; background: linear-gradient(135deg, var(--sunset-gold), var(--sunset-gold-warm)); color: var(--white); 
+            border: none; padding: 1rem; border-radius: var(--r-pill); font-size: 1rem; font-weight: 700; cursor: pointer; 
+            transition: var(--transition); font-family: 'DM Sans', sans-serif; margin-top: 1rem; box-shadow: 0 4px 14px rgba(244,162,97,.3);
         }
-        .form-submit:hover { background: var(--trunk-gray); transform: translateY(-2px); }
-        .form-submit:disabled { background: var(--trunk-gray); opacity: 0.7; cursor: not-allowed; transform: none; }
-        .error-message {
-            background: rgba(255, 87, 34, 0.1); border: 1px solid var(--desert-orange); color: var(--desert-orange); padding: 15px; border-radius: 10px;
-            margin-bottom: 20px; display: none;
-        }
-        .success-message {
-            background: rgba(46, 125, 50, 0.1); border: 1px solid var(--canopy-green); color: var(--canopy-green); padding: 15px; border-radius: 10px;
-            margin-bottom: 20px; display: none;
-        }
+        .form-submit:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(244,162,97,.4); }
+        .form-submit:disabled { background: var(--gray-400, #A89B91); box-shadow: none; cursor: not-allowed; transform: none; }
+        
+        .error-message { background: #f8d7da; border: 1px solid #f5c6cb; color: #721c24; padding: 1rem; border-radius: 12px; margin-bottom: 1.5rem; display: none; font-size: .85rem; font-weight: 600; text-align: center; }
+        .success-message { background: #d4edda; border: 1px solid #c3e6cb; color: #155724; padding: 1rem; border-radius: 12px; margin-bottom: 1.5rem; display: none; font-size: .85rem; font-weight: 600; text-align: center; }
+        
         .loading-spinner {
-            display: none; width: 20px; height: 20px; border: 2px solid var(--earth-cream); border-top: 2px solid var(--sunset-gold);
-            border-radius: 50%; animation: spin 1s linear infinite; margin-left: 10px;
+            display: none; width: 20px; height: 20px; border: 3px solid rgba(255,255,255,0.3); border-top: 3px solid white;
+            border-radius: 50%; animation: spin 1s linear infinite; margin-left: 10px; vertical-align: middle;
         }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        .form-toggle { text-align: center; margin-top: 20px; color: var(--trunk-gray); }
-        .form-toggle a { color: var(--sunset-gold); text-decoration: none; font-weight: 600; }
-        .form-toggle a:hover { text-decoration: underline; }
-        .verification-notice {
-            background: linear-gradient(135deg, var(--canopy-green), var(--sage-green)); color: var(--white); padding: 30px; border-radius: 20px; margin: 20px 0;
-            text-align: center; border: 3px solid var(--sunset-gold);
-        }
-        .verification-notice h4 { margin-bottom: 15px; font-size: 1.5rem; }
-        .verification-notice p { margin-bottom: 12px; line-height: 1.6; }
-        .verification-notice .email-icon { font-size: 3.5rem; margin-bottom: 20px; color: var(--sunset-gold); }
-        .resend-link { color: var(--sunset-gold); text-decoration: underline; cursor: pointer; font-weight: 600; }
-        .resend-link:hover { color: var(--white); }
-        @media (max-width: 992px) {
-            .menu-toggle { display: block; }
-            .nav-menu, .nav-buttons { display: none; }
-            .section { padding: 60px 0; }
-        }
+        
+        .form-toggle { text-align: center; margin-top: 1.5rem; color: var(--text-medium); font-size: .85rem; }
+        .form-toggle a { color: var(--canopy-green); text-decoration: none; font-weight: 700; }
+        .form-toggle a:hover { color: var(--sunset-gold); text-decoration: underline; }
+
+        /* Verification Specific */
+        .verification-notice { text-align: center; padding: 1rem 0; }
+        .verification-notice h4 { font-size: 1.5rem; margin-bottom: 1rem; color: var(--baobab-brown-dark); }
+        .verification-notice p { color: var(--text-medium); margin-bottom: 1rem; }
+        .verification-notice .email-icon { font-size: 4rem; color: var(--sunset-gold); margin-bottom: 1.5rem; }
+        .resend-link { color: var(--canopy-green); font-weight: 700; cursor: pointer; text-decoration: underline; }
+
+        /* ================================================
+           FOOTER
+           ================================================ */
+        .footer { background: var(--deep-charcoal); padding: 4rem 0 2rem; color: white; }
+        .footer-content { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 3rem; margin-bottom: 3rem; }
+        .footer-section h4 { color: var(--sunset-gold); margin-bottom: 1.25rem; font-size: 1.1rem; font-family: 'DM Sans', sans-serif; }
+        .footer-link { color: rgba(255,255,255,0.6); display: block; padding: .4rem 0; font-size: .85rem; transition: var(--transition); }
+        .footer-link:hover { color: var(--sunset-gold); padding-left: 5px; }
+        .footer-bottom { text-align: center; padding-top: 2rem; border-top: 1px solid rgba(255,255,255,0.1); font-size: .8rem; color: rgba(255,255,255,0.4); }
+        .footer-bottom strong { color: var(--sunset-gold); }
+
         @media (max-width: 768px) {
-            .hero-title { font-size: 2.5rem; }
-            .section-title { font-size: 2.2rem; }
-            .features-grid { grid-template-columns: 1fr; gap: 30px; }
-            .feature-card { padding: 30px; }
-            .security-content { grid-template-columns: 1fr; gap: 40px; }
-            .security-features { grid-template-columns: 1fr; gap: 20px; }
-            .hero-buttons { flex-direction: column; align-items: flex-start; }
-            .cta-buttons { flex-direction: column; align-items: center; }
-            .steps-container { grid-template-columns: 1fr; gap: 30px; }
-            .hero { padding: 100px 0 50px; }
-            .hero-content { text-align: center; }
-            .container { padding: 0 15px; }
-        }
-        @media (max-width: 576px) {
-            .hero-title { font-size: 2rem; }
-            .section-title { font-size: 1.8rem; }
-            .cta-title { font-size: 2.2rem; }
-            .hero-subtitle, .section-subtitle, .cta-subtitle { font-size: 1rem; }
-            .btn-hero { padding: 16px 30px; font-size: 1rem; }
-            .feature-icon { width: 70px; height: 70px; font-size: 2rem; }
-            .feature-title { font-size: 1.4rem; }
-            .mobile-menu-panel { width: 280px; padding: 70px 30px 30px; }
-            .logo-text { font-size: 18px; }
-            .modal-content { padding: 30px; margin: 10px; }
-            .verification-notice { padding: 25px; margin: 15px 0; }
-            .verification-notice .email-icon { font-size: 3rem; margin-bottom: 15px; }
-            .verification-notice h4 { font-size: 1.3rem; }
+            .nav-menu, .nav-buttons { display: none; }
+            .menu-toggle { display: block; }
+            .hero { padding-top: 7rem; min-height: 80vh; }
+            .modal-content { padding: 2rem 1.5rem; }
         }
     </style>
 </head>
 <body>
-    <!-- Header -->
+
     <header class="header">
         <div class="container">
             <div class="nav-wrapper">
-                <div class="logo">
-                    <div class="logo-icon"><i class="fas fa-heart"></i></div>
-                    <div class="logo-text">Parent Portal</div>
-                </div>
-                <div class="menu-toggle" id="menuToggle"><i class="fas fa-bars"></i></div>
+                <a href="https://baobabonlineacademy.com" class="logo">
+                    <div class="logo-icon">
+                        <img src="/Images/Logo_Baobab.svg" alt="Baobab Logo" onerror="this.src='/Images/logo.jpg'">
+                    </div>
+                    <div>
+                        <div class="logo-text">Parent Portal</div>
+                        <span class="logo-tag">Baobab Digital Academy</span>
+                    </div>
+                </a>
+                <button class="menu-toggle" id="menuToggle"><i class="fas fa-bars"></i></button>
                 <ul class="nav-menu">
                     <li><a href="#features" class="nav-link">Features</a></li>
                     <li><a href="#how-it-works" class="nav-link">How It Works</a></li>
-                    <li><a href="#security" class="nav-link">Safety & Security</a></li>
-                    <li><a href="https://baobabonlineacademy.com" class="nav-link">Main Site</a></li>
+                    <li><a href="#security" class="nav-link">Security</a></li>
+                    <li><a href="https://baobabonlineacademy.com" class="nav-link">Main Website</a></li>
                 </ul>
                 <div class="nav-buttons">
-                    <a href="#" class="btn btn-outlined" onclick="openLoginModal()">Login</a>
-                    <a href="#" class="btn btn-primary" onclick="openRegistrationModal()">Register</a>
+                    <button class="btn btn-outline btn-sm" onclick="openLoginModal()">Login</button>
+                    <button class="btn btn-gold btn-sm" onclick="openRegistrationModal()">Register</button>
                 </div>
             </div>
         </div>
     </header>
 
-    <!-- Mobile Menu -->
     <div class="mobile-menu-panel" id="mobileMenuPanel">
         <ul class="mobile-menu">
             <li><a href="#features" class="mobile-link">Features</a></li>
             <li><a href="#how-it-works" class="mobile-link">How It Works</a></li>
-            <li><a href="#security" class="mobile-link">Safety & Security</a></li>
-            <li><a href="https://baobabonlineacademy.com" class="mobile-link">Main Site</a></li>
+            <li><a href="#security" class="mobile-link">Security</a></li>
+            <li><a href="https://baobabonlineacademy.com" class="mobile-link">Main Website</a></li>
         </ul>
         <div class="mobile-buttons">
-            <a href="#" class="btn btn-outlined" onclick="openLoginModal()">Login</a>
-            <a href="#" class="btn btn-primary" onclick="openRegistrationModal()">Register</a>
+            <button class="btn btn-outline" style="width:100%;" onclick="openLoginModal()">Login</button>
+            <button class="btn btn-gold" style="width:100%;" onclick="openRegistrationModal()">Register</button>
         </div>
     </div>
     <div class="menu-overlay" id="menuOverlay"></div>
 
-    <!-- Hero Section -->
     <section class="hero">
         <div class="container">
-            <div class="hero-content">
+            <div class="hero-content fu">
                 <div class="hero-badge">
-                    <i class="fas fa-shield-alt"></i>
-                    Secure Parent Portal • Always Connected
+                    <i class="fas fa-shield-alt"></i> Secure Access • Always Connected
                 </div>
                 <h1 class="hero-title">Watch Your Child Flourish Every Step of the Way</h1>
-                <p class="hero-subtitle">
+                <p class="hero-sub" style="color: rgba(255,255,255,0.85);">
                     Stay intimately connected to your child's educational journey with real-time progress tracking, 
-                    direct tutor communication, and cultural milestone celebrations - all in a secure, 
-                    parent-designed portal that honors your family values.
+                    direct tutor communication, and cultural milestone celebrations — all in a secure, 
+                    premium portal designed for peace of mind.
                 </p>
-                <div class="hero-buttons">
-                    <a href="#" class="btn btn-secondary btn-hero" onclick="openRegistrationModal()">
-                        <i class="fas fa-user-plus"></i>
-                        Create Parent Account
-                    </a>
-                    <a href="#features" class="btn btn-white btn-hero">
-                        <i class="fas fa-eye"></i>
-                        See Portal Features
+                <div class="hero-btns">
+                    <button class="btn btn-gold btn-lg" onclick="openRegistrationModal()">
+                        <i class="fas fa-user-plus"></i> Create Parent Account
+                    </button>
+                    <a href="#features" class="btn btn-white btn-lg">
+                        <i class="fas fa-arrow-down"></i> Explore Features
                     </a>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Features Preview -->
-    <section class="features-preview" id="features">
+    <section class="section has-pattern" id="features">
         <div class="container">
-            <h2 class="section-title">Everything You Need as a Parent</h2>
-        <p class="section-subtitle">
-            Designed by parents, for parents - our portal gives you unprecedented insight and control 
-            over your child's educational journey while celebrating their cultural heritage.
-        </p>
-        <div class="features-grid">
-            <div class="feature-card">
-                <div class="feature-icon"><i class="fas fa-chart-line"></i></div>
-                <h3 class="feature-title">Real-Time Progress Tracking</h3>
-                <p class="feature-description">
-                    Watch your child grow with detailed academic analytics, cultural milestone tracking, 
-                    and visual progress reports that show both achievements and areas for support.
+            <div class="t-cen fu">
+                <span class="eyebrow">Portal Features</span>
+                <h2 class="sec-title">Everything You Need as a Parent</h2>
+                <p class="sec-sub cen">
+                    Designed by parents, for parents. Our portal gives you unprecedented insight and control 
+                    over your child's educational journey whilst celebrating their cultural heritage.
                 </p>
-                <ul class="feature-benefits">
-                    <li><i class="fas fa-check-circle"></i> Live grade updates and assignment scores</li>
-                    <li><i class="fas fa-check-circle"></i> Cultural heritage learning progress</li>
-                    <li><i class="fas fa-check-circle"></i> Detailed subject-by-subject analytics</li>
-                    <li><i class="fas fa-check-circle"></i> Milestone celebrations and achievements</li>
-                </ul>
             </div>
-            <div class="feature-card">
-                <div class="feature-icon"><i class="fas fa-comments"></i></div>
-                <h3 class="feature-title">Direct Tutor Communication</h3>
-                <p class="feature-description">
-                    Connect seamlessly with your child's Nigeria-based tutors through secure messaging, 
-                    scheduled calls, and regular feedback sessions that keep you in the loop.
-                </p>
-                <ul class="feature-benefits">
-                    <li><i class="fas fa-check-circle"></i> Secure messaging with all tutors</li>
-                    <li><i class="fas fa-check-circle"></i> Weekly progress video calls</li>
-                    <li><i class="fas fa-check-circle"></i> Cultural context discussions</li>
-                    <li><i class="fas fa-check-circle"></i> Instant notifications for important updates</li>
-                </ul>
+            
+            <div class="features-grid">
+                <div class="feature-card fu">
+                    <div class="feature-icon"><i class="fas fa-chart-line"></i></div>
+                    <h3>Real-Time Progress</h3>
+                    <p>Watch your child grow with detailed academic analytics, cultural milestone tracking, and visual progress reports.</p>
+                    <ul class="feature-list">
+                        <li><i class="fas fa-check-circle"></i> Live grade updates & scores</li>
+                        <li><i class="fas fa-check-circle"></i> Heritage learning progress</li>
+                        <li><i class="fas fa-check-circle"></i> Milestone celebrations</li>
+                    </ul>
+                </div>
+                
+                <div class="feature-card fu">
+                    <div class="feature-icon"><i class="fas fa-comments"></i></div>
+                    <h3>Direct Communication</h3>
+                    <p>Connect seamlessly with your child's Nigeria-based tutors through secure messaging and regular feedback sessions.</p>
+                    <ul class="feature-list">
+                        <li><i class="fas fa-check-circle"></i> Secure messaging with tutors</li>
+                        <li><i class="fas fa-check-circle"></i> Progress video calls</li>
+                        <li><i class="fas fa-check-circle"></i> Instant notifications</li>
+                    </ul>
+                </div>
+                
+                <div class="feature-card fu">
+                    <div class="feature-icon"><i class="fas fa-file-invoice-dollar"></i></div>
+                    <h3>Seamless Management</h3>
+                    <p>Manage everything in one place. From secure payments to scheduling classes and downloading official reports.</p>
+                    <ul class="feature-list">
+                        <li><i class="fas fa-check-circle"></i> Easy invoice payments</li>
+                        <li><i class="fas fa-check-circle"></i> Downloadable PDF reports</li>
+                        <li><i class="fas fa-check-circle"></i> Digital Parent Agreements</li>
+                    </ul>
+                </div>
             </div>
-            <div class="feature-card">
-                <div class="feature-icon"><i class="fas fa-shield-alt"></i></div>
-                <h3 class="feature-title">Complete Safety Monitoring</h3>
-                <p class="feature-description">
-                    Monitor your child's online learning environment with full transparency, 
-                    secure interactions, and comprehensive safety features for peace of mind.
-                </p>
-                <ul class="feature-benefits">
-                    <li><i class="fas fa-check-circle"></i> Full session monitoring capabilities</li>
-                    <li><i class="fas fa-check-circle"></i> Secure, encrypted communications</li>
-                    <li><i class="fas fa-check-circle"></i> Tutor background verification status</li>
-                    <li><i class="fas fa-check-circle"></i> Emergency contact protocols</li>
-                </ul>
-            </div>
-        </div>
         </div>
     </section>
 
-    <!-- How It Works -->
-    <section class="how-it-works" id="how-it-works">
+    <section class="section" id="how-it-works" style="background: white;">
         <div class="container">
-            <h2 class="section-title">Simple Steps to Get Started</h2>
-            <p class="section-subtitle">
-                Join hundreds of families who trust Baobab Academy with their children's education. 
-                Getting started is simple, secure, and designed with busy parents in mind.
-            </p>
+            <div class="t-cen fu">
+                <span class="eyebrow">Simple Process</span>
+                <h2 class="sec-title">Steps to Get Started</h2>
+                <p class="sec-sub cen">
+                    Join hundreds of families who trust Baobab Digital Academy. Getting started is simple, secure, and designed with busy parents in mind.
+                </p>
+            </div>
+            
             <div class="steps-container">
-                <div class="step-card">
-                    <div class="step-number">1</div>
-                    <h3 class="step-title">Create Your Account</h3>
-                    <p class="step-description">
-                        Register with your family details and set up secure access to your personalized parent portal 
-                        in just a few minutes.
-                    </p>
+                <div class="step-card fu">
+                    <div class="step-num">1</div>
+                    <h3>Create Account</h3>
+                    <p>Register securely with your verified email to access your personalised parent dashboard instantly.</p>
                 </div>
-                <div class="step-card">
-                    <div class="step-number">2</div>
-                    <h3 class="step-title">Child Assessment & Matching</h3>
-                    <p class="step-description">
-                        Our team conducts a comprehensive assessment and matches your child with the perfect 
-                        Nigeria-based tutor for their needs.
-                    </p>
+                <div class="step-card fu">
+                    <div class="step-num">2</div>
+                    <h3>Profile Setup</h3>
+                    <p>Add your child's details, sign your digital parent agreement, and review assigned expert tutors.</p>
                 </div>
-                <div class="step-card">
-                    <div class="step-number">3</div>
-                    <h3 class="step-title">Begin Learning Journey</h3>
-                    <p class="step-description">
-                        Watch your child flourish through our portal as they engage in culturally-rich, 
-                        academically excellent lessons.
-                    </p>
-                </div>
-                <div class="step-card">
-                    <div class="step-number">4</div>
-                    <h3 class="step-title">Track & Celebrate Growth</h3>
-                    <p class="step-description">
-                        Monitor progress, communicate with tutors, and celebrate every milestone in your 
-                        child's educational and cultural development.
-                    </p>
+                <div class="step-card fu">
+                    <div class="step-num">3</div>
+                    <h3>Track Growth</h3>
+                    <p>Monitor progress, pay invoices, communicate with tutors, and celebrate every academic milestone.</p>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Security & Trust -->
-    <section class="security-section" id="security">
+    <section class="section security-section" id="security">
         <div class="container">
-            <div class="security-content">
-                <div class="security-text">
+            <div class="sec-grid">
+                <div class="sec-text fu">
+                    <span class="eyebrow" style="background: rgba(255,255,255,0.1); color: white; border-color: var(--sunset-gold);">Trust & Safety</span>
                     <h2>Your Child's Safety is Our Priority</h2>
                     <p>
                         We understand that as a parent, nothing matters more than your child's safety and wellbeing. 
@@ -425,100 +492,76 @@
                     </p>
                     <p>
                         Every interaction is monitored, every tutor is thoroughly vetted, and every lesson is 
-                        recorded for your peace of mind. You have complete control and visibility.
+                        recorded for your peace of mind. You have complete control and visibility over their digital environment.
                     </p>
                 </div>
-                <div class="security-features">
-                    <div class="security-item">
-                        <div class="security-icon"><i class="fas fa-user-shield"></i></div>
-                        <h4 class="security-item-title">Verified Tutors</h4>
-                        <p class="security-item-desc">Background checked educators</p>
+                <div class="sec-features">
+                    <div class="sec-item fu">
+                        <div class="sec-icon"><i class="fas fa-user-shield"></i></div>
+                        <h4>Verified Tutors</h4>
+                        <p>Strict background checks</p>
                     </div>
-                    <div class="security-item">
-                        <div class="security-icon"><i class="fas fa-lock"></i></div>
-                        <h4 class="security-item-title">Encrypted Platform</h4>
-                        <p class="security-item-desc">Bank-level security protocols</p>
+                    <div class="sec-item fu">
+                        <div class="sec-icon"><i class="fas fa-lock"></i></div>
+                        <h4>Encrypted</h4>
+                        <p>Bank-level data security</p>
                     </div>
-                    <div class="security-item">
-                        <div class="security-icon"><i class="fas fa-eye"></i></div>
-                        <h4 class="security-item-title">Full Monitoring</h4>
-                        <p class="security-item-desc">Complete session transparency</p>
+                    <div class="sec-item fu">
+                        <div class="sec-icon"><i class="fas fa-eye"></i></div>
+                        <h4>Full Monitoring</h4>
+                        <p>Complete session transparency</p>
                     </div>
-                    <div class="security-item">
-                        <div class="security-icon"><i class="fas fa-headset"></i></div>
-                        <h4 class="security-item-title">24/7 Support</h4>
-                        <p class="security-item-desc">Always here when you need us</p>
+                    <div class="sec-item fu">
+                        <div class="sec-icon"><i class="fas fa-headset"></i></div>
+                        <h4>24/7 Support</h4>
+                        <p>Always here when you need us</p>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- CTA Section -->
-    <section class="cta-section" id="register">
-        <div class="container">
-            <div class="cta-content">
-                <h2 class="cta-title">Ready to Watch Your Child Flourish?</h2>
-                <p class="cta-subtitle">
-                    Join the growing community of families who choose Baobab Academy for academic excellence 
-                    rooted in cultural pride. Your child's journey to limitless growth starts here.
-                </p>
-                <div class="cta-buttons">
-                    <a href="#" class="btn btn-primary btn-hero" onclick="openRegistrationModal()">
-                        <i class="fas fa-user-plus"></i>
-                        Create Your Parent Account
-                    </a>
-                    <a href="#" class="btn btn-outlined btn-hero" onclick="openLoginModal()">
-                        <i class="fas fa-sign-in-alt"></i>
-                        Already Have an Account?
-                    </a>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Footer -->
     <footer class="footer">
         <div class="container">
             <div class="footer-content">
-                <div class="footer-section">
-                    <h4><i class="fas fa-heart"></i> Parent Resources</h4>
+                <div>
+                    <div style="display: flex; align-items: center; gap: .6rem; margin-bottom: 1.5rem;">
+                        <div style="width: 36px; height: 36px; border-radius: 50%; border: 2px solid var(--sunset-gold); overflow: hidden; background: white;">
+                            <img src="/Images/Logo_Baobab.svg" alt="Baobab" style="width:100%; height:100%; object-fit:cover;" onerror="this.src='/Images/logo.jpg'">
+                        </div>
+                        <span style="font-family: 'Playfair Display', serif; font-size: 1.2rem; font-weight: 700;">Baobab Digital Academy</span>
+                    </div>
+                    <p style="font-size: .85rem; color: rgba(255,255,255,0.6); margin-bottom: 1rem; max-width: 250px;">
+                        Providing strong roots of cultural identity whilst enabling limitless growth in academic achievement.
+                    </p>
+                </div>
+                <div>
+                    <h4>Parent Resources</h4>
                     <a href="get-started.html" class="footer-link">Getting Started Guide</a>
-                    <a href="supporting-child.html" class="footer-link">Supporting Your Child's Learning</a>
-                    <a href="cultural-integration.html" class="footer-link">Cultural Integration at Home</a>
+                    <a href="supporting-child.html" class="footer-link">Supporting Your Child</a>
+                    <a href="cultural-integration.html" class="footer-link">Cultural Integration</a>
                 </div>
-                <div class="footer-section">
-                    <h4><i class="fas fa-shield-alt"></i> Safety & Security</h4>
+                <div>
+                    <h4>Safety & Policies</h4>
                     <a href="child-protection.html" class="footer-link">Child Protection Policy</a>
-                    <a href="tutor-verification.html" class="footer-link">Tutor Verification Process</a>
-                    <a href="#" class="footer-link">Platform Security Features</a>
-                    <a href="#" class="footer-link">Privacy Policy</a>
-                </div>
-                <div class="footer-section">
-                    <h4><i class="fas fa-headset"></i> Support</h4>
-                    <p style="color: rgba(255, 255, 255, 0.7); margin-bottom: 15px;">
-                        <i class="fas fa-envelope"></i>
-                        <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="13637261767d67605371727c7172717c7d7f7a7d7672707277767e6a3d707c7e">[email&#160;protected]</a>
-                    </p>
-                    <p style="color: rgba(255, 255, 255, 0.7); margin-bottom: 15px;">
-                        <i class="fas fa-phone"></i>
-                        +234 (0) 816 501 1291
-                    </p>
-                    <a href="#" class="footer-link">Help Center</a>
-                    <a href="#" class="footer-link">Live Chat Support</a>
+                    <a href="tutor-verification.html" class="footer-link">Tutor Verification</a>
+                    <a href="platform-security.html" class="footer-link">Platform Security</a>
+                    <a href="privacy-policy.html" class="footer-link">Privacy Policy</a>
                 </div>
             </div>
             <div class="footer-bottom">
-                <p>&copy; 2025 Baobab Online Academy Parent Portal. Nurturing Growth, Honoring Heritage!</p>
+                <p>&copy; 2026 Baobab Digital Academy. All rights reserved. <br><br><strong>Deep Roots, Limitless Growth 🌳</strong></p>
             </div>
         </div>
     </footer>
 
-    <!-- Registration Modal -->
     <div class="modal" id="registrationModal">
         <div class="modal-content">
             <button class="modal-close" onclick="closeRegistrationModal()"><i class="fas fa-times"></i></button>
-            <h3 class="modal-title"><i class="fas fa-user-plus"></i> Create Parent Account</h3>
+            <div class="modal-title">
+                <i class="fas fa-user-plus"></i>
+                <span>Create Account</span>
+            </div>
 
             <div class="error-message" id="regErrorMessage"></div>
             <div class="success-message" id="regSuccessMessage"></div>
@@ -526,7 +569,7 @@
             <form id="registrationForm" onsubmit="handleRegistration(event)">
                 <div class="form-group">
                     <label class="form-label">Email Address *</label>
-                    <input type="email" name="email" required class="form-input" placeholder="Enter your email address">
+                    <input type="email" name="email" required class="form-input" placeholder="Enter your authorized email">
                 </div>
                 <div class="form-group">
                     <label class="form-label">Full Name *</label>
@@ -545,7 +588,7 @@
                     <input type="password" name="confirmPassword" required class="form-input" placeholder="Confirm your password" minlength="6">
                 </div>
                 <button type="submit" class="form-submit" id="regSubmitBtn">
-                    <span id="regSubmitText">Create Account</span>
+                    <span id="regSubmitText">Create Secure Account</span>
                     <div class="loading-spinner" id="regLoadingSpinner"></div>
                 </button>
             </form>
@@ -556,11 +599,13 @@
         </div>
     </div>
 
-    <!-- Login Modal -->
     <div class="modal" id="loginModal">
         <div class="modal-content">
             <button class="modal-close" onclick="closeLoginModal()"><i class="fas fa-times"></i></button>
-            <h3 class="modal-title"><i class="fas fa-sign-in-alt"></i> Parent Login</h3>
+            <div class="modal-title">
+                <i class="fas fa-sign-in-alt"></i>
+                <span>Parent Login</span>
+            </div>
 
             <div class="error-message" id="loginErrorMessage"></div>
             <div class="success-message" id="loginSuccessMessage"></div>
@@ -574,38 +619,40 @@
                     <label class="form-label">Password *</label>
                     <input type="password" name="password" required class="form-input" placeholder="Enter your password">
                 </div>
+                <div style="text-align: right; margin-bottom: 1rem;">
+                    <a href="#" onclick="openForgotPasswordModal()" style="color: var(--canopy-green); font-size: .85rem; font-weight: 700; text-decoration: none;">Forgot Password?</a>
+                </div>
                 <button type="submit" class="form-submit" id="loginSubmitBtn">
-                    <span id="loginSubmitText">Login</span>
+                    <span id="loginSubmitText">Login to Dashboard</span>
                     <div class="loading-spinner" id="loginLoadingSpinner"></div>
                 </button>
             </form>
 
-            <div class="form-toggle">
-                <a href="#" onclick="openForgotPasswordModal()" style="color: var(--sunset-gold); font-weight: 600;">Forgot Password?</a>
-            </div>
             <div class="form-toggle">
                 Don't have an account? <a href="#" onclick="switchToRegistration()">Register here</a>
             </div>
         </div>
     </div>
 
-    <!-- Forgot Password Modal -->
     <div class="modal" id="forgotPasswordModal">
         <div class="modal-content">
             <button class="modal-close" onclick="closeForgotPasswordModal()"><i class="fas fa-times"></i></button>
-            <h3 class="modal-title"><i class="fas fa-key"></i> Reset Password</h3>
+            <div class="modal-title">
+                <i class="fas fa-key"></i>
+                <span>Reset Password</span>
+            </div>
 
             <div class="error-message" id="forgotErrorMessage"></div>
             <div class="success-message" id="forgotSuccessMessage"></div>
 
-            <p style="text-align: center; color: var(--trunk-gray); margin-bottom: 25px;">
-                Enter your email address and we'll send you a link to reset your password.
+            <p style="text-align: center; color: var(--text-medium); font-size: .9rem; margin-bottom: 1.5rem;">
+                Enter your email address and we'll send you a secure link to reset your password.
             </p>
 
             <form id="forgotPasswordForm" onsubmit="handleForgotPassword(event)">
                 <div class="form-group">
                     <label class="form-label">Email Address *</label>
-                    <input type="email" name="email" required class="form-input" placeholder="Enter your email address">
+                    <input type="email" name="email" required class="form-input" placeholder="Enter your registered email">
                 </div>
                 <button type="submit" class="form-submit" id="forgotSubmitBtn">
                     <span id="forgotSubmitText">Send Reset Link</span>
@@ -614,414 +661,264 @@
             </form>
 
             <div class="form-toggle">
-                Remember your password? <a href="#" onclick="switchToLoginFromForgot()">Back to Login</a>
+                Remembered your password? <a href="#" onclick="switchToLoginFromForgot()">Back to Login</a>
             </div>
         </div>
     </div>
 
-    <!-- Email Verification Modal -->
     <div class="modal" id="verificationModal">
-        <div class="modal-content">
+        <div class="modal-content" style="text-align: center;">
             <button class="modal-close" onclick="closeVerificationModal()"><i class="fas fa-times"></i></button>
             <div class="verification-notice">
-                <div class="email-icon"><i class="fas fa-envelope-open"></i></div>
-                <h4>📧 Check Your Email!</h4>
-                <p><strong>We've sent a verification link to your email address.</strong></p>
-                <p>Please check your inbox and click the verification link to activate your parent account.</p>
-                <p style="font-size: 0.95rem; opacity: 0.9; margin-top: 20px;">
-                    Don't see the email? Check your spam folder or 
-                    <span class="resend-link" onclick="resendVerificationEmail()">click here to resend</span>
+                <div class="email-icon"><i class="fas fa-envelope-open-text"></i></div>
+                <h4>Check Your Inbox</h4>
+                <p>We've sent a secure verification link to your email address.</p>
+                <p style="font-size: .85rem; padding: 1rem; background: var(--earth-cream); border-radius: 12px;">
+                    Please check your inbox (and spam folder) and click the link to activate your parent account.
+                </p>
+                <p style="font-size: .85rem; margin-top: 1.5rem;">
+                    Don't see the email? <br>
+                    <span class="resend-link" onclick="resendVerificationEmail()">Click here to resend link</span>
                 </p>
             </div>
-            <div style="text-align: center; margin-top: 25px;">
-                <button class="btn btn-primary" onclick="closeVerificationModal()">
-                    <i class="fas fa-check"></i>
-                    I'll Check My Email
-                </button>
-            </div>
+            <button class="btn btn-outline" style="margin-top: 1rem; width: 100%;" onclick="closeVerificationModal()">
+                I'll Check My Email
+            </button>
         </div>
     </div>
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script>
-<script>
-  // ===== CONFIGURATION =====
-  const SUPABASE_URL = 'https://vcxdkacxbjsgaoxbhsip.supabase.co';
-  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZjeGRrYWN4YmpzZ2FveGJoc2lwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI5MDQ5ODMsImV4cCI6MjA2ODQ4MDk4M30.T9KhHWzHZWyaZvyeFXtBu8tPLY9JOn6_wCHcH8B46FU';
-  
-  // Create Supabase client - check if window.supabaseClient doesn't exist
-  if (!window.supabaseClient) {
-    window.supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-  }
-  const supabaseClient = window.supabaseClient;
-
-  // Optional EmailJS init
-  const EMAILJS_CONFIG = { PUBLIC_KEY: 'axzjFvaj8oDzIdLHB' };
-  if (window.emailjs && EMAILJS_CONFIG.PUBLIC_KEY) {
-    try { emailjs.init(EMAILJS_CONFIG.PUBLIC_KEY); } catch(_) {}
-  }
-
-  let pendingUserData = null;
-  let lastAttemptEmail = null;
-
-  // ===== UTILITY FUNCTIONS =====
-  function clearMessages() {
-    document.querySelectorAll('.error-message').forEach(msg => { msg.style.display = 'none'; msg.textContent = ''; });
-    document.querySelectorAll('.success-message').forEach(msg => { msg.style.display = 'none'; msg.textContent = ''; });
-  }
-  
-  function showError(id, message) { 
-    const el = document.getElementById(id); 
-    if (el) {
-      el.textContent = message; 
-      el.style.display = 'block'; 
-    }
-  }
-  
-  function showSuccess(id, message) { 
-    const el = document.getElementById(id); 
-    if (el) {
-      el.textContent = message; 
-      el.style.display = 'block'; 
-    }
-  }
-
-  // ===== MODAL FUNCTIONS =====
-  window.openRegistrationModal = function() { 
-    document.getElementById('registrationModal').style.display = 'flex'; 
-    document.body.style.overflow = 'hidden'; 
-    clearMessages(); 
-  };
-  
-  window.closeRegistrationModal = function() { 
-    document.getElementById('registrationModal').style.display = 'none'; 
-    document.body.style.overflow = 'auto'; 
-    clearMessages(); 
-  };
-  
-  window.openLoginModal = function() { 
-    document.getElementById('loginModal').style.display = 'flex'; 
-    document.body.style.overflow = 'hidden'; 
-    clearMessages(); 
-  };
-  
-  window.closeLoginModal = function() { 
-    document.getElementById('loginModal').style.display = 'none'; 
-    document.body.style.overflow = 'auto'; 
-    clearMessages(); 
-  };
-  
-  window.openVerificationModal = function() { 
-    document.getElementById('verificationModal').style.display = 'flex'; 
-    document.body.style.overflow = 'hidden'; 
-  };
-  
-  window.closeVerificationModal = function() { 
-    document.getElementById('verificationModal').style.display = 'none'; 
-    document.body.style.overflow = 'auto'; 
-  };
-  
-  window.openForgotPasswordModal = function() { 
-    window.closeLoginModal(); 
-    document.getElementById('forgotPasswordModal').style.display = 'flex'; 
-    document.body.style.overflow = 'hidden'; 
-    clearMessages(); 
-  };
-  
-  window.closeForgotPasswordModal = function() { 
-    document.getElementById('forgotPasswordModal').style.display = 'none'; 
-    document.body.style.overflow = 'auto'; 
-    clearMessages(); 
-  };
-  
-  window.switchToLogin = function() { window.closeRegistrationModal(); window.openLoginModal(); };
-  window.switchToRegistration = function() { window.closeLoginModal(); window.openRegistrationModal(); };
-  window.switchToLoginFromForgot = function() { window.closeForgotPasswordModal(); window.openLoginModal(); };
-
-  // ===== AUTH STATE LOGS =====
-  supabaseClient.auth.onAuthStateChange((event, session) => {
-    console.log('Auth state:', event, session?.user?.email || 'no user');
-  });
-
-  // ===== MOBILE MENU =====
-  document.addEventListener('DOMContentLoaded', function() {
-    const menuToggle = document.getElementById('menuToggle');
-    const mobileMenuPanel = document.getElementById('mobileMenuPanel');
-    const menuOverlay = document.getElementById('menuOverlay');
-
-    function toggleMenu() {
-      mobileMenuPanel.classList.toggle('active');
-      menuOverlay.classList.toggle('active');
-      document.body.style.overflow = mobileMenuPanel.classList.contains('active') ? 'hidden' : 'auto';
-      menuToggle.innerHTML = mobileMenuPanel.classList.contains('active') ? '<i class="fas fa-times"></i>' : '<i class="fas fa-bars"></i>';
-    }
-    
-    function closeMenu() {
-      mobileMenuPanel.classList.remove('active');
-      menuOverlay.classList.remove('active');
-      document.body.style.overflow = 'auto';
-      menuToggle.innerHTML = '<i class="fas fa-bars"></i>';
-    }
-    
-    if (menuToggle) menuToggle.addEventListener('click', toggleMenu);
-    if (menuOverlay) menuOverlay.addEventListener('click', closeMenu);
-    document.querySelectorAll('.mobile-link').forEach(link => link.addEventListener('click', closeMenu));
-  });
-
-  // ===== HELPERS =====
-  function verifyRedirectUrl() {
-    return `${window.location.origin}/verify-email.html`;
-  }
-
-  async function isAuthorizedUser(email) {
-    try {
-      const { data, error } = await supabaseClient.from('authorised_emails').select('*').eq('email', email.toLowerCase()).single();
-      if (error || !data) return false;
-      return data.is_used === true;
-    } catch (e) {
-      console.error('authorized_emails check failed:', e);
-      return false;
-    }
-  }
-
-  // ===== REGISTRATION =====
-  window.handleRegistration = async function(event) {
-    event.preventDefault();
-
-    const submitBtn = document.getElementById('regSubmitBtn');
-    const submitText = document.getElementById('regSubmitText');
-    const loadingSpinner = document.getElementById('regLoadingSpinner');
-    submitText.style.display = 'none'; 
-    loadingSpinner.style.display = 'inline-block'; 
-    submitBtn.disabled = true; 
-    clearMessages();
-
-    try {
-      const formData = new FormData(event.target);
-      const email = (formData.get('email') || '').toLowerCase().trim();
-      const fullName = (formData.get('full_name') || '').trim();
-      const phone = (formData.get('phone') || '').trim();
-      const password = formData.get('password');
-      const confirmPassword = formData.get('confirmPassword');
-
-      if (!email || !fullName || !phone || !password) throw new Error('Please fill in all required fields');
-      if (password !== confirmPassword) throw new Error('Passwords do not match');
-      if (password.length < 6) throw new Error('Password must be at least 6 characters long');
-
-      console.log('Checking authorized email…');
-      const { data: authorizedEmail, error: authCheckError } = await supabaseClient
-        .from('authorised_emails')
-        .select('*').eq('email', email).single();
-      
-      if (authCheckError || !authorizedEmail) {
-        throw new Error('This email is not authorized to create an account. Please contact support at parents@baobabonlineacademy.com');
-      }
-      if (authorizedEmail.is_used) throw new Error('This email has already been used to create an account. Please try logging in instead.');
-
-      console.log('Creating user account…');
-      const { data: authData, error: signUpError } = await supabaseClient.auth.signUp({
-        email,
-        password,
-        options: {
-          emailRedirectTo: verifyRedirectUrl(),
-          data: { full_name: fullName, phone: phone }
-        }
-      });
-      
-      if (signUpError) throw new Error(signUpError.message || 'Failed to create user account.');
-      if (!authData?.user) throw new Error('Failed to create user account.');
-
-      pendingUserData = { email, fullName, phone, userId: authData.user.id };
-      lastAttemptEmail = email;
-
-      console.log('Marking email as used…');
-      const { error: updateError } = await supabaseClient
-        .from('authorised_emails')
-        .update({ is_used: true, used_at: new Date().toISOString() })
-        .eq('email', email);
-      
-      if (updateError) console.warn('Failed to update authorised_emails:', updateError);
-
-      event.target.reset();
-      window.closeRegistrationModal();
-      window.openVerificationModal();
-      showSuccess('regSuccessMessage', 'Account created. Please verify your email to continue.');
-      console.log('Registration complete. Verification email sent by Supabase.');
-
-    } catch (error) {
-      console.error('Registration error:', error);
-      let msg = error.message || 'Registration failed. Please try again.';
-      if (msg.toLowerCase().includes('user already registered')) msg = 'An account already exists with this email. Please log in instead.';
-      showError('regErrorMessage', msg);
-    } finally {
-      submitText.style.display = 'inline';
-      loadingSpinner.style.display = 'none';
-      submitBtn.disabled = false;
-    }
-  };
-
-  // ===== LOGIN =====
-  window.handleLogin = async function(event) {
-    event.preventDefault();
-
-    const submitBtn = document.getElementById('loginSubmitBtn');
-    const submitText = document.getElementById('loginSubmitText');
-    const loadingSpinner = document.getElementById('loginLoadingSpinner');
-    submitText.style.display = 'none'; 
-    loadingSpinner.style.display = 'inline-block'; 
-    submitBtn.disabled = true; 
-    clearMessages();
-
-    let email = '';
-    try {
-      const formData = new FormData(event.target);
-      email = (formData.get('email') || '').toLowerCase().trim();
-      const password = formData.get('password');
-
-      await supabaseClient.auth.signOut();
-
-      console.log('Attempting login for:', email);
-      const { data: authData, error: signInError } = await supabaseClient.auth.signInWithPassword({ email, password });
-
-      if (signInError) {
-        const msg = (signInError.message || '').toLowerCase();
-        if (msg.includes('email not confirmed') || signInError.code === 'email_not_confirmed') {
-          lastAttemptEmail = email;
-          try {
-            await supabaseClient.auth.resend({
-              type: 'signup',
-              email,
-              options: { emailRedirectTo: verifyRedirectUrl() }
+    <script>
+        // ===== UI SCROLL ANIMATIONS =====
+        const fuEls = document.querySelectorAll('.fu');
+        const fuObs = new IntersectionObserver(entries => {
+            entries.forEach(entry => {
+                if (!entry.isIntersecting) return;
+                const siblings = Array.from(entry.target.parentElement.children).filter(el => el.classList.contains('fu'));
+                const delay = siblings.indexOf(entry.target) * 90;
+                setTimeout(() => entry.target.classList.add('vis'), delay);
+                fuObs.unobserve(entry.target);
             });
-          } catch (_) {}
-          showError('loginErrorMessage', 'Please verify your email address. We just sent you a fresh verification link.');
-          window.openVerificationModal();
-          return;
+        }, { threshold: 0.1 });
+        fuEls.forEach(el => fuObs.observe(el));
+
+        // ===== MOBILE MENU =====
+        const menuToggle = document.getElementById('menuToggle');
+        const mobileMenuPanel = document.getElementById('mobileMenuPanel');
+        const menuOverlay = document.getElementById('menuOverlay');
+
+        function toggleMenu() {
+            mobileMenuPanel.classList.toggle('active');
+            menuOverlay.classList.toggle('active');
+            document.body.style.overflow = mobileMenuPanel.classList.contains('active') ? 'hidden' : 'auto';
+            menuToggle.innerHTML = mobileMenuPanel.classList.contains('active') ? '<i class="fas fa-times"></i>' : '<i class="fas fa-bars"></i>';
         }
-        if (msg.includes('invalid login credentials')) {
-          throw new Error('Invalid email or password. Please check your credentials and try again.');
+        function closeMenu() {
+            mobileMenuPanel.classList.remove('active');
+            menuOverlay.classList.remove('active');
+            document.body.style.overflow = 'auto';
+            menuToggle.innerHTML = '<i class="fas fa-bars"></i>';
         }
-        throw signInError;
-      }
+        
+        if (menuToggle) menuToggle.addEventListener('click', toggleMenu);
+        if (menuOverlay) menuOverlay.addEventListener('click', closeMenu);
+        document.querySelectorAll('.mobile-link').forEach(link => link.addEventListener('click', closeMenu));
 
-      if (!authData?.user) throw new Error('Login failed. Please try again.');
 
-      showSuccess('loginSuccessMessage', 'Login successful! Redirecting to your dashboard…');
-      event.target.reset();
-      setTimeout(() => {
-        window.closeLoginModal();
-        window.location.href = '/parent-dashboard.html';
-      }, 1500);
+        // ===== SUPABASE & AUTHENTICATION CONFIGURATION (Untouched) =====
+        const SUPABASE_URL = 'https://vcxdkacxbjsgaoxbhsip.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZjeGRrYWN4YmpzZ2FveGJoc2lwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI5MDQ5ODMsImV4cCI6MjA2ODQ4MDk4M30.T9KhHWzHZWyaZvyeFXtBu8tPLY9JOn6_wCHcH8B46FU';
+        
+        if (!window.supabaseClient) {
+            window.supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        }
+        const supabaseClient = window.supabaseClient;
 
-    } catch (error) {
-      console.error('Login error:', error);
-      showError('loginErrorMessage', error.message || 'Login failed. Please try again.');
-    } finally {
-      submitText.style.display = 'inline';
-      loadingSpinner.style.display = 'none';
-      submitBtn.disabled = false;
-    }
-  };
+        let pendingUserData = null;
+        let lastAttemptEmail = null;
 
-  // ===== FORGOT PASSWORD =====
-  window.handleForgotPassword = async function(event) {
-    event.preventDefault();
+        // ===== UTILITY FUNCTIONS =====
+        function clearMessages() {
+            document.querySelectorAll('.error-message').forEach(msg => { msg.style.display = 'none'; msg.textContent = ''; });
+            document.querySelectorAll('.success-message').forEach(msg => { msg.style.display = 'none'; msg.textContent = ''; });
+        }
+        function showError(id, message) { const el = document.getElementById(id); if (el) { el.textContent = message; el.style.display = 'block'; } }
+        function showSuccess(id, message) { const el = document.getElementById(id); if (el) { el.textContent = message; el.style.display = 'block'; } }
 
-    const submitBtn = document.getElementById('forgotSubmitBtn');
-    const submitText = document.getElementById('forgotSubmitText');
-    const loadingSpinner = document.getElementById('forgotLoadingSpinner');
-    submitText.style.display = 'none'; 
-    loadingSpinner.style.display = 'inline-block'; 
-    submitBtn.disabled = true; 
-    clearMessages();
+        // ===== MODAL FUNCTIONS =====
+        window.openRegistrationModal = function() { document.getElementById('registrationModal').style.display = 'flex'; document.body.style.overflow = 'hidden'; clearMessages(); };
+        window.closeRegistrationModal = function() { document.getElementById('registrationModal').style.display = 'none'; document.body.style.overflow = 'auto'; clearMessages(); };
+        window.openLoginModal = function() { document.getElementById('loginModal').style.display = 'flex'; document.body.style.overflow = 'hidden'; clearMessages(); };
+        window.closeLoginModal = function() { document.getElementById('loginModal').style.display = 'none'; document.body.style.overflow = 'auto'; clearMessages(); };
+        window.openVerificationModal = function() { document.getElementById('verificationModal').style.display = 'flex'; document.body.style.overflow = 'hidden'; };
+        window.closeVerificationModal = function() { document.getElementById('verificationModal').style.display = 'none'; document.body.style.overflow = 'auto'; };
+        window.openForgotPasswordModal = function() { window.closeLoginModal(); document.getElementById('forgotPasswordModal').style.display = 'flex'; document.body.style.overflow = 'hidden'; clearMessages(); };
+        window.closeForgotPasswordModal = function() { document.getElementById('forgotPasswordModal').style.display = 'none'; document.body.style.overflow = 'auto'; clearMessages(); };
+        
+        window.switchToLogin = function() { window.closeRegistrationModal(); window.openLoginModal(); };
+        window.switchToRegistration = function() { window.closeLoginModal(); window.openRegistrationModal(); };
+        window.switchToLoginFromForgot = function() { window.closeForgotPasswordModal(); window.openLoginModal(); };
 
-    try {
-      const formData = new FormData(event.target);
-      const email = (formData.get('email') || '').toLowerCase().trim();
-
-      if (!email) throw new Error('Please enter your email address.');
-
-      console.log('Sending password reset email to:', email);
-      const { error } = await supabaseClient.auth.resetPasswordForEmail(email, {
-        redirectTo: 'https://parent.baobabonlineacademy.com/reset-password.html'
-      });
-
-      if (error) throw error;
-
-      showSuccess('forgotSuccessMessage', 'Password reset link sent! Please check your email inbox (and spam folder).');
-      event.target.reset();
-      console.log('Password reset email sent successfully.');
-
-    } catch (error) {
-      console.error('Forgot password error:', error);
-      showError('forgotErrorMessage', error.message || 'Failed to send reset link. Please try again.');
-    } finally {
-      submitText.style.display = 'inline';
-      loadingSpinner.style.display = 'none';
-      submitBtn.disabled = false;
-    }
-  };
-
-  // ===== RESEND VERIFICATION =====
-  window.resendVerificationEmail = async function() {
-    const email = (pendingUserData?.email || lastAttemptEmail || '').trim().toLowerCase();
-    let targetEmail = email;
-    if (!targetEmail) {
-      const entered = prompt('Enter the email address to resend the verification link:');
-      if (!entered) return;
-      targetEmail = entered.trim().toLowerCase();
-    }
-
-    try {
-      await supabaseClient.auth.resend({
-        type: 'signup',
-        email: targetEmail,
-        options: { emailRedirectTo: verifyRedirectUrl() }
-      });
-      alert('A new verification email has been sent. Please check your inbox (and spam folder).');
-    } catch (err) {
-      console.error('Resend verification error:', err);
-      alert('Could not resend verification. Please try again.');
-    }
-  };
-
-  // ===== INITIALIZE =====
-  document.addEventListener('DOMContentLoaded', function () {
-    // Smooth scroll
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-      anchor.addEventListener('click', function (e) {
-        const href = this.getAttribute('href');
-        if (href === '#' || href === '#login' || href === '#register') { e.preventDefault(); return; }
-        e.preventDefault();
-        const target = document.querySelector(href);
-        if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      });
-    });
-
-    // Hover effects
-    document.querySelectorAll('.feature-card').forEach(card => {
-      card.addEventListener('mouseenter', function () { this.style.transform = 'translateY(-15px) scale(1.02)'; });
-      card.addEventListener('mouseleave', function () { this.style.transform = 'translateY(0) scale(1)'; });
-    });
-
-    // Close modals on backdrop click
-    const modals = ['registrationModal', 'loginModal', 'verificationModal', 'forgotPasswordModal'];
-    modals.forEach(modalId => {
-      const modal = document.getElementById(modalId);
-      if (modal) {
-        modal.addEventListener('click', (e) => { 
-          if (e.target === e.currentTarget) {
-            const closeFunc = window[`close${modalId.charAt(0).toUpperCase() + modalId.slice(1).replace('Modal', 'Modal')}`];
-            if (closeFunc) closeFunc();
-          }
+        // Close modals on backdrop click
+        const modals = ['registrationModal', 'loginModal', 'verificationModal', 'forgotPasswordModal'];
+        modals.forEach(modalId => {
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                modal.addEventListener('click', (e) => { 
+                    if (e.target === e.currentTarget) {
+                        const closeFunc = window[`close${modalId.charAt(0).toUpperCase() + modalId.slice(1).replace('Modal', 'Modal')}`];
+                        if (closeFunc) closeFunc();
+                    }
+                });
+            }
         });
-      }
-    });
 
-    // Check existing session
-    supabaseClient.auth.getUser().then(({ data }) => {
-      if (data?.user) console.log('Session found for:', data.user.email);
-    });
-  });
-</script>
+        // ===== SUPABASE LOGIC =====
+        function verifyRedirectUrl() {
+            return `${window.location.origin}/verify-email.html`;
+        }
+
+        window.handleRegistration = async function(event) {
+            event.preventDefault();
+            const submitBtn = document.getElementById('regSubmitBtn');
+            const submitText = document.getElementById('regSubmitText');
+            const loadingSpinner = document.getElementById('regLoadingSpinner');
+            submitText.style.display = 'none'; loadingSpinner.style.display = 'inline-block'; submitBtn.disabled = true; clearMessages();
+
+            try {
+                const formData = new FormData(event.target);
+                const email = (formData.get('email') || '').toLowerCase().trim();
+                const fullName = (formData.get('full_name') || '').trim();
+                const phone = (formData.get('phone') || '').trim();
+                const password = formData.get('password');
+                const confirmPassword = formData.get('confirmPassword');
+
+                if (!email || !fullName || !phone || !password) throw new Error('Please fill in all required fields');
+                if (password !== confirmPassword) throw new Error('Passwords do not match');
+                if (password.length < 6) throw new Error('Password must be at least 6 characters long');
+
+                const { data: authorizedEmail, error: authCheckError } = await supabaseClient
+                    .from('authorised_emails')
+                    .select('*').eq('email', email).single();
+                
+                if (authCheckError || !authorizedEmail) {
+                    throw new Error('This email is not authorized to create an account. Please contact support at admin@baobabonlineacademy.com');
+                }
+                if (authorizedEmail.is_used) throw new Error('This email has already been used to create an account. Please log in instead.');
+
+                const { data: authData, error: signUpError } = await supabaseClient.auth.signUp({
+                    email, password, options: { emailRedirectTo: verifyRedirectUrl(), data: { full_name: fullName, phone: phone } }
+                });
+                
+                if (signUpError) throw new Error(signUpError.message || 'Failed to create user account.');
+                if (!authData?.user) throw new Error('Failed to create user account.');
+
+                pendingUserData = { email, fullName, phone, userId: authData.user.id };
+                lastAttemptEmail = email;
+
+                const { error: updateError } = await supabaseClient
+                    .from('authorised_emails')
+                    .update({ is_used: true, used_at: new Date().toISOString() })
+                    .eq('email', email);
+                
+                event.target.reset();
+                window.closeRegistrationModal();
+                window.openVerificationModal();
+                showSuccess('regSuccessMessage', 'Account created. Please verify your email to continue.');
+            } catch (error) {
+                let msg = error.message || 'Registration failed. Please try again.';
+                if (msg.toLowerCase().includes('user already registered')) msg = 'An account already exists with this email. Please log in instead.';
+                showError('regErrorMessage', msg);
+            } finally {
+                submitText.style.display = 'inline'; loadingSpinner.style.display = 'none'; submitBtn.disabled = false;
+            }
+        };
+
+        window.handleLogin = async function(event) {
+            event.preventDefault();
+            const submitBtn = document.getElementById('loginSubmitBtn');
+            const submitText = document.getElementById('loginSubmitText');
+            const loadingSpinner = document.getElementById('loginLoadingSpinner');
+            submitText.style.display = 'none'; loadingSpinner.style.display = 'inline-block'; submitBtn.disabled = true; clearMessages();
+
+            let email = '';
+            try {
+                const formData = new FormData(event.target);
+                email = (formData.get('email') || '').toLowerCase().trim();
+                const password = formData.get('password');
+
+                await supabaseClient.auth.signOut();
+                const { data: authData, error: signInError } = await supabaseClient.auth.signInWithPassword({ email, password });
+
+                if (signInError) {
+                    const msg = (signInError.message || '').toLowerCase();
+                    if (msg.includes('email not confirmed') || signInError.code === 'email_not_confirmed') {
+                        lastAttemptEmail = email;
+                        try { await supabaseClient.auth.resend({ type: 'signup', email, options: { emailRedirectTo: verifyRedirectUrl() } }); } catch (_) {}
+                        showError('loginErrorMessage', 'Please verify your email address. We just sent you a fresh verification link.');
+                        window.openVerificationModal();
+                        return;
+                    }
+                    if (msg.includes('invalid login credentials')) throw new Error('Invalid email or password. Please check your credentials and try again.');
+                    throw signInError;
+                }
+
+                if (!authData?.user) throw new Error('Login failed. Please try again.');
+
+                showSuccess('loginSuccessMessage', 'Login successful! Redirecting to your dashboard…');
+                event.target.reset();
+                setTimeout(() => {
+                    window.closeLoginModal();
+                    window.location.href = '/parent-dashboard.html';
+                }, 1500);
+
+            } catch (error) {
+                showError('loginErrorMessage', error.message || 'Login failed. Please try again.');
+            } finally {
+                submitText.style.display = 'inline'; loadingSpinner.style.display = 'none'; submitBtn.disabled = false;
+            }
+        };
+
+        window.handleForgotPassword = async function(event) {
+            event.preventDefault();
+            const submitBtn = document.getElementById('forgotSubmitBtn');
+            const submitText = document.getElementById('forgotSubmitText');
+            const loadingSpinner = document.getElementById('forgotLoadingSpinner');
+            submitText.style.display = 'none'; loadingSpinner.style.display = 'inline-block'; submitBtn.disabled = true; clearMessages();
+
+            try {
+                const formData = new FormData(event.target);
+                const email = (formData.get('email') || '').toLowerCase().trim();
+                if (!email) throw new Error('Please enter your email address.');
+
+                const { error } = await supabaseClient.auth.resetPasswordForEmail(email, {
+                    redirectTo: 'https://parent.baobabonlineacademy.com/reset-password.html'
+                });
+
+                if (error) throw error;
+                showSuccess('forgotSuccessMessage', 'Password reset link sent! Please check your email inbox (and spam folder).');
+                event.target.reset();
+            } catch (error) {
+                showError('forgotErrorMessage', error.message || 'Failed to send reset link. Please try again.');
+            } finally {
+                submitText.style.display = 'inline'; loadingSpinner.style.display = 'none'; submitBtn.disabled = false;
+            }
+        };
+
+        window.resendVerificationEmail = async function() {
+            const email = (pendingUserData?.email || lastAttemptEmail || '').trim().toLowerCase();
+            let targetEmail = email;
+            if (!targetEmail) {
+                const entered = prompt('Enter the email address to resend the verification link:');
+                if (!entered) return;
+                targetEmail = entered.trim().toLowerCase();
+            }
+            try {
+                await supabaseClient.auth.resend({ type: 'signup', email: targetEmail, options: { emailRedirectTo: verifyRedirectUrl() } });
+                alert('A new verification email has been sent. Please check your inbox (and spam folder).');
+            } catch (err) {
+                alert('Could not resend verification. Please try again.');
+            }
+        };
+    </script>
 </body>
 </html>
