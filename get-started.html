@@ -2,750 +2,205 @@
 <html lang="en-GB">
 <head>
     <meta charset="UTF-8">
-    <link rel="icon" type="image/png" sizes="32x32" href="/Images/Logo_Baobab.svg">
+    <link rel="icon" type="image/png" sizes="32x32" href="/Images/logo.jpg">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Getting Started Guide - Baobab Online Academy Parent Portal</title>
+    <title>Getting Started Guide - Baobab Digital Academy Parent Portal</title>
+    
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@300;400;700;900&family=Open+Sans:wght@300;400;600;700&family=Kalam:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet">
+    
     <style>
+        /* ================================================
+           BAOBAB BRAND PALETTE
+           ================================================ */
         :root {
-            --baobab-brown: #8D4004;
-            --canopy-green: #2E7D32;
-            --sunset-gold: #F57C00;
-            --trunk-gray: #5D4037;
-            --sky-blue: #1976D2;
-            --earth-cream: #FFF8E1;
-            --desert-orange: #FF5722;
-            --sage-green: #689F38;
-            --deep-charcoal: #263238;
-            --white: #FFFFFF;
-            --light-gray: #F5F5F5;
-            --border-light: #E0E0E0;
-            
-            --transition-slow: all 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
-            --transition-medium: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
-            --transition-fast: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
-            
-            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
-            --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
-            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            --baobab-brown:       #6B3A2A;
+            --baobab-brown-dark:  #4A2218;
+            --baobab-brown-light: #8C5442;
+            --canopy-green:       #2D6A4F;
+            --canopy-green-dark:  #1B4332;
+            --canopy-green-light: #52B788;
+            --sunset-gold:        #F4A261;
+            --sunset-gold-warm:   #E76F51;
+            --earth-cream:        #FEF6EE;
+            --earth-cream-dark:   #F5E6D3;
+            --warm-white:         #FEFEFE;
+            --deep-charcoal:      #18120F;
+            --text-dark:          #2C1810;
+            --text-medium:        #5C3E30;
+            --text-light:         #8C7066;
+            --border-light:       #EDD9C8;
+            --shadow-warm:        rgba(107,58,42,0.12);
+            --max-w:              1280px;
+            --section-py:         5rem;
+            --section-px:         2rem;
+            --r-card:             20px;
+            --r-pill:             50px;
+            --transition:         all 0.3s cubic-bezier(.4,0,.2,1);
         }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        html { scroll-behavior: smooth; font-size: 18px; }
+        @media (max-width: 992px) { html { font-size: 16px; } }
+
+        body { font-family: 'DM Sans', sans-serif; color: var(--text-dark); background-color: var(--warm-white); line-height: 1.6; overflow-x: hidden; -webkit-font-smoothing: antialiased; }
+        h1, h2, h3, h4, h5 { font-family: 'Playfair Display', serif; font-weight: 700; line-height: 1.2; color: var(--baobab-brown-dark); }
+        ul { list-style: none; }
+        a { text-decoration: none; color: inherit; transition: var(--transition); }
+
+        .container { max-width: var(--max-w); margin: 0 auto; padding: 0 var(--section-px); position: relative; }
         
-        body {
-            font-family: 'Open Sans', sans-serif;
-            color: var(--deep-charcoal);
-            line-height: 1.6;
-            overflow-x: hidden;
-            background-color: var(--white);
-        }
-        
-        h1, h2, h3, h4, h5 {
-            font-family: 'Merriweather', serif;
-            font-weight: 700;
-            line-height: 1.3;
-        }
-        
-        .container {
-            width: 100%;
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
-            position: relative;
-        }
-        
+        /* Buttons */
         .btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            padding: 14px 32px;
-            border-radius: 30px;
-            font-weight: 600;
-            text-align: center;
-            transition: var(--transition-fast);
-            border: 2px solid transparent;
-            font-family: 'Open Sans', sans-serif;
-            text-decoration: none;
-            cursor: pointer;
+            display: inline-flex; align-items: center; justify-content: center; gap: .5rem;
+            padding: .85rem 1.75rem; border-radius: var(--r-pill); font-weight: 700; font-size: .95rem;
+            transition: var(--transition); border: 2px solid transparent; cursor: pointer; white-space: nowrap; font-family: 'DM Sans', sans-serif;
         }
-        
-        .btn-primary {
-            background-color: var(--baobab-brown);
-            color: var(--white);
-            border-color: var(--baobab-brown);
-        }
-        
-        .btn-primary:hover {
-            background-color: var(--trunk-gray);
-            border-color: var(--trunk-gray);
-            transform: translateY(-3px);
-            box-shadow: var(--shadow-md);
-        }
-        
-        .btn-secondary {
-            background-color: var(--sunset-gold);
-            color: var(--deep-charcoal);
-            border-color: var(--sunset-gold);
-        }
-        
-        .btn-outlined {
-            background-color: transparent;
-            color: var(--baobab-brown);
-            border-color: var(--baobab-brown);
-        }
-        
-        .btn-outlined:hover {
-            background-color: var(--baobab-brown);
-            color: var(--white);
-        }
-        
-        /* Header */
-        .header {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            z-index: 1000;
-            background-color: var(--white);
-            box-shadow: var(--shadow-md);
-            padding: 10px 0;
-        }
-        
-        .nav-wrapper {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            text-decoration: none;
-        }
-        
-        .logo-icon {
-            width: 32px;
-            height: 32px;
-            background-color: var(--canopy-green);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 8px;
-            font-size: 20px;
-            color: var(--white);
-        }
-        
-        .logo-text {
-            font-weight: 700;
-            font-size: 20px;
-            color: var(--baobab-brown);
-        }
-        
-        .nav-menu {
-            display: flex;
-            gap: 30px;
-            list-style: none;
-        }
-        
-        .nav-link {
-            font-weight: 500;
-            color: var(--deep-charcoal);
-            text-decoration: none;
-            padding: 5px 0;
-            transition: var(--transition-fast);
-        }
-        
-        .nav-link:hover {
-            color: var(--sunset-gold);
-        }
-        
-        .menu-toggle {
-            display: none;
-            font-size: 24px;
-            cursor: pointer;
-            color: var(--baobab-brown);
-        }
-        
-        /* Hero Section */
-        .hero {
-            background: linear-gradient(135deg, var(--sage-green), var(--canopy-green));
-            color: var(--white);
-            padding: 120px 0 80px;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .hero::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="20" cy="20" r="2" fill="rgba(255,255,255,0.1)"/><circle cx="80" cy="40" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="40" cy="80" r="1.5" fill="rgba(255,255,255,0.1)"/></svg>');
-            animation: float 20s infinite linear;
-        }
-        
-        @keyframes float {
-            0% { transform: translateY(0px) rotate(0deg); }
-            100% { transform: translateY(-100px) rotate(360deg); }
-        }
-        
-        .hero-content {
-            position: relative;
-            z-index: 2;
-            max-width: 800px;
-            text-align: center;
-            margin: 0 auto;
-        }
-        
-        .hero-badge {
-            background: rgba(255, 255, 255, 0.2);
-            padding: 12px 25px;
-            border-radius: 25px;
-            font-size: 0.95rem;
-            font-weight: 600;
-            margin-bottom: 25px;
-            display: inline-block;
-            backdrop-filter: blur(10px);
-        }
-        
-        .hero-title {
-            font-size: 3.5rem;
-            margin-bottom: 20px;
-            line-height: 1.2;
-        }
-        
-        .hero-subtitle {
-            font-size: 1.3rem;
-            opacity: 0.9;
-            margin-bottom: 40px;
-            line-height: 1.6;
-        }
-        
+        .btn-primary { background: linear-gradient(135deg, var(--canopy-green), var(--canopy-green-dark)); color: white; box-shadow: 0 4px 14px rgba(45,106,79,.25); }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(45,106,79,.35); }
+        .btn-outline { background: transparent; color: var(--baobab-brown-dark); border-color: var(--border-light); }
+        .btn-outline:hover { background: var(--earth-cream); border-color: var(--sunset-gold); }
+        .btn-white { background: #fff; color: var(--baobab-brown-dark); box-shadow: 0 4px 14px rgba(0,0,0,.08); }
+        .btn-white:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,.15); }
+
+        /* Shared Header (Matches Parent Portal Index) */
+        .header { position: fixed; top: 0; left: 0; width: 100%; z-index: 1000; background: rgba(255, 255, 255, 0.96); backdrop-filter: blur(15px); box-shadow: 0 2px 20px var(--shadow-warm); padding: .75rem 0; }
+        .nav-wrapper { display: flex; justify-content: space-between; align-items: center; }
+        .logo { display: flex; align-items: center; gap: .6rem; }
+        .logo-icon { width: 42px; height: 42px; border-radius: 50%; border: 2px solid var(--sunset-gold); overflow: hidden; background: #fff; }
+        .logo-icon img { width: 100%; height: 100%; object-fit: cover; }
+        .logo-text { font-family: 'Playfair Display', serif; font-weight: 700; font-size: 1.2rem; color: var(--baobab-brown-dark); line-height: 1.1; }
+        .logo-tag { display: block; font-family: 'DM Sans', sans-serif; font-size: .65rem; font-style: italic; color: var(--text-light); }
+        .nav-menu { display: flex; gap: 1.5rem; }
+        .nav-link { font-weight: 600; font-size: .9rem; color: var(--text-medium); }
+        .nav-link:hover, .nav-link.active { color: var(--sunset-gold); }
+        .menu-toggle { display: none; font-size: 1.5rem; cursor: pointer; color: var(--baobab-brown); background: none; border: none; }
+
+        /* Hero */
+        .hero { background: linear-gradient(145deg, var(--canopy-green-dark) 0%, var(--canopy-green) 100%); color: white; padding: 10rem 0 6rem; position: relative; overflow: hidden; }
+        .hero::before { content: ''; position: absolute; inset: 0; opacity: 0.05; background-image: url("data:image/svg+xml,%3Csvg width='44' height='44' viewBox='0 0 44 44' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M22 0 L44 22 L22 44 L0 22 Z' fill='none' stroke='%23FFFFFF' stroke-width='1'/%3E%3C/svg%3E"); background-size: 44px 44px; }
+        .hero-content { position: relative; z-index: 2; max-width: 800px; margin: 0 auto; text-align: center; }
+        .hero-badge { background: rgba(255,255,255,0.15); backdrop-filter: blur(10px); padding: .5rem 1.25rem; border-radius: var(--r-pill); font-size: .8rem; font-weight: 700; display: inline-block; margin-bottom: 1.5rem; border: 1px solid rgba(255,255,255,0.3); color: var(--sunset-gold); }
+        .hero-title { font-size: clamp(2.5rem, 5vw, 3.5rem); margin-bottom: 1rem; color: white; }
+        .hero-subtitle { font-size: 1.1rem; opacity: 0.9; line-height: 1.7; }
+
         /* Breadcrumbs */
-        .breadcrumbs {
-            background: var(--earth-cream);
-            padding: 20px 0;
-            border-bottom: 2px solid var(--border-light);
-        }
+        .breadcrumbs { background: var(--earth-cream); padding: 1rem 0; border-bottom: 1px solid var(--border-light); }
+        .breadcrumb-nav { display: flex; align-items: center; gap: .75rem; font-size: .85rem; }
+        .breadcrumb-link { color: var(--text-medium); font-weight: 600; }
+        .breadcrumb-link:hover { color: var(--sunset-gold); }
+        .breadcrumb-separator { color: var(--text-light); }
+        .breadcrumb-current { color: var(--baobab-brown-dark); font-weight: 700; }
+
+        /* Main Grid */
+        .main-content { padding: 4rem 0; }
+        .content-grid { display: grid; grid-template-columns: 1fr 300px; gap: 4rem; align-items: start; }
         
-        .breadcrumb-nav {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 0.9rem;
-        }
+        /* Sidebar */
+        .content-sidebar { position: sticky; top: 100px; background: var(--earth-cream); border-radius: var(--r-card); padding: 2rem; border: 1px solid var(--border-light); }
+        .sidebar-title { font-size: 1.2rem; margin-bottom: 1.5rem; display: flex; align-items: center; gap: .5rem; }
+        .sidebar-nav li { margin-bottom: .5rem; }
+        .sidebar-nav a { display: block; padding: .6rem 1rem; border-radius: 8px; font-weight: 600; font-size: .9rem; color: var(--text-medium); }
+        .sidebar-nav a:hover, .sidebar-nav a.active { background: var(--white); color: var(--sunset-gold); box-shadow: var(--shadow-sm); transform: translateX(5px); }
+
+        /* Timeline / Content */
+        .timeline-section { margin-bottom: 4rem; }
+        .section-header { background: linear-gradient(135deg, var(--baobab-brown-dark), var(--baobab-brown)); color: white; padding: 2rem; border-radius: var(--r-card); margin-bottom: 2.5rem; }
+        .section-header h2 { font-size: 1.8rem; color: white; margin-bottom: .5rem; }
+        .section-header p { font-size: .95rem; opacity: 0.9; }
         
-        .breadcrumb-link {
-            color: var(--trunk-gray);
-            text-decoration: none;
-            transition: var(--transition-fast);
-        }
+        .timeline { position: relative; padding-left: 40px; }
+        .timeline::before { content: ''; position: absolute; left: 20px; top: 0; bottom: 0; width: 4px; background: linear-gradient(to bottom, var(--sunset-gold), var(--canopy-green)); border-radius: 2px; }
         
-        .breadcrumb-link:hover {
-            color: var(--sunset-gold);
-        }
+        .timeline-item { background: var(--white); border: 1px solid var(--border-light); border-radius: var(--r-card); padding: 2rem; margin-bottom: 2rem; transition: var(--transition); position: relative; }
+        .timeline-item:hover { border-color: var(--sunset-gold); transform: translateX(10px); box-shadow: 0 12px 30px var(--shadow-warm); }
         
-        .breadcrumb-separator {
-            color: var(--trunk-gray);
-            opacity: 0.6;
-        }
+        .timeline-item::before { content: ''; position: absolute; left: -26px; top: 35px; width: 16px; height: 16px; background: var(--sunset-gold); border: 3px solid var(--white); border-radius: 50%; box-shadow: 0 0 0 3px var(--sunset-gold); }
         
-        .breadcrumb-current {
-            color: var(--baobab-brown);
-            font-weight: 600;
-        }
+        .timeline-number { position: absolute; left: -35px; top: 25px; width: 34px; height: 34px; background: var(--baobab-brown-dark); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-family: 'Playfair Display', serif; font-size: 1rem; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
         
-        /* Main Content */
-        .main-content {
-            padding: 80px 0;
-            background: var(--white);
-        }
+        .timeline-header { display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem; }
+        .timeline-icon { width: 48px; height: 48px; background: linear-gradient(135deg, var(--earth-cream), var(--earth-cream-dark)); color: var(--canopy-green); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; }
+        .timeline-title { font-size: 1.4rem; color: var(--baobab-brown-dark); }
+        .timeline-description { color: var(--text-medium); margin-bottom: 1.5rem; font-size: .95rem; }
         
-        .content-grid {
-            display: grid;
-            grid-template-columns: 1fr 300px;
-            gap: 60px;
-            align-items: start;
-        }
-        
-        .content-main {
-            background: var(--white);
-        }
-        
-        .content-sidebar {
-            position: sticky;
-            top: 120px;
-            background: var(--light-gray);
-            border-radius: 20px;
-            padding: 30px;
-            border: 2px solid var(--border-light);
-        }
-        
-        .sidebar-title {
-            color: var(--baobab-brown);
-            font-size: 1.4rem;
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .sidebar-nav {
-            list-style: none;
-        }
-        
-        .sidebar-nav li {
-            margin-bottom: 12px;
-        }
-        
-        .sidebar-nav a {
-            color: var(--trunk-gray);
-            text-decoration: none;
-            padding: 8px 12px;
-            border-radius: 10px;
-            display: block;
-            transition: var(--transition-fast);
-            font-size: 0.95rem;
-        }
-        
-        .sidebar-nav a:hover,
-        .sidebar-nav a.active {
-            background: var(--sunset-gold);
-            color: var(--deep-charcoal);
-            transform: translateX(5px);
-        }
-        
-        /* Timeline Steps */
-        .timeline-section {
-            margin-bottom: 50px;
-        }
-        
-        .section-header {
-            background: linear-gradient(135deg, var(--baobab-brown), var(--trunk-gray));
-            color: var(--white);
-            padding: 25px 30px;
-            border-radius: 15px;
-            margin-bottom: 30px;
-        }
-        
-        .section-header h2 {
-            font-size: 2rem;
-            margin-bottom: 10px;
-        }
-        
-        .section-header p {
-            opacity: 0.9;
-            font-size: 1.1rem;
-        }
-        
-        .timeline {
-            position: relative;
-            padding-left: 40px;
-        }
-        
-        .timeline::before {
-            content: '';
-            position: absolute;
-            left: 20px;
-            top: 0;
-            bottom: 0;
-            width: 3px;
-            background: linear-gradient(to bottom, var(--sunset-gold), var(--canopy-green));
-            border-radius: 2px;
-        }
-        
-        .timeline-item {
-            position: relative;
-            background: var(--white);
-            border: 2px solid var(--border-light);
-            border-radius: 20px;
-            padding: 30px;
-            margin-bottom: 30px;
-            transition: var(--transition-medium);
-        }
-        
-        .timeline-item:hover {
-            border-color: var(--sunset-gold);
-            transform: translateX(10px);
-            box-shadow: var(--shadow-lg);
-        }
-        
-        .timeline-item::before {
-            content: '';
-            position: absolute;
-            left: -52px;
-            top: 35px;
-            width: 20px;
-            height: 20px;
-            background: var(--sunset-gold);
-            border: 4px solid var(--white);
-            border-radius: 50%;
-            box-shadow: 0 0 0 3px var(--sunset-gold);
-        }
-        
-        .timeline-number {
-            position: absolute;
-            left: -65px;
-            top: 25px;
-            width: 35px;
-            height: 35px;
-            background: var(--baobab-brown);
-            color: var(--white);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 700;
-            font-size: 1.1rem;
-            box-shadow: var(--shadow-md);
-        }
-        
-        .timeline-header {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            margin-bottom: 15px;
-        }
-        
-        .timeline-icon {
-            width: 50px;
-            height: 50px;
-            background: linear-gradient(135deg, var(--canopy-green), var(--sage-green));
-            color: var(--white);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-        }
-        
-        .timeline-title {
-            color: var(--deep-charcoal);
-            font-size: 1.5rem;
-            margin: 0;
-        }
-        
-        .timeline-description {
-            color: var(--trunk-gray);
-            margin-bottom: 20px;
-            line-height: 1.7;
-        }
-        
-        .timeline-details {
-            background: var(--earth-cream);
-            padding: 20px;
-            border-radius: 12px;
-            border-left: 4px solid var(--sunset-gold);
-        }
-        
-        .timeline-details h4 {
-            color: var(--baobab-brown);
-            margin-bottom: 12px;
-            font-size: 1.1rem;
-        }
-        
-        .timeline-details ul {
-            list-style: none;
-            padding-left: 0;
-        }
-        
-        .timeline-details li {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 8px;
-            color: var(--trunk-gray);
-        }
-        
-        .timeline-details i {
-            color: var(--canopy-green);
-            font-size: 1.1rem;
-            width: 20px;
-        }
-        
-        /* Helpful Tips Section */
-        .tips-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 30px;
-            margin-top: 40px;
-        }
-        
-        .tip-card {
-            background: var(--white);
-            border: 2px solid var(--border-light);
-            border-radius: 20px;
-            padding: 25px;
-            transition: var(--transition-medium);
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .tip-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: linear-gradient(90deg, var(--sunset-gold), var(--desert-orange));
-        }
-        
-        .tip-card:hover {
-            transform: translateY(-5px);
-            box-shadow: var(--shadow-lg);
-            border-color: var(--sunset-gold);
-        }
-        
-        .tip-icon {
-            width: 60px;
-            height: 60px;
-            background: linear-gradient(135deg, var(--sunset-gold), var(--desert-orange));
-            color: var(--deep-charcoal);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.8rem;
-            margin-bottom: 20px;
-        }
-        
-        .tip-title {
-            color: var(--deep-charcoal);
-            font-size: 1.3rem;
-            margin-bottom: 12px;
-        }
-        
-        .tip-description {
-            color: var(--trunk-gray);
-            line-height: 1.6;
-        }
-        
-        /* Call to Action */
-        .cta-section {
-            background: linear-gradient(135deg, var(--baobab-brown), var(--trunk-gray));
-            color: var(--white);
-            padding: 60px 0;
-            text-align: center;
-            margin-top: 80px;
-            border-radius: 25px;
-        }
-        
-        .cta-content h3 {
-            font-size: 2.2rem;
-            margin-bottom: 15px;
-        }
-        
-        .cta-content p {
-            font-size: 1.1rem;
-            opacity: 0.9;
-            margin-bottom: 30px;
-            max-width: 600px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-        
-        .cta-buttons {
-            display: flex;
-            gap: 20px;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-        
-        .btn-white {
-            background-color: var(--white);
-            color: var(--baobab-brown);
-            border-color: var(--white);
-        }
-        
-        .btn-white:hover {
-            background-color: transparent;
-            color: var(--white);
-            border-color: var(--white);
-        }
-        
+        .timeline-details { background: var(--earth-cream); padding: 1.5rem; border-radius: 12px; border-left: 4px solid var(--sunset-gold); }
+        .timeline-details h4 { font-family: 'DM Sans', sans-serif; font-size: 1rem; margin-bottom: .75rem; }
+        .timeline-details li { display: flex; align-items: center; gap: .75rem; margin-bottom: .5rem; font-size: .9rem; color: var(--text-medium); }
+        .timeline-details i { color: var(--canopy-green); font-size: 1rem; }
+
+        /* Tips Grid */
+        .tips-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem; margin-top: 2rem; }
+        .tip-card { background: var(--white); border: 1px solid var(--border-light); border-radius: var(--r-card); padding: 2rem; transition: var(--transition); position: relative; overflow: hidden; }
+        .tip-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, var(--sunset-gold), var(--canopy-green)); }
+        .tip-card:hover { transform: translateY(-5px); box-shadow: 0 12px 30px var(--shadow-warm); border-color: var(--sunset-gold); }
+        .tip-icon { width: 56px; height: 56px; background: var(--earth-cream); color: var(--sunset-gold-warm); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; margin-bottom: 1.25rem; }
+        .tip-title { font-size: 1.2rem; margin-bottom: .75rem; }
+        .tip-description { font-size: .9rem; color: var(--text-medium); }
+
+        /* CTA */
+        .cta-section { background: linear-gradient(135deg, var(--baobab-brown-dark), var(--canopy-green-dark)); padding: 4rem 2rem; text-align: center; border-radius: var(--r-card); margin-top: 2rem; color: white; }
+        .cta-section h3 { font-size: 2rem; color: white; margin-bottom: 1rem; }
+        .cta-section p { font-size: 1rem; opacity: 0.9; margin-bottom: 2rem; max-width: 600px; margin-left: auto; margin-right: auto; }
+        .cta-buttons { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+
         /* Footer */
-        .footer {
-            background: var(--deep-charcoal);
-            color: var(--white);
-            padding: 60px 0 30px;
-            margin-top: 80px;
-        }
-        
-        .footer-content {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 40px;
-            margin-bottom: 40px;
-        }
-        
-        .footer-section h4 {
-            color: var(--sunset-gold);
-            margin-bottom: 20px;
-            font-size: 1.2rem;
-        }
-        
-        .footer-link {
-            color: rgba(255, 255, 255, 0.7);
-            text-decoration: none;
-            display: block;
-            padding: 8px 0;
-            transition: var(--transition-fast);
-        }
-        
-        .footer-link:hover {
-            color: var(--sunset-gold);
-            padding-left: 5px;
-        }
-        
-        .footer-bottom {
-            text-align: center;
-            padding-top: 30px;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-            color: rgba(255, 255, 255, 0.7);
-        }
-        
-        /* Responsive Design */
+        .footer { background: var(--deep-charcoal); padding: 4rem 0 2rem; color: white; margin-top: 4rem; }
+        .footer-content { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 3rem; margin-bottom: 3rem; }
+        .footer-section h4 { color: var(--sunset-gold); margin-bottom: 1.25rem; font-size: 1.1rem; font-family: 'DM Sans', sans-serif; }
+        .footer-link { color: rgba(255,255,255,0.6); display: block; padding: .4rem 0; font-size: .85rem; transition: var(--transition); }
+        .footer-link:hover { color: var(--sunset-gold); padding-left: 5px; }
+        .footer-bottom { text-align: center; padding-top: 2rem; border-top: 1px solid rgba(255,255,255,0.1); font-size: .8rem; color: rgba(255,255,255,0.4); }
+
+        /* Responsive */
         @media (max-width: 992px) {
-            .menu-toggle {
-                display: block;
-            }
-            
-            .nav-menu {
-                display: none;
-            }
-            
-            .content-grid {
-                grid-template-columns: 1fr;
-                gap: 40px;
-            }
-            
-            .content-sidebar {
-                position: static;
-                order: -1;
-            }
-            
-            .timeline {
-                padding-left: 30px;
-            }
-            
-            .timeline::before {
-                left: 15px;
-            }
-            
-            .timeline-number {
-                left: -50px;
-                width: 30px;
-                height: 30px;
-                font-size: 1rem;
-            }
-            
-            .timeline-item::before {
-                left: -42px;
-                width: 15px;
-                height: 15px;
-            }
+            .menu-toggle { display: block; }
+            .nav-menu { display: none; }
+            .content-grid { grid-template-columns: 1fr; }
+            .content-sidebar { position: static; order: -1; margin-bottom: 2rem; }
+            .timeline { padding-left: 30px; }
+            .timeline::before { left: 15px; }
+            .timeline-number { left: -50px; width: 30px; height: 30px; font-size: .9rem; top: 27px; }
+            .timeline-item::before { left: -22px; width: 14px; height: 14px; top: 36px;}
         }
-        
         @media (max-width: 768px) {
-            .hero-title {
-                font-size: 2.5rem;
-            }
-            
-            .timeline {
-                padding-left: 0;
-            }
-            
-            .timeline::before {
-                display: none;
-            }
-            
-            .timeline-number,
-            .timeline-item::before {
-                display: none;
-            }
-            
-            .timeline-item {
-                margin-left: 0;
-            }
-            
-            .timeline-item:hover {
-                transform: translateY(-5px);
-            }
-            
-            .tips-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .cta-buttons {
-                flex-direction: column;
-                align-items: center;
-            }
-        }
-        
-        @media (max-width: 576px) {
-            .container {
-                padding: 0 15px;
-            }
-            
-            .hero-title {
-                font-size: 2rem;
-            }
-            
-            .timeline-item {
-                padding: 20px;
-            }
-            
-            .section-header {
-                padding: 20px;
-            }
-            
-            .section-header h2 {
-                font-size: 1.6rem;
-            }
+            .hero-title { font-size: 2.2rem; }
+            .timeline { padding-left: 0; }
+            .timeline::before, .timeline-number, .timeline-item::before { display: none; }
+            .timeline-item:hover { transform: translateY(-5px); }
         }
     </style>
 </head>
 <body>
-    <!-- Header -->
     <header class="header">
         <div class="container">
             <div class="nav-wrapper">
                 <a href="index.html" class="logo">
-                    <div class="logo-icon"><i class="fas fa-heart"></i></div>
-                    <div class="logo-text">Parent Portal</div>
+                    <div class="logo-icon"><img src="/Images/Logo_Baobab.svg" alt="Baobab" onerror="this.src='/Images/logo.jpg'"></div>
+                    <div>
+                        <div class="logo-text">Parent Portal</div>
+                        <span class="logo-tag">Baobab Digital Academy</span>
+                    </div>
                 </a>
-                
-                <div class="menu-toggle" id="menuToggle">
-                    <i class="fas fa-bars"></i>
-                </div>
-                
+                <button class="menu-toggle" id="menuToggle"><i class="fas fa-bars"></i></button>
                 <ul class="nav-menu">
                     <li><a href="index.html#features" class="nav-link">Features</a></li>
                     <li><a href="index.html#how-it-works" class="nav-link">How It Works</a></li>
-                    <li><a href="index.html#security" class="nav-link">Safety & Security</a></li>
-                    <li><a href="http://baobabonlineacademy.com" class="nav-link">Main Site</a></li>
+                    <li><a href="index.html#security" class="nav-link">Security</a></li>
+                    <li><a href="https://baobabonlineacademy.com" class="nav-link">Main Site</a></li>
                 </ul>
             </div>
         </div>
     </header>
 
-    <!-- Hero Section -->
     <section class="hero">
         <div class="container">
             <div class="hero-content">
                 <div class="hero-badge">
-                    <i class="fas fa-rocket"></i>
-                    Your Complete Guide to Success
+                    <i class="fas fa-rocket"></i> Your Complete Guide to Success
                 </div>
                 <h1 class="hero-title">Getting Started with Baobab Parent Portal</h1>
                 <p class="hero-subtitle">
@@ -756,28 +211,24 @@
         </div>
     </section>
 
-    <!-- Breadcrumbs -->
     <section class="breadcrumbs">
         <div class="container">
             <nav class="breadcrumb-nav">
-                <a href="index.html" class="breadcrumb-link">
-                    <i class="fas fa-home"></i> Home
-                </a>
+                <a href="index.html" class="breadcrumb-link"><i class="fas fa-home"></i> Home</a>
                 <span class="breadcrumb-separator">/</span>
-                <a href="#" class="breadcrumb-link">Parent Resources</a>
+                <span class="breadcrumb-link">Parent Resources</span>
                 <span class="breadcrumb-separator">/</span>
                 <span class="breadcrumb-current">Getting Started Guide</span>
             </nav>
         </div>
     </section>
 
-    <!-- Main Content -->
     <section class="main-content">
         <div class="container">
             <div class="content-grid">
                 <div class="content-main">
-                    <!-- Account Setup Timeline -->
-                    <div class="timeline-section">
+                    
+                    <div class="timeline-section" id="setup">
                         <div class="section-header">
                             <h2><i class="fas fa-user-plus"></i> Account Setup & Registration</h2>
                             <p>Your first steps to joining the Baobab family and creating a secure environment for your child's learning journey.</p>
@@ -787,9 +238,7 @@
                             <div class="timeline-item">
                                 <div class="timeline-number">1</div>
                                 <div class="timeline-header">
-                                    <div class="timeline-icon">
-                                        <i class="fas fa-envelope"></i>
-                                    </div>
+                                    <div class="timeline-icon"><i class="fas fa-envelope"></i></div>
                                     <h3 class="timeline-title">Email Authorization</h3>
                                 </div>
                                 <p class="timeline-description">
@@ -809,9 +258,7 @@
                             <div class="timeline-item">
                                 <div class="timeline-number">2</div>
                                 <div class="timeline-header">
-                                    <div class="timeline-icon">
-                                        <i class="fas fa-user-check"></i>
-                                    </div>
+                                    <div class="timeline-icon"><i class="fas fa-user-check"></i></div>
                                     <h3 class="timeline-title">Create Your Parent Account</h3>
                                 </div>
                                 <p class="timeline-description">
@@ -832,9 +279,7 @@
                             <div class="timeline-item">
                                 <div class="timeline-number">3</div>
                                 <div class="timeline-header">
-                                    <div class="timeline-icon">
-                                        <i class="fas fa-child"></i>
-                                    </div>
+                                    <div class="timeline-icon"><i class="fas fa-child"></i></div>
                                     <h3 class="timeline-title">Child Profile Setup</h3>
                                 </div>
                                 <p class="timeline-description">
@@ -854,8 +299,7 @@
                         </div>
                     </div>
 
-                    <!-- Orientation Process -->
-                    <div class="timeline-section">
+                    <div class="timeline-section" id="orientation">
                         <div class="section-header">
                             <h2><i class="fas fa-compass"></i> Orientation & Assessment</h2>
                             <p>Understanding your child's needs and matching them with the perfect educational approach and tutor.</p>
@@ -865,9 +309,7 @@
                             <div class="timeline-item">
                                 <div class="timeline-number">4</div>
                                 <div class="timeline-header">
-                                    <div class="timeline-icon">
-                                        <i class="fas fa-video"></i>
-                                    </div>
+                                    <div class="timeline-icon"><i class="fas fa-video"></i></div>
                                     <h3 class="timeline-title">Welcome Consultation</h3>
                                 </div>
                                 <p class="timeline-description">
@@ -888,9 +330,7 @@
                             <div class="timeline-item">
                                 <div class="timeline-number">5</div>
                                 <div class="timeline-header">
-                                    <div class="timeline-icon">
-                                        <i class="fas fa-clipboard-check"></i>
-                                    </div>
+                                    <div class="timeline-icon"><i class="fas fa-clipboard-check"></i></div>
                                     <h3 class="timeline-title">Academic Assessment</h3>
                                 </div>
                                 <p class="timeline-description">
@@ -911,9 +351,7 @@
                             <div class="timeline-item">
                                 <div class="timeline-number">6</div>
                                 <div class="timeline-header">
-                                    <div class="timeline-icon">
-                                        <i class="fas fa-user-graduate"></i>
-                                    </div>
+                                    <div class="timeline-icon"><i class="fas fa-user-graduate"></i></div>
                                     <h3 class="timeline-title">Tutor Matching</h3>
                                 </div>
                                 <p class="timeline-description">
@@ -933,8 +371,7 @@
                         </div>
                     </div>
 
-                    <!-- First Steps -->
-                    <div class="timeline-section">
+                    <div class="timeline-section" id="first-steps">
                         <div class="section-header">
                             <h2><i class="fas fa-play-circle"></i> Beginning the Learning Journey</h2>
                             <p>Your child's first lessons and how to make the most of the Parent Portal from day one.</p>
@@ -944,9 +381,7 @@
                             <div class="timeline-item">
                                 <div class="timeline-number">7</div>
                                 <div class="timeline-header">
-                                    <div class="timeline-icon">
-                                        <i class="fas fa-handshake"></i>
-                                    </div>
+                                    <div class="timeline-icon"><i class="fas fa-handshake"></i></div>
                                     <h3 class="timeline-title">Meet Your Tutor</h3>
                                 </div>
                                 <p class="timeline-description">
@@ -967,9 +402,7 @@
                             <div class="timeline-item">
                                 <div class="timeline-number">8</div>
                                 <div class="timeline-header">
-                                    <div class="timeline-icon">
-                                        <i class="fas fa-chart-line"></i>
-                                    </div>
+                                    <div class="timeline-icon"><i class="fas fa-chart-line"></i></div>
                                     <h3 class="timeline-title">Monitor Progress</h3>
                                 </div>
                                 <p class="timeline-description">
@@ -989,199 +422,120 @@
                         </div>
                     </div>
 
-                    <!-- Helpful Tips -->
                     <div class="timeline-section">
-                        <div class="section-header">
+                        <div class="section-header" style="background: linear-gradient(135deg, var(--canopy-green), var(--canopy-green-dark));">
                             <h2><i class="fas fa-lightbulb"></i> Tips for Success</h2>
                             <p>Expert advice from experienced parents and educators to help you make the most of your Baobab experience.</p>
                         </div>
                         
                         <div class="tips-grid">
                             <div class="tip-card">
-                                <div class="tip-icon">
-                                    <i class="fas fa-home"></i>
-                                </div>
+                                <div class="tip-icon"><i class="fas fa-home"></i></div>
                                 <h4 class="tip-title">Create a Learning Space</h4>
-                                <p class="tip-description">
-                                    Set up a dedicated, quiet space for your child's online lessons. Include cultural elements 
-                                    like Nigerian art or books to reinforce their heritage connection.
-                                </p>
+                                <p class="tip-description">Set up a dedicated, quiet space for your child's online lessons. Include cultural elements like Nigerian art or books to reinforce their heritage connection.</p>
                             </div>
-                            
                             <div class="tip-card">
-                                <div class="tip-icon">
-                                    <i class="fas fa-clock"></i>
-                                </div>
+                                <div class="tip-icon"><i class="fas fa-clock"></i></div>
                                 <h4 class="tip-title">Establish Routines</h4>
-                                <p class="tip-description">
-                                    Consistency helps children thrive. Work with your tutor to establish regular lesson times 
-                                    and review schedules that work with your family's lifestyle.
-                                </p>
+                                <p class="tip-description">Consistency helps children thrive. Work with your tutor to establish regular lesson times and review schedules that work with your family's lifestyle.</p>
                             </div>
-                            
                             <div class="tip-card">
-                                <div class="tip-icon">
-                                    <i class="fas fa-comments"></i>
-                                </div>
+                                <div class="tip-icon"><i class="fas fa-comments"></i></div>
                                 <h4 class="tip-title">Stay Connected</h4>
-                                <p class="tip-description">
-                                    Regular communication with your child's tutor helps identify challenges early and 
-                                    celebrate successes. Use the portal's messaging system frequently.
-                                </p>
+                                <p class="tip-description">Regular communication with your child's tutor helps identify challenges early and celebrate successes. Use the portal's messaging system frequently.</p>
                             </div>
-                            
                             <div class="tip-card">
-                                <div class="tip-icon">
-                                    <i class="fas fa-star"></i>
-                                </div>
+                                <div class="tip-icon"><i class="fas fa-star"></i></div>
                                 <h4 class="tip-title">Celebrate Achievements</h4>
-                                <p class="tip-description">
-                                    Acknowledge both big and small wins. Cultural celebrations of academic achievements 
-                                    help reinforce positive learning associations.
-                                </p>
+                                <p class="tip-description">Acknowledge both big and small wins. Cultural celebrations of academic achievements help reinforce positive learning associations.</p>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Call to Action -->
                     <div class="cta-section">
-                        <div class="cta-content">
-                            <h3>Ready to Begin Your Journey?</h3>
-                            <p>
-                                Join hundreds of families who have transformed their children's education through 
-                                culturally-rich, academically excellent learning with Baobab Academy.
-                            </p>
-                            <div class="cta-buttons">
-                                <a href="index.html#register" class="btn btn-white">
-                                    <i class="fas fa-user-plus"></i>
-                                    Create Your Account Now
-                                </a>
-                                <a href="supporting-child.html" class="btn btn-outlined">
-                                    <i class="fas fa-arrow-right"></i>
-                                    Next: Supporting Your Child
-                                </a>
-                            </div>
+                        <h3>Ready to Begin Your Journey?</h3>
+                        <p>Join hundreds of families who have transformed their children's education through culturally-rich, academically excellent learning with Baobab Academy.</p>
+                        <div class="cta-buttons">
+                            <a href="index.html#register" class="btn btn-white"><i class="fas fa-user-plus"></i> Create Account Now</a>
+                            <a href="supporting-child.html" class="btn btn-outline" style="border-color: rgba(255,255,255,0.4); color: white;"><i class="fas fa-arrow-right"></i> Next: Supporting Your Child</a>
                         </div>
                     </div>
                 </div>
 
                 <div class="content-sidebar">
-                    <h3 class="sidebar-title">
-                        <i class="fas fa-map"></i>
-                        Quick Navigation
-                    </h3>
+                    <h3 class="sidebar-title"><i class="fas fa-map"></i> Quick Navigation</h3>
                     <ul class="sidebar-nav">
-                        <li><a href="#" class="active">Getting Started Guide</a></li>
+                        <li><a href="#setup" class="active">Account Setup</a></li>
+                        <li><a href="#orientation">Orientation & Assessment</a></li>
+                        <li><a href="#first-steps">First Steps</a></li>
+                        <hr style="border: 0; height: 1px; background: var(--border-light); margin: 1rem 0;">
                         <li><a href="supporting-child.html">Supporting Your Child</a></li>
                         <li><a href="cultural-integration.html">Cultural Integration</a></li>
                         <li><a href="child-protection.html">Child Protection</a></li>
                         <li><a href="tutor-verification.html">Tutor Verification</a></li>
                     </ul>
                     
-                    <div style="margin-top: 30px; padding: 20px; background: var(--earth-cream); border-radius: 15px;">
-                        <h4 style="color: var(--baobab-brown); margin-bottom: 15px;">
-                            <i class="fas fa-headset"></i> Need Help?
-                        </h4>
-                        <p style="font-size: 0.9rem; color: var(--trunk-gray); margin-bottom: 15px;">
-                            Our parent support team is here to help you every step of the way.
-                        </p>
-                        <a href="mailto:parents@baobabacademy.com" class="btn btn-primary" style="width: 100%; justify-content: center;">
-                            <i class="fas fa-envelope"></i>
-                            Contact Support
-                        </a>
+                    <div style="margin-top: 2rem; padding: 1.5rem; background: #fff; border-radius: 12px; border: 1px solid var(--border-light); text-align: center;">
+                        <h4 style="color: var(--baobab-brown-dark); margin-bottom: .5rem;"><i class="fas fa-headset"></i> Need Help?</h4>
+                        <p style="font-size: .85rem; color: var(--text-medium); margin-bottom: 1rem;">Our parent support team is here to help you every step of the way.</p>
+                        <a href="mailto:parents@baobabonlineacademy.com" class="btn btn-primary" style="width: 100%; font-size: .85rem; padding: .6rem;"><i class="fas fa-envelope"></i> Contact Support</a>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Footer -->
     <footer class="footer">
         <div class="container">
             <div class="footer-content">
                 <div class="footer-section">
                     <h4><i class="fas fa-heart"></i> Parent Resources</h4>
                     <a href="get-started.html" class="footer-link">Getting Started Guide</a>
-                    <a href="supporting-child.html" class="footer-link">Supporting Your Child's Learning</a>
-                    <a href="cultural-integration.html" class="footer-link">Cultural Integration at Home</a>
+                    <a href="supporting-child.html" class="footer-link">Supporting Your Child</a>
+                    <a href="cultural-integration.html" class="footer-link">Cultural Integration</a>
                 </div>
-                
                 <div class="footer-section">
                     <h4><i class="fas fa-shield-alt"></i> Safety & Security</h4>
                     <a href="child-protection.html" class="footer-link">Child Protection Policy</a>
-                    <a href="tutor-verification.html" class="footer-link">Tutor Verification Process</a>
-                    <a href="#" class="footer-link">Platform Security Features</a>
-                    <a href="#" class="footer-link">Privacy Policy</a>
+                    <a href="tutor-verification.html" class="footer-link">Tutor Verification</a>
+                    <a href="platform-security.html" class="footer-link">Platform Security</a>
+                    <a href="privacy-policy.html" class="footer-link">Privacy Policy</a>
                 </div>
-                
                 <div class="footer-section">
                     <h4><i class="fas fa-headset"></i> Support</h4>
-                    <p style="color: rgba(255, 255, 255, 0.7); margin-bottom: 15px;">
-                        <i class="fas fa-envelope"></i>
-                        parents@baobabonlineacademy.com
-                    </p>
-                    <p style="color: rgba(255, 255, 255, 0.7); margin-bottom: 15px;">
-                        <i class="fas fa-phone"></i>
-                        +234 (0) 816 501 1291
-                    </p>
-                    <a href="#" class="footer-link">Help Center</a>
-                    <a href="#" class="footer-link">Live Chat Support</a>
+                    <p style="color: rgba(255, 255, 255, 0.7); margin-bottom: 10px; font-size: .85rem;"><i class="fas fa-envelope"></i> parents@baobabonlineacademy.com</p>
+                    <p style="color: rgba(255, 255, 255, 0.7); margin-bottom: 15px; font-size: .85rem;"><i class="fas fa-phone"></i> +234 (0) 816 501 1291</p>
                 </div>
             </div>
-            
             <div class="footer-bottom">
-                <p>&copy; 2025 Baobab Online Academy Parent Portal. Nurturing Growth, Honoring Heritage.</p>
+                <p>&copy; 2026 Baobab Digital Academy. All rights reserved. <br><strong>Deep Roots, Limitless Growth 🌳</strong></p>
             </div>
         </div>
     </footer>
 
     <script>
-        // Mobile menu functionality (basic implementation)
+        // Menu Toggle
         const menuToggle = document.getElementById('menuToggle');
-        const navMenu = document.querySelector('.nav-menu');
-        
         if (menuToggle) {
             menuToggle.addEventListener('click', function() {
-                navMenu.classList.toggle('active');
-                this.innerHTML = navMenu.classList.contains('active') 
-                    ? '<i class="fas fa-times"></i>' 
-                    : '<i class="fas fa-bars"></i>';
+                alert('Menu functionality on sub-pages routes back to index.html structure in production.');
             });
         }
 
-        // Smooth scrolling for anchor links
+        // Smooth scroll
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function(e) {
-                e.preventDefault();
-                const target = document.querySelector(this.getAttribute('href'));
+                const targetId = this.getAttribute('href');
+                if(targetId === '#') return;
+                const target = document.querySelector(targetId);
                 if (target) {
-                    target.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'start'
-                    });
+                    e.preventDefault();
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    
+                    // Update active state in sidebar
+                    document.querySelectorAll('.sidebar-nav a').forEach(a => a.classList.remove('active'));
+                    this.classList.add('active');
                 }
-            });
-        });
-
-        // Timeline item hover effects
-        document.querySelectorAll('.timeline-item').forEach(item => {
-            item.addEventListener('mouseenter', function() {
-                this.style.transform = 'translateX(15px) scale(1.02)';
-            });
-            
-            item.addEventListener('mouseleave', function() {
-                this.style.transform = 'translateX(10px) scale(1)';
-            });
-        });
-
-        // Tip card animations
-        document.querySelectorAll('.tip-card').forEach(card => {
-            card.addEventListener('mouseenter', function() {
-                this.style.transform = 'translateY(-8px) scale(1.03)';
-            });
-            
-            card.addEventListener('mouseleave', function() {
-                this.style.transform = 'translateY(0) scale(1)';
             });
         });
     </script>
