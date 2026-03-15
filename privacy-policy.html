@@ -4,885 +4,250 @@
     <meta charset="UTF-8">
     <link rel="icon" type="image/png" sizes="32x32" href="/Images/logo.jpg">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Privacy Policy - Baobab Online Academy Parent Portal</title>
+    <title>Privacy Policy - Baobab Digital Academy</title>
+    
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@300;400;700;900&family=Open+Sans:wght@300;400;600;700&family=Kalam:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet">
+    
     <style>
+        /* ================================================
+           BAOBAB BRAND PALETTE
+           ================================================ */
         :root {
-            --baobab-brown: #8D4004;
-            --canopy-green: #2E7D32;
-            --sunset-gold: #F57C00;
-            --trunk-gray: #5D4037;
-            --sky-blue: #1976D2;
-            --earth-cream: #FFF8E1;
-            --desert-orange: #FF5722;
-            --sage-green: #689F38;
-            --deep-charcoal: #263238;
-            --white: #FFFFFF;
-            --light-gray: #F5F5F5;
-            --border-light: #E0E0E0;
-            --privacy-blue: #1E88E5;
-            --protection-green: #43A047;
-            --consent-purple: #8E24AA;
-            --data-orange: #FB8C00;
-            --policy-gray: #546E7A;
+            --baobab-brown:       #6B3A2A;
+            --baobab-brown-dark:  #4A2218;
+            --baobab-brown-light: #8C5442;
+            --canopy-green:       #2D6A4F;
+            --canopy-green-dark:  #1B4332;
+            --canopy-green-light: #52B788;
+            --sunset-gold:        #F4A261;
+            --sunset-gold-warm:   #E76F51;
+            --earth-cream:        #FEF6EE;
+            --earth-cream-dark:   #F5E6D3;
+            --warm-white:         #FEFEFE;
+            --deep-charcoal:      #18120F;
+            --text-dark:          #2C1810;
+            --text-medium:        #5C3E30;
+            --text-light:         #8C7066;
+            --border-light:       #EDD9C8;
+            --shadow-warm:        rgba(107,58,42,0.12);
+            --max-w:              1280px;
+            --section-py:         5rem;
+            --section-px:         2rem;
+            --r-card:             20px;
+            --r-pill:             50px;
+            --transition:         all 0.3s cubic-bezier(.4,0,.2,1);
             
-            --transition-slow: all 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
-            --transition-medium: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
-            --transition-fast: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
-            
-            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
-            --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
-            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            --privacy-blue:       #1E88E5;
         }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        html { scroll-behavior: smooth; font-size: 18px; }
+        @media (max-width: 992px) { html { font-size: 16px; } }
+
+        body { font-family: 'DM Sans', sans-serif; color: var(--text-dark); background-color: var(--warm-white); line-height: 1.6; overflow-x: hidden; -webkit-font-smoothing: antialiased; }
+        h1, h2, h3, h4, h5 { font-family: 'Playfair Display', serif; font-weight: 700; line-height: 1.2; color: var(--baobab-brown-dark); }
+        ul { list-style: none; }
+        a { text-decoration: none; color: inherit; transition: var(--transition); }
+
+        .container { max-width: var(--max-w); margin: 0 auto; padding: 0 var(--section-px); position: relative; }
+        .fu { opacity: 0; transform: translateY(28px); transition: opacity .7s ease, transform .7s ease; }
+        .fu.vis { opacity: 1; transform: translateY(0); }
         
-        body {
-            font-family: 'Open Sans', sans-serif;
-            color: var(--deep-charcoal);
-            line-height: 1.6;
-            overflow-x: hidden;
-            background-color: var(--white);
-        }
+        /* Buttons */
+        .btn { display: inline-flex; align-items: center; justify-content: center; gap: .5rem; padding: .85rem 1.75rem; border-radius: var(--r-pill); font-weight: 700; font-size: .95rem; transition: var(--transition); border: 2px solid transparent; cursor: pointer; white-space: nowrap; font-family: 'DM Sans', sans-serif; }
+        .btn-primary { background: linear-gradient(135deg, var(--canopy-green), var(--canopy-green-dark)); color: white; box-shadow: 0 4px 14px rgba(45,106,79,.25); }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(45,106,79,.35); }
+        .btn-white { background: #fff; color: var(--privacy-blue); box-shadow: 0 4px 14px rgba(0,0,0,.08); }
+        .btn-white:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,.15); }
+        .btn-outline { background: transparent; color: var(--baobab-brown-dark); border-color: var(--border-light); }
+        .btn-outline:hover { background: var(--earth-cream); border-color: var(--sunset-gold); }
+
+        /* Shared Header */
+        .header { position: fixed; top: 0; left: 0; width: 100%; z-index: 1000; background: rgba(255, 255, 255, 0.96); backdrop-filter: blur(15px); box-shadow: 0 2px 20px var(--shadow-warm); padding: .75rem 0; }
+        .nav-wrapper { display: flex; justify-content: space-between; align-items: center; }
+        .logo { display: flex; align-items: center; gap: .6rem; }
+        .logo-icon { width: 46px; height: 46px; min-width: 46px; border-radius: 50%; border: 2px solid var(--sunset-gold); overflow: hidden; display: flex; align-items: center; justify-content: center; background: #fff; }
+        .logo-icon img { width: 100%; height: 100%; object-fit: cover; }
+        .logo-text { font-family: 'Playfair Display', serif; font-weight: 700; font-size: 1.2rem; color: var(--baobab-brown-dark); line-height: 1.1; }
+        .logo-tag { display: block; font-family: 'DM Sans', sans-serif; font-size: .65rem; font-style: italic; color: var(--text-light); }
         
-        h1, h2, h3, h4, h5 {
-            font-family: 'Merriweather', serif;
-            font-weight: 700;
-            line-height: 1.3;
-        }
+        .nav-menu { display: flex; gap: 1.5rem; align-items: center; }
+        .nav-link { font-weight: 600; font-size: .9rem; color: var(--text-medium); }
+        .nav-link:hover, .nav-link.active { color: var(--sunset-gold); }
         
-        .container {
-            width: 100%;
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
-            position: relative;
-        }
-        
-        .btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            padding: 14px 32px;
-            border-radius: 30px;
-            font-weight: 600;
-            text-align: center;
-            transition: var(--transition-fast);
-            border: 2px solid transparent;
-            font-family: 'Open Sans', sans-serif;
-            text-decoration: none;
-            cursor: pointer;
-        }
-        
-        .btn-primary {
-            background-color: var(--baobab-brown);
-            color: var(--white);
-            border-color: var(--baobab-brown);
-        }
-        
-        .btn-primary:hover {
-            background-color: var(--trunk-gray);
-            border-color: var(--trunk-gray);
-            transform: translateY(-3px);
-            box-shadow: var(--shadow-md);
-        }
-        
-        .btn-secondary {
-            background-color: var(--sunset-gold);
-            color: var(--deep-charcoal);
-            border-color: var(--sunset-gold);
-        }
-        
-        .btn-outlined {
-            background-color: transparent;
-            color: var(--baobab-brown);
-            border-color: var(--baobab-brown);
-        }
-        
-        .btn-outlined:hover {
-            background-color: var(--baobab-brown);
-            color: var(--white);
-        }
-        
-        /* Header */
-        .header {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            z-index: 1000;
-            background-color: var(--white);
-            box-shadow: var(--shadow-md);
-            padding: 10px 0;
-        }
-        
-        .nav-wrapper {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            text-decoration: none;
-        }
-        
-        .logo-icon {
-            width: 32px;
-            height: 32px;
-            background-color: var(--canopy-green);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 8px;
-            font-size: 20px;
-            color: var(--white);
-        }
-        
-        .logo-text {
-            font-weight: 700;
-            font-size: 20px;
-            color: var(--baobab-brown);
-        }
-        
-        .nav-menu {
-            display: flex;
-            gap: 30px;
-            list-style: none;
-        }
-        
-        .nav-link {
-            font-weight: 500;
-            color: var(--deep-charcoal);
-            text-decoration: none;
-            padding: 5px 0;
-            transition: var(--transition-fast);
-        }
-        
-        .nav-link:hover {
-            color: var(--sunset-gold);
-        }
-        
-        .menu-toggle {
-            display: none;
-            font-size: 24px;
-            cursor: pointer;
-            color: var(--baobab-brown);
-        }
-        
+        /* Mobile Menu */
+        .ham { display: none; flex-direction: column; gap: 5px; padding: .4rem; background: none; border: none; cursor: pointer; }
+        .ham span { display: block; width: 24px; height: 2px; background: var(--baobab-brown); border-radius: 2px; transition: all .3s; }
+        .ham.open span:nth-child(1) { transform: rotate(45deg) translate(5px, 5px); }
+        .ham.open span:nth-child(2) { opacity: 0; }
+        .ham.open span:nth-child(3) { transform: rotate(-45deg) translate(5px, -5px); }
+
+        .mob-menu { display: none; flex-direction: column; background: #fff; padding: 1.5rem 2rem 2rem; border-top: 1px solid var(--border-light); box-shadow: 0 12px 30px var(--shadow-warm); position: absolute; top: 100%; left: 0; width: 100%; z-index: 999; }
+        .mob-menu.open { display: flex; animation: slideDown 0.3s ease; }
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        .mob-menu a { font-size: 1rem; font-weight: 500; color: var(--text-dark); padding: 1rem 0; border-bottom: 1px solid var(--border-light); }
+
         /* Hero Section */
-        .hero {
-            background: linear-gradient(135deg, var(--privacy-blue), var(--protection-green));
-            color: var(--white);
-            padding: 120px 0 80px;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .hero::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200"><rect x="40" y="40" width="120" height="80" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="2" rx="10"/><circle cx="60" cy="60" r="8" fill="rgba(255,255,255,0.1)"/><circle cx="100" cy="60" r="8" fill="rgba(255,255,255,0.1)"/><circle cx="140" cy="60" r="8" fill="rgba(255,255,255,0.1)"/><path d="M60,80 L60,100 M100,80 L100,100 M140,80 L140,100" stroke="rgba(255,255,255,0.1)" stroke-width="2"/></svg>');
-            animation: privacy-flow 15s infinite ease-in-out;
-        }
-        
-        @keyframes privacy-flow {
-            0%, 100% { opacity: 0.3; transform: translateY(0); }
-            50% { opacity: 0.6; transform: translateY(-10px); }
-        }
-        
-        .hero-content {
-            position: relative;
-            z-index: 2;
-            max-width: 800px;
-            text-align: center;
-            margin: 0 auto;
-        }
-        
-        .hero-badge {
-            background: rgba(255, 255, 255, 0.25);
-            padding: 12px 25px;
-            border-radius: 25px;
-            font-size: 0.95rem;
-            font-weight: 600;
-            margin-bottom: 25px;
-            display: inline-block;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-        }
-        
-        .hero-title {
-            font-size: 3.5rem;
-            margin-bottom: 20px;
-            line-height: 1.2;
-        }
-        
-        .hero-subtitle {
-            font-size: 1.3rem;
-            opacity: 0.9;
-            margin-bottom: 40px;
-            line-height: 1.6;
-        }
-        
+        .hero { background: linear-gradient(145deg, #1E88E5 0%, var(--canopy-green-dark) 100%); color: white; padding: 10rem 0 6rem; position: relative; overflow: hidden; }
+        .hero::before { content: ''; position: absolute; inset: 0; opacity: 0.05; background-image: url("data:image/svg+xml,%3Csvg width='44' height='44' viewBox='0 0 44 44' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M22 0 L44 22 L22 44 L0 22 Z' fill='none' stroke='%23FFFFFF' stroke-width='1'/%3E%3C/svg%3E"); background-size: 44px 44px; }
+        .hero-content { position: relative; z-index: 2; max-width: 800px; margin: 0 auto; text-align: center; }
+        .hero-badge { background: rgba(255,255,255,0.15); backdrop-filter: blur(10px); padding: .5rem 1.25rem; border-radius: var(--r-pill); font-size: .8rem; font-weight: 700; display: inline-block; margin-bottom: 1.5rem; border: 1px solid rgba(255,255,255,0.3); color: var(--sunset-gold); text-transform: uppercase; letter-spacing: .05em; }
+        .hero-title { font-size: clamp(2.5rem, 5vw, 3.5rem); margin-bottom: 1rem; color: white; }
+        .hero-subtitle { font-size: 1.1rem; opacity: 0.9; line-height: 1.7; }
+
         /* Breadcrumbs */
-        .breadcrumbs {
-            background: var(--earth-cream);
-            padding: 20px 0;
-            border-bottom: 2px solid var(--border-light);
-        }
+        .breadcrumbs { background: var(--earth-cream); padding: 1rem 0; border-bottom: 1px solid var(--border-light); }
+        .breadcrumb-nav { display: flex; align-items: center; gap: .75rem; font-size: .85rem; }
+        .breadcrumb-link { color: var(--text-medium); font-weight: 600; }
+        .breadcrumb-link:hover { color: var(--sunset-gold); }
+        .breadcrumb-current { color: var(--baobab-brown-dark); font-weight: 700; }
+
+        /* Main Content Layout */
+        .main-content { padding: 5rem 0; }
+        .content-layout { display: grid; grid-template-columns: 1fr 300px; gap: 4rem; align-items: start; }
         
-        .breadcrumb-nav {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 0.9rem;
-        }
+        /* Overview */
+        .privacy-overview { background: linear-gradient(135deg, var(--canopy-green-light), var(--canopy-green-dark)); color: white; padding: 3rem; border-radius: var(--r-card); margin-bottom: 4rem; position: relative; overflow: hidden; box-shadow: 0 10px 30px rgba(45,106,79,0.2); }
+        .privacy-overview h2 { color: white; font-size: 2.2rem; margin-bottom: 1rem; }
+        .privacy-overview p { font-size: 1.05rem; opacity: 0.9; line-height: 1.7; margin-bottom: 1.5rem; }
+        .last-updated { background: rgba(255, 255, 255, 0.15); padding: 1rem 1.5rem; border-radius: 12px; display: inline-block; font-size: .85rem; }
+        .last-updated strong { color: var(--sunset-gold-yellow); }
+
+        /* Principles Grid */
+        .principles-header { text-align: center; margin-bottom: 3rem; }
+        .principles-header h2 { font-size: 2.2rem; margin-bottom: 1rem; }
+        .principles-header p { color: var(--text-medium); max-width: 600px; margin: 0 auto; }
+
+        .principles-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 2rem; margin-bottom: 5rem; }
+        .principle-card { background: var(--white); border-radius: var(--r-card); padding: 2.5rem 2rem; box-shadow: 0 8px 24px var(--shadow-warm); border: 1px solid var(--border-light); transition: var(--transition); border-top: 4px solid var(--privacy-blue); }
+        .principle-card:nth-child(2) { border-top-color: var(--canopy-green); }
+        .principle-card:nth-child(3) { border-top-color: var(--sunset-gold); }
+        .principle-card:nth-child(4) { border-top-color: var(--baobab-brown); }
+        .principle-card:hover { transform: translateY(-8px); box-shadow: 0 16px 40px rgba(0,0,0,0.1); }
         
-        .breadcrumb-link {
-            color: var(--trunk-gray);
-            text-decoration: none;
-            transition: var(--transition-fast);
-        }
+        .principle-icon { width: 60px; height: 60px; background: var(--earth-cream); border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; margin-bottom: 1.5rem; color: var(--privacy-blue); }
+        .principle-card:nth-child(2) .principle-icon { color: var(--canopy-green); }
+        .principle-card:nth-child(3) .principle-icon { color: var(--sunset-gold); }
+        .principle-card:nth-child(4) .principle-icon { color: var(--baobab-brown); }
         
-        .breadcrumb-link:hover {
-            color: var(--sunset-gold);
-        }
-        
-        .breadcrumb-separator {
-            color: var(--trunk-gray);
-            opacity: 0.6;
-        }
-        
-        .breadcrumb-current {
-            color: var(--baobab-brown);
-            font-weight: 600;
-        }
-        
-        /* Main Content */
-        .main-content {
-            padding: 80px 0;
-            background: var(--white);
-        }
-        
-        .content-layout {
-            display: grid;
-            grid-template-columns: 1fr 300px;
-            gap: 60px;
-            align-items: start;
-        }
-        
-        .content-main {
-            background: var(--white);
-        }
-        
-        .content-sidebar {
-            position: sticky;
-            top: 120px;
-            background: var(--light-gray);
-            border-radius: 20px;
-            padding: 30px;
-            border: 2px solid var(--border-light);
-        }
-        
-        .sidebar-title {
-            color: var(--baobab-brown);
-            font-size: 1.4rem;
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .sidebar-nav {
-            list-style: none;
-        }
-        
-        .sidebar-nav li {
-            margin-bottom: 12px;
-        }
-        
-        .sidebar-nav a {
-            color: var(--trunk-gray);
-            text-decoration: none;
-            padding: 8px 12px;
-            border-radius: 10px;
-            display: block;
-            transition: var(--transition-fast);
-            font-size: 0.95rem;
-        }
-        
-        .sidebar-nav a:hover,
-        .sidebar-nav a.active {
-            background: var(--sunset-gold);
-            color: var(--deep-charcoal);
-            transform: translateX(5px);
-        }
-        
-        /* Privacy Overview */
-        .privacy-overview {
-            background: linear-gradient(135deg, var(--protection-green), var(--canopy-green));
-            color: var(--white);
-            padding: 50px;
-            border-radius: 25px;
-            margin-bottom: 60px;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .privacy-overview::before {
-            content: '';
-            position: absolute;
-            top: -50px;
-            right: -50px;
-            width: 200px;
-            height: 200px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 50%;
-        }
-        
-        .overview-content {
-            position: relative;
-            z-index: 2;
-        }
-        
-        .overview-content h2 {
-            font-size: 2.5rem;
-            margin-bottom: 20px;
-        }
-        
-        .overview-content p {
-            font-size: 1.2rem;
-            opacity: 0.9;
-            line-height: 1.7;
-            margin-bottom: 20px;
-        }
-        
-        .last-updated {
-            background: rgba(255, 255, 255, 0.15);
-            padding: 15px 20px;
-            border-radius: 10px;
-            margin-top: 25px;
-            backdrop-filter: blur(10px);
-        }
-        
-        .last-updated strong {
-            color: var(--sunset-gold);
-        }
-        
-        /* Privacy Principles */
-        .privacy-principles {
-            margin-bottom: 60px;
-        }
-        
-        .principles-header {
-            text-align: center;
-            margin-bottom: 50px;
-        }
-        
-        .principles-header h2 {
-            font-size: 2.5rem;
-            color: var(--baobab-brown);
-            margin-bottom: 15px;
-        }
-        
-        .principles-header p {
-            color: var(--trunk-gray);
-            font-size: 1.1rem;
-            max-width: 600px;
-            margin: 0 auto;
-            line-height: 1.7;
-        }
-        
-        .principles-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 30px;
-        }
-        
-        .principle-card {
-            background: var(--white);
-            border-radius: 20px;
-            padding: 35px;
-            box-shadow: var(--shadow-lg);
-            border: 3px solid transparent;
-            transition: var(--transition-medium);
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .principle-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 6px;
-            background: var(--privacy-blue);
-            transform: scaleX(0);
-            transform-origin: left;
-            transition: var(--transition-medium);
-        }
-        
-        .principle-card:hover::before {
-            transform: scaleX(1);
-        }
-        
-        .principle-card:hover {
-            transform: translateY(-10px);
-            border-color: var(--privacy-blue);
-            box-shadow: var(--shadow-xl);
-        }
-        
-        .principle-card:nth-child(2)::before {
-            background: var(--protection-green);
-        }
-        
-        .principle-card:nth-child(3)::before {
-            background: var(--consent-purple);
-        }
-        
-        .principle-card:nth-child(4)::before {
-            background: var(--data-orange);
-        }
-        
-        .principle-icon {
-            width: 80px;
-            height: 80px;
-            background: linear-gradient(135deg, var(--privacy-blue), var(--sky-blue));
-            border-radius: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--white);
-            font-size: 2.5rem;
-            margin-bottom: 25px;
-        }
-        
-        .principle-card:nth-child(2) .principle-icon {
-            background: linear-gradient(135deg, var(--protection-green), var(--canopy-green));
-        }
-        
-        .principle-card:nth-child(3) .principle-icon {
-            background: linear-gradient(135deg, var(--consent-purple), var(--privacy-blue));
-        }
-        
-        .principle-card:nth-child(4) .principle-icon {
-            background: linear-gradient(135deg, var(--data-orange), var(--sunset-gold));
-        }
-        
-        .principle-title {
-            color: var(--deep-charcoal);
-            font-size: 1.5rem;
-            margin-bottom: 15px;
-        }
-        
-        .principle-description {
-            color: var(--trunk-gray);
-            line-height: 1.7;
-        }
-        
+        .principle-title { font-size: 1.2rem; margin-bottom: 1rem; }
+        .principle-description { color: var(--text-medium); font-size: .9rem; line-height: 1.6; }
+
         /* Policy Document */
-        .policy-document {
-            background: var(--white);
-            border: 2px solid var(--border-light);
-            border-radius: 20px;
-            padding: 50px;
-            margin: 60px 0;
-            box-shadow: var(--shadow-md);
-        }
+        .policy-document { background: white; border: 1px solid var(--border-light); border-radius: var(--r-card); padding: 3rem; margin-bottom: 4rem; box-shadow: 0 6px 16px var(--shadow-warm); }
+        .document-header { border-bottom: 2px solid var(--border-light); padding-bottom: 1.5rem; margin-bottom: 2.5rem; text-align: center; }
+        .document-header h2 { font-size: 2rem; margin-bottom: 1rem; }
+        .document-meta { display: flex; justify-content: center; gap: 2rem; flex-wrap: wrap; }
+        .meta-item { color: var(--text-medium); font-size: .85rem; display: flex; align-items: center; gap: .5rem; }
+        .meta-item i { color: var(--sunset-gold); }
         
-        .document-header {
-            border-bottom: 3px solid var(--sunset-gold);
-            padding-bottom: 25px;
-            margin-bottom: 40px;
-            text-align: center;
-        }
+        .policy-section { margin-bottom: 3rem; }
+        .policy-section h3 { font-size: 1.4rem; margin-bottom: 1.5rem; padding-left: 2rem; position: relative; }
+        .section-number { position: absolute; left: 0; top: -2px; background: var(--sunset-gold); color: white; width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: .85rem; font-family: 'DM Sans', sans-serif; font-weight: 800; }
+        .policy-section p { color: var(--text-medium); line-height: 1.7; margin-bottom: 1rem; font-size: .95rem; }
+        .policy-section ul { margin: 1rem 0 1rem 1.5rem; padding-left: 1rem; list-style-type: disc; }
+        .policy-section li { color: var(--text-medium); margin-bottom: .5rem; font-size: .95rem; }
         
-        .document-header h2 {
-            color: var(--baobab-brown);
-            font-size: 2.2rem;
-            margin-bottom: 15px;
-        }
+        .subsection { background: var(--earth-cream); padding: 1.5rem; border-radius: 12px; margin: 1.5rem 0; border-left: 4px solid var(--privacy-blue); }
+        .subsection h4 { color: var(--baobab-brown-dark); margin-bottom: .75rem; font-size: 1.1rem; font-family: 'DM Sans', sans-serif; }
+        .subsection p { margin-bottom: .5rem; font-size: .9rem; }
+        .subsection ul { margin-bottom: 0; }
         
-        .document-meta {
-            display: flex;
-            justify-content: center;
-            gap: 30px;
-            flex-wrap: wrap;
-            margin-top: 20px;
-        }
-        
-        .meta-item {
-            color: var(--trunk-gray);
-            font-size: 0.95rem;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .meta-item i {
-            color: var(--sunset-gold);
-        }
-        
-        .policy-section {
-            margin-bottom: 50px;
-        }
-        
-        .policy-section h3 {
-            color: var(--deep-charcoal);
-            font-size: 1.6rem;
-            margin-bottom: 20px;
-            padding-left: 25px;
-            border-left: 5px solid var(--sunset-gold);
-            position: relative;
-        }
-        
-        .section-number {
-            position: absolute;
-            left: -15px;
-            top: -5px;
-            background: var(--sunset-gold);
-            color: var(--deep-charcoal);
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.9rem;
-            font-weight: 700;
-        }
-        
-        .policy-section p {
-            color: var(--trunk-gray);
-            line-height: 1.8;
-            margin-bottom: 20px;
-            font-size: 1.05rem;
-        }
-        
-        .policy-section ul {
-            margin: 20px 0;
-            padding-left: 25px;
-        }
-        
-        .policy-section li {
-            color: var(--trunk-gray);
-            margin-bottom: 12px;
-            line-height: 1.7;
-            position: relative;
-        }
-        
-        .policy-section li::marker {
-            color: var(--sunset-gold);
-        }
-        
-        .subsection {
-            background: var(--earth-cream);
-            padding: 25px;
-            border-radius: 15px;
-            margin: 25px 0;
-            border-left: 4px solid var(--privacy-blue);
-        }
-        
-        .subsection h4 {
-            color: var(--baobab-brown);
-            margin-bottom: 15px;
-            font-size: 1.2rem;
-        }
-        
-        .subsection p {
-            margin-bottom: 12px;
-        }
-        
-        .highlight-box {
-            background: linear-gradient(135deg, var(--privacy-blue), var(--protection-green));
-            color: var(--white);
-            padding: 30px;
-            border-radius: 15px;
-            margin: 30px 0;
-            text-align: center;
-        }
-        
-        .highlight-box h4 {
-            font-size: 1.4rem;
-            margin-bottom: 15px;
-            color: var(--sunset-gold);
-        }
-        
-        .highlight-box p {
-            font-size: 1.1rem;
-            opacity: 0.9;
-            margin: 0;
-        }
-        
-        /* Contact Information */
-        .contact-section {
-            background: var(--light-gray);
-            padding: 50px;
-            border-radius: 25px;
-            margin: 60px 0;
-            text-align: center;
-        }
-        
-        .contact-section h2 {
-            color: var(--baobab-brown);
-            font-size: 2.2rem;
-            margin-bottom: 20px;
-        }
-        
-        .contact-section p {
-            color: var(--trunk-gray);
-            font-size: 1.1rem;
-            margin-bottom: 30px;
-            line-height: 1.7;
-        }
-        
-        .contact-info {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 25px;
-            margin-top: 30px;
-        }
-        
-        .contact-item {
-            background: var(--white);
-            padding: 25px;
-            border-radius: 15px;
-            box-shadow: var(--shadow-md);
-            transition: var(--transition-medium);
-        }
-        
-        .contact-item:hover {
-            transform: translateY(-5px);
-            box-shadow: var(--shadow-lg);
-        }
-        
-        .contact-item h4 {
-            color: var(--baobab-brown);
-            margin-bottom: 10px;
-            font-size: 1.1rem;}
-        
-        .contact-item p {
-            color: var(--trunk-gray);
-            font-size: 0.95rem;
-            margin: 5px 0;
-        }
-        
-        .contact-item i {
-            color: var(--sunset-gold);
-            margin-right: 8px;
-        }
-        
-        /* Call to Action */
-        .cta-section {
-            background: linear-gradient(135deg, var(--privacy-blue), var(--protection-green));
-            color: var(--white);
-            padding: 60px 0;
-            text-align: center;
-            margin-top: 80px;
-            border-radius: 25px;
-        }
-        
-        .cta-content h3 {
-            font-size: 2.2rem;
-            margin-bottom: 15px;
-        }
-        
-        .cta-content p {
-            font-size: 1.1rem;
-            opacity: 0.9;
-            margin-bottom: 30px;
-            max-width: 600px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-        
-        .cta-buttons {
-            display: flex;
-            gap: 20px;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-        
-        .btn-white {
-            background-color: var(--white);
-            color: var(--privacy-blue);
-            border-color: var(--white);
-        }
-        
-        .btn-white:hover {
-            background-color: transparent;
-            color: var(--white);
-            border-color: var(--white);
-        }
-        
+        .highlight-box { background: linear-gradient(135deg, var(--privacy-blue), var(--canopy-green)); color: white; padding: 1.5rem; border-radius: 12px; margin: 1.5rem 0; text-align: center; }
+        .highlight-box h4 { color: var(--sunset-gold-yellow); margin-bottom: .5rem; font-size: 1.1rem; font-family: 'DM Sans', sans-serif; }
+        .highlight-box p { color: white; font-size: .95rem; margin: 0; }
+
+        /* Contact Section */
+        .contact-section { background: var(--earth-cream); padding: 4rem 3rem; border-radius: var(--r-card); margin-bottom: 4rem; border: 1px solid var(--border-light); text-align: center; }
+        .contact-section h2 { font-size: 2.2rem; margin-bottom: 1rem; }
+        .contact-info { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-top: 2.5rem; }
+        .contact-item { background: white; padding: 1.5rem; border-radius: 16px; border: 1px solid var(--border-light); box-shadow: 0 4px 12px rgba(0,0,0,0.03); }
+        .contact-item h4 { color: var(--baobab-brown-dark); font-size: 1.05rem; margin-bottom: .5rem; font-family: 'DM Sans', sans-serif; }
+        .contact-item p { font-size: .85rem; color: var(--text-medium); margin-bottom: 0; }
+        .contact-item i { color: var(--sunset-gold); margin-right: .5rem; }
+
+        /* CTA */
+        .cta-section { background: linear-gradient(135deg, var(--privacy-blue), var(--canopy-green-dark)); color: white; padding: 4rem 2rem; text-align: center; border-radius: var(--r-card); }
+        .cta-section h3 { font-size: 2rem; color: white; margin-bottom: 1rem; }
+        .cta-section p { font-size: 1rem; opacity: 0.9; margin-bottom: 2rem; max-width: 600px; margin-left: auto; margin-right: auto; }
+        .cta-buttons { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+
+        /* Sidebar */
+        .content-sidebar { position: sticky; top: 100px; }
+        .sidebar-box { background: var(--earth-cream); border-radius: 16px; padding: 1.5rem; border: 1px solid var(--border-light); margin-bottom: 1.5rem; }
+        .sidebar-title { font-size: 1.2rem; margin-bottom: 1rem; display: flex; align-items: center; gap: .5rem; }
+        .sidebar-nav li { margin-bottom: .5rem; }
+        .sidebar-nav a { display: block; padding: .6rem 1rem; border-radius: 8px; font-weight: 600; font-size: .9rem; color: var(--text-medium); }
+        .sidebar-nav a:hover, .sidebar-nav a.active { background: var(--white); color: var(--sunset-gold); box-shadow: var(--shadow-sm); transform: translateX(5px); }
+
+        .emergency-sidebar { background: linear-gradient(135deg, var(--privacy-blue), var(--canopy-green)); color: white; text-align: center; }
+        .emergency-sidebar h4 { color: white; margin-bottom: .5rem; font-size: 1.1rem; }
+        .emergency-sidebar p { font-size: .85rem; opacity: 0.9; margin-bottom: 1rem; }
+
         /* Footer */
-        .footer {
-            background: var(--deep-charcoal);
-            color: var(--white);
-            padding: 60px 0 30px;
-            margin-top: 80px;
-        }
-        
-        .footer-content {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 40px;
-            margin-bottom: 40px;
-        }
-        
-        .footer-section h4 {
-            color: var(--sunset-gold);
-            margin-bottom: 20px;
-            font-size: 1.2rem;
-        }
-        
-        .footer-link {
-            color: rgba(255, 255, 255, 0.7);
-            text-decoration: none;
-            display: block;
-            padding: 8px 0;
-            transition: var(--transition-fast);
-        }
-        
-        .footer-link:hover {
-            color: var(--sunset-gold);
-            padding-left: 5px;
-        }
-        
-        .footer-bottom {
-            text-align: center;
-            padding-top: 30px;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-            color: rgba(255, 255, 255, 0.7);
-        }
-        
-        /* Responsive Design */
+        .footer { background: var(--deep-charcoal); padding: 4rem 0 2rem; color: white; margin-top: 4rem; }
+        .footer-content { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 3rem; margin-bottom: 3rem; }
+        .footer-section h4 { color: var(--sunset-gold); margin-bottom: 1.25rem; font-size: 1.1rem; font-family: 'DM Sans', sans-serif; }
+        .footer-link { color: rgba(255,255,255,0.6); display: block; padding: .4rem 0; font-size: .85rem; transition: var(--transition); }
+        .footer-link:hover { color: var(--sunset-gold); padding-left: 5px; }
+        .footer-bottom { text-align: center; padding-top: 2rem; border-top: 1px solid rgba(255,255,255,0.1); font-size: .8rem; color: rgba(255,255,255,0.4); }
+
         @media (max-width: 992px) {
-            .menu-toggle {
-                display: block;
-            }
-            
-            .nav-menu {
-                display: none;
-            }
-            
-            .content-layout {
-                grid-template-columns: 1fr;
-                gap: 40px;
-            }
-            
-            .content-sidebar {
-                position: static;
-                order: -1;
-            }
-            
-            .principles-grid {
-                grid-template-columns: 1fr;
-                gap: 25px;
-            }
-            
-            .contact-info {
-                grid-template-columns: 1fr;
-            }
+            .nav-menu { display: none; }
+            .ham { display: flex; }
+            .content-layout { grid-template-columns: 1fr; }
+            .content-sidebar { display: none; } /* Hide sticky sidebar on mobile for cleaner reading */
         }
-        
         @media (max-width: 768px) {
-            .hero-title {
-                font-size: 2.5rem;
-            }
-            
-            .privacy-overview {
-                padding: 30px;
-            }
-            
-            .policy-document {
-                padding: 30px;
-            }
-            
-            .contact-section {
-                padding: 30px;
-            }
-            
-            .document-meta {
-                flex-direction: column;
-                gap: 15px;
-            }
-        }
-        
-        @media (max-width: 576px) {
-            .container {
-                padding: 0 15px;
-            }
-            
-            .hero-title {
-                font-size: 2rem;
-            }
-            
-            .principle-card {
-                padding: 25px;
-            }
-            
-            .principle-icon {
-                width: 70px;
-                height: 70px;
-                font-size: 2rem;
-            }
-            
-            .policy-document {
-                padding: 20px;
-            }
-            
-            .cta-buttons {
-                flex-direction: column;
-                align-items: center;
-            }
+            .hero-title { font-size: 2.2rem; }
+            .privacy-overview { padding: 2rem 1.5rem; }
+            .policy-document { padding: 2rem 1.5rem; }
+            .contact-section { padding: 3rem 1.5rem; }
         }
     </style>
 </head>
 <body>
-    <!-- Header -->
     <header class="header">
         <div class="container">
             <div class="nav-wrapper">
                 <a href="index.html" class="logo">
-                    <div class="logo-icon"><i class="fas fa-heart"></i></div>
-                    <div class="logo-text">Parent Portal</div>
+                    <div class="logo-icon"><img src="/Images/Logo_Baobab.svg" alt="Baobab" onerror="this.src='/Images/logo.jpg'"></div>
+                    <div>
+                        <div class="logo-text">Parent Portal</div>
+                        <span class="logo-tag">Baobab Digital Academy</span>
+                    </div>
                 </a>
-                
-                <div class="menu-toggle" id="menuToggle">
-                    <i class="fas fa-bars"></i>
-                </div>
                 
                 <ul class="nav-menu">
                     <li><a href="index.html#features" class="nav-link">Features</a></li>
                     <li><a href="index.html#how-it-works" class="nav-link">How It Works</a></li>
-                    <li><a href="index.html#security" class="nav-link">Safety & Security</a></li>
-                    <li><a href="http://baobabonlineacademy.com" class="nav-link">Main Site</a></li>
+                    <li><a href="index.html#security" class="nav-link active">Safety & Security</a></li>
+                    <li><a href="https://baobabonlineacademy.com" class="nav-link">Main Site</a></li>
                 </ul>
+
+                <button class="ham" id="ham" aria-label="Toggle navigation">
+                    <span></span><span></span><span></span>
+                </button>
             </div>
+        </div>
+        
+        <div class="mob-menu" id="mob">
+            <a href="index.html#features">Features</a>
+            <a href="index.html#how-it-works">How It Works</a>
+            <a href="index.html#security">Safety & Security</a>
+            <a href="https://baobabonlineacademy.com">Main Website</a>
         </div>
     </header>
 
-    <!-- Hero Section -->
     <section class="hero">
         <div class="container">
-            <div class="hero-content">
+            <div class="hero-content fu">
                 <div class="hero-badge">
-                    <i class="fas fa-user-shield"></i>
-                    Privacy First • Complete Transparency
+                    <i class="fas fa-user-shield"></i> Privacy First • Complete Transparency
                 </div>
                 <h1 class="hero-title">Privacy Policy</h1>
                 <p class="hero-subtitle">
@@ -893,32 +258,28 @@
         </div>
     </section>
 
-    <!-- Breadcrumbs -->
     <section class="breadcrumbs">
         <div class="container">
             <nav class="breadcrumb-nav">
-                <a href="index.html" class="breadcrumb-link">
-                    <i class="fas fa-home"></i> Home
-                </a>
+                <a href="index.html" class="breadcrumb-link"><i class="fas fa-home"></i> Home</a>
                 <span class="breadcrumb-separator">/</span>
-                <a href="#" class="breadcrumb-link">Safety & Security</a>
+                <span class="breadcrumb-link">Safety & Security</span>
                 <span class="breadcrumb-separator">/</span>
                 <span class="breadcrumb-current">Privacy Policy</span>
             </nav>
         </div>
     </section>
 
-    <!-- Main Content -->
     <section class="main-content">
         <div class="container">
             <div class="content-layout">
                 <div class="content-main">
-                    <!-- Privacy Overview -->
-                    <div class="privacy-overview">
+                    
+                    <div class="privacy-overview fu">
                         <div class="overview-content">
                             <h2><i class="fas fa-shield-alt"></i> Our Privacy Commitment</h2>
                             <p>
-                                At Baobab Online Academy, protecting your family's privacy isn't just a legal 
+                                At Baobab Digital Academy, protecting your family's privacy isn't just a legal 
                                 requirement—it's a fundamental value that guides every decision we make. We believe 
                                 that exceptional education must be built on a foundation of trust and transparency.
                             </p>
@@ -928,102 +289,55 @@
                                 exceed international privacy standards while serving our mission of educational excellence.
                             </p>
                             <div class="last-updated">
-                                <strong>Last Updated:</strong> January 15, 2025 | <strong>Version:</strong> 2.1
+                                <strong>Last Updated:</strong> January 15, 2026 | <strong>Version:</strong> 2.1
                             </div>
                         </div>
                     </div>
 
-                    <!-- Privacy Principles -->
-                    <div class="privacy-principles">
-                        <div class="principles-header">
-                            <h2>Our Core Privacy Principles</h2>
-                            <p>
-                                These fundamental principles guide every aspect of how we handle your personal information 
-                                and make privacy decisions throughout your family's journey with us.
-                            </p>
+                    <div class="principles-header fu">
+                        <h2>Our Core Privacy Principles</h2>
+                        <p>These fundamental principles guide every aspect of how we handle your personal information and make privacy decisions throughout your family's journey with us.</p>
+                    </div>
+                    
+                    <div class="principles-grid">
+                        <div class="principle-card fu">
+                            <div class="principle-icon"><i class="fas fa-eye-slash"></i></div>
+                            <h3 class="principle-title">Data Minimization</h3>
+                            <p class="principle-description">We collect only the information necessary to provide exceptional educational services. No excessive data collection, and no tracking beyond what serves your child's learning.</p>
                         </div>
                         
-                        <div class="principles-grid">
-                            <div class="principle-card">
-                                <div class="principle-icon">
-                                    <i class="fas fa-eye-slash"></i>
-                                </div>
-                                <h3 class="principle-title">Data Minimization</h3>
-                                <p class="principle-description">
-                                    We collect only the information necessary to provide exceptional educational 
-                                    services. No excessive data collection, no unnecessary tracking, and no 
-                                    information gathering beyond what directly serves your child's learning.
-                                </p>
-                            </div>
-                            
-                            <div class="principle-card">
-                                <div class="principle-icon">
-                                    <i class="fas fa-lock"></i>
-                                </div>
-                                <h3 class="principle-title">Purpose Limitation</h3>
-                                <p class="principle-description">
-                                    Your information is used exclusively for educational purposes and child safety. 
-                                    We never sell, rent, or share your data for marketing purposes or any activities 
-                                    unrelated to your child's education.
-                                </p>
-                            </div>
-                            
-                            <div class="principle-card">
-                                <div class="principle-icon">
-                                    <i class="fas fa-hands"></i>
-                                </div>
-                                <h3 class="principle-title">Informed Consent</h3>
-                                <p class="principle-description">
-                                    We provide clear, understandable explanations of how your information is used. 
-                                    You maintain control over your data with granular consent options and the 
-                                    ability to modify permissions at any time.
-                                </p>
-                            </div>
-                            
-                            <div class="principle-card">
-                                <div class="principle-icon">
-                                    <i class="fas fa-user-check"></i>
-                                </div>
-                                <h3 class="principle-title">Individual Rights</h3>
-                                <p class="principle-description">
-                                    You have complete rights over your personal information including access, 
-                                    correction, deletion, and portability. We respect your choices and make 
-                                    exercising these rights simple and straightforward.
-                                </p>
-                            </div>
+                        <div class="principle-card fu">
+                            <div class="principle-icon"><i class="fas fa-lock"></i></div>
+                            <h3 class="principle-title">Purpose Limitation</h3>
+                            <p class="principle-description">Your information is used exclusively for educational purposes and safety. We never sell, rent, or share your data for marketing purposes.</p>
+                        </div>
+                        
+                        <div class="principle-card fu">
+                            <div class="principle-icon"><i class="fas fa-hands"></i></div>
+                            <h3 class="principle-title">Informed Consent</h3>
+                            <p class="principle-description">We provide clear explanations of how your info is used. You maintain control over your data with granular consent options that you can modify at any time.</p>
+                        </div>
+                        
+                        <div class="principle-card fu">
+                            <div class="principle-icon"><i class="fas fa-user-check"></i></div>
+                            <h3 class="principle-title">Individual Rights</h3>
+                            <p class="principle-description">You have complete rights over your personal information including access, correction, deletion, and portability. We make exercising these rights simple.</p>
                         </div>
                     </div>
 
-                    <!-- Policy Document -->
-                    <div class="policy-document">
+                    <div class="policy-document fu">
                         <div class="document-header">
                             <h2>Complete Privacy Policy</h2>
                             <div class="document-meta">
-                                <div class="meta-item">
-                                    <i class="fas fa-calendar"></i>
-                                    Effective: January 15, 2025
-                                </div>
-                                <div class="meta-item">
-                                    <i class="fas fa-balance-scale"></i>
-                                    GDPR & COPPA Compliant
-                                </div>
-                                <div class="meta-item">
-                                    <i class="fas fa-globe"></i>
-                                    International Standards
-                                </div>
+                                <div class="meta-item"><i class="fas fa-calendar"></i> Effective: Jan 15, 2026</div>
+                                <div class="meta-item"><i class="fas fa-balance-scale"></i> GDPR & COPPA Compliant</div>
+                                <div class="meta-item"><i class="fas fa-globe"></i> International Standards</div>
                             </div>
                         </div>
                         
-                        <div class="policy-section">
-                            <h3>
-                                <span class="section-number">1</span>
-                                Information We Collect
-                            </h3>
-                            <p>
-                                We collect information that enables us to provide personalized, safe, and effective 
-                                educational services for your child. Our collection practices are transparent, 
-                                purposeful, and limited to what's necessary for educational excellence.
-                            </p>
+                        <div class="policy-section" id="information-collection">
+                            <h3><span class="section-number">1</span> Information We Collect</h3>
+                            <p>We collect information that enables us to provide personalized, safe, and effective educational services for your child. Our collection practices are transparent, purposeful, and limited to what's necessary for educational excellence.</p>
                             
                             <div class="subsection">
                                 <h4>Personal Information</h4>
@@ -1059,97 +373,56 @@
                             </div>
                         </div>
                         
-                        <div class="policy-section">
-                            <h3>
-                                <span class="section-number">2</span>
-                                How We Use Your Information
-                            </h3>
-                            <p>
-                                Every piece of information we collect serves a specific purpose in delivering 
-                                exceptional educational experiences while maintaining the highest safety standards.
-                            </p>
+                        <div class="policy-section" id="information-use">
+                            <h3><span class="section-number">2</span> How We Use Your Information</h3>
+                            <p>Every piece of information we collect serves a specific purpose in delivering exceptional educational experiences while maintaining the highest safety standards.</p>
                             
                             <div class="highlight-box">
                                 <h4>Primary Purpose: Educational Excellence</h4>
-                                <p>
-                                    All data usage is designed to enhance your child's learning experience, 
-                                    ensure safety, and support academic achievement.
-                                </p>
+                                <p>All data usage is designed to enhance your child's learning experience, ensure safety, and support academic achievement.</p>
                             </div>
                             
                             <ul>
-                                <li><strong>Personalized Learning:</strong> Tailoring educational content and teaching methods to your child's individual needs and learning style</li>
-                                <li><strong>Progress Tracking:</strong> Monitoring academic development and providing detailed progress reports to parents</li>
-                                <li><strong>Safety Monitoring:</strong> Ensuring appropriate interactions and maintaining child protection protocols</li>
-                                <li><strong>Communication:</strong> Facilitating secure communication between families, tutors, and support staff</li>
-                                <li><strong>Platform Improvement:</strong> Enhancing our services based on usage patterns and feedback</li>
-                                <li><strong>Compliance:</strong> Meeting legal requirements and maintaining educational standards</li>
+                                <li><strong>Personalized Learning:</strong> Tailoring educational content to your child's individual needs</li>
+                                <li><strong>Progress Tracking:</strong> Monitoring academic development and providing reports</li>
+                                <li><strong>Safety Monitoring:</strong> Ensuring appropriate interactions and protocols</li>
+                                <li><strong>Communication:</strong> Facilitating secure communication between families and tutors</li>
+                                <li><strong>Platform Improvement:</strong> Enhancing our services based on usage patterns</li>
+                                <li><strong>Compliance:</strong> Meeting legal requirements and educational standards</li>
                             </ul>
                         </div>
                         
-                        <div class="policy-section">
-                            <h3>
-                                <span class="section-number">3</span>
-                                Information Sharing and Disclosure
-                            </h3>
-                            <p>
-                                We maintain strict controls over information sharing and only disclose data when 
-                                necessary for educational services, safety, or legal compliance.
-                            </p>
+                        <div class="policy-section" id="information-sharing">
+                            <h3><span class="section-number">3</span> Information Sharing & Disclosure</h3>
+                            <p>We maintain strict controls over information sharing and only disclose data when necessary for educational services, safety, or legal compliance.</p>
                             
                             <div class="subsection">
                                 <h4>Authorized Educational Sharing</h4>
                                 <ul>
-                                    <li>Verified tutors receive only information necessary for teaching your child</li>
-                                    <li>Educational support staff access data relevant to their role in your child's learning</li>
-                                    <li>Parents and guardians have full access to their child's educational records</li>
+                                    <li>Verified tutors receive only information necessary for teaching</li>
+                                    <li>Support staff access data relevant to their specific role</li>
+                                    <li>Parents and guardians have full access to their child's records</li>
                                 </ul>
                             </div>
                             
                             <div class="subsection">
                                 <h4>Service Providers</h4>
-                                <p>
-                                    We work with carefully vetted service providers who help us deliver our educational 
-                                    platform. These providers are bound by strict confidentiality agreements and can 
-                                    only use information for specified purposes.
-                                </p>
+                                <p>We work with carefully vetted service providers who help us deliver our platform. They are bound by strict confidentiality agreements and use information only for specified purposes.</p>
                             </div>
                             
-                            <div class="subsection">
-                                <h4>Legal Requirements</h4>
-                                <p>
-                                    We may disclose information when required by law, to protect safety, or to respond 
-                                    to valid legal requests from authorities. We will notify affected families whenever 
-                                    legally possible.
-                                </p>
-                            </div>
-                            
-                            <div class="highlight-box">
-                                <h4>What We Never Do</h4>
-                                <p>
-                                    We never sell, rent, or trade your personal information. We don't share data 
-                                    for marketing purposes or any activities unrelated to education and safety.
-                                </p>
+                            <div class="highlight-box" style="background: linear-gradient(135deg, var(--safety-red, #D32F2F), #B71C1C);">
+                                <h4 style="color: white;">What We Never Do</h4>
+                                <p>We never sell, rent, or trade your personal information. We don't share data for marketing purposes or any activities unrelated to education and safety.</p>
                             </div>
                         </div>
                         
-                        <div class="policy-section">
-                            <h3>
-                                <span class="section-number">4</span>
-                                Children's Privacy Protection
-                            </h3>
-                            <p>
-                                Protecting children's privacy requires special care and enhanced safeguards. 
-                                We exceed industry standards in our approach to children's data protection.
-                            </p>
+                        <div class="policy-section" id="childrens-privacy">
+                            <h3><span class="section-number">4</span> Children's Privacy Protection</h3>
+                            <p>Protecting children's privacy requires special care. We exceed industry standards in our approach to children's data protection.</p>
                             
                             <div class="subsection">
                                 <h4>COPPA Compliance</h4>
-                                <p>
-                                    We fully comply with the Children's Online Privacy Protection Act (COPPA) and 
-                                    obtain verifiable parental consent before collecting any personal information from 
-                                    children under 13.
-                                </p>
+                                <p>We fully comply with the Children's Online Privacy Protection Act (COPPA) and obtain verifiable parental consent before collecting any personal information from children under 13.</p>
                             </div>
                             
                             <div class="subsection">
@@ -1159,268 +432,104 @@
                                     <li>Access to children's information is strictly limited and monitored</li>
                                     <li>Parents maintain complete control over their child's data</li>
                                     <li>Automatic deletion protocols for unnecessary data</li>
-                                    <li>Regular audits of children's data protection measures</li>
                                 </ul>
-                            </div>
-                            
-                            <div class="subsection">
-                                <h4>Parental Rights</h4>
-                                <p>
-                                    Parents have the right to review, modify, or delete their child's personal 
-                                    information at any time. We provide easy-to-use tools for exercising these rights 
-                                    through the Parent Portal.
-                                </p>
                             </div>
                         </div>
                         
-                        <div class="policy-section">
-                            <h3>
-                                <span class="section-number">5</span>
-                                Data Security and Protection
-                            </h3>
-                            <p>
-                                We employ multiple layers of security to protect your family's information using 
-                                industry-leading technologies and practices.
-                            </p>
+                        <div class="policy-section" id="data-security">
+                            <h3><span class="section-number">5</span> Data Security & Protection</h3>
+                            <p>We employ multiple layers of security to protect your family's information using industry-leading technologies and practices.</p>
                             
                             <div class="subsection">
                                 <h4>Technical Safeguards</h4>
                                 <ul>
                                     <li>AES-256 encryption for all data storage and transmission</li>
                                     <li>Multi-factor authentication for all account access</li>
-                                    <li>Regular security audits and penetration testing</li>
-                                    <li>Automated threat detection and response systems</li>
-                                    <li>Secure, redundant data backup systems</li>
-                                </ul>
-                            </div>
-                            
-                            <div class="subsection">
-                                <h4>Administrative Safeguards</h4>
-                                <ul>
-                                    <li>Strict access controls based on job responsibilities</li>
-                                    <li>Regular security training for all staff members</li>
-                                    <li>Comprehensive background checks for all personnel</li>
-                                    <li>Incident response procedures and protocols</li>
-                                    <li>Regular reviews of security policies and procedures</li>
-                                </ul>
-                            </div>
-                            
-                            <div class="subsection">
-                                <h4>Physical Safeguards</h4>
-                                <ul>
-                                    <li>Secure data centers with 24/7 monitoring</li>
-                                    <li>Biometric access controls for sensitive areas</li>
-                                    <li>Environmental monitoring and protection systems</li>
-                                    <li>Secure disposal of physical media and equipment</li>
+                                    <li>Automated threat detection and secure data backup systems</li>
                                 </ul>
                             </div>
                         </div>
                         
-                        <div class="policy-section">
-                            <h3>
-                                <span class="section-number">6</span>
-                                Your Privacy Rights
-                            </h3>
-                            <p>
-                                You have comprehensive rights regarding your personal information. We make exercising 
-                                these rights simple and provide multiple ways to manage your privacy preferences.
-                            </p>
+                        <div class="policy-section" id="privacy-rights">
+                            <h3><span class="section-number">6</span> Your Privacy Rights</h3>
+                            <p>You have comprehensive rights regarding your personal information. We make exercising these rights simple.</p>
                             
                             <div class="subsection">
-                                <h4>Access Rights</h4>
-                                <p>
-                                    You can access and review all personal information we hold about you and your child 
-                                    through the Parent Portal or by contacting our privacy team directly.
-                                </p>
+                                <h4>Access & Correction</h4>
+                                <p>You can access, review, and correct all personal information we hold about you and your child directly through your Parent Portal dashboard.</p>
                             </div>
                             
                             <div class="subsection">
-                                <h4>Correction Rights</h4>
-                                <p>
-                                    If any information we hold is inaccurate or incomplete, you can correct it directly 
-                                    through your account or request corrections from our support team.
-                                </p>
-                            </div>
-                            
-                            <div class="subsection">
-                                <h4>Deletion Rights</h4>
-                                <p>
-                                    You can request deletion of personal information, subject to legal retention 
-                                    requirements. We'll delete data promptly and confirm the deletion with you.
-                                </p>
-                            </div>
-                            
-                            <div class="subsection">
-                                <h4>Portability Rights</h4>
-                                <p>
-                                    You can receive a copy of your personal information in a structured, commonly 
-                                    used format and have it transferred to another service provider if desired.
-                                </p>
-                            </div>
-                            
-                            <div class="subsection">
-                                <h4>Objection Rights</h4>
-                                <p>
-                                    You can object to certain uses of your information and request restrictions on 
-                                    processing for specific purposes.
-                                </p>
+                                <h4>Deletion & Portability</h4>
+                                <p>You can request deletion of personal information or receive a copy of your data in a structured format by contacting our privacy team.</p>
                             </div>
                         </div>
                         
-                        <div class="policy-section">
-                            <h3>
-                                <span class="section-number">7</span>
-                                Data Retention and Deletion
-                            </h3>
-                            <p>
-                                We retain personal information only as long as necessary for educational purposes, 
-                                safety requirements, and legal compliance.
-                            </p>
+                        <div class="policy-section" id="data-retention">
+                            <h3><span class="section-number">7</span> Data Retention</h3>
+                            <p>We retain personal information only as long as necessary for educational purposes, safety requirements, and legal compliance.</p>
                             
                             <div class="subsection">
                                 <h4>Retention Periods</h4>
                                 <ul>
-                                    <li><strong>Active Student Records:</strong> Maintained during enrollment and for 7 years after graduation for transcript purposes</li>
+                                    <li><strong>Active Student Records:</strong> Maintained during enrollment and for 7 years after graduation</li>
                                     <li><strong>Safety Records:</strong> Retained for 10 years for child protection purposes</li>
-                                    <li><strong>Technical Logs:</strong> Deleted after 90 days unless required for security investigations</li>
-                                    <li><strong>Marketing Information:</strong> Deleted immediately upon opt-out or account closure</li>
-                                </ul>
-                            </div>
-                            
-                            <div class="subsection">
-                                <h4>Automatic Deletion</h4>
-                                <p>
-                                    Our systems automatically delete information that's no longer needed, ensuring 
-                                    we don't retain data longer than necessary.
-                                </p>
-                            </div>
-                        </div>
-                        
-                        <div class="policy-section">
-                            <h3>
-                                <span class="section-number">8</span>
-                                International Data Transfers
-                            </h3>
-                            <p>
-                                While our primary operations are based in Nigeria, we may transfer data internationally 
-                                for specific educational or technical purposes, always with appropriate safeguards.
-                            </p>
-                            
-                            <div class="subsection">
-                                <h4>Transfer Safeguards</h4>
-                                <ul>
-                                    <li>Standard Contractual Clauses (SCCs) for GDPR compliance</li>
-                                    <li>Adequacy decisions where available</li>
-                                    <li>Additional encryption for international transfers</li>
-                                    <li>Regular compliance audits of international partners</li>
-                                </ul>
-                            </div>
-                        </div>
-                        
-                        <div class="policy-section">
-                            <h3>
-                                <span class="section-number">9</span>
-                                Policy Updates and Changes
-                            </h3>
-                            <p>
-                                We may update this privacy policy to reflect changes in our practices, technology, 
-                                or legal requirements. We'll always notify you of significant changes.
-                            </p>
-                            
-                            <div class="subsection">
-                                <h4>Notification Process</h4>
-                                <ul>
-                                    <li>Email notification to all registered parents</li>
-                                    <li>Prominent notice in the Parent Portal</li>
-                                    <li>Summary of changes provided in plain language</li>
-                                    <li>30-day notice period before material changes take effect</li>
+                                    <li><strong>Technical Logs:</strong> Deleted after 90 days</li>
                                 </ul>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Contact Section -->
-                    <div class="contact-section">
+                    <div class="contact-section fu">
                         <h2>Questions About Your Privacy?</h2>
-                        <p>
-                            Our privacy team is here to help with any questions about how we protect and use your 
-                            family's information. We're committed to transparency and will respond promptly to all inquiries.
-                        </p>
+                        <p style="color: var(--text-medium); margin-bottom: 2rem;">Our privacy team is here to help with any questions. We're committed to transparency and will respond promptly to all inquiries.</p>
                         
                         <div class="contact-info">
                             <div class="contact-item">
                                 <h4><i class="fas fa-envelope"></i> Privacy Email</h4>
                                 <p>privacy@baobabonlineacademy.com</p>
-                                <p>Response within 24 hours</p>
                             </div>
-                            
                             <div class="contact-item">
                                 <h4><i class="fas fa-phone"></i> Privacy Hotline</h4>
                                 <p>+234 (0) 816 501 1291</p>
-                                <p>Monday - Friday, 9 AM - 6 PM WAT</p>
                             </div>
-                            
                             <div class="contact-item">
-                                <h4><i class="fas fa-mail-bulk"></i> Postal Address</h4>
-                                <p>Baobab Academy Privacy Officer</p>
-                                <p>Lagos, Nigeria</p>
-                            </div>
-                            
-                            <div class="contact-item">
-                                <h4><i class="fas fa-user-shield"></i> Data Protection Officer</h4>
+                                <h4><i class="fas fa-user-shield"></i> DPO</h4>
                                 <p>dpo@baobabonlineacademy.com</p>
-                                <p>For formal privacy complaints</p>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Call to Action -->
-                    <div class="cta-section">
-                        <div class="cta-content">
-                            <h3>Privacy You Can Trust</h3>
-                            <p>
-                                Join thousands of families who trust Baobab Academy with their most precious information. 
-                                Your privacy is protected by our unwavering commitment to transparency and security.
-                            </p>
-                            <div class="cta-buttons">
-                                <a href="index.html#register" class="btn btn-white">
-                                    <i class="fas fa-user-plus"></i>
-                                    Join Our Protected Community
-                                </a>
-                                <a href="get-started.html" class="btn btn-outlined">
-                                    <i class="fas fa-arrow-right"></i>
-                                    Back to Getting Started
-                                </a>
-                            </div>
+                    <div class="cta-section fu">
+                        <h3>Privacy You Can Trust</h3>
+                        <p>Join thousands of families who trust Baobab Academy with their most precious information. Your privacy is protected by our unwavering commitment to security.</p>
+                        <div class="cta-buttons">
+                            <a href="index.html#register" class="btn btn-white"><i class="fas fa-user-plus"></i> Join Protected Community</a>
+                            <a href="get-started.html" class="btn btn-outline" style="color: white; border-color: rgba(255,255,255,0.4);"><i class="fas fa-arrow-left"></i> Back to Start</a>
                         </div>
                     </div>
+
                 </div>
 
                 <div class="content-sidebar">
-                    <h3 class="sidebar-title">
-                        <i class="fas fa-map"></i>
-                        Privacy Navigation
-                    </h3>
-                    <ul class="sidebar-nav">
-                        <li><a href="#information-collection" onclick="scrollToSection('information-collection')">Information We Collect</a></li>
-                        <li><a href="#information-use" onclick="scrollToSection('information-use')">How We Use Data</a></li>
-                        <li><a href="#information-sharing" onclick="scrollToSection('information-sharing')">Information Sharing</a></li>
-                        <li><a href="#childrens-privacy" onclick="scrollToSection('childrens-privacy')">Children's Privacy</a></li>
-                        <li><a href="#data-security" onclick="scrollToSection('data-security')">Data Security</a></li>
-                        <li><a href="#privacy-rights" onclick="scrollToSection('privacy-rights')">Your Rights</a></li>
-                        <li><a href="#data-retention" onclick="scrollToSection('data-retention')">Data Retention</a></li>
-                    </ul>
+                    <div class="sidebar-box">
+                        <h3 class="sidebar-title"><i class="fas fa-map"></i> Privacy Nav</h3>
+                        <ul class="sidebar-nav">
+                            <li><a href="#information-collection">1. Information We Collect</a></li>
+                            <li><a href="#information-use">2. How We Use Data</a></li>
+                            <li><a href="#information-sharing">3. Information Sharing</a></li>
+                            <li><a href="#childrens-privacy">4. Children's Privacy</a></li>
+                            <li><a href="#data-security">5. Data Security</a></li>
+                            <li><a href="#privacy-rights">6. Your Rights</a></li>
+                            <li><a href="#data-retention">7. Data Retention</a></li>
+                        </ul>
+                    </div>
                     
-                    <div style="margin-top: 30px; padding: 20px; background: linear-gradient(135deg, var(--privacy-blue), var(--protection-green)); border-radius: 15px; color: var(--white); text-align: center;">
-                        <h4 style="margin-bottom: 15px;">
-                            <i class="fas fa-shield-alt"></i> Privacy Questions?
-                        </h4>
-                        <p style="font-size: 0.9rem; margin-bottom: 15px; opacity: 0.9;">
-                            Our privacy team is available to help with any concerns about your data.
-                        </p>
-                        <a href="mailto:privacy@baobabacademy.com" class="btn btn-white" style="width: 100%; justify-content: center;">
-                            <i class="fas fa-envelope"></i>
-                            Contact Privacy Team
+                    <div class="sidebar-box emergency-sidebar">
+                        <h4><i class="fas fa-shield-alt"></i> Privacy Questions?</h4>
+                        <p>Our privacy team is available to help with any concerns about your data.</p>
+                        <a href="mailto:privacy@baobabonlineacademy.com" class="btn btn-white" style="width: 100%; color: var(--privacy-blue); padding: .6rem; font-size: .85rem;">
+                            <i class="fas fa-envelope"></i> Contact Team
                         </a>
                     </div>
                 </div>
@@ -1428,129 +537,71 @@
         </div>
     </section>
 
-    <!-- Footer -->
     <footer class="footer">
         <div class="container">
             <div class="footer-content">
                 <div class="footer-section">
                     <h4><i class="fas fa-heart"></i> Parent Resources</h4>
                     <a href="get-started.html" class="footer-link">Getting Started Guide</a>
-                    <a href="supporting-child.html" class="footer-link">Supporting Your Child's Learning</a>
-                    <a href="cultural-integration.html" class="footer-link">Cultural Integration at Home</a>
+                    <a href="supporting-child.html" class="footer-link">Supporting Your Child</a>
+                    <a href="cultural-integration.html" class="footer-link">Cultural Integration</a>
                 </div>
-                
                 <div class="footer-section">
                     <h4><i class="fas fa-shield-alt"></i> Safety & Security</h4>
                     <a href="child-protection.html" class="footer-link">Child Protection Policy</a>
-                    <a href="tutor-verification.html" class="footer-link">Tutor Verification Process</a>
-                    <a href="platform-security.html" class="footer-link">Platform Security Features</a>
+                    <a href="tutor-verification.html" class="footer-link">Tutor Verification</a>
+                    <a href="platform-security.html" class="footer-link">Platform Security</a>
                     <a href="privacy-policy.html" class="footer-link">Privacy Policy</a>
                 </div>
-                
                 <div class="footer-section">
                     <h4><i class="fas fa-headset"></i> Support</h4>
-                    <p style="color: rgba(255, 255, 255, 0.7); margin-bottom: 15px;">
-                        <i class="fas fa-envelope"></i>
-                        parents@baobabonlineacademy.com
-                    </p>
-                    <p style="color: rgba(255, 255, 255, 0.7); margin-bottom: 15px;">
-                        <i class="fas fa-phone"></i>
-                        +234 (0) 816 501 1291
-                    </p>
-                    <a href="#" class="footer-link">Help Center</a>
-                    <a href="#" class="footer-link">Live Chat Support</a>
+                    <p style="color: rgba(255, 255, 255, 0.7); margin-bottom: 10px; font-size: .85rem;"><i class="fas fa-envelope"></i> parents@baobabonlineacademy.com</p>
+                    <p style="color: rgba(255, 255, 255, 0.7); margin-bottom: 15px; font-size: .85rem;"><i class="fas fa-phone"></i> +234 (0) 816 501 1291</p>
                 </div>
             </div>
-            
             <div class="footer-bottom">
-                <p>&copy; 2025 Baobab Online Academy Parent Portal. Nurturing Growth, Honoring Heritage.</p>
+                <p>&copy; 2026 Baobab Digital Academy. All rights reserved. <br><strong>Deep Roots, Limitless Growth 🌳</strong></p>
             </div>
         </div>
     </footer>
 
     <script>
-        // Mobile menu functionality
-        const menuToggle = document.getElementById('menuToggle');
-        const navMenu = document.querySelector('.nav-menu');
-        
-        if (menuToggle) {
-            menuToggle.addEventListener('click', function() {
-                navMenu.classList.toggle('active');
-                this.innerHTML = navMenu.classList.contains('active') 
-                    ? '<i class="fas fa-times"></i>' 
-                    : '<i class="fas fa-bars"></i>';
+        // Mobile Menu
+        const ham = document.getElementById('ham');
+        const mob = document.getElementById('mob');
+        if (ham && mob) {
+            ham.addEventListener('click', () => {
+                ham.classList.toggle('open');
+                mob.classList.toggle('open');
             });
         }
 
-        // Scroll to section functionality
-        function scrollToSection(sectionId) {
-            // This is a placeholder function - you would need to add IDs to sections
-            console.log('Scrolling to:', sectionId);
-        }
+        // Scroll animations
+        const fuEls = document.querySelectorAll('.fu');
+        const fuObs = new IntersectionObserver(entries => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('vis');
+                    fuObs.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.1 });
+        fuEls.forEach(el => fuObs.observe(el));
 
-        // Principle card hover effects
-        document.querySelectorAll('.principle-card').forEach(card => {
-            card.addEventListener('mouseenter', function() {
-                this.style.transform = 'translateY(-12px) scale(1.02)';
-            });
-            
-            card.addEventListener('mouseleave', function() {
-                this.style.transform = 'translateY(0) scale(1)';
-            });
-        });
-
-        // Contact item hover effects
-        document.querySelectorAll('.contact-item').forEach(item => {
-            item.addEventListener('mouseenter', function() {
-                this.style.transform = 'translateY(-8px) scale(1.02)';
-            });
-            
-            item.addEventListener('mouseleave', function() {
-                this.style.transform = 'translateY(0) scale(1)';
-            });
-        });
-
-        // Smooth scrolling for anchor links
+        // Smooth scrolling for sidebar links
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function(e) {
                 e.preventDefault();
                 const target = document.querySelector(this.getAttribute('href'));
                 if (target) {
-                    target.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'start'
-                    });
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    
+                    // Update active state
+                    document.querySelectorAll('.sidebar-nav a').forEach(a => a.classList.remove('active'));
+                    this.classList.add('active');
                 }
             });
         });
-
-        // Policy section reading progress indicator (optional enhancement)
-        function trackReadingProgress() {
-            const sections = document.querySelectorAll('.policy-section');
-            const sidebar = document.querySelector('.sidebar-nav');
-            
-            window.addEventListener('scroll', function() {
-                let current = '';
-                sections.forEach(section => {
-                    const sectionTop = section.offsetTop;
-                    const sectionHeight = section.clientHeight;
-                    if (window.scrollY >= (sectionTop - 200)) {
-                        current = section.id;
-                    }
-                });
-                
-                // Update active section in sidebar
-                sidebar.querySelectorAll('a').forEach(link => {
-                    link.classList.remove('active');
-                    if (link.getAttribute('href') === '#' + current) {
-                        link.classList.add('active');
-                    }
-                });
-            });
-        }
-
-        // Initialize reading progress tracking
-        document.addEventListener('DOMContentLoaded', trackReadingProgress);
     </script>
 </body>
 </html>
