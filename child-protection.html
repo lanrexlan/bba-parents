@@ -4,941 +4,245 @@
     <meta charset="UTF-8">
     <link rel="icon" type="image/png" sizes="32x32" href="/Images/logo.jpg">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Child Protection Policy - Baobab Online Academy Parent Portal</title>
+    <title>Child Protection Policy - Baobab Digital Academy</title>
+    
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@300;400;700;900&family=Open+Sans:wght@300;400;600;700&family=Kalam:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet">
+    
     <style>
+        /* ================================================
+           BAOBAB BRAND PALETTE
+           ================================================ */
         :root {
-            --baobab-brown: #8D4004;
-            --canopy-green: #2E7D32;
-            --sunset-gold: #F57C00;
-            --trunk-gray: #5D4037;
-            --sky-blue: #1976D2;
-            --earth-cream: #FFF8E1;
-            --desert-orange: #FF5722;
-            --sage-green: #689F38;
-            --deep-charcoal: #263238;
-            --white: #FFFFFF;
-            --light-gray: #F5F5F5;
-            --border-light: #E0E0E0;
-            --security-blue: #0D47A1;
-            --safety-green: #1B5E20;
-            --alert-red: #B71C1C;
-            --warning-amber: #E65100;
+            --baobab-brown:       #6B3A2A;
+            --baobab-brown-dark:  #4A2218;
+            --baobab-brown-light: #8C5442;
+            --canopy-green:       #2D6A4F;
+            --canopy-green-dark:  #1B4332;
+            --canopy-green-light: #52B788;
+            --sunset-gold:        #F4A261;
+            --sunset-gold-warm:   #E76F51;
+            --earth-cream:        #FEF6EE;
+            --earth-cream-dark:   #F5E6D3;
+            --warm-white:         #FEFEFE;
+            --deep-charcoal:      #18120F;
+            --text-dark:          #2C1810;
+            --text-medium:        #5C3E30;
+            --text-light:         #8C7066;
+            --border-light:       #EDD9C8;
+            --shadow-warm:        rgba(107,58,42,0.12);
+            --max-w:              1280px;
+            --section-py:         5rem;
+            --section-px:         2rem;
+            --r-card:             20px;
+            --r-pill:             50px;
+            --transition:         all 0.3s cubic-bezier(.4,0,.2,1);
             
-            --transition-slow: all 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
-            --transition-medium: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
-            --transition-fast: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
-            
-            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
-            --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
-            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            --safety-red:         #D32F2F;
+            --safety-red-light:   #FFEBEE;
         }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        html { scroll-behavior: smooth; font-size: 18px; }
+        @media (max-width: 992px) { html { font-size: 16px; } }
+
+        body { font-family: 'DM Sans', sans-serif; color: var(--text-dark); background-color: var(--warm-white); line-height: 1.6; overflow-x: hidden; -webkit-font-smoothing: antialiased; }
+        h1, h2, h3, h4, h5 { font-family: 'Playfair Display', serif; font-weight: 700; line-height: 1.2; color: var(--baobab-brown-dark); }
+        ul { list-style: none; }
+        a { text-decoration: none; color: inherit; transition: var(--transition); }
+
+        .container { max-width: var(--max-w); margin: 0 auto; padding: 0 var(--section-px); position: relative; }
+        .fu { opacity: 0; transform: translateY(28px); transition: opacity .7s ease, transform .7s ease; }
+        .fu.vis { opacity: 1; transform: translateY(0); }
         
-        body {
-            font-family: 'Open Sans', sans-serif;
-            color: var(--deep-charcoal);
-            line-height: 1.6;
-            overflow-x: hidden;
-            background-color: var(--white);
-        }
+        /* Buttons */
+        .btn { display: inline-flex; align-items: center; justify-content: center; gap: .5rem; padding: .85rem 1.75rem; border-radius: var(--r-pill); font-weight: 700; font-size: .95rem; transition: var(--transition); border: 2px solid transparent; cursor: pointer; white-space: nowrap; font-family: 'DM Sans', sans-serif; }
+        .btn-primary { background: linear-gradient(135deg, var(--canopy-green), var(--canopy-green-dark)); color: white; box-shadow: 0 4px 14px rgba(45,106,79,.25); }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(45,106,79,.35); }
+        .btn-white { background: #fff; color: var(--baobab-brown-dark); box-shadow: 0 4px 14px rgba(0,0,0,.08); }
+        .btn-white:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,.15); }
+        .btn-outline { background: transparent; color: var(--baobab-brown-dark); border-color: var(--border-light); }
+        .btn-outline:hover { background: var(--earth-cream); border-color: var(--sunset-gold); }
+
+        /* Shared Header */
+        .header { position: fixed; top: 0; left: 0; width: 100%; z-index: 1000; background: rgba(255, 255, 255, 0.96); backdrop-filter: blur(15px); box-shadow: 0 2px 20px var(--shadow-warm); padding: .75rem 0; }
+        .nav-wrapper { display: flex; justify-content: space-between; align-items: center; }
+        .logo { display: flex; align-items: center; gap: .6rem; }
+        .logo-icon { width: 46px; height: 46px; min-width: 46px; border-radius: 50%; border: 2px solid var(--sunset-gold); overflow: hidden; display: flex; align-items: center; justify-content: center; background: #fff; }
+        .logo-icon img { width: 100%; height: 100%; object-fit: cover; }
+        .logo-text { font-family: 'Playfair Display', serif; font-weight: 700; font-size: 1.2rem; color: var(--baobab-brown-dark); line-height: 1.1; }
+        .logo-tag { display: block; font-family: 'DM Sans', sans-serif; font-size: .65rem; font-style: italic; color: var(--text-light); }
         
-        h1, h2, h3, h4, h5 {
-            font-family: 'Merriweather', serif;
-            font-weight: 700;
-            line-height: 1.3;
-        }
+        .nav-menu { display: flex; gap: 1.5rem; align-items: center; }
+        .nav-link { font-weight: 600; font-size: .9rem; color: var(--text-medium); }
+        .nav-link:hover, .nav-link.active { color: var(--sunset-gold); }
         
-        .container {
-            width: 100%;
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
-            position: relative;
-        }
-        
-        .btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            padding: 14px 32px;
-            border-radius: 30px;
-            font-weight: 600;
-            text-align: center;
-            transition: var(--transition-fast);
-            border: 2px solid transparent;
-            font-family: 'Open Sans', sans-serif;
-            text-decoration: none;
-            cursor: pointer;
-        }
-        
-        .btn-primary {
-            background-color: var(--baobab-brown);
-            color: var(--white);
-            border-color: var(--baobab-brown);
-        }
-        
-        .btn-primary:hover {
-            background-color: var(--trunk-gray);
-            border-color: var(--trunk-gray);
-            transform: translateY(-3px);
-            box-shadow: var(--shadow-md);
-        }
-        
-        .btn-secondary {
-            background-color: var(--sunset-gold);
-            color: var(--deep-charcoal);
-            border-color: var(--sunset-gold);
-        }
-        
-        .btn-outlined {
-            background-color: transparent;
-            color: var(--baobab-brown);
-            border-color: var(--baobab-brown);
-        }
-        
-        .btn-outlined:hover {
-            background-color: var(--baobab-brown);
-            color: var(--white);
-        }
-        
-        /* Header */
-        .header {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            z-index: 1000;
-            background-color: var(--white);
-            box-shadow: var(--shadow-md);
-            padding: 10px 0;
-        }
-        
-        .nav-wrapper {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            text-decoration: none;
-        }
-        
-        .logo-icon {
-            width: 32px;
-            height: 32px;
-            background-color: var(--canopy-green);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 8px;
-            font-size: 20px;
-            color: var(--white);
-        }
-        
-        .logo-text {
-            font-weight: 700;
-            font-size: 20px;
-            color: var(--baobab-brown);
-        }
-        
-        .nav-menu {
-            display: flex;
-            gap: 30px;
-            list-style: none;
-        }
-        
-        .nav-link {
-            font-weight: 500;
-            color: var(--deep-charcoal);
-            text-decoration: none;
-            padding: 5px 0;
-            transition: var(--transition-fast);
-        }
-        
-        .nav-link:hover {
-            color: var(--sunset-gold);
-        }
-        
-        .menu-toggle {
-            display: none;
-            font-size: 24px;
-            cursor: pointer;
-            color: var(--baobab-brown);
-        }
-        
+        /* Mobile Menu */
+        .ham { display: none; flex-direction: column; gap: 5px; padding: .4rem; background: none; border: none; cursor: pointer; }
+        .ham span { display: block; width: 24px; height: 2px; background: var(--baobab-brown); border-radius: 2px; transition: all .3s; }
+        .ham.open span:nth-child(1) { transform: rotate(45deg) translate(5px, 5px); }
+        .ham.open span:nth-child(2) { opacity: 0; }
+        .ham.open span:nth-child(3) { transform: rotate(-45deg) translate(5px, -5px); }
+
+        .mob-menu { display: none; flex-direction: column; background: #fff; padding: 1.5rem 2rem 2rem; border-top: 1px solid var(--border-light); box-shadow: 0 12px 30px var(--shadow-warm); position: absolute; top: 100%; left: 0; width: 100%; z-index: 999; }
+        .mob-menu.open { display: flex; animation: slideDown 0.3s ease; }
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        .mob-menu a { font-size: 1rem; font-weight: 500; color: var(--text-dark); padding: 1rem 0; border-bottom: 1px solid var(--border-light); }
+        .mob-menu a:hover { color: var(--canopy-green); padding-left: 5px; }
+
         /* Hero Section */
-        .hero {
-            background: linear-gradient(135deg, var(--security-blue), var(--sky-blue), var(--safety-green));
-            color: var(--white);
-            padding: 120px 0 80px;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .hero::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200"><path d="M50,50 L150,50 L150,150 L50,150 Z" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="2"/><circle cx="100" cy="100" r="30" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="2"/></svg>');
-            animation: shield-pulse 8s infinite ease-in-out;
-        }
-        
-        @keyframes shield-pulse {
-            0%, 100% { opacity: 0.3; transform: scale(1); }
-            50% { opacity: 0.6; transform: scale(1.05); }
-        }
-        
-        .hero-content {
-            position: relative;
-            z-index: 2;
-            max-width: 800px;
-            text-align: center;
-            margin: 0 auto;
-        }
-        
-        .hero-badge {
-            background: rgba(255, 255, 255, 0.25);
-            padding: 12px 25px;
-            border-radius: 25px;
-            font-size: 0.95rem;
-            font-weight: 600;
-            margin-bottom: 25px;
-            display: inline-block;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-        }
-        
-        .hero-title {
-            font-size: 3.5rem;
-            margin-bottom: 20px;
-            line-height: 1.2;
-        }
-        
-        .hero-subtitle {
-            font-size: 1.3rem;
-            opacity: 0.9;
-            margin-bottom: 40px;
-            line-height: 1.6;
-        }
-        
+        .hero { background: linear-gradient(145deg, var(--baobab-brown-dark) 0%, var(--canopy-green-dark) 100%); color: white; padding: 10rem 0 6rem; position: relative; overflow: hidden; }
+        .hero::before { content: ''; position: absolute; inset: 0; opacity: 0.05; background-image: url("data:image/svg+xml,%3Csvg width='44' height='44' viewBox='0 0 44 44' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M22 0 L44 22 L22 44 L0 22 Z' fill='none' stroke='%23FFFFFF' stroke-width='1'/%3E%3C/svg%3E"); background-size: 44px 44px; }
+        .hero-content { position: relative; z-index: 2; max-width: 800px; margin: 0 auto; text-align: center; }
+        .hero-badge { background: rgba(255,255,255,0.15); backdrop-filter: blur(10px); padding: .5rem 1.25rem; border-radius: var(--r-pill); font-size: .8rem; font-weight: 700; display: inline-block; margin-bottom: 1.5rem; border: 1px solid rgba(255,255,255,0.3); color: var(--sunset-gold); text-transform: uppercase; letter-spacing: .05em; }
+        .hero-title { font-size: clamp(2.5rem, 5vw, 3.5rem); margin-bottom: 1rem; color: white; }
+        .hero-subtitle { font-size: 1.1rem; opacity: 0.9; line-height: 1.7; }
+
         /* Breadcrumbs */
-        .breadcrumbs {
-            background: var(--earth-cream);
-            padding: 20px 0;
-            border-bottom: 2px solid var(--border-light);
-        }
-        
-        .breadcrumb-nav {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 0.9rem;
-        }
-        
-        .breadcrumb-link {
-            color: var(--trunk-gray);
-            text-decoration: none;
-            transition: var(--transition-fast);
-        }
-        
-        .breadcrumb-link:hover {
-            color: var(--sunset-gold);
-        }
-        
-        .breadcrumb-separator {
-            color: var(--trunk-gray);
-            opacity: 0.6;
-        }
-        
-        .breadcrumb-current {
-            color: var(--baobab-brown);
-            font-weight: 600;
-        }
-        
-        /* Main Content */
-        .main-content {
-            padding: 80px 0;
-            background: var(--white);
-        }
-        
-        .content-layout {
-            display: grid;
-            grid-template-columns: 1fr 300px;
-            gap: 60px;
-            align-items: start;
-        }
-        
-        .content-main {
-            background: var(--white);
-        }
-        
-        .content-sidebar {
-            position: sticky;
-            top: 120px;
-            background: var(--light-gray);
-            border-radius: 20px;
-            padding: 30px;
-            border: 2px solid var(--border-light);
-        }
-        
-        .sidebar-title {
-            color: var(--baobab-brown);
-            font-size: 1.4rem;
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .sidebar-nav {
-            list-style: none;
-        }
-        
-        .sidebar-nav li {
-            margin-bottom: 12px;
-        }
-        
-        .sidebar-nav a {
-            color: var(--trunk-gray);
-            text-decoration: none;
-            padding: 8px 12px;
-            border-radius: 10px;
-            display: block;
-            transition: var(--transition-fast);
-            font-size: 0.95rem;
-        }
-        
-        .sidebar-nav a:hover,
-        .sidebar-nav a.active {
-            background: var(--sunset-gold);
-            color: var(--deep-charcoal);
-            transform: translateX(5px);
-        }
+        .breadcrumbs { background: var(--earth-cream); padding: 1rem 0; border-bottom: 1px solid var(--border-light); }
+        .breadcrumb-nav { display: flex; align-items: center; gap: .75rem; font-size: .85rem; }
+        .breadcrumb-link { color: var(--text-medium); font-weight: 600; }
+        .breadcrumb-link:hover { color: var(--sunset-gold); }
+        .breadcrumb-current { color: var(--baobab-brown-dark); font-weight: 700; }
+
+        /* Main Content Layout */
+        .main-content { padding: 4rem 0; }
+        .content-layout { display: grid; grid-template-columns: 1fr 300px; gap: 4rem; align-items: start; }
         
         /* Policy Overview */
-        .policy-overview {
-            background: linear-gradient(135deg, var(--safety-green), var(--canopy-green));
-            color: var(--white);
-            padding: 50px;
-            border-radius: 25px;
-            margin-bottom: 60px;
-            position: relative;
-            overflow: hidden;
-        }
+        .policy-overview { background: linear-gradient(135deg, var(--canopy-green-dark), var(--canopy-green)); color: white; padding: 3rem; border-radius: var(--r-card); margin-bottom: 3rem; position: relative; overflow: hidden; box-shadow: 0 10px 30px rgba(45,106,79,0.2); }
+        .policy-overview h2 { color: white; font-size: 2.2rem; margin-bottom: 1rem; }
+        .policy-overview p { font-size: 1.1rem; opacity: 0.9; line-height: 1.7; margin-bottom: 2rem; }
+        .overview-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1.5rem; }
+        .stat-item { background: rgba(255, 255, 255, 0.1); padding: 1.5rem; border-radius: 16px; text-align: center; border: 1px solid rgba(255,255,255,0.2); }
+        .stat-number { font-family: 'Playfair Display', serif; font-size: 2rem; font-weight: 800; color: var(--sunset-gold); display: block; margin-bottom: .25rem; }
+        .stat-label { font-size: .85rem; opacity: 0.9; font-weight: 600; }
+
+        /* Security Measures Grid */
+        .section-header { text-align: center; margin-bottom: 3rem; }
+        .section-header h2 { font-size: 2.2rem; margin-bottom: 1rem; }
+        .section-header p { color: var(--text-medium); max-width: 700px; margin: 0 auto; }
         
-        .policy-overview::before {
-            content: '';
-            position: absolute;
-            top: -50px;
-            right: -50px;
-            width: 200px;
-            height: 200px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 50%;
-        }
-        
-        .overview-content {
-            position: relative;
-            z-index: 2;
-        }
-        
-        .overview-content h2 {
-            font-size: 2.5rem;
-            margin-bottom: 20px;
-        }
-        
-        .overview-content p {
-            font-size: 1.2rem;
-            opacity: 0.9;
-            line-height: 1.7;
-            margin-bottom: 20px;
-        }
-        
-        .overview-stats {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 25px;
-            margin-top: 40px;
-        }
-        
-        .stat-item {
-            background: rgba(255, 255, 255, 0.15);
-            padding: 20px;
-            border-radius: 15px;
-            text-align: center;
-            backdrop-filter: blur(10px);
-        }
-        
-        .stat-number {
-            font-size: 2rem;
-            font-weight: 700;
-            color: var(--sunset-gold);
-            display: block;
-        }
-        
-        .stat-label {
-            font-size: 0.9rem;
-            opacity: 0.9;
-            margin-top: 5px;
-        }
-        
-        /* Security Measures */
-        .security-measures {
-            margin-bottom: 60px;
-        }
-        
-        .section-header {
-            text-align: center;
-            margin-bottom: 50px;
-        }
-        
-        .section-header h2 {
-            font-size: 2.5rem;
-            color: var(--baobab-brown);
-            margin-bottom: 15px;
-        }
-        
-        .section-header p {
-            color: var(--trunk-gray);
-            font-size: 1.1rem;
-            max-width: 700px;
-            margin: 0 auto;
-            line-height: 1.7;
-        }
-        
-        .measures-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 30px;
-        }
-        
-        .measure-card {
-            background: var(--white);
-            border-radius: 20px;
-            padding: 35px;
-            box-shadow: var(--shadow-lg);
-            border: 3px solid transparent;
-            transition: var(--transition-medium);
-            position: relative;
-        }
-        
-        .measure-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 6px;
-            background: var(--safety-green);
-            border-radius: 20px 20px 0 0;
-        }
-        
-        .measure-card:nth-child(2)::before {
-            background: var(--security-blue);
-        }
-        
-        .measure-card:nth-child(3)::before {
-            background: var(--sunset-gold);
-        }
-        
-        .measure-card:nth-child(4)::before {
-            background: var(--alert-red);
-        }
-        
-        .measure-card:hover {
-            transform: translateY(-10px);
-            border-color: var(--sunset-gold);
-            box-shadow: var(--shadow-xl);
-        }
-        
-        .measure-icon {
-            width: 80px;
-            height: 80px;
-            background: linear-gradient(135deg, var(--safety-green), var(--canopy-green));
-            border-radius: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--white);
-            font-size: 2.5rem;
-            margin-bottom: 25px;
-        }
-        
-        .measure-card:nth-child(2) .measure-icon {
-            background: linear-gradient(135deg, var(--security-blue), var(--sky-blue));
-        }
-        
-        .measure-card:nth-child(3) .measure-icon {
-            background: linear-gradient(135deg, var(--sunset-gold), var(--warning-amber));
-            color: var(--deep-charcoal);
-        }
-        
-        .measure-card:nth-child(4) .measure-icon {
-            background: linear-gradient(135deg, var(--alert-red), var(--desert-orange));
-        }
-        
-        .measure-title {
-            font-size: 1.6rem;
-            color: var(--deep-charcoal);
-            margin-bottom: 15px;
-        }
-        
-        .measure-description {
-            color: var(--trunk-gray);
-            line-height: 1.7;
-            margin-bottom: 20px;
-        }
-        
-        .measure-details {
-            background: var(--earth-cream);
-            padding: 20px;
-            border-radius: 12px;
-            border-left: 4px solid var(--safety-green);
-        }
-        
-        .measure-card:nth-child(2) .measure-details {
-            border-left-color: var(--security-blue);
-        }
-        
-        .measure-card:nth-child(3) .measure-details {
-            border-left-color: var(--sunset-gold);
-        }
-        
-        .measure-card:nth-child(4) .measure-details {
-            border-left-color: var(--alert-red);
-        }
-        
-        .measure-details h4 {
-            color: var(--baobab-brown);
-            margin-bottom: 12px;
-            font-size: 1.1rem;
-        }
-        
-        .measure-details ul {
-            list-style: none;
-            padding-left: 0;
-        }
-        
-        .measure-details li {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 8px;
-            color: var(--trunk-gray);
-            font-size: 0.95rem;
-        }
-        
-        .measure-details i {
-            color: var(--canopy-green);
-            font-size: 1rem;
-            width: 16px;
-        }
-        
-        /* Reporting System */
-        .reporting-section {
-            background: var(--light-gray);
-            padding: 60px 0;
-            border-radius: 30px;
-            margin: 80px 0;
-        }
-        
-        .reporting-header {
-            text-align: center;
-            margin-bottom: 50px;
-        }
-        
-        .reporting-header h2 {
-            font-size: 2.5rem;
-            color: var(--baobab-brown);
-            margin-bottom: 15px;
-        }
-        
-        .reporting-process {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 30px;
-            max-width: 1000px;
-            margin: 0 auto;
-        }
-        
-        .process-step {
-            background: var(--white);
-            border-radius: 20px;
-            padding: 30px;
-            text-align: center;
-            box-shadow: var(--shadow-md);
-            transition: var(--transition-medium);
-            position: relative;
-        }
-        
-        .process-step:hover {
-            transform: translateY(-8px);
-            box-shadow: var(--shadow-lg);
-        }
-        
-        .step-number {
-            position: absolute;
-            top: -15px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 40px;
-            height: 40px;
-            background: var(--alert-red);
-            color: var(--white);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 700;
-            font-size: 1.2rem;
-        }
-        
-        .step-icon {
-            width: 70px;
-            height: 70px;
-            background: linear-gradient(135deg, var(--alert-red), var(--desert-orange));
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--white);
-            font-size: 2rem;
-            margin: 20px auto 20px;
-        }
-        
-        .step-title {
-            color: var(--deep-charcoal);
-            font-size: 1.3rem;
-            margin-bottom: 12px;
-        }
-        
-        .step-description {
-            color: var(--trunk-gray);
-            line-height: 1.6;
-            font-size: 0.95rem;
-        }
-        
+        .measures-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 2rem; margin-bottom: 4rem; }
+        .measure-card { background: var(--white); border-radius: var(--r-card); padding: 2.5rem 2rem; box-shadow: 0 8px 24px var(--shadow-warm); border: 1px solid var(--border-light); transition: var(--transition); }
+        .measure-card:hover { transform: translateY(-8px); border-color: var(--sunset-gold); box-shadow: 0 16px 40px rgba(107,58,42,0.15); }
+        .measure-icon { width: 64px; height: 64px; background: linear-gradient(135deg, var(--earth-cream), var(--earth-cream-dark)); border-radius: 16px; display: flex; align-items: center; justify-content: center; color: var(--canopy-green); font-size: 1.8rem; margin-bottom: 1.5rem; }
+        .measure-card h3 { font-size: 1.3rem; margin-bottom: 1rem; }
+        .measure-card p { color: var(--text-medium); margin-bottom: 1.5rem; font-size: .95rem; }
+        .measure-details { background: var(--earth-cream); padding: 1.25rem; border-radius: 12px; border-left: 4px solid var(--sunset-gold); }
+        .measure-details h4 { font-family: 'DM Sans', sans-serif; font-size: .95rem; margin-bottom: .75rem; }
+        .measure-details li { display: flex; align-items: center; gap: .75rem; margin-bottom: .5rem; font-size: .85rem; color: var(--text-dark); }
+        .measure-details i { color: var(--canopy-green); }
+
+        /* Reporting Process */
+        .reporting-section { background: var(--earth-cream); padding: 4rem 3rem; border-radius: var(--r-card); margin-bottom: 4rem; border: 1px solid var(--border-light); }
+        .reporting-process { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-top: 2.5rem; }
+        .process-step { background: white; padding: 2rem 1.5rem; border-radius: 16px; text-align: center; border: 1px solid var(--border-light); position: relative; transition: var(--transition); }
+        .process-step:hover { transform: translateY(-5px); border-color: var(--safety-red); box-shadow: 0 10px 24px rgba(211,47,47,0.1); }
+        .step-number { position: absolute; top: -15px; left: 50%; transform: translateX(-50%); width: 32px; height: 32px; background: var(--safety-red); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 1rem; border: 3px solid var(--earth-cream); }
+        .process-step i { font-size: 1.8rem; color: var(--baobab-brown); margin: 1rem 0; }
+        .process-step h3 { font-size: 1.1rem; margin-bottom: .5rem; }
+        .process-step p { font-size: .85rem; color: var(--text-medium); }
+
         /* Emergency Contacts */
-        .emergency-contacts {
-            background: linear-gradient(135deg, var(--alert-red), var(--desert-orange));
-            color: var(--white);
-            padding: 50px;
-            border-radius: 25px;
-            margin: 60px 0;
-            text-align: center;
-        }
-        
-        .emergency-contacts h2 {
-            font-size: 2.2rem;
-            margin-bottom: 20px;
-        }
-        
-        .emergency-contacts p {
-            font-size: 1.1rem;
-            opacity: 0.9;
-            margin-bottom: 30px;
-            max-width: 600px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-        
-        .contact-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 25px;
-            max-width: 800px;
-            margin: 0 auto;
-        }
-        
-        .contact-item {
-            background: rgba(255, 255, 255, 0.15);
-            padding: 25px;
-            border-radius: 15px;
-            backdrop-filter: blur(10px);
-        }
-        
-        .contact-item h4 {
-            font-size: 1.2rem;
-            margin-bottom: 10px;
-            color: var(--sunset-gold);
-        }
-        
-        .contact-item p {
-            margin: 5px 0;
-            font-size: 0.95rem;
-        }
-        
+        .emergency-contacts { background: linear-gradient(135deg, var(--safety-red), #B71C1C); color: white; padding: 4rem 3rem; border-radius: var(--r-card); margin-bottom: 4rem; text-align: center; }
+        .emergency-contacts h2 { color: white; font-size: 2.2rem; margin-bottom: 1rem; }
+        .emergency-contacts p { font-size: 1.05rem; opacity: 0.9; margin-bottom: 2.5rem; }
+        .contact-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; }
+        .contact-item { background: rgba(255, 255, 255, 0.1); padding: 1.5rem; border-radius: 16px; backdrop-filter: blur(5px); border: 1px solid rgba(255,255,255,0.2); }
+        .contact-item h4 { color: var(--sunset-gold); font-size: 1.1rem; margin-bottom: .5rem; font-family: 'DM Sans', sans-serif; }
+        .contact-item p { font-size: .9rem; margin-bottom: .25rem; }
+
         /* Policy Document */
-        .policy-document {
-            background: var(--white);
-            border: 2px solid var(--border-light);
-            border-radius: 20px;
-            padding: 40px;
-            margin: 60px 0;
-        }
-        
-        .document-header {
-            border-bottom: 2px solid var(--border-light);
-            padding-bottom: 20px;
-            margin-bottom: 30px;
-        }
-        
-        .document-header h2 {
-            color: var(--baobab-brown);
-            font-size: 2rem;
-            margin-bottom: 10px;
-        }
-        
-        .document-header .date {
-            color: var(--trunk-gray);
-            font-size: 0.9rem;
-        }
-        
-        .policy-section {
-            margin-bottom: 40px;
-        }
-        
-        .policy-section h3 {
-            color: var(--deep-charcoal);
-            font-size: 1.4rem;
-            margin-bottom: 15px;
-            padding-left: 20px;
-            border-left: 4px solid var(--sunset-gold);
-        }
-        
-        .policy-section p {
-            color: var(--trunk-gray);
-            line-height: 1.8;
-            margin-bottom: 15px;
-        }
-        
-        .policy-section ul {
-            padding-left: 20px;
-            margin-bottom: 15px;
-        }
-        
-        .policy-section li {
-            color: var(--trunk-gray);
-            margin-bottom: 8px;
-            line-height: 1.7;
-        }
-        
-        /* Call to Action */
-        .cta-section {
-            background: linear-gradient(135deg, var(--safety-green), var(--canopy-green));
-            color: var(--white);
-            padding: 60px 0;
-            text-align: center;
-            margin-top: 80px;
-            border-radius: 25px;
-        }
-        
-        .cta-content h3 {
-            font-size: 2.2rem;
-            margin-bottom: 15px;
-        }
-        
-        .cta-content p {
-            font-size: 1.1rem;
-            opacity: 0.9;
-            margin-bottom: 30px;
-            max-width: 600px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-        
-        .cta-buttons {
-            display: flex;
-            gap: 20px;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-        
-        .btn-white {
-            background-color: var(--white);
-            color: var(--safety-green);
-            border-color: var(--white);
-        }
-        
-        .btn-white:hover {
-            background-color: transparent;
-            color: var(--white);
-            border-color: var(--white);
-        }
-        
+        .policy-document { background: white; border: 1px solid var(--border-light); border-radius: var(--r-card); padding: 3rem; margin-bottom: 4rem; }
+        .document-header { border-bottom: 2px solid var(--border-light); padding-bottom: 1.5rem; margin-bottom: 2rem; }
+        .document-header h2 { font-size: 2rem; margin-bottom: .5rem; }
+        .document-header .date { color: var(--text-light); font-size: .85rem; }
+        .policy-section { margin-bottom: 2rem; }
+        .policy-section h3 { font-size: 1.3rem; margin-bottom: 1rem; padding-left: 1rem; border-left: 4px solid var(--sunset-gold); }
+        .policy-section p { color: var(--text-medium); margin-bottom: 1rem; font-size: .95rem; }
+        .policy-section ul { padding-left: 1.5rem; margin-bottom: 1rem; list-style-type: disc; color: var(--text-medium); font-size: .95rem; }
+        .policy-section li { margin-bottom: .5rem; }
+
+        /* Sidebar */
+        .content-sidebar { position: sticky; top: 100px; }
+        .sidebar-box { background: var(--earth-cream); border-radius: 16px; padding: 1.5rem; border: 1px solid var(--border-light); margin-bottom: 1.5rem; }
+        .sidebar-title { font-size: 1.2rem; margin-bottom: 1rem; display: flex; align-items: center; gap: .5rem; }
+        .sidebar-nav li { margin-bottom: .5rem; }
+        .sidebar-nav a { display: block; padding: .6rem 1rem; border-radius: 8px; font-weight: 600; font-size: .9rem; color: var(--text-medium); }
+        .sidebar-nav a:hover, .sidebar-nav a.active { background: var(--white); color: var(--sunset-gold); box-shadow: var(--shadow-sm); transform: translateX(5px); }
+
+        .emergency-sidebar { background: linear-gradient(135deg, var(--safety-red), #B71C1C); color: white; text-align: center; }
+        .emergency-sidebar h4 { color: white; margin-bottom: .5rem; font-size: 1.1rem; }
+        .emergency-sidebar p { font-size: .85rem; opacity: 0.9; margin-bottom: 1rem; }
+
+        /* CTA */
+        .cta-section { background: linear-gradient(135deg, var(--canopy-green), var(--canopy-green-dark)); color: white; padding: 4rem 2rem; text-align: center; border-radius: var(--r-card); }
+        .cta-section h3 { font-size: 2rem; color: white; margin-bottom: 1rem; }
+        .cta-section p { font-size: 1rem; opacity: 0.9; margin-bottom: 2rem; max-width: 600px; margin-left: auto; margin-right: auto; }
+        .cta-buttons { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+
         /* Footer */
-        .footer {
-            background: var(--deep-charcoal);
-            color: var(--white);
-            padding: 60px 0 30px;
-            margin-top: 80px;
-        }
-        
-        .footer-content {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 40px;
-            margin-bottom: 40px;
-        }
-        
-        .footer-section h4 {
-            color: var(--sunset-gold);
-            margin-bottom: 20px;
-            font-size: 1.2rem;
-        }
-        
-        .footer-link {
-            color: rgba(255, 255, 255, 0.7);
-            text-decoration: none;
-            display: block;
-            padding: 8px 0;
-            transition: var(--transition-fast);
-        }
-        
-        .footer-link:hover {
-            color: var(--sunset-gold);
-            padding-left: 5px;
-        }
-        
-        .footer-bottom {
-            text-align: center;
-            padding-top: 30px;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-            color: rgba(255, 255, 255, 0.7);
-        }
-        
-        /* Responsive Design */
+        .footer { background: var(--deep-charcoal); padding: 4rem 0 2rem; color: white; margin-top: 4rem; }
+        .footer-content { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 3rem; margin-bottom: 3rem; }
+        .footer-section h4 { color: var(--sunset-gold); margin-bottom: 1.25rem; font-size: 1.1rem; font-family: 'DM Sans', sans-serif; }
+        .footer-link { color: rgba(255,255,255,0.6); display: block; padding: .4rem 0; font-size: .85rem; transition: var(--transition); }
+        .footer-link:hover { color: var(--sunset-gold); padding-left: 5px; }
+        .footer-bottom { text-align: center; padding-top: 2rem; border-top: 1px solid rgba(255,255,255,0.1); font-size: .8rem; color: rgba(255,255,255,0.4); }
+
         @media (max-width: 992px) {
-            .menu-toggle {
-                display: block;
-            }
-            
-            .nav-menu {
-                display: none;
-            }
-            
-            .content-layout {
-                grid-template-columns: 1fr;
-                gap: 40px;
-            }
-            
-            .content-sidebar {
-                position: static;
-                order: -1;
-            }
-            
-            .measures-grid {
-                grid-template-columns: 1fr;
-                gap: 25px;
-            }
-            
-            .reporting-process {
-                grid-template-columns: 1fr;
-                gap: 25px;
-            }
+            .nav-menu { display: none; }
+            .ham { display: flex; }
+            .content-layout { grid-template-columns: 1fr; }
+            .content-sidebar { position: static; order: -1; }
         }
-        
         @media (max-width: 768px) {
-            .hero-title {
-                font-size: 2.5rem;
-            }
-            
-            .policy-overview {
-                padding: 30px;
-            }
-            
-            .overview-stats {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            
-            .emergency-contacts {
-                padding: 30px;
-            }
-            
-            .contact-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .policy-document {
-                padding: 25px;
-            }
-        }
-        
-        @media (max-width: 576px) {
-            .container {
-                padding: 0 15px;
-            }
-            
-            .hero-title {
-                font-size: 2rem;
-            }
-            
-            .measure-card {
-                padding: 25px;
-            }
-            
-            .measure-icon {
-                width: 70px;
-                height: 70px;
-                font-size: 2rem;
-            }
-            
-            .overview-stats {
-                grid-template-columns: 1fr;
-            }
-            
-            .cta-buttons {
-                flex-direction: column;
-                align-items: center;
-            }
+            .hero-title { font-size: 2.2rem; }
+            .policy-overview, .reporting-section, .emergency-contacts, .policy-document { padding: 2rem 1.5rem; }
         }
     </style>
 </head>
 <body>
-    <!-- Header -->
     <header class="header">
         <div class="container">
             <div class="nav-wrapper">
                 <a href="index.html" class="logo">
-                    <div class="logo-icon"><i class="fas fa-heart"></i></div>
-                    <div class="logo-text">Parent Portal</div>
+                    <div class="logo-icon"><img src="/Images/Logo_Baobab.svg" alt="Baobab" onerror="this.src='/Images/logo.jpg'"></div>
+                    <div>
+                        <div class="logo-text">Parent Portal</div>
+                        <span class="logo-tag">Baobab Digital Academy</span>
+                    </div>
                 </a>
-                
-                <div class="menu-toggle" id="menuToggle">
-                    <i class="fas fa-bars"></i>
-                </div>
                 
                 <ul class="nav-menu">
                     <li><a href="index.html#features" class="nav-link">Features</a></li>
                     <li><a href="index.html#how-it-works" class="nav-link">How It Works</a></li>
-                    <li><a href="index.html#security" class="nav-link">Safety & Security</a></li>
-                    <li><a href="http://baobabonlineacademy.com" class="nav-link">Main Site</a></li>
+                    <li><a href="index.html#security" class="nav-link active">Safety & Security</a></li>
+                    <li><a href="https://baobabonlineacademy.com" class="nav-link">Main Site</a></li>
                 </ul>
+
+                <button class="ham" id="ham" aria-label="Toggle navigation">
+                    <span></span><span></span><span></span>
+                </button>
             </div>
+        </div>
+        
+        <div class="mob-menu" id="mob">
+            <a href="index.html#features">Features</a>
+            <a href="index.html#how-it-works">How It Works</a>
+            <a href="index.html#security">Safety & Security</a>
+            <a href="https://baobabonlineacademy.com">Main Website</a>
         </div>
     </header>
 
-    <!-- Hero Section -->
     <section class="hero">
         <div class="container">
             <div class="hero-content">
                 <div class="hero-badge">
-                    <i class="fas fa-shield-alt"></i>
-                    Comprehensive Protection • Zero Tolerance
+                    <i class="fas fa-shield-alt"></i> Comprehensive Protection • Zero Tolerance
                 </div>
                 <h1 class="hero-title">Child Protection Policy</h1>
                 <p class="hero-subtitle">
@@ -949,228 +253,151 @@
         </div>
     </section>
 
-    <!-- Breadcrumbs -->
     <section class="breadcrumbs">
         <div class="container">
             <nav class="breadcrumb-nav">
-                <a href="index.html" class="breadcrumb-link">
-                    <i class="fas fa-home"></i> Home
-                </a>
+                <a href="index.html" class="breadcrumb-link"><i class="fas fa-home"></i> Home</a>
                 <span class="breadcrumb-separator">/</span>
-                <a href="#" class="breadcrumb-link">Safety & Security</a>
+                <span class="breadcrumb-link">Safety & Security</span>
                 <span class="breadcrumb-separator">/</span>
                 <span class="breadcrumb-current">Child Protection Policy</span>
             </nav>
         </div>
     </section>
 
-    <!-- Main Content -->
     <section class="main-content">
         <div class="container">
             <div class="content-layout">
                 <div class="content-main">
-                    <!-- Policy Overview -->
-                    <div class="policy-overview">
-                        <div class="overview-content">
-                            <h2><i class="fas fa-shield-alt"></i> Our Commitment to Safety</h2>
-                            <p>
-                                At Baobab Online Academy, child protection is not just a policy—it's the foundation 
-                                of everything we do. We maintain the highest standards of safety, transparency, and 
-                                accountability to ensure every child in our care is protected, respected, and empowered to learn.
-                            </p>
-                            <p>
-                                Our comprehensive approach combines rigorous tutor vetting, advanced technology safeguards, 
-                                continuous monitoring, and clear reporting mechanisms to create the safest possible learning environment.
-                            </p>
-                            
-                            <div class="overview-stats">
-                                <div class="stat-item">
-                                    <span class="stat-number">100%</span>
-                                    <div class="stat-label">Background Checked Tutors</div>
-                                </div>
-                                <div class="stat-item">
-                                    <span class="stat-number">24/7</span>
-                                    <div class="stat-label">Safety Monitoring</div>
-                                </div>
-                                <div class="stat-item">
-                                    <span class="stat-number">Zero</span>
-                                    <div class="stat-label">Tolerance Policy</div>
-                                </div>
-                                <div class="stat-item">
-                                    <span class="stat-number">Immediate</span>
-                                    <div class="stat-label">Response Protocol</div>
-                                </div>
+                    
+                    <div class="policy-overview fu">
+                        <h2><i class="fas fa-shield-alt"></i> Our Commitment to Safety</h2>
+                        <p>
+                            At Baobab Digital Academy, child protection is not just a policy—it's the foundation 
+                            of everything we do. We maintain the highest standards of safety, transparency, and 
+                            accountability to ensure every child in our care is protected, respected, and empowered to learn.
+                        </p>
+                        <p>
+                            Our comprehensive approach combines rigorous tutor vetting, advanced technology safeguards, 
+                            continuous monitoring, and clear reporting mechanisms to create the safest possible learning environment.
+                        </p>
+                        
+                        <div class="overview-stats">
+                            <div class="stat-item">
+                                <span class="stat-number">100%</span>
+                                <div class="stat-label">Background Checked</div>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-number">24/7</span>
+                                <div class="stat-label">Safety Monitoring</div>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-number">Zero</span>
+                                <div class="stat-label">Tolerance Policy</div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Security Measures -->
-                    <div class="security-measures">
-                        <div class="section-header">
-                            <h2>Multi-Layered Protection Framework</h2>
-                            <p>
-                                Our child protection system operates on multiple levels, creating overlapping safeguards 
-                                that ensure comprehensive protection through prevention, monitoring, and immediate response protocols.
-                            </p>
+                    <div class="section-header fu">
+                        <h2>Multi-Layered Protection Framework</h2>
+                        <p>Our child protection system operates on multiple levels, creating overlapping safeguards that ensure comprehensive protection through prevention, monitoring, and immediate response protocols.</p>
+                    </div>
+                    
+                    <div class="measures-grid">
+                        <div class="measure-card fu">
+                            <div class="measure-icon"><i class="fas fa-user-shield"></i></div>
+                            <h3>Rigorous Tutor Verification</h3>
+                            <p>Every educator undergoes comprehensive background checks, professional verification, and ongoing monitoring to ensure they meet our highest standards.</p>
+                            <div class="measure-details">
+                                <h4>Verification Includes:</h4>
+                                <ul>
+                                    <li><i class="fas fa-check-circle"></i> Criminal background checks</li>
+                                    <li><i class="fas fa-check-circle"></i> Educational credential verification</li>
+                                    <li><i class="fas fa-check-circle"></i> Child protection certification</li>
+                                </ul>
+                            </div>
                         </div>
                         
-                        <div class="measures-grid">
-                            <div class="measure-card">
-                                <div class="measure-icon">
-                                    <i class="fas fa-user-shield"></i>
-                                </div>
-                                <h3 class="measure-title">Rigorous Tutor Verification</h3>
-                                <p class="measure-description">
-                                    Every educator undergoes comprehensive background checks, professional verification, 
-                                    and ongoing monitoring to ensure they meet our highest standards for child safety and educational excellence.
-                                </p>
-                                <div class="measure-details">
-                                    <h4>Verification Process Includes:</h4>
-                                    <ul>
-                                        <li><i class="fas fa-check-circle"></i> Criminal background checks</li>
-                                        <li><i class="fas fa-check-circle"></i> Educational credential verification</li>
-                                        <li><i class="fas fa-check-circle"></i> Professional reference validation</li>
-                                        <li><i class="fas fa-check-circle"></i> Child protection training certification</li>
-                                        <li><i class="fas fa-check-circle"></i> Ongoing behavioral monitoring</li>
-                                    </ul>
-                                </div>
+                        <div class="measure-card fu">
+                            <div class="measure-icon"><i class="fas fa-video"></i></div>
+                            <h3>Complete Session Monitoring</h3>
+                            <p>All tutoring sessions are recorded and monitored in real-time with advanced systems that alert our safety team immediately to any concerns.</p>
+                            <div class="measure-details">
+                                <h4>Monitoring Features:</h4>
+                                <ul>
+                                    <li><i class="fas fa-check-circle"></i> Full session recording & storage</li>
+                                    <li><i class="fas fa-check-circle"></i> Real-time behavior analysis</li>
+                                    <li><i class="fas fa-check-circle"></i> Parent access to recordings</li>
+                                </ul>
                             </div>
-                            
-                            <div class="measure-card">
-                                <div class="measure-icon">
-                                    <i class="fas fa-video"></i>
-                                </div>
-                                <h3 class="measure-title">Complete Session Monitoring</h3>
-                                <p class="measure-description">
-                                    All tutoring sessions are recorded and monitored in real-time with advanced AI systems 
-                                    that can detect inappropriate behavior and alert our safety team immediately.
-                                </p>
-                                <div class="measure-details">
-                                    <h4>Monitoring Features:</h4>
-                                    <ul>
-                                        <li><i class="fas fa-check-circle"></i> Full session recording and storage</li>
-                                        <li><i class="fas fa-check-circle"></i> Real-time AI behavior analysis</li>
-                                        <li><i class="fas fa-check-circle"></i> Immediate alert system</li>
-                                        <li><i class="fas fa-check-circle"></i> Parent access to session recordings</li>
-                                        <li><i class="fas fa-check-circle"></i> Automated flagging of concerns</li>
-                                    </ul>
-                                </div>
+                        </div>
+                        
+                        <div class="measure-card fu">
+                            <div class="measure-icon"><i class="fas fa-lock"></i></div>
+                            <h3>Secure Platform Technology</h3>
+                            <p>Our platform uses bank-level encryption and security protocols to protect all communications, personal data, and learning materials.</p>
+                            <div class="measure-details">
+                                <h4>Security Technologies:</h4>
+                                <ul>
+                                    <li><i class="fas fa-check-circle"></i> End-to-end encryption</li>
+                                    <li><i class="fas fa-check-circle"></i> Secure data transmission</li>
+                                    <li><i class="fas fa-check-circle"></i> GDPR and COPPA compliance</li>
+                                </ul>
                             </div>
-                            
-                            <div class="measure-card">
-                                <div class="measure-icon">
-                                    <i class="fas fa-lock"></i>
-                                </div>
-                                <h3 class="measure-title">Secure Platform Technology</h3>
-                                <p class="measure-description">
-                                    Our platform uses bank-level encryption and security protocols to protect all 
-                                    communications, personal data, and learning materials from unauthorized access.
-                                </p>
-                                <div class="measure-details">
-                                    <h4>Security Technologies:</h4>
-                                    <ul>
-                                        <li><i class="fas fa-check-circle"></i> End-to-end encryption</li>
-                                        <li><i class="fas fa-check-circle"></i> Secure data storage and transmission</li>
-                                        <li><i class="fas fa-check-circle"></i> Multi-factor authentication</li>
-                                        <li><i class="fas fa-check-circle"></i> Regular security audits</li>
-                                        <li><i class="fas fa-check-circle"></i> GDPR and COPPA compliance</li>
-                                    </ul>
-                                </div>
-                            </div>
-                            
-                            <div class="measure-card">
-                                <div class="measure-icon">
-                                    <i class="fas fa-exclamation-triangle"></i>
-                                </div>
-                                <h3 class="measure-title">Immediate Response Protocol</h3>
-                                <p class="measure-description">
-                                    Our dedicated safety team responds immediately to any concerns or incidents, 
-                                    with clear escalation procedures and direct communication with parents and authorities when needed.
-                                </p>
-                                <div class="measure-details">
-                                    <h4>Response Procedures:</h4>
-                                    <ul>
-                                        <li><i class="fas fa-check-circle"></i> 24/7 emergency response team</li>
-                                        <li><i class="fas fa-check-circle"></i> Immediate session termination capability</li>
-                                        <li><i class="fas fa-check-circle"></i> Direct parent notification system</li>
-                                        <li><i class="fas fa-check-circle"></i> Collaboration with local authorities</li>
-                                        <li><i class="fas fa-check-circle"></i> Comprehensive incident documentation</li>
-                                    </ul>
-                                </div>
+                        </div>
+                        
+                        <div class="measure-card fu">
+                            <div class="measure-icon"><i class="fas fa-exclamation-triangle"></i></div>
+                            <h3>Immediate Response Protocol</h3>
+                            <p>Our dedicated safety team responds immediately to any concerns, with clear escalation procedures and direct communication with parents.</p>
+                            <div class="measure-details">
+                                <h4>Response Procedures:</h4>
+                                <ul>
+                                    <li><i class="fas fa-check-circle"></i> 24/7 emergency response team</li>
+                                    <li><i class="fas fa-check-circle"></i> Immediate session termination</li>
+                                    <li><i class="fas fa-check-circle"></i> Direct parent notification</li>
+                                </ul>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Reporting System -->
-                    <div class="reporting-section">
-                        <div class="container">
-                            <div class="reporting-header">
-                                <h2>How to Report Concerns</h2>
-                                <p style="color: var(--trunk-gray); font-size: 1.1rem; max-width: 600px; margin: 0 auto;">
-                                    We encourage parents, children, and staff to report any concerns immediately. 
-                                    Our reporting system is designed to be accessible, confidential, and effective.
-                                </p>
+                    <div class="reporting-section fu">
+                        <div class="section-header" style="margin-bottom: 2rem;">
+                            <h2>How to Report Concerns</h2>
+                            <p>We encourage parents, children, and staff to report any concerns immediately. Our reporting system is accessible, confidential, and effective.</p>
+                        </div>
+                        
+                        <div class="reporting-process">
+                            <div class="process-step">
+                                <div class="step-number">1</div>
+                                <i class="fas fa-phone"></i>
+                                <h3>Immediate Contact</h3>
+                                <p>Call our 24/7 emergency line or use the emergency button in the Parent Portal.</p>
                             </div>
-                            
-                            <div class="reporting-process">
-                                <div class="process-step">
-                                    <div class="step-number">1</div>
-                                    <div class="step-icon">
-                                        <i class="fas fa-phone"></i>
-                                    </div>
-                                    <h3 class="step-title">Immediate Contact</h3>
-                                    <p class="step-description">
-                                        For urgent concerns, call our 24/7 emergency line or use the emergency button 
-                                        in the Parent Portal for immediate assistance.
-                                    </p>
-                                </div>
-                                
-                                <div class="process-step">
-                                    <div class="step-number">2</div>
-                                    <div class="step-icon">
-                                        <i class="fas fa-file-alt"></i>
-                                    </div>
-                                    <h3 class="step-title">Document Details</h3>
-                                    <p class="step-description">
-                                        Provide specific details about the incident, including dates, times, 
-                                        and any evidence such as screenshots or session recordings.
-                                    </p>
-                                </div>
-                                
-                                <div class="process-step">
-                                    <div class="step-number">3</div>
-                                    <div class="step-icon">
-                                        <i class="fas fa-shield-alt"></i>
-                                    </div>
-                                    <h3 class="step-title">Immediate Action</h3>
-                                    <p class="step-description">
-                                        Our safety team immediately investigates all reports and takes appropriate 
-                                        protective measures while maintaining confidentiality.
-                                    </p>
-                                </div>
-                                
-                                <div class="process-step">
-                                    <div class="step-number">4</div>
-                                    <div class="step-icon">
-                                        <i class="fas fa-clipboard-check"></i>
-                                    </div>
-                                    <h3 class="step-title">Follow-Up</h3>
-                                    <p class="step-description">
-                                        We provide regular updates on the investigation and resolution, 
-                                        ensuring you're informed throughout the entire process.
-                                    </p>
-                                </div>
+                            <div class="process-step">
+                                <div class="step-number">2</div>
+                                <i class="fas fa-file-alt"></i>
+                                <h3>Document Details</h3>
+                                <p>Provide specific details about the incident, including dates, times, and evidence.</p>
+                            </div>
+                            <div class="process-step">
+                                <div class="step-number">3</div>
+                                <i class="fas fa-shield-alt"></i>
+                                <h3>Immediate Action</h3>
+                                <p>Our safety team immediately investigates and takes appropriate protective measures.</p>
+                            </div>
+                            <div class="process-step">
+                                <div class="step-number">4</div>
+                                <i class="fas fa-clipboard-check"></i>
+                                <h3>Follow-Up</h3>
+                                <p>We provide regular updates on the investigation and resolution.</p>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Emergency Contacts -->
-                    <div class="emergency-contacts">
+                    <div class="emergency-contacts fu">
                         <h2><i class="fas fa-phone-alt"></i> Emergency Contact Information</h2>
-                        <p>
-                            These contacts are available 24/7 for immediate assistance with any child safety concerns. 
-                            Do not hesitate to reach out if you have any worries about your child's wellbeing.
-                        </p>
+                        <p>These contacts are available 24/7 for immediate assistance. Do not hesitate to reach out if you have any worries about your child's wellbeing.</p>
                         
                         <div class="contact-grid">
                             <div class="contact-item">
@@ -1178,19 +405,11 @@
                                 <p><i class="fas fa-phone"></i> +234 (0) 816 501 1291</p>
                                 <p><i class="fas fa-clock"></i> Available 24/7</p>
                             </div>
-                            
                             <div class="contact-item">
                                 <h4>Safety Team Email</h4>
                                 <p><i class="fas fa-envelope"></i> safety@baobabacademy.com</p>
                                 <p><i class="fas fa-clock"></i> Response within 1 hour</p>
                             </div>
-                            
-                            <div class="contact-item">
-                                <h4>Parent Portal Alert</h4>
-                                <p><i class="fas fa-exclamation-triangle"></i> Emergency Button</p>
-                                <p><i class="fas fa-clock"></i> Immediate notification</p>
-                            </div>
-                            
                             <div class="contact-item">
                                 <h4>WhatsApp Support</h4>
                                 <p><i class="fab fa-whatsapp"></i> +234 (0) 816 501 1291</p>
@@ -1199,20 +418,15 @@
                         </div>
                     </div>
 
-                    <!-- Policy Document -->
-                    <div class="policy-document">
+                    <div class="policy-document fu">
                         <div class="document-header">
                             <h2>Complete Child Protection Policy</h2>
-                            <p class="date">Last Updated: January 2025 | Version 3.2</p>
+                            <p class="date">Last Updated: January 2026 | Version 3.2</p>
                         </div>
                         
                         <div class="policy-section">
                             <h3>1. Policy Statement</h3>
-                            <p>
-                                Baobab Online Academy is committed to creating and maintaining a safe environment for all children 
-                                in our programs. We have zero tolerance for any form of abuse, neglect, or inappropriate behavior 
-                                towards children. This policy applies to all staff, tutors, volunteers, and anyone associated with our organization.
-                            </p>
+                            <p>Baobab Digital Academy is committed to creating and maintaining a safe environment for all children in our programs. We have zero tolerance for any form of abuse, neglect, or inappropriate behavior towards children. This policy applies to all staff, tutors, volunteers, and anyone associated with our organization.</p>
                         </div>
                         
                         <div class="policy-section">
@@ -1236,74 +450,48 @@
                                 <li>Clear codes of conduct for appropriate behavior</li>
                                 <li>Regular supervision and monitoring of all interactions</li>
                                 <li>Secure technology platforms with built-in safeguards</li>
-                                <li>Parent and child education about online safety</li>
                             </ul>
                         </div>
                         
                         <div class="policy-section">
                             <h3>4. Reporting and Response</h3>
-                            <p>
-                                All concerns must be reported immediately to our Child Protection Officer. We maintain 
-                                detailed records of all incidents and work closely with parents and relevant authorities 
-                                to ensure appropriate action is taken.
-                            </p>
+                            <p>All concerns must be reported immediately to our Child Protection Officer. We maintain detailed records of all incidents and work closely with parents and relevant authorities to ensure appropriate action is taken.</p>
                         </div>
                         
                         <div class="policy-section">
                             <h3>5. Support for Children and Families</h3>
-                            <p>
-                                We provide ongoing support to children and families affected by child protection concerns, 
-                                including access to professional counseling services and continued educational support 
-                                during any investigation or recovery process.
-                            </p>
+                            <p>We provide ongoing support to children and families affected by child protection concerns, including access to professional counseling services and continued educational support during any investigation or recovery process.</p>
                         </div>
                     </div>
 
-                    <!-- Call to Action -->
-                    <div class="cta-section">
-                        <div class="cta-content">
-                            <h3>Your Child's Safety is Our Priority</h3>
-                            <p>
-                                Trust Baobab Academy to provide the highest standards of child protection while 
-                                delivering exceptional educational experiences. Your peace of mind is priceless.
-                            </p>
-                            <div class="cta-buttons">
-                                <a href="index.html#register" class="btn btn-white">
-                                    <i class="fas fa-user-plus"></i>
-                                    Join Our Safe Learning Community
-                                </a>
-                                <a href="tutor-verification.html" class="btn btn-outlined">
-                                    <i class="fas fa-arrow-right"></i>
-                                    Next: Tutor Verification
-                                </a>
-                            </div>
+                    <div class="cta-section fu">
+                        <h3>Your Child's Safety is Our Priority</h3>
+                        <p>Trust Baobab Academy to provide the highest standards of child protection while delivering exceptional educational experiences. Your peace of mind is priceless.</p>
+                        <div class="cta-buttons">
+                            <a href="index.html#register" class="btn btn-white"><i class="fas fa-user-plus"></i> Join Our Safe Community</a>
+                            <a href="tutor-verification.html" class="btn btn-outline" style="color: white; border-color: rgba(255,255,255,0.4);"><i class="fas fa-arrow-right"></i> Tutor Verification</a>
                         </div>
                     </div>
+
                 </div>
 
                 <div class="content-sidebar">
-                    <h3 class="sidebar-title">
-                        <i class="fas fa-map"></i>
-                        Safety Resources
-                    </h3>
-                    <ul class="sidebar-nav">
-                        <li><a href="#" class="active">Child Protection Policy</a></li>
-                        <li><a href="tutor-verification.html">Tutor Verification Process</a></li>
-                        <li><a href="#platform-security">Platform Security Features</a></li>
-                        <li><a href="#privacy-policy">Privacy Policy</a></li>
-                        <li><a href="get-started.html">Getting Started Guide</a></li>
-                    </ul>
+                    <div class="sidebar-box">
+                        <h3 class="sidebar-title"><i class="fas fa-shield-alt"></i> Safety Resources</h3>
+                        <ul class="sidebar-nav">
+                            <li><a href="child-protection.html" class="active">Child Protection Policy</a></li>
+                            <li><a href="tutor-verification.html">Tutor Verification Process</a></li>
+                            <li><a href="platform-security.html">Platform Security Features</a></li>
+                            <li><a href="privacy-policy.html">Privacy Policy</a></li>
+                            <li><a href="get-started.html">Getting Started Guide</a></li>
+                        </ul>
+                    </div>
                     
-                    <div style="margin-top: 30px; padding: 20px; background: linear-gradient(135deg, var(--alert-red), var(--desert-orange)); border-radius: 15px; color: var(--white); text-align: center;">
-                        <h4 style="margin-bottom: 15px;">
-                            <i class="fas fa-exclamation-triangle"></i> Report Concerns
-                        </h4>
-                        <p style="font-size: 0.9rem; margin-bottom: 15px; opacity: 0.9;">
-                            Immediate assistance available 24/7 for any safety concerns.
-                        </p>
-                        <a href="tel:+2348165011291" class="btn btn-white" style="width: 100%; justify-content: center;">
-                            <i class="fas fa-phone"></i>
-                            Emergency Hotline
+                    <div class="sidebar-box emergency-sidebar">
+                        <h4><i class="fas fa-exclamation-triangle"></i> Report Concerns</h4>
+                        <p>Immediate assistance available 24/7 for any safety concerns.</p>
+                        <a href="tel:+2348165011291" class="btn btn-white" style="width: 100%; color: var(--safety-red); padding: .6rem; font-size: .85rem;">
+                            <i class="fas fa-phone"></i> Emergency Hotline
                         </a>
                     </div>
                 </div>
@@ -1311,95 +499,56 @@
         </div>
     </section>
 
-    <!-- Footer -->
     <footer class="footer">
         <div class="container">
             <div class="footer-content">
                 <div class="footer-section">
                     <h4><i class="fas fa-heart"></i> Parent Resources</h4>
                     <a href="get-started.html" class="footer-link">Getting Started Guide</a>
-                    <a href="supporting-child.html" class="footer-link">Supporting Your Child's Learning</a>
-                    <a href="cultural-integration.html" class="footer-link">Cultural Integration at Home</a>
+                    <a href="supporting-child.html" class="footer-link">Supporting Your Child</a>
+                    <a href="cultural-integration.html" class="footer-link">Cultural Integration</a>
                 </div>
-                
                 <div class="footer-section">
                     <h4><i class="fas fa-shield-alt"></i> Safety & Security</h4>
                     <a href="child-protection.html" class="footer-link">Child Protection Policy</a>
-                    <a href="tutor-verification.html" class="footer-link">Tutor Verification Process</a>
-                    <a href="#" class="footer-link">Platform Security Features</a>
-                    <a href="#" class="footer-link">Privacy Policy</a>
+                    <a href="tutor-verification.html" class="footer-link">Tutor Verification</a>
+                    <a href="platform-security.html" class="footer-link">Platform Security</a>
+                    <a href="privacy-policy.html" class="footer-link">Privacy Policy</a>
                 </div>
-                
                 <div class="footer-section">
                     <h4><i class="fas fa-headset"></i> Support</h4>
-                    <p style="color: rgba(255, 255, 255, 0.7); margin-bottom: 15px;">
-                        <i class="fas fa-envelope"></i>
-                        parents@baobabonlineacademy.com
-                    </p>
-                    <p style="color: rgba(255, 255, 255, 0.7); margin-bottom: 15px;">
-                        <i class="fas fa-phone"></i>
-                        +234 (0) 816 501 1291
-                    </p>
-                    <a href="#" class="footer-link">Help Center</a>
-                    <a href="#" class="footer-link">Live Chat Support</a>
+                    <p style="color: rgba(255, 255, 255, 0.7); margin-bottom: 10px; font-size: .85rem;"><i class="fas fa-envelope"></i> parents@baobabonlineacademy.com</p>
+                    <p style="color: rgba(255, 255, 255, 0.7); margin-bottom: 15px; font-size: .85rem;"><i class="fas fa-phone"></i> +234 (0) 816 501 1291</p>
                 </div>
             </div>
-            
             <div class="footer-bottom">
-                <p>&copy; 2025 Baobab Online Academy Parent Portal. Nurturing Growth, Honoring Heritage.</p>
+                <p>&copy; 2026 Baobab Digital Academy. All rights reserved. <br><strong>Deep Roots, Limitless Growth 🌳</strong></p>
             </div>
         </div>
     </footer>
 
     <script>
-        // Mobile menu functionality
-        const menuToggle = document.getElementById('menuToggle');
-        const navMenu = document.querySelector('.nav-menu');
-        
-        if (menuToggle) {
-            menuToggle.addEventListener('click', function() {
-                navMenu.classList.toggle('active');
-                this.innerHTML = navMenu.classList.contains('active') 
-                    ? '<i class="fas fa-times"></i>' 
-                    : '<i class="fas fa-bars"></i>';
+        // Mobile Menu
+        const ham = document.getElementById('ham');
+        const mob = document.getElementById('mob');
+        if (ham && mob) {
+            ham.addEventListener('click', () => {
+                ham.classList.toggle('open');
+                mob.classList.toggle('open');
             });
         }
 
-        // Measure card hover effects
-        document.querySelectorAll('.measure-card').forEach(card => {
-            card.addEventListener('mouseenter', function() {
-                this.style.transform = 'translateY(-15px) scale(1.02)';
-            });
-            
-            card.addEventListener('mouseleave', function() {
-                this.style.transform = 'translateY(0) scale(1)';
-            });
-        });
-
-        // Process step hover effects
-        document.querySelectorAll('.process-step').forEach(step => {
-            step.addEventListener('mouseenter', function() {
-                this.style.transform = 'translateY(-10px) scale(1.03)';
-            });
-            
-            step.addEventListener('mouseleave', function() {
-                this.style.transform = 'translateY(0) scale(1)';
-            });
-        });
-
-        // Smooth scrolling for anchor links
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function(e) {
-                e.preventDefault();
-                const target = document.querySelector(this.getAttribute('href'));
-                if (target) {
-                    target.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'start'
-                    });
+        // Scroll animations
+        const fuEls = document.querySelectorAll('.fu');
+        const fuObs = new IntersectionObserver(entries => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('vis');
+                    fuObs.unobserve(entry.target);
                 }
             });
-        });
+        }, { threshold: 0.1 });
+        fuEls.forEach(el => fuObs.observe(el));
     </script>
 </body>
 </html>
