@@ -1,3898 +1,643 @@
 <!DOCTYPE html>
 <html lang="en-GB">
 <head>
-  <meta charset="UTF-8" />
-  <link rel="icon" type="image/png" sizes="32x32" href="/Images/Logo_Baobab.svg" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Parent Dashboard - Baobab Digital Academy</title>
-
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/png" sizes="32x32" href="/Images/logo.jpg">
+  <title>Parent Portal - Baobab Digital Academy</title>
+  
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet">
   
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
   <style>
     /* ================================================
-       BAOBAB BRAND PALETTE & PORTAL VARIABLES
+       PREMIUM BAOBAB DESIGN SYSTEM 
        ================================================ */
     :root {
-      /* Core Brand Colors */
       --baobab-brown:       #6B3A2A;
       --baobab-brown-dark:  #4A2218;
-      --baobab-brown-light: #8C5442;
       --canopy-green:       #2D6A4F;
       --canopy-green-dark:  #1B4332;
-      --canopy-green-light: #52B788;
       --sunset-gold:        #F4A261;
-      --sunset-gold-warm:   #E76F51;
       --earth-cream:        #FEF6EE;
-      --earth-cream-dark:   #F5E6D3;
-      --warm-white:         #FEFEFE;
-      --deep-charcoal:      #18120F;
-
-      /* Portal Functional Mapping */
-      --primary: var(--canopy-green);
-      --primary-hover: var(--canopy-green-dark);
-      --primary-light: rgba(45, 106, 79, 0.1);
+      --bg-light:           #f8f9fa;
+      --white:              #ffffff;
+      --text-dark:          #1f2937;
+      --text-muted:         #6b7280;
+      --border-color:       #e5e7eb;
       
-      --secondary: var(--sunset-gold);
-      --secondary-hover: var(--sunset-gold-warm);
-      --secondary-light: rgba(244, 162, 97, 0.1);
+      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
       
-      --accent: var(--baobab-brown);
-      --accent-hover: var(--baobab-brown-dark);
-      --accent-light: rgba(107, 58, 42, 0.1);
-      
-      --warning: #FBBF24;
-      --warning-light: #FFF8E1;
-      --success: #2D6A4F;
-      --success-light: #E8F5E8;
-      --danger: #E76F51;
-      --danger-light: #FFEBEE;
-      
-      /* Grays adjusted to warm/earthy tones */
-      --gray-50: #FAFAFA;
-      --gray-100: #F5F5F5;
-      --gray-200: var(--border-light, #EDD9C8);
-      --gray-300: #D4C4B7;
-      --gray-400: #A89B91;
-      --gray-500: #8C7066;
-      --gray-600: #5C3E30;
-      --gray-700: #4A3226;
-      --gray-800: #2C1810;
-      --gray-900: #18120F;
-      
-      --white: #FFFFFF;
-      --black: #000000;
-      
-      --shadow-xs: 0 1px 2px 0 rgba(107,58,42,0.05);
-      --shadow-sm: 0 1px 3px 0 rgba(107,58,42,0.08);
-      --shadow-md: 0 4px 12px -1px rgba(107,58,42,0.12);
-      --shadow-lg: 0 10px 25px -3px rgba(107,58,42,0.15);
-      --shadow-xl: 0 20px 35px -5px rgba(107,58,42,0.15);
-      --shadow-2xl: 0 25px 50px -12px rgba(107,58,42,0.25);
-      
-      --border-radius: 12px;
-      --border-radius-lg: 16px;
-      --border-radius-xl: 20px;
-      --r-pill: 50px; /* Matching main site */
-      
-      --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-      --transition-slow: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      --radius-md: 0.5rem;
+      --radius-lg: 1rem;
+      --transition: all 0.2s ease-in-out;
     }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    html, body {
-      height: 100%;
-    }
-
-    body {
-      font-family: 'DM Sans', sans-serif;
-      background: var(--gray-50);
-      color: var(--gray-800);
-      line-height: 1.6;
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { 
+      font-family: 'DM Sans', sans-serif; 
+      background-color: var(--bg-light); 
+      color: var(--text-dark); 
+      line-height: 1.5; 
       -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
     }
+    h1, h2, h3, h4, h5 { font-family: 'Playfair Display', serif; color: var(--baobab-brown-dark); }
 
-    h1, h2, h3, h4, h5, h6, .brand-text {
-      font-family: 'Playfair Display', serif;
-    }
-
-    /* Header */
-    .header {
-      position: sticky;
-      top: 0;
-      z-index: 1000;
-      background: rgba(255, 255, 255, 0.98);
-      backdrop-filter: blur(20px);
-      border-bottom: 1px solid var(--gray-200);
-      box-shadow: var(--shadow-sm);
-    }
-
-    .header-content {
-      max-width: 1400px;
-      margin: 0 auto;
-      padding: 0 1rem;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      height: 70px;
-    }
-
-    .header-left {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      flex: 1;
-      min-width: 0;
-    }
-
-    .menu-toggle {
-      display: none;
-      width: 40px;
-      height: 40px;
-      border: none;
-      background: var(--earth-cream);
-      border-radius: var(--border-radius);
-      color: var(--baobab-brown);
-      cursor: pointer;
-      transition: var(--transition);
-      flex-shrink: 0;
-    }
-
-    .menu-toggle:hover {
-      background: var(--earth-cream-dark);
-    }
-
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 0.6rem;
-      text-decoration: none;
-      flex-shrink: 0;
-    }
-
-    .brand-icon {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      border: 2px solid var(--sunset-gold);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: white;
-      font-size: 1rem;
-      overflow: hidden;
-      box-shadow: 0 0 0 3px rgba(244,162,97,.22);
-    }
+    /* --- LAYOUT --- */
+    .dashboard-wrapper { display: flex; height: 100vh; overflow: hidden; }
     
-    .brand-icon img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
+    /* --- SIDEBAR --- */
+    .sidebar { 
+      width: 280px; 
+      background: var(--white); 
+      border-right: 1px solid var(--border-color); 
+      display: flex; 
+      flex-direction: column; 
+      transition: var(--transition); 
+      z-index: 50; 
     }
-
-    .brand-text {
-      font-size: 1.15rem;
-      font-weight: 800;
-      color: var(--baobab-brown-dark);
-      white-space: nowrap;
+    .sidebar-header { 
+      padding: 1.5rem; 
+      border-bottom: 1px solid var(--border-color); 
+      display: flex; 
+      align-items: center; 
+      gap: 1rem; 
     }
-
-    .search-container {
-      flex: 1;
-      max-width: 400px;
-      margin: 0 1rem;
-      display: none;
+    .brand-icon { 
+      width: 40px; height: 40px; 
+      background: linear-gradient(135deg, var(--sunset-gold), #e76f51); 
+      border-radius: var(--radius-md); 
+      display: flex; align-items: center; justify-content: center; 
+      color: var(--white); font-size: 1.2rem; 
     }
-
-    .search-wrapper {
-      position: relative;
-    }
-
-    .search-input {
-      width: 100%;
-      height: 40px;
-      padding: 0 0.75rem 0 2.5rem;
-      border: 2px solid var(--gray-200);
-      border-radius: var(--r-pill);
-      background: var(--gray-50);
-      font-family: 'DM Sans', sans-serif;
-      font-size: 0.9rem;
-      transition: var(--transition);
-      outline: none;
-    }
-
-    .search-input:focus {
-      border-color: var(--canopy-green-light);
-      background: var(--white);
-      box-shadow: 0 0 0 3px var(--primary-light);
-    }
-
-    .search-icon {
-      position: absolute;
-      left: 1rem;
-      top: 50%;
-      transform: translateY(-50%);
-      color: var(--gray-400);
-      font-size: 1rem;
-    }
-
-    .header-right {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      flex-shrink: 0;
-    }
-
-    .notification-btn {
-      position: relative;
-      width: 40px;
-      height: 40px;
-      border: none;
-      background: var(--earth-cream);
-      border-radius: 50%;
-      color: var(--baobab-brown);
-      cursor: pointer;
-      transition: var(--transition);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-    }
-
-    .notification-btn:hover {
-      background: var(--earth-cream-dark);
-      color: var(--baobab-brown-dark);
-    }
-
-    .notification-badge {
-      position: absolute;
-      top: -2px;
-      right: -2px;
-      width: 18px;
-      height: 18px;
-      background: var(--danger);
-      color: white;
-      border-radius: 50%;
-      font-size: 0.7rem;
-      font-weight: 700;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border: 2px solid white;
-    }
-
-    .user-menu {
-      position: relative;
-      cursor: pointer;
-    }
-
-    .user-profile {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      padding: 0.35rem 0.5rem 0.35rem 0.35rem;
-      border-radius: var(--r-pill);
-      transition: var(--transition);
-      border: 1px solid transparent;
-    }
-
-    .user-profile:hover {
-      background: var(--earth-cream);
-      border-color: var(--gray-200);
-    }
-
-    .user-avatar {
-      width: 36px;
-      height: 36px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, var(--sunset-gold), var(--sunset-gold-warm));
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: white;
-      font-weight: 700;
-      font-size: 0.9rem;
-      box-shadow: var(--shadow-sm);
-      overflow: hidden;
-      flex-shrink: 0;
-    }
-
-    .user-avatar img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-
-    .user-info {
-      display: flex;
-      flex-direction: column;
-      min-width: 0;
-    }
-
-    .user-name {
-      font-weight: 700;
-      font-size: 0.85rem;
-      color: var(--gray-800);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .user-role {
-      font-size: 0.75rem;
-      color: var(--gray-500);
-    }
-
-    /* Layout */
-    .app-layout {
-      display: flex;
-      min-height: calc(100vh - 70px);
-      max-width: 1400px;
-      margin: 0 auto;
-      padding: 0 1rem;
-      gap: 1.5rem;
-    }
-
-    /* Sidebar */
-    .sidebar {
-      width: 260px;
-      flex-shrink: 0;
-      padding: 1.5rem 0;
-    }
-
-    .sidebar-nav {
-      background: var(--white);
-      border-radius: var(--border-radius-xl);
-      box-shadow: var(--shadow-md);
-      padding: 1.25rem 1rem;
-      border: 1px solid var(--gray-200);
-      position: sticky;
-      top: 90px;
-    }
-
-    .nav-list {
-      list-style: none;
-      display: flex;
-      flex-direction: column;
-      gap: 0.35rem;
-    }
-
-    .nav-item {
-      position: relative;
-    }
-
-    .nav-link {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      padding: 0.75rem 1rem;
-      border-radius: var(--border-radius);
-      color: var(--gray-600);
-      text-decoration: none;
-      font-weight: 600;
-      font-size: 0.9rem;
-      transition: var(--transition);
-      position: relative;
-    }
-
-    .nav-link:hover {
-      color: var(--baobab-brown-dark);
-      background: var(--earth-cream);
-    }
-
-    .nav-link.active {
-      color: var(--baobab-brown-dark);
-      background: var(--earth-cream-dark);
-      box-shadow: inset 3px 0 0 var(--sunset-gold);
-    }
-
-    .nav-icon {
-      font-size: 1.1rem;
-      width: 20px;
-      text-align: center;
-      flex-shrink: 0;
-      color: var(--sunset-gold);
-    }
+    .brand-text { font-family: 'Playfair Display', serif; font-size: 1.2rem; font-weight: 700; color: var(--baobab-brown-dark); line-height: 1.2; }
+    .brand-sub { font-size: 0.7rem; color: var(--text-muted); font-family: 'DM Sans', sans-serif; text-transform: uppercase; letter-spacing: 0.05em; }
     
-    .nav-link.active .nav-icon {
-      color: var(--baobab-brown-dark);
+    .sidebar-nav { flex: 1; overflow-y: auto; padding: 1.5rem 1rem; }
+    .nav-group { margin-bottom: 2rem; }
+    .nav-label { font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.75rem; padding-left: 0.75rem; }
+    .nav-item { 
+      display: flex; align-items: center; gap: 1rem; 
+      padding: 0.75rem; color: var(--text-dark); 
+      text-decoration: none; border-radius: var(--radius-md); 
+      font-weight: 500; font-size: 0.95rem; 
+      transition: var(--transition); cursor: pointer; 
     }
+    .nav-item:hover { background: var(--earth-cream); color: var(--baobab-brown); }
+    .nav-item.active { background: var(--baobab-brown); color: var(--white); box-shadow: var(--shadow-md); }
+    .nav-item.active i { color: var(--white); }
+    .nav-item i { width: 20px; text-align: center; color: var(--text-muted); transition: var(--transition); }
+    .sidebar-footer { padding: 1rem; border-top: 1px solid var(--border-color); }
 
-    /* Main Content */
-    .main-content {
-      flex: 1;
-      padding: 1.5rem 0;
-      min-width: 0;
-    }
-
-    .section {
-      display: none;
-      animation: fadeIn 0.4s ease-in-out;
-    }
-
-    .section.active {
-      display: block;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    /* Welcome Banner */
-    .welcome-banner {
-      background: linear-gradient(145deg, var(--baobab-brown-dark) 0%, var(--canopy-green-dark) 100%);
-      border-radius: var(--border-radius-xl);
-      padding: 2.5rem 2rem;
-      color: white;
-      margin-bottom: 1.75rem;
-      position: relative;
-      overflow: hidden;
-      box-shadow: var(--shadow-lg);
-    }
-
-    /* African Adire Pattern Overlay */
-    .welcome-banner::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background-image: url("data:image/svg+xml,%3Csvg width='44' height='44' viewBox='0 0 44 44' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M22 0 L44 22 L22 44 L0 22 Z' fill='none' stroke='%23FFFFFF' stroke-opacity='0.04' stroke-width='1'/%3E%3C/svg%3E");
-      background-size: 44px 44px;
-      pointer-events: none;
-      z-index: 0;
-    }
-
-    .welcome-content {
-      position: relative;
-      z-index: 1;
-    }
-
-    .welcome-title {
-      font-size: 2.2rem;
-      font-weight: 800;
-      margin-bottom: 0.5rem;
-      line-height: 1.2;
-      color: var(--white);
-    }
-
-    .welcome-subtitle {
-      font-family: 'DM Sans', sans-serif;
-      font-size: 1.05rem;
-      color: rgba(255,255,255,0.85);
-      margin-bottom: 2rem;
-    }
-
-    .stats-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-      gap: 1.25rem;
-    }
-
-    .stat-card {
-      background: rgba(255, 255, 255, 0.1);
-      backdrop-filter: blur(12px);
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      border-radius: var(--border-radius-lg);
-      padding: 1.25rem;
-      text-align: left;
-      transition: var(--transition);
-      position: relative;
-      overflow: hidden;
-    }
-
-    .stat-card::after {
-      content:'';
-      position:absolute;
-      top:0; left:0; width:4px; height:100%;
-      background:var(--sunset-gold);
-    }
-
-    .stat-card:hover {
-      background: rgba(255, 255, 255, 0.15);
-      transform: translateY(-3px);
-    }
-
-    .stat-number {
-      font-family: 'Playfair Display', serif;
-      font-size: 2.2rem;
-      font-weight: 800;
-      color: var(--sunset-gold);
-      margin-bottom: 0.1rem;
-      line-height: 1.1;
-    }
-
-    .stat-label {
-      font-family: 'DM Sans', sans-serif;
-      font-size: 0.85rem;
-      color: rgba(255,255,255,0.9);
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-    }
-
-    /* Cards */
-    .card {
-      background: var(--white);
-      border: 1px solid var(--gray-200);
-      border-radius: var(--border-radius-xl);
-      box-shadow: var(--shadow-sm);
-      margin-bottom: 1.5rem;
-      overflow: hidden;
-      transition: box-shadow 0.3s;
-    }
+    /* --- MAIN CONTENT --- */
+    .main-wrapper { flex: 1; display: flex; flex-direction: column; overflow: hidden; background-color: var(--bg-light); }
     
-    .card:hover {
-      box-shadow: var(--shadow-md);
-    }
+    /* TOP HEADER */
+    .top-header { height: 72px; background: var(--white); border-bottom: 1px solid var(--border-color); display: flex; align-items: center; justify-content: flex-end; padding: 0 2rem; }
+    .admin-profile-btn { display: flex; align-items: center; gap: 0.75rem; cursor: pointer; padding: 0.5rem; border-radius: var(--radius-md); transition: var(--transition); }
+    .admin-profile-btn:hover { background: var(--earth-cream); }
+    .admin-avatar { width: 36px; height: 36px; background: var(--canopy-green); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--white); font-weight: 700; }
+    .admin-info { display: flex; flex-direction: column; text-align: right; }
+    .admin-name { font-size: 0.85rem; font-weight: 700; color: var(--text-dark); }
+    .admin-role { font-size: 0.7rem; color: var(--text-muted); }
 
-    .card-header {
-      padding: 1.25rem 1.5rem;
-      border-bottom: 1px solid var(--gray-200);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 1rem;
-      background: var(--white);
-    }
+    /* CONTENT AREA */
+    .content-area { flex: 1; overflow-y: auto; padding: 2rem; }
+    .page-section { display: none; animation: fadeIn 0.3s ease; }
+    .page-section.active { display: block; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-    .card-title {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      font-family: 'Playfair Display', serif;
-      font-size: 1.25rem;
-      font-weight: 700;
-      color: var(--baobab-brown-dark);
-    }
+    .page-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 2rem; }
+    .page-title { font-size: 2rem; margin-bottom: 0.25rem; }
+    .page-desc { color: var(--text-muted); font-size: 0.95rem; }
 
-    .card-icon {
-      width: 42px;
-      height: 42px;
-      border-radius: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: white;
-      font-size: 1.2rem;
-      box-shadow: var(--shadow-sm);
-      flex-shrink: 0;
+    /* --- CARDS & STATS --- */
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
+    .stat-card { 
+      background: var(--white); border-radius: var(--radius-lg); 
+      padding: 1.5rem; border: 1px solid var(--border-color); 
+      box-shadow: var(--shadow-sm); display: flex; align-items: center; gap: 1.5rem; transition: var(--transition); 
     }
+    .stat-card:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); }
+    .stat-icon { width: 56px; height: 56px; border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; }
+    .stat-icon.green { background: #e6f7ed; color: var(--canopy-green); }
+    .stat-icon.gold { background: #fef0e6; color: var(--sunset-gold); }
+    .stat-icon.brown { background: #f4ecea; color: var(--baobab-brown); }
+    .stat-info h4 { font-family: 'DM Sans', sans-serif; font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.25rem; }
+    .stat-info .value { font-family: 'Playfair Display', serif; font-size: 2rem; font-weight: 700; color: var(--text-dark); line-height: 1; }
 
-    .card-actions {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      flex-wrap: wrap;
-    }
+    .data-card { background: var(--white); border-radius: var(--radius-lg); border: 1px solid var(--border-color); box-shadow: var(--shadow-sm); margin-bottom: 2rem; overflow: hidden; }
+    .data-card-header { padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; background: var(--white); }
+    .data-card-title { font-size: 1.1rem; font-weight: 700; font-family: 'Playfair Display', serif; display: flex; align-items: center; gap: 0.5rem; }
+    .data-card-body { padding: 0; overflow-x: auto; }
 
-    .card-content {
-      padding: 1.5rem;
-    }
+    /* --- TABLES --- */
+    .table { width: 100%; border-collapse: collapse; text-align: left; }
+    .table th { padding: 1rem 1.5rem; background: #f9fafb; font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1px solid var(--border-color); }
+    .table td { padding: 1rem 1.5rem; border-bottom: 1px solid var(--border-color); font-size: 0.95rem; vertical-align: middle; }
+    .table tr:hover td { background: var(--bg-light); }
+    .table tr:last-child td { border-bottom: none; }
 
-    /* Buttons */
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.5rem;
-      padding: 0.6rem 1.25rem;
-      border: 2px solid transparent;
-      border-radius: var(--r-pill);
-      font-family: 'DM Sans', sans-serif;
-      font-weight: 700;
-      font-size: 0.85rem;
-      text-decoration: none;
-      cursor: pointer;
-      transition: var(--transition);
-      white-space: nowrap;
-    }
+    /* --- BADGES & BUTTONS --- */
+    .badge { display: inline-flex; padding: 0.35rem 0.85rem; border-radius: 50px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; }
+    .badge-success { background: #def7ec; color: #1e8a53; border: 1px solid #b8ebcd;}
+    .badge-warning { background: #fef0e6; color: #d95e14; border: 1px solid #fce3ce;}
+    .badge-gray { background: #f3f4f6; color: #4b5563; border: 1px solid #e5e7eb;}
+    .badge-danger { background: #fee2e2; color: #b91c1c; border: 1px solid #fecaca;}
 
-    .btn-primary {
-      background: var(--canopy-green);
-      color: white;
-      box-shadow: var(--shadow-sm);
-    }
+    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; padding: 0.6rem 1.25rem; font-size: 0.9rem; font-weight: 600; border-radius: var(--radius-md); cursor: pointer; transition: var(--transition); border: 1px solid transparent; font-family: 'DM Sans', sans-serif; text-decoration: none; }
+    .btn-primary { background: var(--canopy-green); color: var(--white); }
+    .btn-primary:hover { background: var(--canopy-green-dark); box-shadow: var(--shadow-md); }
+    .btn-secondary { background: var(--white); border-color: var(--border-color); color: var(--text-dark); }
+    .btn-secondary:hover { background: var(--bg-light); border-color: #d1d5db; }
+    .btn-sm { padding: 0.35rem 0.75rem; font-size: 0.8rem; }
+    .btn-meet { background: linear-gradient(135deg, var(--sunset-gold), #e76f51); color: white; border: none; box-shadow: 0 2px 8px rgba(244, 162, 97, 0.3); }
+    .btn-meet:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(244, 162, 97, 0.4); color: white;}
 
-    .btn-primary:hover {
-      background: var(--canopy-green-dark);
-      transform: translateY(-1px);
-      box-shadow: var(--shadow-md);
-    }
-
-    .btn-secondary {
-      background: var(--white);
-      color: var(--gray-700);
-      border-color: var(--gray-200);
-    }
-
-    .btn-secondary:hover {
-      background: var(--earth-cream);
-      border-color: var(--baobab-brown-light);
-      color: var(--baobab-brown-dark);
-    }
-
-    .btn-success {
-      background: linear-gradient(135deg, var(--sunset-gold), var(--sunset-gold-warm));
-      color: white;
-      box-shadow: 0 4px 14px rgba(231,111,81,.25);
-    }
+    /* --- MODALS --- */
+    .modal-overlay { position: fixed; inset: 0; background: rgba(17, 24, 39, 0.7); backdrop-filter: blur(4px); z-index: 9999; display: none; align-items: center; justify-content: center; padding: 1rem; opacity: 0; transition: opacity 0.3s ease; }
+    .modal-overlay.active { display: flex; opacity: 1; }
+    .modal-content { background: var(--white); border-radius: var(--radius-lg); width: 100%; max-width: 600px; max-height: 90vh; overflow-y: auto; box-shadow: var(--shadow-lg); transform: scale(0.95); transition: transform 0.3s ease; }
+    .modal-overlay.active .modal-content { transform: scale(1); }
     
-    .btn-success:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 6px 20px rgba(231,111,81,.4);
-    }
+    .modal-header { padding: 1.5rem 2rem; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; background: #f8f9fa; border-radius: var(--radius-lg) var(--radius-lg) 0 0; }
+    .modal-title { font-size: 1.25rem; font-weight: 700; display: flex; align-items: center; gap: 0.75rem; }
+    .modal-close { background: transparent; border: none; font-size: 1.25rem; color: var(--text-muted); cursor: pointer; transition: var(--transition); }
+    .modal-close:hover { color: var(--text-dark); transform: rotate(90deg); }
+    
+    .modal-body { padding: 2rem; }
+    .modal-footer { padding: 1.5rem 2rem; border-top: 1px solid var(--border-color); background: #f8f9fa; display: flex; justify-content: flex-end; gap: 1rem; border-radius: 0 0 var(--radius-lg) var(--radius-lg); }
 
-    .btn-warning {
-      background: var(--earth-cream);
-      color: var(--baobab-brown-dark);
-      border-color: var(--sunset-gold);
-    }
+    /* --- FORMS --- */
+    .form-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem; }
+    .form-group { margin-bottom: 1.5rem; }
+    .form-group.full { grid-column: 1 / -1; }
+    .form-label { display: block; font-size: 0.85rem; font-weight: 700; color: var(--text-dark); margin-bottom: 0.5rem; }
+    .form-control { width: 100%; padding: 0.75rem 1rem; border: 1px solid #d1d5db; border-radius: var(--radius-md); font-family: 'DM Sans', sans-serif; font-size: 0.95rem; color: var(--text-dark); background: var(--white); transition: var(--transition); }
+    .form-control:focus { outline: none; border-color: var(--canopy-green); box-shadow: 0 0 0 3px rgba(45, 106, 79, 0.1); }
+    textarea.form-control { resize: vertical; min-height: 100px; }
 
-    .btn-sm {
-      padding: 0.4rem 1rem;
-      font-size: 0.8rem;
-    }
-
-    /* Forms */
-    .form-group {
-      margin-bottom: 1.25rem;
-    }
-
-    .form-label {
-      display: block;
-      font-weight: 600;
-      margin-bottom: 0.5rem;
-      color: var(--baobab-brown-dark);
-      font-size: 0.9rem;
-    }
-
-    .form-input, .form-select {
-      width: 100%;
-      padding: 0.75rem 1rem;
-      border: 2px solid var(--gray-200);
-      border-radius: var(--border-radius);
-      font-family: 'DM Sans', sans-serif;
-      font-size: 0.95rem;
-      color: var(--gray-800);
-      transition: var(--transition);
-      background: var(--gray-50);
-    }
-
-    .form-input:focus, .form-select:focus {
-      outline: none;
-      border-color: var(--canopy-green-light);
-      background: var(--white);
-      box-shadow: 0 0 0 3px var(--primary-light);
-    }
-
-    textarea.form-input {
-      min-height: 120px;
-      resize: vertical;
-    }
-
-    /* Tables */
-    .table-container {
-      overflow: auto;
-      border-radius: var(--border-radius-lg);
-      border: 1px solid var(--gray-200);
-      background: var(--white);
-    }
-
-    .table {
-      width: 100%;
-      border-collapse: separate;
-      border-spacing: 0;
-    }
-
-    .table th {
-      background: var(--earth-cream);
-      padding: 1rem 1.25rem;
-      text-align: left;
-      font-family: 'Playfair Display', serif;
-      font-weight: 700;
-      font-size: 0.95rem;
-      color: var(--baobab-brown-dark);
-      border-bottom: 1px solid var(--gray-200);
-      position: sticky;
-      top: 0;
-      z-index: 10;
-    }
-
-    .table td {
-      padding: 1rem 1.25rem;
-      border-bottom: 1px solid var(--gray-100);
-      vertical-align: middle;
-      font-size: 0.9rem;
-      color: var(--gray-700);
-    }
-
-    .table tbody tr {
-      transition: var(--transition);
-    }
-
-    .table tbody tr:hover {
-      background: var(--gray-50);
-    }
-
-    /* Badges */
-    .badge {
-      display: inline-flex;
-      align-items: center;
-      padding: 0.35rem 0.75rem;
-      border-radius: var(--r-pill);
-      font-size: 0.75rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-    }
-
-    .badge-success { background: var(--success-light); color: var(--success); }
-    .badge-warning { background: var(--warning-light); color: var(--baobab-brown-dark); border: 1px solid var(--sunset-gold); }
-    .badge-danger { background: var(--danger-light); color: var(--danger); }
-    .badge-primary { background: var(--earth-cream); color: var(--baobab-brown-dark); border: 1px solid var(--baobab-brown-light); }
-    .badge-secondary { background: var(--gray-100); color: var(--gray-600); }
-
-    /* Progress bars for overview */
-    .progress-item {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 1.25rem;
-      background: var(--white);
-      border: 1px solid var(--gray-200);
-      border-radius: var(--border-radius);
-      margin-bottom: 0.75rem;
-      transition: var(--transition);
-    }
-
-    .progress-item:hover {
+    /* --- FAMILY ROSTER SPECIFIC --- */
+    .family-roster { display: grid; gap: 1.25rem; margin-top: 1rem; }
+    .student-card { 
+      border: 1px solid var(--border-color); 
+      border-radius: var(--radius-md); 
+      padding: 1.5rem; 
+      background: var(--white); 
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center; 
+      border-left: 5px solid var(--canopy-green); 
       box-shadow: var(--shadow-sm);
-      border-color: var(--sunset-gold);
-      transform: translateY(-2px);
     }
-
-    .progress-info {
-      flex: 1;
-      min-width: 0;
-    }
-
-    .progress-title {
-      font-weight: 700;
-      color: var(--baobab-brown-dark);
-      margin-bottom: 0.25rem;
-      font-size: 0.95rem;
-    }
-
-    .progress-subtitle {
-      font-size: 0.85rem;
-      color: var(--gray-500);
-    }
-
-    .progress-visual {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      flex-shrink: 0;
-    }
-
-    .progress-bar {
-      width: 100px;
-      height: 8px;
-      background: var(--gray-200);
-      border-radius: 4px;
-      overflow: hidden;
-    }
-
-    .progress-fill {
-      height: 100%;
-      background: linear-gradient(90deg, var(--sunset-gold), var(--canopy-green));
-      border-radius: 4px;
-      transition: width 0.8s ease;
-    }
-
-    /* Modal */
-    .modal {
-      position: fixed;
-      inset: 0;
-      background: rgba(44, 24, 16, 0.6);
-      backdrop-filter: blur(8px);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      z-index: 1500;
-      padding: 1rem;
-    }
-
-    .modal.active {
-      display: flex;
-    }
-
-    .modal-content {
-      background: var(--white);
-      border-radius: var(--border-radius-xl);
-      box-shadow: var(--shadow-2xl);
-      width: 100%;
-      max-width: 500px;
-      max-height: 90vh;
-      overflow: auto;
-      position: relative;
-      border: 1px solid var(--gray-200);
-    }
-
-    .modal-header {
-      padding: 1.5rem 1.5rem 1rem;
-      border-bottom: 1px solid var(--gray-200);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      background: var(--earth-cream);
-    }
-
-    .modal-title {
-      font-family: 'Playfair Display', serif;
-      font-size: 1.35rem;
-      font-weight: 700;
-      color: var(--baobab-brown-dark);
-    }
-
-    .modal-close {
-      width: 36px;
-      height: 36px;
-      border: none;
-      background: var(--white);
-      border-radius: 50%;
-      color: var(--gray-500);
-      cursor: pointer;
-      transition: var(--transition);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: var(--shadow-xs);
-    }
-
-    .modal-close:hover {
-      background: var(--danger-light);
-      color: var(--danger);
-    }
-
-    .modal-body {
-      padding: 1.5rem;
-    }
-
-    /* Tab navigation for reports */
-    .tab-nav {
-      display: flex;
-      gap: 0.5rem;
-      margin-bottom: 1.5rem;
-      border-bottom: 2px solid var(--gray-200);
-    }
-
-    .tab-btn {
-      padding: 0.75rem 1.5rem;
-      border: none;
-      background: transparent;
-      color: var(--gray-500);
-      font-family: 'DM Sans', sans-serif;
-      font-weight: 700;
-      cursor: pointer;
-      transition: var(--transition);
-      position: relative;
-      font-size: 0.95rem;
-      margin-bottom: -2px;
-      border-bottom: 2px solid transparent;
-    }
-
-    .tab-btn.active {
-      color: var(--baobab-brown-dark);
-      border-bottom-color: var(--canopy-green);
-    }
-
-    .tab-btn:hover:not(.active) {
-      color: var(--gray-800);
-    }
-
-    .tab-content { display: none; }
-    .tab-content.active { display: block; }
-
-    /* Chart containers */
-    .chart-container {
-      background: var(--white);
-      border: 1px solid var(--gray-200);
-      border-radius: var(--border-radius-lg);
-      padding: 1.25rem;
-      margin-bottom: 1.25rem;
-      height: 280px;
-      box-shadow: var(--shadow-xs);
-    }
-
-    /* Loading states */
-    .loading {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.75rem;
-      padding: 2rem;
-      color: var(--gray-500);
-      font-weight: 500;
-    }
-    .spinner {
-      width: 24px;
-      height: 24px;
-      border: 3px solid var(--earth-cream-dark);
-      border-top: 3px solid var(--canopy-green);
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
-    }
-    @keyframes spin { to { transform: rotate(360deg); } }
-
-    .empty-state {
-      text-align: center;
-      padding: 3rem 1rem;
-      color: var(--gray-500);
-    }
-    .empty-state i {
-      font-size: 3rem;
-      margin-bottom: 1rem;
-      color: var(--earth-cream-dark);
-    }
-
-    /* Agreement Specific Styles */
-    .agreement-document {
-      background: var(--white);
-      border-radius: var(--border-radius-lg);
-      padding: 3rem;
-      margin: 1.5rem 0;
-      box-shadow: var(--shadow-sm);
-      border: 1px solid var(--gray-200);
-      font-family: 'DM Sans', sans-serif;
-      line-height: 1.8;
-      max-width: 800px;
-      margin-left: auto;
-      margin-right: auto;
-      position: relative;
-    }
-
-    .agreement-header {
-      text-align: center;
-      margin-bottom: 2.5rem;
-      padding-bottom: 1.5rem;
-      border-bottom: 2px solid var(--canopy-green);
-    }
-
-    .agreement-title {
-      font-size: 2rem;
-      font-weight: 800;
-      color: var(--baobab-brown-dark);
-      margin-bottom: 0.5rem;
-    }
-
-    .agreement-section-title {
-      font-family: 'Playfair Display', serif;
-      font-size: 1.35rem;
-      font-weight: 700;
-      color: var(--baobab-brown-dark);
-      margin-bottom: 1rem;
-      padding-bottom: 0.5rem;
-      border-bottom: 1px solid var(--gray-200);
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-    }
-
-    .agreement-section-icon {
-      width: 28px;
-      height: 28px;
-      background: linear-gradient(135deg, var(--sunset-gold), var(--sunset-gold-warm));
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: white;
-      font-size: 0.8rem;
-    }
-
-    .highlight-info {
-      background: var(--earth-cream);
-      border: 1px solid var(--border-light);
-      border-radius: var(--border-radius);
-      padding: 1.25rem 1.5rem;
-      margin: 1.5rem 0;
-      position: relative;
-      overflow: hidden;
-    }
-    .highlight-info::before {
-      content: '';
-      position: absolute;
-      left: 0; top: 0; width: 4px; height: 100%;
-      background: var(--canopy-green);
-    }
-    .highlight-info strong { color: var(--baobab-brown-dark); font-weight: 700; }
-
-    /* Expandable Text */
-    .expandable-text { max-width: 220px; position: relative; }
-    .text-preview { max-height: 44px; overflow: hidden; line-height: 1.5; }
-    .text-full { display: none; line-height: 1.5; white-space: pre-wrap; }
-    .text-toggle { color: var(--canopy-green); cursor: pointer; font-size: 0.8rem; font-weight:700; margin-top: 0.35rem; text-decoration: underline; }
-    .text-toggle:hover { color: var(--sunset-gold-warm); }
-
-    /* Responsive */
-    @media (max-width: 1024px) {
-      .app-layout { padding: 0 0.75rem; gap: 1rem; }
-      .sidebar { width: 240px; }
-      .stats-grid { grid-template-columns: repeat(2, 1fr); }
-    }
-
-    @media (max-width: 768px) {
-      .header-content { padding: 0 1rem; height: 60px; }
-      .brand-text { font-size: 1.1rem; }
-      .user-info, .search-container { display: none; }
-      .menu-toggle { display: flex; }
-      
-      .app-layout { flex-direction: column; padding: 0 0.75rem; min-height: calc(100vh - 60px); }
-      
-      .sidebar {
-        position: fixed;
-        top: 60px; left: -280px;
-        height: calc(100vh - 60px);
-        width: 260px;
-        background: var(--white);
-        z-index: 1200;
-        transition: var(--transition-slow);
-        padding: 1rem;
-        overflow-y: auto;
-      }
-      .sidebar.active { left: 0; box-shadow: var(--shadow-2xl); }
-      .sidebar-nav { box-shadow:none; border:none; top:0; padding:0; }
-      
-      .sidebar-overlay {
-        position: fixed; inset: 0;
-        background: rgba(44, 24, 16, 0.5);
-        backdrop-filter: blur(4px);
-        z-index: 1100;
-        display: none;
-      }
-      .sidebar-overlay.active { display: block; }
-      
-      .main-content { padding: 1rem 0 5rem; }
-      .welcome-banner { padding: 1.5rem; }
-      .welcome-title { font-size: 1.6rem; }
-      .card-header { flex-direction: column; align-items: stretch; }
-      
-      /* Bottom Nav */
-      .bottom-nav {
-        display: block; position: fixed; bottom: 0; left: 0; right: 0;
-        background: rgba(255, 255, 255, 0.98);
-        backdrop-filter: blur(20px);
-        border-top: 1px solid var(--gray-200);
-        padding: 0.5rem 0; z-index: 1000;
-      }
-      .bottom-nav-container {
-        display: grid; grid-template-columns: repeat(5, 1fr);
-        max-width: 500px; margin: 0 auto;
-      }
-      .bottom-nav-item {
-        display: flex; flex-direction: column; align-items: center; gap: 0.25rem;
-        padding: 0.4rem; text-decoration: none; color: var(--gray-500);
-        font-size: 0.7rem; font-weight: 600; transition: var(--transition);
-      }
-      .bottom-nav-item.active { color: var(--baobab-brown-dark); }
-      .bottom-nav-item.active i { color: var(--sunset-gold); }
-      .bottom-nav-item i { font-size: 1.2rem; }
-      
-      /* Mobile Table */
-      .table-container { border: none; background: transparent; }
-      .table, .table thead, .table tbody, .table th, .table td, .table tr { display: block; }
-      .table thead tr { position: absolute; top: -9999px; left: -9999px; }
-      .table tr {
-        background: var(--white);
-        border: 1px solid var(--gray-200);
-        border-radius: var(--border-radius);
-        margin-bottom: 0.75rem;
-        box-shadow: var(--shadow-sm);
-        padding: 1rem;
-      }
-      .table td {
-        border: none; padding: 0.4rem 0;
-        display: flex; justify-content: space-between; align-items: flex-start;
-        font-size: 0.9rem; gap: 1rem;
-      }
-      .table td::before {
-        content: attr(data-label);
-        font-weight: 700; color: var(--baobab-brown-dark);
-        font-size: 0.75rem; letter-spacing: 0.05em;
-        flex-shrink: 0; min-width: 90px;
-      }
-    }
+    .student-info h4 { font-family: 'DM Sans', sans-serif; font-weight: 700; font-size: 1.2rem; color: var(--text-dark); margin-bottom: 0.5rem; }
+    .student-meta { font-size: 0.85rem; color: var(--text-muted); display: flex; gap: 1.5rem; font-weight: 500; }
   </style>
 </head>
 <body>
-  <header class="header">
-    <div class="header-content">
-      <div class="header-left">
-        <button class="menu-toggle" id="menuToggle">
-          <i class="fas fa-bars"></i>
-        </button>
-        <a href="#overview" class="brand">
-          <div class="brand-icon">
-            <img src="/Images/Logo_Baobab.svg" alt="Baobab" onerror="this.src='/Images/Logo_Baobab.svg'">
-          </div>
-          <div class="brand-text">Parent Portal</div>
-        </a>
-      </div>
 
-      <div class="search-container">
-        <div class="search-wrapper">
-          <i class="fas fa-search search-icon"></i>
-          <input type="search" class="search-input" id="globalSearch" placeholder="Search children, lessons, reports...">
-        </div>
-      </div>
-
-      <div class="header-right">
-        <button class="notification-btn" id="notificationBtn">
-          <i class="fas fa-bell"></i>
-          <span class="notification-badge" id="notificationCount" style="display: none;">0</span>
-        </button>
-        
-        <div class="user-menu" id="userMenu">
-          <div class="user-profile">
-            <div class="user-avatar" id="userAvatar">
-              <span id="userInitials">P</span>
-            </div>
-            <div class="user-info">
-              <div class="user-name" id="userName">Loading...</div>
-              <div class="user-role">Parent</div>
-            </div>
-            <i class="fas fa-chevron-down" style="color: var(--gray-400); font-size: 0.7rem; margin-left:.2rem;"></i>
-          </div>
-        </div>
-      </div>
-    </div>
-  </header>
-
-  <div class="sidebar-overlay" id="sidebarOverlay"></div>
-
-  <div class="app-layout">
+  <div class="dashboard-wrapper">
     <aside class="sidebar" id="sidebar">
-      <nav class="sidebar-nav">
-        <ul class="nav-list">
-          <li class="nav-item">
-            <a href="#overview" class="nav-link active" data-section="overview">
-              <i class="fas fa-home nav-icon"></i>
-              Dashboard Overview
-            </a>
-          </li>
-          <li class="nav-item">
-            <a href="#children" class="nav-link" data-section="children">
-              <i class="fas fa-child nav-icon"></i>
-              Children Management
-            </a>
-          </li>
-          <li class="nav-item">
-            <a href="#lessons" class="nav-link" data-section="lessons">
-              <i class="fas fa-calendar-alt nav-icon"></i>
-              Upcoming Lessons
-            </a>
-          </li>
-          <li class="nav-item">
-            <a href="#tutors" class="nav-link" data-section="tutors">
-              <i class="fas fa-chalkboard-teacher nav-icon"></i>
-              Assigned Tutors
-            </a>
-          </li>
-          <li class="nav-item">
-            <a href="#reports" class="nav-link" data-section="reports">
-              <i class="fas fa-chart-bar nav-icon"></i>
-              Reports & Assessments
-            </a>
-          </li>
-          <li class="nav-item">
-            <a href="#billing" class="nav-link" data-section="billing">
-              <i class="fas fa-credit-card nav-icon"></i>
-              Billing & Payments
-            </a>
-          </li>
-          <li class="nav-item">
-            <a href="#agreement" class="nav-link" data-section="agreement">
-              <i class="fas fa-file-contract nav-icon"></i>
-              Parent Agreement
-            </a>
-          </li>
-          <li class="nav-item">
-            <a href="#profile" class="nav-link" data-section="profile">
-              <i class="fas fa-user-edit nav-icon"></i>
-              My Profile
-            </a>
-          </li>
-          <li class="nav-item">
-            <a href="#" class="nav-link" id="logoutLink" style="color:var(--danger); margin-top:1rem;">
-              <i class="fas fa-sign-out-alt nav-icon" style="color:var(--danger);"></i>
-              Logout
-            </a>
-          </li>
-        </ul>
-      </nav>
+      <div class="sidebar-header">
+        <div class="brand-icon"><i class="fas fa-seedling"></i></div>
+        <div>
+          <div class="brand-text">Baobab Connect</div>
+          <div class="brand-sub">Parent Portal</div>
+        </div>
+      </div>
+      
+      <div class="sidebar-nav">
+        <div class="nav-group">
+          <div class="nav-label">Home</div>
+          <a class="nav-item active" data-target="dashboard"><i class="fas fa-home"></i> Dashboard Overview</a>
+        </div>
+        
+        <div class="nav-group">
+          <div class="nav-label">Academics</div>
+          <a class="nav-item" data-target="timetable"><i class="fas fa-calendar-alt"></i> Weekly Timetable</a>
+          <a class="nav-item" data-target="progress"><i class="fas fa-chart-line"></i> Academic Progress</a>
+        </div>
+        
+        <div class="nav-group">
+          <div class="nav-label">Account</div>
+          <a class="nav-item" data-target="billing"><i class="fas fa-receipt"></i> Billing & Invoices</a>
+          <a class="nav-item" data-target="family"><i class="fas fa-users"></i> Family & Students</a>
+        </div>
+      </div>
+      
+      <div class="sidebar-footer">
+        <a class="nav-item" onclick="logout()" style="color: #b91c1c;"><i class="fas fa-sign-out-alt"></i> Sign Out</a>
+      </div>
     </aside>
 
-    <main class="main-content">
-      
-      <section id="overview" class="section active">
-        <div class="welcome-banner">
-          <div class="welcome-content">
-            <h1 class="welcome-title">Welcome back, <span id="parentName">Parent</span>! 👋</h1>
-            <p class="welcome-subtitle">Your children are making amazing progress. Here's a quick snapshot of today.</p>
-            
-            <div class="stats-grid">
-              <div class="stat-card">
-                <div class="stat-number" id="totalLessons">0</div>
-                <div class="stat-label">Lessons Completed</div>
-              </div>
-              <div class="stat-card">
-                <div class="stat-number" id="averageGrade">0%</div>
-                <div class="stat-label">Average Grade</div>
-              </div>
-              <div class="stat-card">
-                <div class="stat-number" id="culturalMilestones">0</div>
-                <div class="stat-label">Cultural Milestones</div>
-              </div>
-              <div class="stat-card">
-                <div class="stat-number" id="activeTutors">0</div>
-                <div class="stat-label">Active Tutors</div>
-              </div>
-            </div>
+    <div class="main-wrapper">
+      <header class="top-header">
+        <div class="admin-profile-btn" onclick="document.querySelector('.nav-item[data-target=\'family\']').click()">
+          <div class="admin-info">
+            <span class="admin-name" id="topParentName">Parent Name</span>
+            <span class="admin-role">Family Account</span>
           </div>
+          <div class="admin-avatar" id="topParentInitial">P</div>
         </div>
+      </header>
 
-        <div class="card">
-          <div class="card-header">
-            <div class="card-title">
-              <div class="card-icon" style="background: linear-gradient(135deg, var(--canopy-green), var(--canopy-green-dark));">
-                <i class="fas fa-chart-line"></i>
-              </div>
-              Recent Progress
+      <main class="content-area">
+        
+        <section id="dashboard" class="page-section active">
+          <div class="page-header">
+            <div>
+              <h1 class="page-title" id="welcomeMessage">Welcome back</h1>
+              <p class="page-desc">Here is what is happening with your students this week.</p>
             </div>
-            <div class="card-actions">
-              <a href="#reports" class="btn btn-secondary" data-section="reports">
-                <i class="fas fa-arrow-right"></i>
-                View Full Reports
-              </a>
+            <button class="btn btn-secondary" onclick="loadAllData()"><i class="fas fa-sync-alt"></i> Refresh</button>
+          </div>
+
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-icon green"><i class="fas fa-child"></i></div>
+              <div class="stat-info"><h4>Enrolled Students</h4><div class="value" id="statStudents">0</div></div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon brown"><i class="fas fa-calendar-check"></i></div>
+              <div class="stat-info"><h4>Weekly Classes</h4><div class="value" id="statClasses">0</div></div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon gold"><i class="fas fa-file-invoice"></i></div>
+              <div class="stat-info"><h4>Pending Invoices</h4><div class="value" id="statInvoices">0</div></div>
             </div>
           </div>
-          <div class="card-content">
-            <div id="overviewProgress">
-              <div class="loading">
-                <div class="spinner"></div>
-                Loading progress...
-              </div>
+          
+          <div class="data-card">
+            <div class="data-card-header">
+              <div class="data-card-title"><i class="fas fa-video" style="color: var(--canopy-green)"></i> Quick Join - Your Classes</div>
+            </div>
+            <div class="data-card-body table-responsive" id="quickJoinContainer">
+              <div style="padding:2rem; text-align:center; color:var(--text-muted)">Loading your schedule...</div>
             </div>
           </div>
-        </div>
+        </section>
 
-        <div class="card">
-          <div class="card-header">
-            <div class="card-title">
-              <div class="card-icon" style="background: linear-gradient(135deg, var(--sunset-gold), var(--sunset-gold-warm));">
-                <i class="fas fa-calendar-alt"></i>
-              </div>
-              Upcoming Lessons
+        <section id="timetable" class="page-section">
+          <div class="page-header">
+            <div>
+              <h1 class="page-title">Weekly Timetable</h1>
+              <p class="page-desc">Your children's recurring class schedules and Google Meet links.</p>
             </div>
           </div>
-          <div class="card-content">
-            <div id="overviewLessons">
-              <div class="loading">
-                <div class="spinner"></div>
-                Loading lessons...
-              </div>
+          <div class="data-card">
+            <div class="data-card-body table-responsive" id="timetableContainer">
+              <div style="padding:2rem; text-align:center; color:var(--text-muted)">Loading timetable...</div>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      <section id="children" class="section">
-        <div class="card">
-          <div class="card-header">
-            <div class="card-title">
-              <div class="card-icon" style="background: linear-gradient(135deg, var(--baobab-brown-light), var(--baobab-brown));">
-                <i class="fas fa-children"></i>
-              </div>
-              Children Management
-            </div>
-            <div class="card-actions">
-              <div class="search-wrapper" style="min-width: 200px;">
-                <i class="fas fa-search search-icon"></i>
-                <input type="search" class="search-input" id="childrenSearch" placeholder="Search children...">
-              </div>
-              <button class="btn btn-secondary" id="childrenExport">
-                <i class="fas fa-download"></i>
-                Export CSV
-              </button>
+        <section id="progress" class="page-section">
+          <div class="page-header">
+            <div>
+              <h1 class="page-title">Academic Progress</h1>
+              <p class="page-desc">Termly assessment scores and tutor feedback.</p>
             </div>
           </div>
-          <div class="card-content">
-            <div class="table-container">
-              <table class="table" id="childrenTable">
-                <thead>
-                  <tr>
-                    <th>Name</th>
-                    <th>DOB</th>
-                    <th>Age</th>
-                    <th>Grade</th>
-                    <th>Class Type</th>
-                    <th>Status</th>
-                    <th>Enrolled</th>
-                    <th>Emergency Contact</th>
-                    <th>Supporting Tutors</th>
-                    <th>Actions</th>
-                  </tr>
-                </thead>
-                <tbody id="childrenTbody"></tbody>
-              </table>
+          <div class="data-card">
+            <div class="data-card-body table-responsive" id="progressContainer">
+              <div style="padding:2rem; text-align:center; color:var(--text-muted)">Loading assessments...</div>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      <section id="lessons" class="section">
-        <div class="card">
-          <div class="card-header">
-            <div class="card-title">
-              <div class="card-icon" style="background: linear-gradient(135deg, var(--sunset-gold), var(--sunset-gold-warm));">
-                <i class="fas fa-calendar-days"></i>
-              </div>
-              Upcoming Lessons
-            </div>
-            <div class="card-actions">
-              <div class="search-wrapper" style="min-width: 200px;">
-                <i class="fas fa-search search-icon"></i>
-                <input type="search" class="search-input" id="lessonsSearch" placeholder="Search lessons...">
-              </div>
-              <button class="btn btn-secondary" id="lessonsExport">
-                <i class="fas fa-download"></i>
-                Export CSV
-              </button>
+        <section id="billing" class="page-section">
+          <div class="page-header">
+            <div>
+              <h1 class="page-title">Billing & Invoices</h1>
+              <p class="page-desc">Review your payment history and outstanding fees.</p>
             </div>
           </div>
-          <div class="card-content">
-            <div class="table-container">
-              <table class="table" id="lessonsTable">
-                <thead>
-                  <tr>
-                    <th>Date</th>
-                    <th>Time</th>
-                    <th>Child</th>
-                    <th>Subject</th>
-                    <th>Tutor</th>
-                    <th>Status</th>
-                    <th>Join</th>
-                  </tr>
-                </thead>
-                <tbody id="lessonsTbody"></tbody>
-              </table>
+          <div class="data-card">
+            <div class="data-card-body table-responsive" id="billingContainer">
+              <div style="padding:2rem; text-align:center; color:var(--text-muted)">Loading billing records...</div>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      <section id="tutors" class="section">
-        <div class="card">
-          <div class="card-header">
-            <div class="card-title">
-              <div class="card-icon" style="background: linear-gradient(135deg, var(--canopy-green), var(--canopy-green-dark));">
-                <i class="fas fa-user-tie"></i>
-              </div>
-              Assigned Tutors
+        <section id="family" class="page-section">
+          <div class="page-header">
+            <div>
+              <h1 class="page-title">Family Profile</h1>
+              <p class="page-desc">Manage your contact details and enrolled students.</p>
             </div>
-            <div class="card-actions">
-              <div class="search-wrapper" style="min-width: 200px;">
-                <i class="fas fa-search search-icon"></i>
-                <input type="search" class="search-input" id="tutorsSearch" placeholder="Search tutors...">
-              </div>
-              <button class="btn btn-secondary" id="tutorsExport">
-                <i class="fas fa-download"></i>
-                Export CSV
-              </button>
-            </div>
+            <button class="btn btn-primary" onclick="openModal('childModal'); document.getElementById('childForm').reset(); document.getElementById('childId').value='';"><i class="fas fa-plus"></i> Add Student</button>
           </div>
-          <div class="card-content">
-            <div class="table-container">
-              <table class="table" id="tutorsTable">
-                <thead>
-                  <tr>
-                    <th>Tutor</th>
-                    <th>Child</th>
-                    <th>Subject</th>
-                    <th>Status</th>
-                  </tr>
-                </thead>
-                <tbody id="tutorsTbody"></tbody>
-              </table>
+          
+          <div class="data-card">
+            <div class="data-card-header">
+              <div class="data-card-title"><i class="fas fa-address-card" style="color: var(--baobab-brown)"></i> Primary Contact Details</div>
+              <button class="btn btn-sm btn-secondary" onclick="openParentEditModal()"><i class="fas fa-edit"></i> Edit Details</button>
             </div>
-          </div>
-        </div>
-      </section>
-
-      <section id="reports" class="section">
-        <div class="card">
-          <div class="card-header">
-            <div class="card-title">
-              <div class="card-icon" style="background: linear-gradient(135deg, var(--baobab-brown), var(--baobab-brown-dark));">
-                <i class="fas fa-chart-bar"></i>
-              </div>
-              Reports & Assessments
-            </div>
-            <div class="card-actions">
-              <a href="https://docs.google.com/forms/d/e/1FAIpQLSdVbQpgqc0ErHynMNVC_ma25kAMAIS5ZLCZ7yUR8T51bcw07g/viewform?usp=header" 
-                 target="_blank" 
-                 rel="noopener noreferrer"
-                 class="btn btn-secondary">
-                <i class="fas fa-comment-alt"></i>
-                Share Feedback
-              </a>
-              <button class="btn btn-primary" id="downloadReportsPDF">
-                <i class="fas fa-file-pdf"></i>
-                Download PDF Report
-              </button>
-              <button class="btn btn-secondary" id="refreshReports">
-                <i class="fas fa-refresh"></i>
-                Refresh
-              </button>
-            </div>
-          </div>
-          <div class="card-content">
-            <div class="tab-nav">
-              <button class="tab-btn active" data-tab="assessments">Assessments</button>
-              <button class="tab-btn" data-tab="progress">Progress Records</button>
-            </div>
-
-            <div id="assessments" class="tab-content active">
-              <div class="card-actions" style="margin-bottom: 1.25rem;">
-                <div class="search-wrapper" style="min-width: 200px;">
-                  <i class="fas fa-search search-icon"></i>
-                  <input type="search" class="search-input" id="assessmentsSearch" placeholder="Search assessments...">
-                </div>
-                <button class="btn btn-secondary" id="assessmentsExport">
-                  <i class="fas fa-download"></i>
-                  Export CSV
-                </button>
-              </div>
-
-              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; margin-bottom: 1.5rem;">
-                <div class="chart-container">
-                  <canvas id="avgBySubjectChart"></canvas>
-                </div>
-                <div class="chart-container">
-                  <canvas id="trendChart"></canvas>
-                </div>
-              </div>
-
-              <div class="table-container">
-                <table class="table" id="assessmentsTable">
-                  <thead>
-                    <tr>
-                      <th>Date</th>
-                      <th>Child</th>
-                      <th>Subject</th>
-                      <th>Title</th>
-                      <th>Type</th>
-                      <th>Score</th>
-                      <th>Feedback</th>
-                    </tr>
-                  </thead>
-                  <tbody id="assessmentsTbody"></tbody>
-                </table>
-              </div>
-            </div>
-
-            <div id="progress" class="tab-content">
-              <div class="card-actions" style="margin-bottom: 1.25rem;">
-                <div class="search-wrapper" style="min-width: 200px;">
-                  <i class="fas fa-search search-icon"></i>
-                  <input type="search" class="search-input" id="progressSearch" placeholder="Search progress records...">
-                </div>
-                <button class="btn btn-secondary" id="progressExport">
-                  <i class="fas fa-download"></i>
-                  Export CSV
-                </button>
-              </div>
-
-              <div class="table-container">
-                <table class="table" id="progressTable">
-                  <thead>
-                    <tr>
-                      <th>Date</th>
-                      <th>Child</th>
-                      <th>Subject</th>
-                      <th>Score</th>
-                      <th>Strengths</th>
-                      <th>Improvement</th>
-                      <th>Notes</th>
-                      <th>Recorded By</th>
-                    </tr>
-                  </thead>
-                  <tbody id="progressTbody"></tbody>
-                </table>
+            <div class="data-card-body" style="padding: 2rem;">
+              <div class="form-grid" style="margin-bottom: 0;">
+                <div><label class="form-label">Full Name</label><div id="dispParentName" style="font-weight: 500;">-</div></div>
+                <div><label class="form-label">Email Address</label><div id="dispParentEmail" style="font-weight: 500;">-</div></div>
+                <div><label class="form-label">Phone Number</label><div id="dispParentPhone" style="font-weight: 500;">-</div></div>
+                <div><label class="form-label">Emergency Contact</label><div id="dispParentEmergency" style="font-weight: 500;">-</div></div>
               </div>
             </div>
           </div>
-        </div>
-      </section>
 
-      <section id="billing" class="section">
-        <div class="card">
-          <div class="card-header">
-            <div class="card-title">
-              <div class="card-icon" style="background: linear-gradient(135deg, var(--danger), var(--baobab-brown));">
-                <i class="fas fa-file-invoice-dollar"></i>
-              </div>
-              Billing & Payments
-            </div>
-            <div class="card-actions">
-              <div class="search-wrapper" style="min-width: 200px;">
-                <i class="fas fa-search search-icon"></i>
-                <input type="search" class="search-input" id="billingSearch" placeholder="Search billing...">
-              </div>
-              <button class="btn btn-secondary" id="billingExport">
-                <i class="fas fa-download"></i>
-                Export CSV
-              </button>
-            </div>
+          <h3 style="margin-top: 2rem; margin-bottom: 1rem; font-family: 'DM Sans', sans-serif; font-size: 1.1rem; color: var(--text-dark);">Enrolled Students</h3>
+          <div class="family-roster" id="rosterContainer">
+            <div style="padding:2rem; text-align:center; color:var(--text-muted); background:var(--white); border-radius:var(--radius-lg); border:1px solid var(--border-color);">Loading students...</div>
           </div>
-          <div class="card-content">
-            <div class="table-container">
-              <table class="table" id="billingTable">
-                <thead>
-                  <tr>
-                    <th>Created</th>
-                    <th>Description</th>
-                    <th>Amount</th>
-                    <th>Status</th>
-                    <th>Due</th>
-                    <th>Paid At</th>
-                    <th>Method</th>
-                    <th>Txn ID</th>
-                  </tr>
-                </thead>
-                <tbody id="billingTbody"></tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-      </section>
+        </section>
 
-      <section id="agreement" class="section">
-        <div class="card">
-          <div class="card-header">
-            <div class="card-title">
-              <div class="card-icon" style="background: linear-gradient(135deg, var(--canopy-green), var(--sunset-gold));">
-                <i class="fas fa-file-contract"></i>
-              </div>
-              Parent Agreement
-            </div>
-            <div class="card-actions">
-              <button class="btn btn-secondary" id="printAgreement">
-                <i class="fas fa-print"></i>
-                Print Agreement
-              </button>
-              <button class="btn btn-primary" id="downloadAgreementPDF">
-                <i class="fas fa-download"></i>
-                Download PDF
-              </button>
-            </div>
-          </div>
-          <div class="card-content">
-            <div class="agreement-document" id="agreementDocument">
-              <div class="agreement-watermark" style="color: rgba(107, 58, 42, 0.03);">BAOBAB</div>
-              <div class="agreement-content">
-                <div class="agreement-header">
-                  <h1 class="agreement-title" style="color:var(--baobab-brown-dark);">PARENT AGREEMENT</h1>
-                  <p class="agreement-subtitle">Baobab Digital Academy • Educational Excellence</p>
-                </div>
-
-                <div class="agreement-section">
-                  <p style="text-align: center; margin-bottom: 2rem; font-size: 1.05rem; line-height: 1.8; color:var(--gray-800);">
-                    This Agreement is made on the <strong id="agreementDate">_______</strong> day of <strong id="agreementMonth">_______</strong> 2026 between <strong>Baobab Digital Academy</strong> and <strong id="parentNameAgreement">_______</strong>, regarding the education of her children, <span id="childrenListAgreement">_______</span>.
-                  </p>
-                </div>
-
-                <div class="agreement-section">
-                  <h2 class="agreement-section-title">
-                    <div class="agreement-section-icon">
-                      <i class="fas fa-graduation-cap"></i>
-                    </div>
-                    Enrollment & Subjects
-                  </h2>
-                  <div class="agreement-content">
-                    <div class="highlight-info">
-                      <div id="subjectsEnrollmentAgreement">
-                        <p>Loading enrollment details...</p>
-                      </div>
-                    </div>
-                    <div id="tutorAssignmentsAgreement" style="color:var(--gray-700);">
-                      <p>Loading tutor assignments...</p>
-                    </div>
-                  </div>
-                </div>
-
-                <div class="agreement-section">
-                  <h2 class="agreement-section-title">
-                    <div class="agreement-section-icon">
-                      <i class="fas fa-pound-sign"></i>
-                    </div>
-                    Fees
-                  </h2>
-                  <div class="agreement-content">
-                    <div class="highlight-info">
-                      <div id="feesBreakdownAgreement">
-                        <p>Loading fee structure...</p>
-                      </div>
-                    </div>
-                    <ul class="agreement-list">
-                      <li>Fees must be paid before the commencement of classes.</li>
-                      <li>Fees are non-refundable once the term commences.</li>
-                    </ul>
-                  </div>
-                </div>
-
-                <div class="agreement-section">
-                  <h2 class="agreement-section-title">
-                    <div class="agreement-section-icon">
-                      <i class="fas fa-handshake"></i>
-                    </div>
-                    Learning Commitment
-                  </h2>
-                  <div class="agreement-content">
-                    <ul class="agreement-list">
-                      <li>The Academy shall provide qualified instructors and structured lesson delivery.</li>
-                      <li>The Parent agrees to ensure consistent attendance and encourage children to complete assignments.</li>
-                      <li>The Academy shall not be held responsible for missed lessons due to student absence.</li>
-                    </ul>
-                  </div>
-                </div>
-
-                <div class="agreement-section">
-                  <h2 class="agreement-section-title">
-                    <div class="agreement-section-icon">
-                      <i class="fas fa-file-signature"></i>
-                    </div>
-                    Termination
-                  </h2>
-                  <div class="agreement-content">
-                    <ul class="agreement-list">
-                      <li>Either party may terminate this agreement with two (2) weeks' written notice.</li>
-                      <li>No refund will be issued for partial term attendance.</li>
-                    </ul>
-                  </div>
-                </div>
-
-                <div class="signature-section" style="margin-top: 3rem; padding-top: 2rem; border-top: 2px solid var(--gray-200); display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
-                  <div class="signature-block" style="text-align: center; padding: 1.5rem; background: var(--gray-50); border-radius: var(--border-radius); border: 1px solid var(--gray-200);">
-                    <div class="signature-line" style="border-bottom: 2px solid var(--gray-400); margin: 2rem 0 0.5rem; height: 1px;"></div>
-                    <img id="schoolSignatureImage" class="signature-image" src="Images/HOD_Signature.jpg" alt="Head of School Signature" style="max-width: 150px; max-height: 80px; margin: 1rem auto; display: block;">
-                    <div class="signature-title" style="font-weight: 700; color: var(--gray-800);">Head of School</div>
-                    <div class="signature-subtitle" style="font-size: 0.85rem; color: var(--gray-500); font-style: italic;">Baobab Digital Academy</div>
-                    <div style="margin-top: 1rem; font-size: 0.9rem; color: var(--gray-600);">
-                      Date: <strong id="schoolSignatureDate">_____________</strong>
-                    </div>
-                  </div>
-                  <div class="signature-block" style="text-align: center; padding: 1.5rem; background: var(--gray-50); border-radius: var(--border-radius); border: 1px solid var(--gray-200);">
-                    <div class="signature-line" style="border-bottom: 2px solid var(--gray-400); margin: 2rem 0 0.5rem; height: 1px;"></div>
-                    <img id="parentSignatureImage" class="signature-image" alt="Parent Signature" style="max-width: 150px; max-height: 80px; margin: 1rem auto; display: none;">
-                    <div class="signature-upload" style="position: relative; display: inline-block; margin: 1rem 0;">
-                      <input type="file" id="signatureInput" accept="image/*" style="position: absolute; opacity: 0; width: 100%; height: 100%; cursor: pointer;">
-                      <button class="btn btn-secondary">
-                        <i class="fas fa-upload"></i>
-                        Upload Signature
-                      </button>
-                    </div>
-                    <div class="signature-title" id="parentSignatureName" style="font-weight: 700; color: var(--gray-800);">Parent's Name</div>
-                    <div class="signature-subtitle" style="font-size: 0.85rem; color: var(--gray-500); font-style: italic;">Parent/Guardian</div>
-                    <div style="margin-top: 1rem; font-size: 0.9rem; color: var(--gray-600);">
-                      Date: <strong id="parentSignatureDate">_____________</strong>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section id="profile" class="section">
-        <div class="card">
-          <div class="card-header">
-            <div class="card-title">
-              <div class="card-icon" style="background: linear-gradient(135deg, var(--baobab-brown-light), var(--baobab-brown));">
-                <i class="fas fa-user-cog"></i>
-              </div>
-              My Profile
-            </div>
-          </div>
-          <div class="card-content">
-            <div style="display: grid; grid-template-columns: auto 1fr; gap: 2rem; align-items: start;">
-              <div class="avatar-upload" style="position: relative; display: inline-block;">
-                <div class="user-avatar" style="width: 120px; height: 120px; font-size: 2.5rem; border-radius:50%; background: linear-gradient(135deg, var(--sunset-gold), var(--sunset-gold-warm)); display:flex; align-items:center; justify-content:center; color:white; overflow:hidden;" id="profileAvatar">
-                  <span id="profileInitials">P</span>
-                  <img id="profileImage" style="display: none; width:100%; height:100%; object-fit:cover;" alt="Profile">
-                </div>
-                <div class="upload-overlay" style="position: absolute; inset: 0; background: rgba(44, 24, 16, 0.5); border-radius: 50%; display: flex; align-items: center; justify-content: center; opacity: 0; transition: var(--transition); cursor: pointer;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0'" onclick="document.getElementById('avatarInput').click()">
-                  <i class="fas fa-camera" style="color:white; font-size:1.5rem;"></i>
-                </div>
-                <input type="file" id="avatarInput" accept="image/*" style="display: none;">
-              </div>
-              
-              <form id="profileForm">
-                <div class="form-group">
-                  <label class="form-label" for="profileFullName">Full Name</label>
-                  <input class="form-input" id="profileFullName" name="full_name" type="text" placeholder="Enter your full name">
-                </div>
-                <div class="form-group">
-                  <label class="form-label" for="profileEmail">Email</label>
-                  <input class="form-input" id="profileEmail" type="email" readonly>
-                </div>
-                <div class="form-group">
-                  <label class="form-label" for="profilePhone">Phone</label>
-                  <input class="form-input" id="profilePhone" name="phone" type="tel" placeholder="Enter your phone number">
-                </div>
-                <div class="form-group">
-                  <label class="form-label" for="profileAddress">Address</label>
-                  <input class="form-input" id="profileAddress" name="address" type="text" placeholder="Enter your address">
-                </div>
-                <button class="btn btn-primary" type="submit">
-                  <i class="fas fa-save"></i>
-                  Update Profile
-                </button>
-              </form>
-            </div>
-          </div>
-        </div>
-      </section>
-    </main>
+      </main>
+    </div>
   </div>
 
-  <nav class="bottom-nav" style="display: none;">
-    <div class="bottom-nav-container">
-      <a href="#overview" class="bottom-nav-item active" data-section="overview">
-        <i class="fas fa-home"></i>
-        <span>Home</span>
-      </a>
-      <a href="#children" class="bottom-nav-item" data-section="children">
-        <i class="fas fa-child"></i>
-        <span>Children</span>
-      </a>
-      <a href="#lessons" class="bottom-nav-item" data-section="lessons">
-        <i class="fas fa-calendar-alt"></i>
-        <span>Lessons</span>
-      </a>
-      <a href="#reports" class="bottom-nav-item" data-section="reports">
-        <i class="fas fa-file-alt"></i>
-        <span>Reports</span>
-      </a>
-      <a href="#profile" class="bottom-nav-item" data-section="profile">
-        <i class="fas fa-user"></i>
-        <span>Profile</span>
-      </a>
-    </div>
-  </nav>
-
-  <div class="modal" id="childEditModal">
+  <div class="modal-overlay" id="parentModal">
     <div class="modal-content">
       <div class="modal-header">
-        <h3 class="modal-title">Edit Child Information</h3>
-        <button class="modal-close" onclick="closeChildEditModal()">
-          <i class="fas fa-times"></i>
-        </button>
+        <h3 class="modal-title"><i class="fas fa-user-edit"></i> Edit Contact Details</h3>
+        <button class="modal-close" onclick="closeModal('parentModal')"><i class="fas fa-times"></i></button>
       </div>
-      <div class="modal-body">
-        <form id="childEditForm">
-          <input type="hidden" id="editChildId">
-          <div class="form-group">
-            <label class="form-label" for="editChildName">Full Name</label>
-            <input class="form-input" id="editChildName" name="name" type="text" required>
+      <form id="parentForm">
+        <div class="modal-body">
+          <div class="form-grid">
+            <div class="form-group full"><label class="form-label">Full Name *</label><input type="text" class="form-control" id="parentName" required></div>
+            <div class="form-group"><label class="form-label">Email (Read Only)</label><input type="email" class="form-control" id="parentEmail" readonly style="background: #f3f4f6;"></div>
+            <div class="form-group"><label class="form-label">Phone Number</label><input type="tel" class="form-control" id="parentPhone"></div>
+            <div class="form-group full"><label class="form-label">Emergency Contact Name & Number</label><input type="text" class="form-control" id="parentEmergency"></div>
           </div>
-          <div class="form-group">
-            <label class="form-label" for="editChildDOB">Date of Birth</label>
-            <input class="form-input" id="editChildDOB" name="date_of_birth" type="date">
-          </div>
-          <div class="form-group">
-            <label class="form-label" for="editChildGrade">Grade Level</label>
-            <input class="form-input" id="editChildGrade" name="grade_level" type="text">
-          </div>
-          <div class="form-group">
-            <label class="form-label" for="editChildClassType">Class Type</label>
-            <select class="form-select" id="editChildClassType" name="class_type">
-              <option value="Group">Group Class</option>
-              <option value="1-on-1">1-on-1 Class</option>
-              <option value="Exam Intensive">Exam Intensive</option>
-              <option value="Python Programming">Programming & Tech</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label class="form-label" for="editChildEmergency">Emergency Contact</label>
-            <input class="form-input" id="editChildEmergency" name="emergency_contact" type="text">
-          </div>
-          <div class="form-group">
-            <label class="form-label" for="editChildSupportingTutors">Supporting Tutors</label>
-            <input class="form-input" id="editChildSupportingTutors" name="supporting_tutors" type="text" placeholder="Enter supporting tutor names (comma-separated)">
-            <small style="color: var(--gray-500); font-size: 0.8rem; margin-top: 0.25rem; display: block;">
-              Enter names separated by commas, e.g., "John Smith, Jane Doe"
-            </small>
-          </div>
-          <div class="form-group">
-            <label class="form-label" for="editChildMedical">Medical Information</label>
-            <textarea class="form-input" id="editChildMedical" name="medical_info"></textarea>
-          </div>
-          <div class="form-group">
-            <label class="form-label" for="editChildPreferences">Learning Preferences</label>
-            <textarea class="form-input" id="editChildPreferences" name="learning_preferences"></textarea>
-          </div>
-          <button class="btn btn-primary" type="submit" style="width: 100%;">
-            <i class="fas fa-save"></i>
-            Update Child Details
-          </button>
-        </form>
-      </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="closeModal('parentModal')">Cancel</button>
+          <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Save Changes</button>
+        </div>
+      </form>
     </div>
   </div>
 
-  <script>
-    (function() {
-    'use strict';
+  <div class="modal-overlay" id="childModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title"><i class="fas fa-child"></i> Student Details</h3>
+        <button class="modal-close" onclick="closeModal('childModal')"><i class="fas fa-times"></i></button>
+      </div>
+      <form id="childForm">
+        <div class="modal-body">
+          <input type="hidden" id="childId">
+          <div class="form-grid">
+            <div class="form-group full"><label class="form-label">Student Full Name *</label><input type="text" class="form-control" id="childName" required></div>
+            <div class="form-group"><label class="form-label">Date of Birth</label><input type="date" class="form-control" id="childDob"></div>
+            <div class="form-group"><label class="form-label">Grade / Year Level</label><input type="text" class="form-control" id="childGrade" placeholder="e.g. Year 8"></div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="closeModal('childModal')">Cancel</button>
+          <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Save Student</button>
+        </div>
+      </form>
+    </div>
+  </div>
 
-    // Supabase setup
+
+  <script>
     const SUPABASE_URL = 'https://vcxdkacxbjsgaoxbhsip.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZjeGRrYWN4YmpzZ2FveGJoc2lwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI5MDQ5ODMsImV4cCI6MjA2ODQ4MDk4M30.T9KhHWzHZWyaZvyeFXtBu8tPLY9JOn6_wCHcH8B46FU';
-    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    
-    // State
-    let currentUser = null;
-    let parentProfile = null;
-    let children = [];
-    let charts = { avgBySubject: null, trend: null };
-    const cache = {
-      children: [],
-      lessons: [],
-      tutors: [],
-      assessments: [],
-      progress: [],
-      billing: [],
-      fees: [],
-      subjects: []
-    };
+    let myProfile = null;
+    let appData = { children: [], schedules: [], assessments: [], billing: [], subjects: [], tutors: [] };
 
-    // UI elements
-    const menuToggle = document.getElementById('menuToggle');
-    const sidebar = document.getElementById('sidebar');
-    const sidebarOverlay = document.getElementById('sidebarOverlay');
-
-    // Mobile menu functionality
-    function toggleSidebar(open) {
-      const show = open ?? !sidebar.classList.contains('active');
-      sidebar.classList.toggle('active', show);
-      sidebarOverlay.classList.toggle('active', show);
-      document.body.style.overflow = show ? 'hidden' : '';
-      menuToggle.innerHTML = show ? '<i class="fas fa-times"></i>' : '<i class="fas fa-bars"></i>';
-    }
-
-    menuToggle?.addEventListener('click', () => toggleSidebar());
-    sidebarOverlay?.addEventListener('click', () => toggleSidebar(false));
-
-    // Navigation functionality
-    function setActive(sectionId) {
-      // Update sections
-      document.querySelectorAll('.section').forEach(s => 
-        s.classList.toggle('active', s.id === sectionId)
-      );
-      
-      // Update nav links
-      document.querySelectorAll('.nav-link').forEach(a => 
-        a.classList.toggle('active', a.dataset.section === sectionId)
-      );
-      
-      // Update bottom nav
-      document.querySelectorAll('.bottom-nav-item').forEach(b => 
-        b.classList.toggle('active', b.dataset.section === sectionId)
-      );
-      
-      loadSection(sectionId);
-      toggleSidebar(false);
-    }
-
-    function routeFromHash() {
-      const id = (location.hash || '#overview').replace('#', '');
-      setActive(id);
-    }
-
-    window.addEventListener('hashchange', routeFromHash);
-
-    // Add click handlers for navigation
-    document.querySelectorAll('[data-section]').forEach(link => {
-      link.addEventListener('click', (e) => {
-        e.preventDefault();
-        const section = link.dataset.section;
-        location.hash = '#' + section;
+    // --- Navigation Logic ---
+    document.querySelectorAll('.nav-item[data-target]').forEach(link => {
+      link.addEventListener('click', () => {
+        document.querySelectorAll('.nav-item').forEach(l => l.classList.remove('active'));
+        document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
+        link.classList.add('active');
+        document.getElementById(link.dataset.target).classList.add('active');
       });
     });
 
-    // User menu click handler
-    document.getElementById('userMenu').addEventListener('click', () => {
-      location.hash = '#profile';
-    });
+    // --- Modal Helpers ---
+    function openModal(id) { document.getElementById(id).classList.add('active'); }
+    function closeModal(id) { document.getElementById(id).classList.remove('active'); }
 
-    // Tab functionality for reports
-    document.querySelectorAll('.tab-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        // Update tab buttons
-        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        
-        // Update tab content
-        const target = btn.dataset.tab;
-        document.querySelectorAll('.tab-content').forEach(content => {
-          content.classList.toggle('active', content.id === target);
-        });
-      });
-    });
-
-    // Helper functions
-    function initialsOf(str) {
-      if (!str) return 'P';
-      const base = str.includes('@') ? str.split('@')[0] : str;
-      const parts = base.trim().split(/\s+/).filter(Boolean);
-      return (parts[0]?.[0] || base[0] || 'P').toUpperCase() + (parts[1]?.[0] || '').toUpperCase();
-    }
-
-    function fmtDate(d) { 
-      if (!d) return ''; 
-      const dt = new Date(d); 
-      return dt.toLocaleDateString(); 
-    }
-
-    function fmtTime(d) { 
-      if (!d) return ''; 
-      const dt = new Date(d); 
-      return dt.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}); 
-    }
-
-    function yearsFrom(d) {
-      if (!d) return '';
-      const ms = Date.now() - new Date(d).getTime();
-      return Math.floor(ms / (365.25 * 24 * 60 * 60 * 1000));
-    }
-
-    function toPercent(grade, max) { 
-      if (!grade && grade !== 0) return ''; 
-      const denom = max || 100; 
-      const pct = Math.round((Number(grade) / Number(denom)) * 100); 
-      return pct + '%'; 
-    }
-
-    function statusBadge(status) {
-      const s = (status || '').toLowerCase();
-      let className = 'badge-secondary';
-      if (s.includes('paid') || s.includes('active') || s.includes('completed')) {
-        className = 'badge-success';
-      } else if (s.includes('pending') || s.includes('scheduled')) {
-        className = 'badge-warning';
-      } else if (s.includes('failed') || s.includes('overdue') || s.includes('cancelled')) {
-        className = 'badge-danger';
-      }
-      return `<span class="badge ${className}">${status || '—'}</span>`;
-    }
-
-    function escapeCSV(val) {
-      if (val == null) return '';
-      const s = String(val);
-      return /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
-    }
-
-    function exportCSV(filename, rows, columns) {
-      const header = columns.map(c => c.label).join(',');
-      const body = rows.map(r => 
-        columns.map(c => escapeCSV(c.get ? c.get(r) : r[c.key])).join(',')
-      ).join('\n');
-      const csv = header + '\n' + body;
-      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url; 
-      a.download = filename;
-      document.body.appendChild(a); 
-      a.click();
-      document.body.removeChild(a); 
-      URL.revokeObjectURL(url);
-    }
-
-    function numberToWords(num) {
-      const ones = ['', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine'];
-      const teens = ['Ten', 'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen', 'Seventeen', 'Eighteen', 'Nineteen'];
-      const tens = ['', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'];
-      const thousands = ['', 'Thousand', 'Million', 'Billion'];
-
-      if (num === 0) return 'Zero';
-
-      function convertHundreds(n) {
-        let result = '';
-        if (n >= 100) {
-          result += ones[Math.floor(n / 100)] + ' Hundred ';
-          n %= 100;
-        }
-        if (n >= 20) {
-          result += tens[Math.floor(n / 10)] + ' ';
-          n %= 10;
-        } else if (n >= 10) {
-          result += teens[n - 10] + ' ';
-          return result;
-        }
-        if (n > 0) {
-          result += ones[n] + ' ';
-        }
-        return result;
-      }
-
-      let result = '';
-      let thousandCounter = 0;
-
-      while (num > 0) {
-        if (num % 1000 !== 0) {
-          result = convertHundreds(num % 1000) + thousands[thousandCounter] + ' ' + result;
-        }
-        num = Math.floor(num / 1000);
-        thousandCounter++;
-      }
-
-      return result.trim();
-    }
-
-    // Create expandable text cell
-  function createExpandableText(text, maxLength = 120) {
-  if (!text || text.length <= maxLength) {
-    return `<div class="expandable-text">${text || '—'}</div>`;
-  }
-
-  const preview = text.substring(0, maxLength);
-  const uniqueId = 'text_' + Math.random().toString(36).substr(2, 9);
-  
-  return `
-    <div class="expandable-text">
-      <div class="text-preview" id="${uniqueId}_preview">
-        ${preview}...
-        <div class="text-toggle" onclick="toggleText('${uniqueId}')">Show more</div>
-      </div>
-      <div class="text-full" id="${uniqueId}_full">
-        ${text}
-        <div class="text-toggle" onclick="toggleText('${uniqueId}')">Show less</div>
-      </div>
-    </div>
-  `;
-}
-
-    function toggleText(id) {
-      const preview = document.getElementById(id + '_preview');
-      const full = document.getElementById(id + '_full');
-      
-      if (preview.style.display === 'none') {
-        preview.style.display = 'block';
-        full.style.display = 'none';
-      } else {
-        preview.style.display = 'none';
-        full.style.display = 'block';
-      }
-    }
-
-    // Make toggleText globalc
-    window.toggleText = toggleText;
-
-    // Initialize fees table and data
-    async function initializeFeesTable() {
+    // --- Core Data Loading ---
+    async function loadAllData() {
       try {
-        // Load fees into cache
-        const { data: fees, error } = await supabase
-          .from('fees')
-          .select('*');
+        const { data: { session } } = await supabaseClient.auth.getSession();
+        if (!session) { window.location.href = '/index.html'; return; }
+
+        // Fetch Parent Profile
+        const { data: profile } = await supabaseClient.from('parent_profiles').select('*').eq('user_id', session.user.id).single();
+        if (!profile) { alert("Parent profile not found. Please contact support."); return; }
+        myProfile = profile;
         
-        if (error) {
-          console.error('Error loading fees:', error);
-          // Fallback fees
-          cache.fees = [
-            { grade_range: 'Grades 1-6', class_type: 'Group', amount: 40000, currency: 'NGN' },
-            { grade_range: 'Grades 1-6', class_type: '1-on-1', amount: 60000, currency: 'NGN' },
-            { grade_range: 'Grades 7-11', class_type: 'Group', amount: 60000, currency: 'NGN' },
-            { grade_range: 'Grades 7-11', class_type: '1-on-1', amount: 100000, currency: 'NGN' },
-            { grade_range: 'All Grades', class_type: 'Exam Intensive', amount: 100000, currency: 'NGN' },
-            { grade_range: 'All Grades', class_type: 'Python Programming', amount: 40000, currency: 'NGN' }
-          ];
-        } else {
-          cache.fees = fees || [];
-        }
-      } catch (error) {
-        console.error('Error initializing fees table:', error);
-        cache.fees = [];
-      }
-    }
-
-    function getFeeForChild(child) {
-  if (!child || !cache.fees?.length) {
-    return 0;
-  }
-
-  const gradeLevel = child.grade_level ? child.grade_level.toString().trim() : '';
-  const classType = child.class_type || 'Group';
-  
-  // Helper function to check if a grade falls within a range
-  function isGradeInRange(grade, gradeRange) {
-    if (!grade || !gradeRange) return false;
-    
-    // Handle "All Grades" case
-    if (gradeRange.toLowerCase() === 'all grades') {
-      return true;
-    }
-    
-    // Extract numeric part from grade (e.g., "Grade 5" -> 5, "5" -> 5)
-    const gradeNum = parseInt(grade.replace(/\D/g, ''));
-    if (isNaN(gradeNum)) return false;
-    
-    // Parse grade range (e.g., "Grades 1-6" -> [1, 6])
-    const rangeMatch = gradeRange.match(/(\d+)-(\d+)/);
-    if (rangeMatch) {
-      const minGrade = parseInt(rangeMatch[1]);
-      const maxGrade = parseInt(rangeMatch[2]);
-      return gradeNum >= minGrade && gradeNum <= maxGrade;
-    }
-    
-    // Handle single grade (e.g., "Grade 5")
-    const singleGradeMatch = gradeRange.match(/(\d+)/);
-    if (singleGradeMatch) {
-      const targetGrade = parseInt(singleGradeMatch[1]);
-      return gradeNum === targetGrade;
-    }
-    
-    return false;
-  }
-  
-  // Find the matching fee based on grade range and class type
-  const matchingFee = cache.fees.find(fee => {
-    const gradeMatches = isGradeInRange(gradeLevel, fee.grade_range);
-    const classMatches = fee.class_type.toLowerCase() === classType.toLowerCase();
-    return gradeMatches && classMatches;
-  });
-  
-  if (matchingFee) {
-    return Number(matchingFee.amount) || 0;
-  }
-  
-  // Fallback logic if no exact match is found
-  console.warn(`No fee found for grade "${gradeLevel}" and class type "${classType}"`);
-  
-  // Extract numeric grade for fallback
-  const gradeNum = parseInt((gradeLevel || '').replace(/\D/g, ''));
-  
-  if (isNaN(gradeNum)) {
-    return 40000; // Default fallback
-  }
-  
-  // Fallback based on common grade ranges and class types
-  if (classType.toLowerCase().includes('1-on-1')) {
-    return gradeNum >= 7 ? 100000 : 60000;
-  } else if (classType.toLowerCase().includes('exam intensive')) {
-    return 100000;
-  } else if (classType.toLowerCase().includes('python') || classType.toLowerCase().includes('programming')) {
-    return 40000;
-  } else {
-    // Group class fallback
-    return gradeNum >= 7 ? 60000 : 40000;
-  }
-}
-
-    
-// Enhanced PDF Generation Function (drop-in replacement)
-async function generatePDFReport() {
-  if (!children.length) {
-    alert('No children data available to generate report.');
-    return;
-  }
-
-  try {
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF({ unit: 'mm', format: 'a4' });
-
-    // Constants and metrics
-    const baseFont = 'helvetica';
-    const defaultFontSize = 12;
-    const lineSpacing = 1.45; // slightly tighter than 1.5 to improve page fit
-    const mmPerPt = 0.352777778;
-
-    const pageWidth = typeof doc.internal.pageSize.getWidth === 'function'
-      ? doc.internal.pageSize.getWidth()
-      : doc.internal.pageSize.width;
-
-    const pageHeight = typeof doc.internal.pageSize.getHeight === 'function'
-      ? doc.internal.pageSize.getHeight()
-      : doc.internal.pageSize.height;
-
-    const margin = 20;
-    let y = margin;
-
-    // Ensure base font is always set
-    doc.setFont(baseFont, 'normal');
-    doc.setFontSize(defaultFontSize);
-    doc.setTextColor(0, 0, 0);
-
-    // Helpers
-    const lineHeightFor = (fontSize) => fontSize * lineSpacing * mmPerPt;
-
-    function safeText(s) {
-      // Replace punctuation that can render oddly in core fonts
-      return String(s || '')
-        .replace(/[–—]/g, '-')
-        .replace(/[“”]/g, '"')
-        .replace(/[‘’]/g, "'")
-        .replace(/\u00A0/g, ' '); // non-breaking space -> space
-    }
-
-    function addWatermark() {
-      // Draw watermark with low opacity, restoring graphics state afterward
-      const useGState = !!(doc.setGState && doc.GState);
-      if (doc.saveGraphicsState) doc.saveGraphicsState();
-      if (useGState) doc.setGState(new doc.GState({ opacity: 0.05 }));
-
-      doc.setFont(baseFont, 'bold');
-      doc.setFontSize(48);
-      // Baobab Brown for watermark
-      doc.setTextColor(107, 58, 42);
-      doc.text('BAOBAB DIGITAL ACADEMY', pageWidth / 2, pageHeight / 2, {
-        align: 'center',
-        angle: 45
-      });
-
-      if (useGState) doc.setGState(new doc.GState({ opacity: 1 }));
-      if (doc.restoreGraphicsState) doc.restoreGraphicsState();
-
-      // Reset base text state
-      doc.setFont(baseFont, 'normal');
-      doc.setFontSize(defaultFontSize);
-      doc.setTextColor(0, 0, 0);
-    }
-
-    function checkPageBreak(blockHeight = 20) {
-      if (y + blockHeight > pageHeight - margin) {
-        doc.addPage();
-        addWatermark();
-        y = margin;
-        return true;
-      }
-      return false;
-    }
-
-    function writeSectionHeader(title, color = [107, 58, 42], fontSize = 16) {
-      checkPageBreak(lineHeightFor(fontSize) * 1.8);
-      y += lineHeightFor(defaultFontSize) * 0.3;
-
-      doc.setFont(baseFont, 'bold');
-      doc.setFontSize(fontSize);
-      doc.setTextColor(...color);
-      doc.text(safeText(title), margin, y);
-
-      y += fontSize * 1.2 * mmPerPt;
-      doc.setFont(baseFont, 'normal');
-      doc.setFontSize(defaultFontSize);
-      doc.setTextColor(0, 0, 0);
-    }
-
-    function writeSubsectionHeader(title, color = [45, 106, 79], fontSize = 12) {
-      checkPageBreak(lineHeightFor(fontSize) * 1.6);
-      y += lineHeightFor(defaultFontSize) * 0.2;
-
-      doc.setFont(baseFont, 'bold');
-      doc.setFontSize(fontSize);
-      doc.setTextColor(...color);
-      doc.text(safeText(title), margin + 5, y);
-
-      y += fontSize * 1.1 * mmPerPt;
-      doc.setFont(baseFont, 'normal');
-      doc.setFontSize(defaultFontSize);
-      doc.setTextColor(0, 0, 0);
-    }
-
-    // Safer paragraph writer with guarded justification
-    // options = { fontSize, color, indent, bold, align: 'left'|'center'|'right', justify: boolean }
-    function writeParagraph(text, options = {}) {
-      if (!text) return 0;
-
-      const {
-        fontSize = defaultFontSize,
-        color = [0, 0, 0],
-        indent = 0,
-        bold = false,
-        align = 'left',
-        justify = false
-      } = options;
-
-      const t = safeText(text);
-      const lh = lineHeightFor(fontSize);
-      const maxWidth = pageWidth - (2 * margin + indent);
-
-      doc.setFont(baseFont, bold ? 'bold' : 'normal');
-      doc.setFontSize(fontSize);
-      doc.setTextColor(...color);
-
-      const lines = doc.splitTextToSize(t, maxWidth);
-      const paraHeight = lines.length * lh + lh * 0.3;
-      checkPageBreak(paraHeight);
-
-      const x0 = margin + indent;
-
-      lines.forEach((line, i) => {
-        // Justify all but the last line (optional)
-        if (justify && i < lines.length - 1) {
-          const words = line.trim().split(/\s+/);
-          const spaces = Math.max(words.length - 1, 0);
-
-          if (spaces > 0) {
-            const wordsWidth = words.reduce((sum, w) => sum + doc.getTextWidth(w), 0);
-            const available = maxWidth - wordsWidth;
-            const baseSpace = doc.getTextWidth(' ');
-
-            // Additional spacing per gap (beyond a single space)
-            let extraPerSpace = available / spaces - baseSpace;
-
-            // Guard against extreme spacing (which causes garbling)
-            const maxExtra = baseSpace * 2; // up to 3x a normal space total
-            if (!isFinite(extraPerSpace)) extraPerSpace = 0;
-            if (extraPerSpace > maxExtra) extraPerSpace = maxExtra;
-            if (extraPerSpace < -baseSpace) extraPerSpace = -baseSpace * 0.8;
-
-            // If the line is too short (one or two words), left-align it (safer)
-            if (words.length <= 2) {
-              doc.text(line, x0, y);
-            } else {
-              let x = x0;
-              words.forEach((w, wi) => {
-                doc.text(w, x, y);
-                if (wi < words.length - 1) {
-                  x += doc.getTextWidth(w) + baseSpace + extraPerSpace;
-                }
-              });
-            }
-          } else {
-            // single word line
-            doc.text(line, x0, y);
-          }
-        } else {
-          // No justification / last line
-          if (align === 'center') {
-            doc.text(line, pageWidth / 2, y, { align: 'center' });
-          } else if (align === 'right') {
-            doc.text(line, pageWidth - margin, y, { align: 'right' });
-          } else {
-            doc.text(line, x0, y);
-          }
-        }
-
-        y = +(y + lh).toFixed(2);
-      });
-
-      y += lh * 0.3;
-
-      // Restore base font state
-      doc.setFont(baseFont, 'normal');
-      doc.setFontSize(defaultFontSize);
-      doc.setTextColor(0, 0, 0);
-
-      return lines.length;
-    }
-
-    // Analysis helpers
-    function getPerformanceAnalysis(assessments) {
-      if (!assessments?.length) return null;
-
-      const scores = assessments
-        .map(a => {
-          const g = Number(a.grade);
-          const m = Number(a.max_grade) || 100;
-          if (!isFinite(g) || !isFinite(m) || m <= 0) return null;
-          return Math.max(0, Math.min(100, (g / m) * 100));
-        })
-        .filter(v => v !== null);
-
-      if (!scores.length) return null;
-
-      const avg = scores.reduce((s, v) => s + v, 0) / scores.length;
-      return {
-        average: Math.round(avg),
-        total: assessments.length
-      };
-    }
-
-    function scoreBandMessage(avg, scope = 'overall', subject = '') {
-      const subj = subject ? `in ${subject}` : 'in this area';
-
-      if (avg >= 85) {
-        return scope === 'overall'
-          ? 'Outstanding performance; demonstrates excellent mastery and consistent high-quality work. Sustain momentum with enrichment and stretch tasks.'
-          : `Excellent attainment ${subj}; deep understanding and consistent accuracy. Encourage extension activities and further challenge.`;
-      } else if (avg >= 70) {
-        return scope === 'overall'
-          ? 'Good performance; strong understanding with minor gaps. Maintain regular practice and begin targeted revision of weaker objectives.'
-          : `Good understanding ${subj} with minor gaps. Maintain practice and address weaker objectives with short, focused reviews.`;
-      } else if (avg >= 55) {
-        return scope === 'overall'
-          ? 'Satisfactory performance; consistent engagement but room to improve. Prioritise regular revision of weaker topics and short weekly assessments.'
-          : `Satisfactory attainment ${subj}. Continue practice, prioritise consolidation of core concepts, and use quick formative checks.`;
-      } else if (avg >= 40) {
-        return scope === 'overall'
-          ? 'Developing performance; foundational understanding is emerging. Increase guided practice, revisit core concepts, and schedule frequent feedback loops.'
-          : `Developing understanding ${subj}. Revisit prerequisite skills, increase guided practice, and set short, achievable goals.`;
-      } else {
-        return scope === 'overall'
-          ? 'At-risk performance; structured intervention is recommended. Focus on prerequisite skills, scaffold tasks, and increase monitoring and feedback.'
-          : `At-risk attainment ${subj}. Implement focused intervention on core skills and provide scaffolded tasks with close monitoring.`;
-      }
-    }
-
-    function recommendationsForAverage(avg) {
-      if (avg >= 85) {
-        return 'Maintain an accelerated pathway with enrichment tasks, independent projects, and peer mentoring to deepen mastery.';
-      } else if (avg >= 70) {
-        return 'Continue steady practice, add weekly targeted revision for gaps, and use spaced retrieval to strengthen retention.';
-      } else if (avg >= 55) {
-        return 'Prioritise weekly revision of weaker objectives, use short formative quizzes, and reinforce core strategies during lessons.';
-      } else if (avg >= 40) {
-        return 'Increase guided practice on fundamental concepts, use structured worked examples, and check understanding in small, frequent intervals.';
-      } else {
-        return 'Adopt an intervention plan: rebuild prerequisite knowledge, break objectives into smaller steps, and increase parent–tutor check-ins.';
-      }
-    }
-
-    // Cover page
-    addWatermark();
-
-    doc.setFont(baseFont, 'bold');
-    doc.setFontSize(28);
-    // Baobab Brown
-    doc.setTextColor(107, 58, 42);
-    doc.text('BAOBAB DIGITAL ACADEMY', pageWidth / 2, y + 20, { align: 'center' });
-    y += 35;
-
-    doc.setFontSize(20);
-    // Canopy Green
-    doc.setTextColor(45, 106, 79);
-    doc.text('Student Progress & Assessment Report', pageWidth / 2, y, { align: 'center' });
-    y += 40;
-
-    doc.setFont(baseFont, 'normal');
-    doc.setFontSize(14);
-    doc.setTextColor(0, 0, 0);
-    doc.text('Academic Year 2025–2026', pageWidth / 2, y, { align: 'center' });
-    y += 10;
-    doc.text(new Date().toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' }), pageWidth / 2, y, { align: 'center' });
-    y += 40;
-
-    writeParagraph(`Dear ${safeText(parentProfile?.full_name || 'Valued Parent')},`, { fontSize: 14, bold: true });
-    writeParagraph(
-      `This report provides a comprehensive overview of your ${children.length === 1 ? "child's" : "children's"} academic progress, including assessment results, tutor observations, and recommendations for continued growth.`,
-      { justify: true }
-    );
-
-    // Per-child pages
-    for (let i = 0; i < children.length; i++) {
-      const child = children[i];
-
-      doc.addPage();
-      addWatermark();
-      y = margin;
-
-      // Header
-      doc.setFont(baseFont, 'bold');
-      doc.setFontSize(20);
-      doc.setTextColor(107, 58, 42); // Baobab Brown
-      doc.text(safeText((child.name || '').toUpperCase()), margin, y);
-      y += 15;
-
-      doc.setFont(baseFont, 'normal');
-      doc.setFontSize(12);
-      doc.setTextColor(0, 0, 0);
-      doc.text(
-        safeText(`Grade: ${child.grade_level || 'N/A'} | Class Type: ${child.class_type || 'Group'}`),
-        margin,
-        y
-      );
-      y += 18;
-
-      // Data for this child
-      const childAssessments = cache.assessments.filter(a => a.children?.name === child.name);
-      const childProgress = cache.progress.filter(p => p.child_name === child.name);
-      const performance = getPerformanceAnalysis(childAssessments);
-
-      // Academic performance
-      if (performance) {
-        writeSectionHeader('ACADEMIC PERFORMANCE', [107, 58, 42], 16);
-
-        writeSubsectionHeader('Overall Score Summary', [45, 106, 79], 12);
-        const overallText =
-          `${child.name} completed ${performance.total} ${performance.total === 1 ? 'assessment' : 'assessments'} ` +
-          `with an average score of ${performance.average}%. ` +
-          scoreBandMessage(performance.average, 'overall');
-        writeParagraph(overallText, { indent: 10, justify: true });
-
-        // Subject breakdown
-        const subjectGroups = {};
-        childAssessments.forEach(a => {
-          const subject = a.subjects?.name || 'General Studies';
-          subjectGroups[subject] = subjectGroups[subject] || [];
-          subjectGroups[subject].push(a);
-        });
-
-        for (const subject of Object.keys(subjectGroups)) {
-          const subjectPerf = getPerformanceAnalysis(subjectGroups[subject]);
-          if (!subjectPerf) continue;
-
-          const subjectText =
-            `In ${subject}, the student completed ${subjectPerf.total} ${subjectPerf.total === 1 ? 'assessment' : 'assessments'} ` +
-            `achieving an average of ${subjectPerf.average}%. ` +
-            scoreBandMessage(subjectPerf.average, 'subject', subject);
-
-          writeParagraph(subjectText, { indent: 15, color: [60, 60, 60], justify: true });
-        }
-      }
-
-      // Tutor observations (recent)
-      if (childProgress.length > 0) {
-        // Sunset Gold for observations header
-        writeSectionHeader('TUTOR OBSERVATIONS', [244, 162, 97], 16);
-
-        childProgress.slice(0, 3).forEach(rec => {
-          // Strengths
-          if (rec.strengths) {
-            writeSubsectionHeader('Strengths', [45, 106, 79], 12);
-            writeParagraph(rec.strengths, { indent: 15, justify: true });
-          }
-
-          // Areas for Improvement
-          if (rec.areas_of_improvement) {
-            writeSubsectionHeader('Areas for Improvement', [231, 111, 81], 12);
-            writeParagraph(rec.areas_of_improvement, { indent: 15, justify: true });
-          }
-
-          // Goals
-          if (rec.goals) {
-            writeSubsectionHeader('Learning Goals', [244, 162, 97], 12);
-            writeParagraph(rec.goals, { indent: 15, justify: true });
-          }
-
-          // Notes
-          if (rec.notes) {
-            writeSubsectionHeader('Additional Notes', [100, 100, 100], 12);
-            writeParagraph(rec.notes, { indent: 15, color: [60, 60, 60], justify: true });
-          }
-
-          y += 6;
-        });
-      }
-
-      // Recommendations
-      writeSectionHeader('RECOMMENDATIONS', [244, 162, 97], 16);
-      if (performance) {
-        writeParagraph(recommendationsForAverage(performance.average), { indent: 10, justify: true });
-      } else {
-        writeParagraph('Insufficient assessment data to compute tailored recommendations. Continue regular practice and request a diagnostic check.', { indent: 10, justify: true });
-      }
-
-      // Summary box
-      if (performance) {
-        checkPageBreak(30);
-        y += 6;
-
-        doc.setDrawColor(107, 58, 42); // Baobab Brown
-        doc.setLineWidth(0.5);
-        const boxX = margin;
-        const boxY = y;
-        const boxW = pageWidth - 2 * margin;
-        const boxH = 25;
-        doc.rect(boxX, boxY, boxW, boxH);
-
-        doc.setFont(baseFont, 'bold');
-        doc.setFontSize(12);
-        doc.setTextColor(107, 58, 42);
-        doc.text('SUMMARY', boxX + 6, boxY + 9);
-
-        doc.setFont(baseFont, 'normal');
-        doc.setFontSize(11);
-        doc.setTextColor(0, 0, 0);
-        const summaryText = `Assessments: ${performance.total} | Average: ${performance.average}% | Progress Records: ${childProgress.length}`;
-        doc.text(summaryText, boxX + 6, boxY + 17);
-
-        y += boxH + 6;
-      }
-    }
-
-    // Closing page
-    doc.addPage();
-    addWatermark();
-    y = margin + 30;
-
-    writeSectionHeader('THANK YOU', [107, 58, 42], 18);
-    writeParagraph(
-      'Thank you for choosing Baobab Digital Academy. We remain committed to your child’s educational success and look forward to continued partnership in their learning journey. Our dedicated team will continue to provide comprehensive support and regular updates on academic progress.',
-      { justify: true }
-    );
-
-    y += 10;
-    doc.setFont(baseFont, 'normal');
-    doc.setFontSize(12);
-    doc.setTextColor(100, 100, 100);
-    doc.text('Baobab Digital Academy – Excellence in Digital Education', pageWidth / 2, y, { align: 'center' });
-    y += 7;
-    doc.text('admin@baobabonlineacademy.com | www.baobabonlineacademy.com', pageWidth / 2, y, { align: 'center' });
-
-    // Save
-    const studentNames = children.map(c => c.name).join('_').replace(/\s+/g, '_');
-    const filename = `Baobab_Report_${studentNames}_${new Date().toISOString().split('T')[0]}.pdf`;
-    doc.save(filename);
-  } catch (error) {
-    console.error('Error generating PDF:', error);
-    alert('Failed to generate report. Please try again.');
-  }
-}
-    // Auth functions
-    async function ensureAuth() {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) { 
-        location.href = '/index.html'; 
-        return null; 
-      }
-      if (!session.user.email_confirmed_at) { 
-        alert('Please verify your email.'); 
-        location.href = '/index.html'; 
-        return null; 
-      }
-      currentUser = session.user;
-      return currentUser;
-    }
-
-    async function loadProfile() {
-      const { data: profile } = await supabase
-        .from('parent_profiles')
-        .select('*')
-        .eq('user_id', currentUser.id)
-        .maybeSingle();
-        
-      if (!profile) {
-        const fallback = {
-          user_id: currentUser.id,
-          full_name: currentUser.user_metadata?.full_name || '',
-          email: currentUser.email,
-          phone: currentUser.user_metadata?.phone || ''
-        };
-        const { data: created } = await supabase
-          .from('parent_profiles')
-          .insert([fallback])
-          .select()
-          .single();
-        parentProfile = created || fallback;
-      } else {
-        parentProfile = profile;
-      }
-      
-      const displayName = (parentProfile.full_name?.trim()) || 
-                          (currentUser.user_metadata?.full_name?.trim()) || 
-                          (currentUser.email?.split('@')[0]) || 'Parent';
-      const firstName = displayName.split(' ')[0];
-      
-      // Update UI elements
-      document.getElementById('userName').textContent = displayName;
-      document.getElementById('parentName').textContent = firstName;
-      
-      const initials = initialsOf(parentProfile.full_name || currentUser.email);
-      document.getElementById('userInitials').textContent = initials;
-      document.getElementById('profileInitials').textContent = initials;
-
-      // Update profile form
-      document.getElementById('profileFullName').value = parentProfile.full_name || '';
-      document.getElementById('profileEmail').value = currentUser.email || '';
-      document.getElementById('profilePhone').value = parentProfile.phone || '';
-      document.getElementById('profileAddress').value = parentProfile.address || '';
-
-      // Load profile image if exists
-      if (parentProfile.profile_image_url) {
-        const profileImg = document.getElementById('profileImage');
-        const userAvatarImg = document.querySelector('#userAvatar img');
-        
-        profileImg.src = parentProfile.profile_image_url;
-        profileImg.style.display = 'block';
-        document.getElementById('profileInitials').style.display = 'none';
-        
-        if (userAvatarImg) {
-          userAvatarImg.src = parentProfile.profile_image_url;
-          userAvatarImg.style.display = 'block';
-          document.getElementById('userInitials').style.display = 'none';
-        } else {
-          // Create img element for header avatar
-          const headerAvatar = document.getElementById('userAvatar');
-          const newImg = document.createElement('img');
-          newImg.src = parentProfile.profile_image_url;
-          newImg.alt = 'Profile';
-          headerAvatar.appendChild(newImg);
-          document.getElementById('userInitials').style.display = 'none';
-        }
-      }
-
-      // Load parent signature if exists
-      if (parentProfile.signature_url) {
-        const sigImg = document.getElementById('parentSignatureImage');
-        sigImg.src = parentProfile.signature_url;
-        sigImg.style.display = 'block';
-        document.querySelector('.signature-upload').style.display = 'none';
-      }
-    }
-
-    // Profile image upload functionality
-    document.querySelector('.avatar-upload').addEventListener('click', () => {
-      document.getElementById('avatarInput').click();
-    });
-
-    document.getElementById('avatarInput').addEventListener('change', async (e) => {
-      const file = e.target.files[0];
-      if (!file) return;
-
-      if (!file.type.startsWith('image/')) {
-        alert('Please select an image file.');
-        return;
-      }
-
-      if (file.size > 5 * 1024 * 1024) {
-        alert('File size must be less than 5MB.');
-        return;
-      }
-
-      try {
-        const fileExt = file.name.split('.').pop();
-        const fileName = `${currentUser.id}-${Date.now()}.${fileExt}`;
-        
-        const { data, error } = await supabase.storage
-          .from('profile-images')
-          .upload(fileName, file);
-
-        if (error) throw error;
-
-        const { data: { publicUrl } } = supabase.storage
-          .from('profile-images')
-          .getPublicUrl(fileName);
-
-        const { error: updateError } = await supabase
-          .from('parent_profiles')
-          .update({ 
-            profile_image_url: publicUrl,
-            updated_at: new Date().toISOString()
-          })
-          .eq('user_id', currentUser.id);
-
-        if (updateError) throw updateError;
-
-        // Update UI
-        const profileImg = document.getElementById('profileImage');
-        profileImg.src = publicUrl;
-        profileImg.style.display = 'block';
-        document.getElementById('profileInitials').style.display = 'none';
-
-        const headerAvatar = document.getElementById('userAvatar');
-        let headerImg = headerAvatar.querySelector('img');
-        if (!headerImg) {
-          headerImg = document.createElement('img');
-          headerImg.alt = 'Profile';
-          headerAvatar.appendChild(headerImg);
-        }
-        headerImg.src = publicUrl;
-        headerImg.style.display = 'block';
-        document.getElementById('userInitials').style.display = 'none';
-
-        alert('Profile image updated successfully!');
-      } catch (error) {
-        console.error('Error uploading image:', error);
-        alert('Failed to upload image. Please try again.');
-      }
-    });
-
-    // Signature upload functionality
-    document.getElementById('signatureInput').addEventListener('change', async (e) => {
-      const file = e.target.files[0];
-      if (!file) return;
-
-      if (!file.type.startsWith('image/')) {
-        alert('Please select an image file.');
-        return;
-      }
-
-      if (file.size > 2 * 1024 * 1024) {
-        alert('Signature file size must be less than 2MB.');
-        return;
-      }
-
-      try {
-        const fileExt = file.name.split('.').pop();
-        const fileName = `signature-${currentUser.id}-${Date.now()}.${fileExt}`;
-        
-        const { data, error } = await supabase.storage
-          .from('signatures')
-          .upload(fileName, file);
-
-        if (error) throw error;
-
-        const { data: { publicUrl } } = supabase.storage
-          .from('signatures')
-          .getPublicUrl(fileName);
-
-        const { error: updateError } = await supabase
-          .from('parent_profiles')
-          .update({ 
-            signature_url: publicUrl,
-            agreement_signed_at: new Date().toISOString(),
-            updated_at: new Date().toISOString()
-          })
-          .eq('user_id', currentUser.id);
-
-        if (updateError) throw updateError;
-
-        // Update UI
-        const sigImg = document.getElementById('parentSignatureImage');
-        sigImg.src = publicUrl;
-        sigImg.style.display = 'block';
-        document.querySelector('.signature-upload').style.display = 'none';
-
-        alert('Signature uploaded successfully!');
-      } catch (error) {
-        console.error('Error uploading signature:', error);
-        alert('Failed to upload signature. Please try again.');
-      }
-    });
-
-    async function loadChildren() {
-      const { data, error } = await supabase
-        .from('children')
-        .select('*')
-        .eq('parent_id', currentUser.id)
-        .order('created_at', { ascending: true });
-      if (error) { 
-        console.error(error); 
-        children = []; 
-        return; 
-      }
-      children = data || [];
-      cache.children = children;
-    }
-
-    async function loadSubjects() {
-      const { data, error } = await supabase
-        .from('subjects')
-        .select('*')
-        .eq('is_active', true)
-        .order('name');
-      if (error) {
-        console.error('Error loading subjects:', error);
-        cache.subjects = [];
-        return;
-      }
-      cache.subjects = data || [];
-    }
-
-    async function loadDashboardStats() {
-      if (!children.length) {
-        document.getElementById('totalLessons').textContent = 0;
-        document.getElementById('averageGrade').textContent = '0%';
-        document.getElementById('culturalMilestones').textContent = 0;
-        document.getElementById('activeTutors').textContent = 0;
-        return;
-      }
-      const ids = children.map(c => c.id);
-
-      const { data: lessons } = await supabase
-        .from('lessons')
-        .select('id')
-        .in('child_id', ids)
-        .eq('status', 'completed');
-      document.getElementById('totalLessons').textContent = lessons?.length || 0;
-
-      const { data: grades } = await supabase
-        .from('assessments')
-        .select('grade,max_grade')
-        .in('child_id', ids);
-      if (grades?.length) {
-        const avg = grades.reduce((s, g) => s + (Number(g.grade) / (Number(g.max_grade) || 100)) * 100, 0) / grades.length;
-        document.getElementById('averageGrade').textContent = Math.round(avg) + '%';
-      } else {
-        document.getElementById('averageGrade').textContent = '0%';
-      }
-
-      const { data: milestones } = await supabase
-        .from('cultural_milestones')
-        .select('id')
-        .in('child_id', ids)
-        .eq('achieved', true);
-      document.getElementById('culturalMilestones').textContent = milestones?.length || 0;
-
-      const { data: tutorAssignments } = await supabase
-        .from('tutor_assignments')
-        .select('tutor_id')
-        .in('child_id', ids)
-        .eq('status', 'active');
-      const uniqueTutors = [...new Set((tutorAssignments || []).map(t => t.tutor_id))];
-      document.getElementById('activeTutors').textContent = uniqueTutors.length;
-    }
-
-    // Overview widgets
-    async function loadOverviewCards() {
-      const cids = children.map(c => c.id);
-      
-      // Recent progress
-      const { data: recent } = await supabase
-        .from('progress_records')
-        .select('score, recorded_at, children:child_id(name), subjects:subject_id(name)')
-        .in('child_id', cids)
-        .order('recorded_at', { ascending: false })
-        .limit(5);
-
-      const progWrap = document.getElementById('overviewProgress');
-      if (!recent?.length) {
-        progWrap.innerHTML = '<div class="empty-state"><i class="fas fa-chart-line"></i><div>No progress records yet.</div></div>';
-      } else {
-        progWrap.innerHTML = recent.map(p => `
-          <div class="progress-item">
-            <div class="progress-info">
-              <div class="progress-title">${p.subjects?.name || 'Subject'}</div>
-              <div class="progress-subtitle">${p.children?.name || 'Child'} • ${fmtDate(p.recorded_at)}</div>
-            </div>
-            <div class="progress-visual">
-              <div class="progress-bar">
-                <div class="progress-fill" style="width: ${Number(p.score) || 0}%"></div>
-              </div>
-              <div class="badge badge-success">${Number(p.score) || 0}%</div>
-            </div>
-          </div>
-        `).join('');
-      }
-
-      // Upcoming lessons - Fixed the query to show lessons after current time
-      const nowIso = new Date().toISOString();
-      const { data: lessons } = await supabase
-        .from('lessons')
-        .select('*')
-        .in('child_id', cids)
-        .in('status', ['scheduled', 'confirmed'])  // Include both scheduled and confirmed
-        .gte('scheduled_at', nowIso)
-        .order('scheduled_at', { ascending: true })
-        .limit(5);
-
-      let upcoming = [];
-      if (lessons?.length) {
-        const tutorIds = [...new Set(lessons.map(l => l.tutor_id).filter(Boolean))];
-        const childIds = [...new Set(lessons.map(l => l.child_id).filter(Boolean))];
-        const subjectIds = [...new Set(lessons.map(l => l.subject_id).filter(Boolean))];
-
-        const [tutorResults, childResults, subjectResults] = await Promise.all([
-          tutorIds.length ? supabase.from('tutor_profiles').select('id, full_name').in('id', tutorIds) : { data: [] },
-          childIds.length ? supabase.from('children').select('id, name').in('id', childIds) : { data: [] },
-          subjectIds.length ? supabase.from('subjects').select('id, name').in('id', subjectIds) : { data: [] }
+        // Update UI Headers
+        document.getElementById('topParentName').innerText = profile.full_name;
+        document.getElementById('topParentInitial').innerText = profile.full_name.charAt(0).toUpperCase();
+        document.getElementById('welcomeMessage').innerText = `Welcome back, ${profile.full_name.split(' ')[0]}`;
+
+        // Populate Family Profile Tab
+        document.getElementById('dispParentName').innerText = profile.full_name;
+        document.getElementById('dispParentEmail').innerText = profile.email || 'Not provided';
+        document.getElementById('dispParentPhone').innerText = profile.phone || 'Not provided';
+        document.getElementById('dispParentEmergency').innerText = profile.emergency_contact || 'Not provided';
+
+        // Fetch Data (RLS guarantees we only get our own data)
+        const [cRes, schRes, aRes, bRes, sRes, tRes] = await Promise.all([
+          supabaseClient.from('children').select('*').order('created_at', { ascending: false }),
+          supabaseClient.from('class_schedules').select('*').order('day_of_week'),
+          supabaseClient.from('assessments').select('*').order('conducted_at', { ascending: false }),
+          supabaseClient.from('billing_records').select('*').order('created_at', { ascending: false }),
+          supabaseClient.from('subjects').select('*'),
+          supabaseClient.from('tutor_profiles').select('id, full_name') // Might return empty if RLS isn't updated, code handles this gracefully
         ]);
 
-        const tutorMap = new Map((tutorResults.data || []).map(t => [t.id, t]));
-        const childMap = new Map((childResults.data || []).map(c => [c.id, c]));
-        const subjectMap = new Map((subjectResults.data || []).map(s => [s.id, s]));
+        appData.children = cRes.data || [];
+        appData.schedules = schRes.data || [];
+        appData.assessments = aRes.data || [];
+        appData.billing = bRes.data || [];
+        appData.subjects = sRes.data || [];
+        appData.tutors = tRes.data || [];
 
-        upcoming = lessons.map(lesson => ({
-          ...lesson,
-          tutor_name: tutorMap.get(lesson.tutor_id)?.full_name || 'Tutor',
-          child_name: childMap.get(lesson.child_id)?.name || '',
-          subject_name: subjectMap.get(lesson.subject_id)?.name || 'Subject'
-        }));
+        // In-Memory Linking
+        appData.schedules.forEach(s => {
+          s.children = appData.children.find(c => c.id === s.child_id);
+          s.subjects = appData.subjects.find(sub => sub.id === s.subject_id);
+          s.tutor_name = appData.tutors.find(t => t.id === s.tutor_id)?.full_name || 'Assigned Tutor';
+        });
+        
+        appData.assessments.forEach(a => {
+          a.children = appData.children.find(c => c.id === a.child_id);
+          a.subjects = appData.subjects.find(s => s.id === a.subject_id);
+          a.tutor_name = appData.tutors.find(t => t.id === a.tutor_id)?.full_name || 'Assigned Tutor';
+        });
+
+        renderDashboards();
+      } catch (err) { console.error(err); }
+    }
+
+    function renderDashboards() {
+      // --- Stats ---
+      document.getElementById('statStudents').innerText = appData.children.length;
+      document.getElementById('statClasses').innerText = appData.schedules.filter(s => s.status === 'active').length;
+      document.getElementById('statInvoices').innerText = appData.billing.filter(b => b.status === 'pending').length;
+
+      // --- Quick Join (Dashboard) & Timetable ---
+      if (appData.schedules.length === 0) {
+        const emptyMsg = `<div style="padding:2rem; text-align:center; color:var(--text-muted)">No active classes scheduled yet. Admin will assign tutors soon.</div>`;
+        document.getElementById('quickJoinContainer').innerHTML = emptyMsg;
+        document.getElementById('timetableContainer').innerHTML = emptyMsg;
+      } else {
+        const schedHtml = appData.schedules.map(s => {
+          const color = s.subjects?.color_code || '#6b7280';
+          const subjBadge = `<span class="badge" style="background-color:${color}20; color:${color}; border:1px solid ${color}40;">${s.subjects?.name || '-'}</span>`;
+          const btn = s.meeting_url 
+            ? `<a href="${s.meeting_url}" target="_blank" class="btn btn-sm btn-meet"><i class="fas fa-video"></i> Join Class</a>` 
+            : `<span class="badge badge-gray">Link Pending</span>`;
+          return `
+          <tr>
+            <td><strong>${s.children?.name || '-'}</strong><br><small style="color:var(--text-muted)">${s.tutor_name}</small></td>
+            <td>${subjBadge}</td>
+            <td>Every <strong>${s.day_of_week}</strong><br><span style="color:var(--text-muted)">${s.start_time.substring(0,5)}</span></td>
+            <td style="text-align:right;">${btn}</td>
+          </tr>`
+        }).join('');
+        
+        const tableStructure = `<table class="table"><thead><tr><th>Student & Tutor</th><th>Subject</th><th>Schedule</th><th style="text-align:right;">Access</th></tr></thead><tbody>${schedHtml}</tbody></table>`;
+        document.getElementById('quickJoinContainer').innerHTML = tableStructure;
+        document.getElementById('timetableContainer').innerHTML = tableStructure;
       }
 
-      const lessonsWrap = document.getElementById('overviewLessons');
-      if (!upcoming?.length) {
-        lessonsWrap.innerHTML = '<div class="empty-state"><i class="fas fa-calendar-alt"></i><div>No upcoming lessons scheduled.</div></div>';
+      // --- Progress / Assessments ---
+      if (appData.assessments.length === 0) {
+        document.getElementById('progressContainer').innerHTML = `<div style="padding:2rem; text-align:center; color:var(--text-muted)">No assessments logged yet for this term.</div>`;
       } else {
-        lessonsWrap.innerHTML = upcoming.map(l => {
-          const dt = new Date(l.scheduled_at);
-          const isToday = dt.toDateString() === new Date().toDateString();
-          
+        const assHtml = appData.assessments.map(a => {
+          const color = a.subjects?.color_code || '#6b7280';
+          const subjBadge = `<span class="badge" style="background-color:${color}20; color:${color}; border:1px solid ${color}40; margin-top:5px;">${a.subjects?.name || '-'}</span>`;
           return `
-            <div class="progress-item">
-              <div class="progress-info">
-                <div class="progress-title">${l.subject_name}</div>
-                <div class="progress-subtitle">with ${l.tutor_name} • ${l.child_name}</div>
-              </div>
-              <div class="progress-visual" style="gap: 0.75rem;">
-                <div class="badge badge-warning">${isToday ? 'Today' : fmtDate(l.scheduled_at)} ${fmtTime(l.scheduled_at)}</div>
-                ${isToday && l.meeting_url ? 
-                  `<a class="btn btn-success btn-sm" href="${l.meeting_url}" target="_blank" rel="noopener"><i class="fas fa-video"></i> Join</a>` : 
-                  `<span class="badge badge-secondary">${l.status || 'Scheduled'}</span>`
-                }
+          <tr>
+            <td><strong>${a.children?.name || '-'}</strong><br>${subjBadge}</td>
+            <td><span class="badge badge-primary">${a.type || 'Assessment'}</span><br><strong>${a.title}</strong></td>
+            <td><strong style="font-size:1.2rem; color:var(--canopy-green);">${a.grade}/${a.max_grade}</strong></td>
+            <td><p style="font-size:0.85rem; color:var(--text-muted); max-width:300px; margin:0;">"${a.feedback || 'No feedback provided.'}"</p><small style="color:#aaa">- ${a.tutor_name}</small></td>
+          </tr>`
+        }).join('');
+        document.getElementById('progressContainer').innerHTML = `<table class="table"><thead><tr><th>Student</th><th>Term & Topic</th><th>Score</th><th>Tutor Feedback</th></tr></thead><tbody>${assHtml}</tbody></table>`;
+      }
+
+      // --- Billing ---
+      if (appData.billing.length === 0) {
+        document.getElementById('billingContainer').innerHTML = `<div style="padding:2rem; text-align:center; color:var(--text-muted)">No invoices currently on record.</div>`;
+      } else {
+        const billingHtml = appData.billing.map(b => {
+          let badgeClass = 'badge-gray';
+          if (b.status === 'paid') badgeClass = 'badge-success';
+          if (b.status === 'pending') badgeClass = 'badge-warning';
+          if (b.status === 'overdue') badgeClass = 'badge-danger';
+          return `
+          <tr>
+            <td><strong>${b.description}</strong></td>
+            <td>£${b.amount}</td>
+            <td>${b.due_date || '-'}</td>
+            <td><span class="badge ${badgeClass}">${b.status.toUpperCase()}</span></td>
+          </tr>`
+        }).join('');
+        document.getElementById('billingContainer').innerHTML = `<table class="table"><thead><tr><th>Description</th><th>Amount</th><th>Due Date</th><th>Status</th></tr></thead><tbody>${billingHtml}</tbody></table>`;
+      }
+
+      // --- Family Roster ---
+      const rosterContainer = document.getElementById('rosterContainer');
+      if (appData.children.length === 0) {
+        rosterContainer.innerHTML = `<div style="padding:2rem; text-align:center; color:var(--text-muted); background:var(--white); border-radius:var(--radius-lg); border:1px solid var(--border-color);">You have no students enrolled yet.</div>`;
+      } else {
+        rosterContainer.innerHTML = appData.children.map(c => {
+          const statColor = (!c.status || c.status.toLowerCase() === 'active') ? 'var(--canopy-green)' : '#9ca3af';
+          return `
+          <div class="student-card">
+            <div class="student-info">
+              <h4>${c.name}</h4>
+              <div class="student-meta">
+                <span><i class="fas fa-graduation-cap"></i> ${c.grade_level || 'Grade not set'}</span>
+                <span><i class="fas fa-circle" style="color:${statColor}; font-size:0.6rem; vertical-align:middle; margin-right:4px;"></i>${c.status || 'Active'}</span>
               </div>
             </div>
-          `;
+            <button class="btn btn-sm btn-secondary" onclick="editChild('${c.id}')"><i class="fas fa-edit"></i> Edit Info</button>
+          </div>`;
         }).join('');
       }
     }
 
-    // Agreement functionality
-    async function loadAgreementSection() {
-      if (!parentProfile || !children.length) {
-        document.getElementById('agreementDocument').innerHTML = `
-          <div class="empty-state">
-            <i class="fas fa-file-contract"></i>
-            <div>Agreement data not available. Please ensure your profile and children information is complete.</div>
-          </div>
-        `;
-        return;
-      }
+    // --- FORM SUBMISSIONS ---
 
-      try {
-        // Set basic info - use parent registration date
-        const registrationDate = new Date(currentUser.created_at);
-        const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-        
-        document.getElementById('agreementDate').textContent = registrationDate.getDate();
-        document.getElementById('agreementMonth').textContent = months[registrationDate.getMonth()];
-        document.getElementById('parentNameAgreement').textContent = parentProfile.full_name || 'Parent Name';
-        document.getElementById('parentSignatureName').textContent = parentProfile.full_name || 'Parent Name';
-        
-        // Format registration date for signatures
-        document.getElementById('parentSignatureDate').textContent = registrationDate.toLocaleDateString();
-        document.getElementById('schoolSignatureDate').textContent = registrationDate.toLocaleDateString();
-
-        // Format children list - fix double grade issue
-        const childrenList = children.map(child => {
-          const grade = child.grade_level ? ` (${child.grade_level})` : '';
-          return `<strong>${child.name}</strong>${grade}`;
-        }).join(' and ');
-        document.getElementById('childrenListAgreement').innerHTML = childrenList;
-
-        // Load tutor assignments and subjects for children
-        const childIds = children.map(c => c.id);
-        const { data: assignments } = await supabase
-          .from('tutor_assignments')
-          .select('*')
-          .in('child_id', childIds)
-          .eq('status', 'active');
-
-        let subjectsEnrollment = '';
-        let tutorAssignments = '';
-        let totalFees = 0;
-
-        if (assignments?.length) {
-          const tutorIds = [...new Set(assignments.map(a => a.tutor_id).filter(Boolean))];
-          const subjectIds = [...new Set(assignments.map(a => a.subject_id).filter(Boolean))];
-
-          const [tutorResults, subjectResults] = await Promise.all([
-            tutorIds.length ? supabase.from('tutor_profiles').select('id, full_name').in('id', tutorIds) : { data: [] },
-            subjectIds.length ? supabase.from('subjects').select('id, name, weekly_frequency').in('id', subjectIds) : { data: [] }
-          ]);
-
-          const tutorMap = new Map((tutorResults.data || []).map(t => [t.id, t]));
-          const subjectMap = new Map((subjectResults.data || []).map(s => [s.id, s]));
-
-          // Group subjects by frequency
-          const subjectGroups = {};
-          assignments.forEach(assignment => {
-            const subject = subjectMap.get(assignment.subject_id);
-            if (subject) {
-              const frequency = subject.weekly_frequency || 2;
-              const key = `${subject.name}_${frequency}`;
-              if (!subjectGroups[key]) {
-                subjectGroups[key] = {
-                  name: subject.name,
-                  frequency: frequency,
-                  tutors: new Set()
-                };
-              }
-              const tutor = tutorMap.get(assignment.tutor_id);
-              if (tutor) {
-                subjectGroups[key].tutors.add(tutor.full_name);
-              }
-            }
-          });
-
-          // Build subjects enrollment text
-          const subjectEntries = Object.values(subjectGroups);
-          subjectsEnrollment = `<p>The children are enrolled in:</p><ul class="agreement-list">`;
-          
-          let totalPeriods = 0;
-          subjectEntries.forEach(subject => {
-            const periodsText = subject.frequency === 1 ? '1 period weekly' : `${subject.frequency} periods weekly`;
-            subjectsEnrollment += `<li><strong>${subject.name}</strong> (${periodsText})</li>`;
-            totalPeriods += subject.frequency;
-          });
-          
-          subjectsEnrollment += `</ul><p><strong>Total weekly periods: ${totalPeriods}</strong></p>`;
-
-          // Build tutor assignments
-          tutorAssignments = '<p>Subject assignments:</p><ul class="agreement-list">';
-          subjectEntries.forEach(subject => {
-            const tutorsList = Array.from(subject.tutors).join(' and ');
-            tutorAssignments += `<li><strong>${subject.name}</strong> will be taught by ${tutorsList}.</li>`;
-          });
-          tutorAssignments += '</ul>';
-
-          // Add supporting tutors information
-          const supportingTutorsInfo = children
-            .filter(child => child.supporting_tutors && child.supporting_tutors.length > 0)
-            .map(child => {
-              const tutorsList = child.supporting_tutors.join(' and ');
-              return `<li>Lessons for <strong>${child.name}</strong> will be supported by ${tutorsList} as assistant teachers.</li>`;
-            })
-            .join('');
-          
-          if (supportingTutorsInfo) {
-            tutorAssignments += '<p>Additional support:</p><ul class="agreement-list">' + supportingTutorsInfo + '</ul>';
-          }
-
-        } else {
-          subjectsEnrollment = '<p><em>No active subject enrollments found.</em></p>';
-          tutorAssignments = '<p><em>No tutor assignments found.</em></p>';
-        }
-
-        // Calculate fees based on each child's grade and class type
-        children.forEach(child => {
-          const fee = getFeeForChild(child);
-          totalFees += fee;
-        });
-
-        // Update agreement content
-        document.getElementById('subjectsEnrollmentAgreement').innerHTML = subjectsEnrollment;
-        document.getElementById('tutorAssignmentsAgreement').innerHTML = tutorAssignments;
-
-        // Update fees with proper calculation
-        const totalFeesFormatted = new Intl.NumberFormat('en-NG', {
-          style: 'currency',
-          currency: 'NGN',
-          minimumFractionDigits: 0
-        }).format(totalFees);
-
-        const feesInWords = numberToWords(totalFees);
-        
-        // Build detailed fees breakdown
-        let feesBreakdown = '<p>Fee breakdown per child:</p><ul class="agreement-list">';
-        children.forEach(child => {
-          const fee = getFeeForChild(child);
-          const feeFormatted = new Intl.NumberFormat('en-NG', {
-            style: 'currency',
-            currency: 'NGN',
-            minimumFractionDigits: 0
-          }).format(fee);
-          feesBreakdown += `<li><strong>${child.name}</strong> (${child.class_type || 'Group'} class): ${feeFormatted} per month</li>`;
-        });
-        feesBreakdown += '</ul>';
-        
-        feesBreakdown += `<p><strong>Total due for ${children.length} ${children.length === 1 ? 'child' : 'children'} = ${totalFeesFormatted}</strong> (${feesInWords} Naira only) per month.</p>`;
-        
-        document.getElementById('feesBreakdownAgreement').innerHTML = feesBreakdown;
-
-      } catch (error) {
-        console.error('Error loading agreement:', error);
-        document.getElementById('agreementDocument').innerHTML = `
-          <div class="empty-state">
-            <i class="fas fa-exclamation-triangle"></i>
-            <div>Error loading agreement data. Please refresh the page and try again.</div>
-          </div>
-        `;
-      }
+    // Parent Profile Edit
+    window.openParentEditModal = () => {
+      if(!myProfile) return;
+      document.getElementById('parentName').value = myProfile.full_name;
+      document.getElementById('parentEmail').value = myProfile.email || '';
+      document.getElementById('parentPhone').value = myProfile.phone || '';
+      document.getElementById('parentEmergency').value = myProfile.emergency_contact || '';
+      openModal('parentModal');
     }
-
-    // Print agreement functionality
-    document.getElementById('printAgreement')?.addEventListener('click', () => {
-      window.print();
-    });
-
-    // Download PDF functionality
-    document.getElementById('downloadAgreementPDF')?.addEventListener('click', () => {
-      alert('Please use your browser\'s "Print to PDF" option from the print dialog for now. Full PDF download functionality will be added soon.');
-      window.print();
-    });
-
-    // Table renderers
-    function renderChildrenTable(rows) {
-      const tb = document.getElementById('childrenTbody');
-      if (!rows?.length) { 
-        tb.innerHTML = `<tr><td colspan="10"><div class="empty-state"><i class="fas fa-child"></i><div>No children found.</div></div></td></tr>`; 
-        return; 
-      }
-      tb.innerHTML = rows.map(r => `
-        <tr>
-          <td data-label="Name">${r.name || ''}</td>
-          <td data-label="DOB">${fmtDate(r.date_of_birth)}</td>
-          <td data-label="Age">${yearsFrom(r.date_of_birth) || ''}</td>
-          <td data-label="Grade">${r.grade_level || ''}</td>
-          <td data-label="Class Type"><span class="badge badge-primary">${r.class_type || 'Group'}</span></td>
-          <td data-label="Status">${statusBadge(r.status || 'Active')}</td>
-          <td data-label="Enrolled">${fmtDate(r.enrollment_date)}</td>
-          <td data-label="Emergency Contact">${r.emergency_contact || '—'}</td>
-          <td data-label="Supporting Tutors">${r.supporting_tutors ? r.supporting_tutors.join(', ') : '—'}</td>
-          <td data-label="Actions">
-            <button class="btn btn-warning btn-sm" onclick="openChildEditModal('${r.id}')">
-              <i class="fas fa-edit"></i> Edit
-            </button>
-          </td>
-        </tr>
-      `).join('');
-    }
-
-    function renderLessonsTable(rows) {
-      const tb = document.getElementById('lessonsTbody');
-      if (!rows?.length) { 
-        tb.innerHTML = `<tr><td colspan="7"><div class="empty-state"><i class="fas fa-calendar-alt"></i><div>No lessons found.</div></div></td></tr>`; 
-        return; 
-      }
-      tb.innerHTML = rows.map(r => `
-        <tr>
-          <td data-label="Date">${fmtDate(r.scheduled_at)}</td>
-          <td data-label="Time">${fmtTime(r.scheduled_at)}</td>
-          <td data-label="Child">${r.child_name || ''}</td>
-          <td data-label="Subject">${r.subject_name || ''}</td>
-          <td data-label="Tutor">${r.tutor_name || ''}</td>
-          <td data-label="Status">${statusBadge(r.status)}</td>
-          <td data-label="Join">
-            ${r.meeting_url ? 
-              `<a class="btn btn-success btn-sm" href="${r.meeting_url}" target="_blank" rel="noopener"><i class="fas fa-video"></i> Join</a>` : 
-              '<span class="badge badge-secondary">—</span>'
-            }
-          </td>
-        </tr>
-      `).join('');
-    }
-
-    function renderTutorsTable(rows) {
-      const tb = document.getElementById('tutorsTbody');
-      if (!rows?.length) { 
-        tb.innerHTML = `<tr><td colspan="4"><div class="empty-state"><i class="fas fa-chalkboard-teacher"></i><div>No tutor found.</div></div></td></tr>`; 
-        return; 
-      }
-      tb.innerHTML = rows.map(r => `
-        <tr>
-          <td data-label="Tutor">${r.tutor_name || ''}</td>
-          <td data-label="Child">${r.child_name || ''}</td>
-          <td data-label="Subject">${r.subject_name || ''}</td>
-          <td data-label="Status">${statusBadge(r.status || 'Active')}</td>
-        </tr>
-      `).join('');
-    }
-
-    function renderAssessmentsTable(rows) {
-      const tb = document.getElementById('assessmentsTbody');
-      if (!rows?.length) { 
-        tb.innerHTML = `<tr><td colspan="7"><div class="empty-state"><i class="fas fa-chart-bar"></i><div>No assessments recorded.</div></div></td></tr>`; 
-        return; 
-      }
-      tb.innerHTML = rows.map(a => {
-        const pct = toPercent(a.grade, a.max_grade);
-        const scoreStr = (a.grade != null ? a.grade : '—') + (a.max_grade ? ` / ${a.max_grade}` : '') + (pct ? ` (${pct})` : '');
-        return `
-          <tr>
-            <td data-label="Date">${fmtDate(a.conducted_at)}</td>
-            <td data-label="Child">${a.children?.name || ''}</td>
-            <td data-label="Subject">${a.subjects?.name || ''}</td>
-            <td data-label="Title">${a.title || ''}</td>
-            <td data-label="Type"><span class="badge badge-secondary">${a.type || 'quiz'}</span></td>
-            <td data-label="Score">${scoreStr}</td>
-            <td data-label="Feedback">${createExpandableText(a.feedback)}</td>
-          </tr>
-        `;
-      }).join('');
-    }
-
-  function renderProgressTable(rows) {
-  const tb = document.getElementById('progressTbody');
-  if (!rows?.length) { 
-    tb.innerHTML = `<tr><td colspan="8"><div class="empty-state"><i class="fas fa-chart-line"></i><div>No progress records yet.</div></div></td></tr>`; 
-    return; 
-  }
-  tb.innerHTML = rows.map(p => `
-    <tr>
-      <td data-label="Date">${fmtDate(p.recorded_at)}</td>
-      <td data-label="Child">${p.child_name || '—'}</td>
-      <td data-label="Subject">${p.subject_name || '—'}</td>
-      <td data-label="Score">${p.score != null ? p.score + '%' : '—'}</td>
-      <td data-label="Strengths">${createExpandableText(p.strengths, 120)}</td>
-      <td data-label="Improvement">${createExpandableText(p.areas_of_improvement, 120)}</td>
-      <td data-label="Notes">${createExpandableText(p.notes, 120)}</td>
-      <td data-label="Recorded By">${p.tutor_name || '—'}</td>
-    </tr>
-  `).join('');
-}
-
-    function renderBillingTable(rows) {
-      const tb = document.getElementById('billingTbody');
-      if (!rows?.length) { 
-        tb.innerHTML = `<tr><td colspan="8"><div class="empty-state"><i class="fas fa-file-invoice-dollar"></i><div>No billing records yet.</div></div></td></tr>`; 
-        return; 
-      }
-      tb.innerHTML = rows.map(b => `
-        <tr>
-          <td data-label="Created">${fmtDate(b.created_at)}</td>
-          <td data-label="Description">${b.description || ''}</td>
-          <td data-label="Amount">${b.currency || 'GBP'} ${Number(b.amount || 0).toFixed(2)}</td>
-          <td data-label="Status">${statusBadge(b.status || 'pending')}</td>
-          <td data-label="Due">${fmtDate(b.due_date)}</td>
-          <td data-label="Paid At">${fmtDate(b.paid_at)}</td>
-          <td data-label="Method">${b.payment_method || '—'}</td>
-          <td data-label="Txn ID">${b.transaction_id || '—'}</td>
-        </tr>
-      `).join('');
-    }
-
-    // Section loaders
-    async function loadChildrenSection() {
-      renderChildrenTable(cache.children);
-    }
-
-    async function loadLessonsSection() {
-      if (!children.length) { 
-        renderLessonsTable([]); 
-        return; 
-      }
-      
-      const ids = children.map(c => c.id);
-      const { data: lessons } = await supabase
-        .from('lessons')
-        .select('*')
-        .in('child_id', ids)
-        .order('scheduled_at', { ascending: true });
-
-      let data = [];
-      if (lessons?.length) {
-        const tutorIds = [...new Set(lessons.map(l => l.tutor_id).filter(Boolean))];
-        const childIds = [...new Set(lessons.map(l => l.child_id).filter(Boolean))];
-        const subjectIds = [...new Set(lessons.map(l => l.subject_id).filter(Boolean))];
-
-        const [tutorResults, childResults, subjectResults] = await Promise.all([
-          tutorIds.length ? supabase.from('tutor_profiles').select('id, full_name').in('id', tutorIds) : { data: [] },
-          childIds.length ? supabase.from('children').select('id, name').in('id', childIds) : { data: [] },
-          subjectIds.length ? supabase.from('subjects').select('id, name').in('id', subjectIds) : { data: [] }
-        ]);
-
-        const tutorMap = new Map((tutorResults.data || []).map(t => [t.id, t]));
-        const childMap = new Map((childResults.data || []).map(c => [c.id, c]));
-        const subjectMap = new Map((subjectResults.data || []).map(s => [s.id, s]));
-
-        data = lessons.map(lesson => ({
-          ...lesson,
-          tutor_name: tutorMap.get(lesson.tutor_id)?.full_name,
-          child_name: childMap.get(lesson.child_id)?.name,
-          subject_name: subjectMap.get(lesson.subject_id)?.name
-        }));
-      }
-
-      cache.lessons = data || [];
-      renderLessonsTable(cache.lessons);
-    }
-
-    async function loadTutorsSection() {
-      if (!children.length) { 
-        renderTutorsTable([]); 
-        return; 
-      }
-      
-      const ids = children.map(c => c.id);
-      const { data: assignments } = await supabase
-        .from('tutor_assignments')
-        .select('*')
-        .in('child_id', ids)
-        .order('created_at', { ascending: false });
-
-      let data = [];
-      if (assignments?.length) {
-        const tutorIds = [...new Set(assignments.map(a => a.tutor_id).filter(Boolean))];
-        const childIds = [...new Set(assignments.map(a => a.child_id).filter(Boolean))];
-        const subjectIds = [...new Set(assignments.map(a => a.subject_id).filter(Boolean))];
-
-        const [tutorResults, childResults, subjectResults] = await Promise.all([
-          tutorIds.length ? supabase.from('tutor_profiles').select('id, full_name, email').in('id', tutorIds) : { data: [] },
-          childIds.length ? supabase.from('children').select('id, name').in('id', childIds) : { data: [] },
-          subjectIds.length ? supabase.from('subjects').select('id, name').in('id', subjectIds) : { data: [] }
-        ]);
-
-        const tutorMap = new Map((tutorResults.data || []).map(t => [t.id, t]));
-        const childMap = new Map((childResults.data || []).map(c => [c.id, c]));
-        const subjectMap = new Map((subjectResults.data || []).map(s => [s.id, s]));
-
-        data = assignments.map(assignment => ({
-          ...assignment,
-          tutor_name: tutorMap.get(assignment.tutor_id)?.full_name,
-          child_name: childMap.get(assignment.child_id)?.name,
-          subject_name: subjectMap.get(assignment.subject_id)?.name
-        }));
-      }
-
-      cache.tutors = data || [];
-      renderTutorsTable(cache.tutors);
-    }
-
-    async function loadReportsSection() {
-      if (!children.length) {
-        renderAssessmentsTable([]); 
-        renderProgressTable([]);
-        if (charts.avgBySubject) { 
-          charts.avgBySubject.destroy(); 
-          charts.avgBySubject = null; 
-        }
-        if (charts.trend) { 
-          charts.trend.destroy(); 
-          charts.trend = null; 
-        }
-        return;
-      }
-      const ids = children.map(c => c.id);
-      
-      // Assessments
-      const { data: assessments } = await supabase
-        .from('assessments')
-        .select('id, grade, max_grade, title, type, feedback, conducted_at, children:child_id(name), subjects:subject_id(name)')
-        .in('child_id', ids)
-        .order('conducted_at', { ascending: false });
-      cache.assessments = assessments || [];
-      renderAssessmentsTable(cache.assessments);
-
-      // Charts: averages by subject
-      const bySubject = {};
-      (cache.assessments).forEach(a => {
-        const s = a.subjects?.name || 'Subject';
-        const pct = a.max_grade ? (Number(a.grade || 0) / Number(a.max_grade)) * 100 : Number(a.grade || 0);
-        if (!bySubject[s]) bySubject[s] = { sum: 0, count: 0 };
-        bySubject[s].sum += pct; 
-        bySubject[s].count += 1;
-      });
-      const subjectAverages = Object.entries(bySubject).map(([subject, agg]) => ({ 
-        subject, 
-        avg: Math.round(agg.sum / agg.count) 
-      }));
-      
-      const ctx1 = document.getElementById('avgBySubjectChart').getContext('2d');
-      if (charts.avgBySubject) charts.avgBySubject.destroy();
-      charts.avgBySubject = new Chart(ctx1, {
-        type: 'bar',
-        data: { 
-          labels: subjectAverages.map(s => s.subject), 
-          datasets: [{ 
-            data: subjectAverages.map(s => s.avg), 
-            label: 'Average %', 
-            // Canopy Green
-            backgroundColor: 'rgba(45, 106, 79, 0.8)', 
-            borderColor: 'rgba(45, 106, 79, 1)', 
-            borderWidth: 2, 
-            borderRadius: 8,
-            borderSkipped: false,
-          }] 
-        },
-        options: { 
-          responsive: true, 
-          maintainAspectRatio: false, 
-          scales: { 
-            y: { 
-              beginAtZero: true, 
-              max: 100, 
-              ticks: { callback: v => v + '%' },
-              grid: { color: 'rgba(237, 217, 200, 0.5)' } // border-light
-            },
-            x: {
-              grid: { display: false }
-            }
-          }, 
-          plugins: { 
-            legend: { display: false },
-            title: {
-              display: true,
-              text: 'Average Scores by Subject',
-              font: { size: 14, weight: '600', family: "'DM Sans', sans-serif" },
-              color: '#2C1810' // gray-800
-            }
-          }
-        }
-      });
-
-      // Trend: last 12
-      const last = (cache.assessments).slice(0, 12).reverse();
-      const trend = last.map(a => ({ 
-        label: fmtDate(a.conducted_at), 
-        value: Math.round((Number(a.grade || 0) / (Number(a.max_grade) || 100)) * 100) 
-      }));
-      
-      const ctx2 = document.getElementById('trendChart').getContext('2d');
-      if (charts.trend) charts.trend.destroy();
-      charts.trend = new Chart(ctx2, {
-        type: 'line',
-        data: { 
-          labels: trend.map(t => t.label), 
-          datasets: [{ 
-            data: trend.map(t => t.value), 
-            label: 'Score %', 
-            // Sunset Gold
-            borderColor: '#F4A261', 
-            backgroundColor: 'rgba(244, 162, 97, 0.1)', 
-            tension: 0.4, 
-            fill: true, 
-            pointRadius: 4,
-            pointBackgroundColor: '#F4A261',
-            pointBorderColor: '#ffffff',
-            pointBorderWidth: 2
-          }] 
-        },
-        options: { 
-          responsive: true, 
-          maintainAspectRatio: false, 
-          scales: { 
-            y: { 
-              beginAtZero: true, 
-              max: 100, 
-              ticks: { callback: v => v + '%' },
-              grid: { color: 'rgba(237, 217, 200, 0.5)' }
-            },
-            x: {
-              grid: { display: false }
-            }
-          }, 
-          plugins: { 
-            legend: { display: false },
-            title: {
-              display: true,
-              text: 'Recent Assessment Trend',
-              font: { size: 14, weight: '600', family: "'DM Sans', sans-serif" },
-              color: '#2C1810'
-            }
-          }
-        }
-      });
-
-      // Progress records
-      const { data: progressRecords } = await supabase
-        .from('progress_records')
-        .select('*')
-        .in('child_id', ids)
-        .order('recorded_at', { ascending: false });
-
-      let progressData = [];
-      if (progressRecords?.length) {
-        const tutorIds = [...new Set(progressRecords.map(p => p.recorded_by).filter(Boolean))];
-        const childIds = [...new Set(progressRecords.map(p => p.child_id).filter(Boolean))];
-        const subjectIds = [...new Set(progressRecords.map(p => p.subject_id).filter(Boolean))];
-
-        const [tutorResults, childResults, subjectResults] = await Promise.all([
-          tutorIds.length ? supabase.from('tutor_profiles').select('id, full_name').in('id', tutorIds) : { data: [] },
-          childIds.length ? supabase.from('children').select('id, name').in('id', childIds) : { data: [] },
-          subjectIds.length ? supabase.from('subjects').select('id, name').in('id', subjectIds) : { data: [] }
-        ]);
-
-        const tutorMap = new Map((tutorResults.data || []).map(t => [t.id, t]));
-        const childMap = new Map((childResults.data || []).map(c => [c.id, c]));
-        const subjectMap = new Map((subjectResults.data || []).map(s => [s.id, s]));
-
-        progressData = progressRecords.map(record => ({
-          ...record,
-          tutor_name: tutorMap.get(record.recorded_by)?.full_name,
-          child_name: childMap.get(record.child_id)?.name,
-          subject_name: subjectMap.get(record.subject_id)?.name
-        }));
-      }
-      
-      cache.progress = progressData;
-      renderProgressTable(cache.progress);
-    }
-
-    async function loadBillingSection() {
-      const { data, error } = await supabase
-        .from('billing_records')
-        .select('*')
-        .eq('parent_id', currentUser.id)
-        .order('created_at', { ascending: false });
-      if (error) { 
-        console.error(error); 
-        renderBillingTable([]); 
-        return; 
-      }
-      cache.billing = data || [];
-      renderBillingTable(cache.billing);
-    }
-
-    // Section dispatcher
-    async function loadSection(id) {
-      switch (id) {
-        case 'overview':
-          await loadDashboardStats();
-          await loadOverviewCards();
-          break;
-        case 'children':
-          await loadChildrenSection();
-          break;
-        case 'lessons':
-          await loadLessonsSection();
-          break;
-        case 'tutors':
-          await loadTutorsSection();
-          break;
-        case 'reports':
-          await loadReportsSection();
-          break;
-        case 'billing':
-          await loadBillingSection();
-          break;
-        case 'agreement':
-          await loadAgreementSection();
-          break;
-        case 'profile':
-        default:
-          break;
-      }
-    }
-
-    // Child modal functions
-    function openChildEditModal(id) {
-      const c = children.find(x => x.id === id);
-      if (!c) return;
-      document.getElementById('editChildId').value = c.id;
-      document.getElementById('editChildName').value = c.name || '';
-      document.getElementById('editChildDOB').value = c.date_of_birth || '';
-      document.getElementById('editChildGrade').value = c.grade_level || '';
-      document.getElementById('editChildClassType').value = c.class_type || 'Group';
-      document.getElementById('editChildEmergency').value = c.emergency_contact || '';
-      document.getElementById('editChildMedical').value = c.medical_info || '';
-      document.getElementById('editChildPreferences').value = c.learning_preferences || '';
-      
-      // Handle supporting tutors array
-      const supportingTutors = c.supporting_tutors ? c.supporting_tutors.join(', ') : '';
-      document.getElementById('editChildSupportingTutors').value = supportingTutors;
-      
-      document.getElementById('childEditModal').classList.add('active');
-      document.body.style.overflow = 'hidden';
-    }
-
-    function closeChildEditModal() {
-      document.getElementById('childEditModal').classList.remove('active');
-      document.body.style.overflow = '';
-    }
-
-    async function saveChild(e) {
-      e.preventDefault();
-      const id = document.getElementById('editChildId').value;
-      
-      // Handle supporting tutors conversion from string to array
-      const supportingTutorsString = document.getElementById('editChildSupportingTutors').value;
-      const supportingTutorsArray = supportingTutorsString 
-        ? supportingTutorsString.split(',').map(name => name.trim()).filter(name => name.length > 0)
-        : null;
-      
-      const updates = {
-        name: document.getElementById('editChildName').value,
-        date_of_birth: document.getElementById('editChildDOB').value || null,
-        grade_level: document.getElementById('editChildGrade').value,
-        class_type: document.getElementById('editChildClassType').value,
-        emergency_contact: document.getElementById('editChildEmergency').value,
-        medical_info: document.getElementById('editChildMedical').value,
-        learning_preferences: document.getElementById('editChildPreferences').value,
-        supporting_tutors: supportingTutorsArray,
-        updated_at: new Date().toISOString()
-      };
-      
-      const { error } = await supabase.from('children').update(updates).eq('id', id);
-      if (error) { 
-        alert('Failed to update child.'); 
-        return; 
-      }
-      alert('Child updated successfully!');
-      closeChildEditModal();
-      await loadChildren();
-      await loadChildrenSection();
-      await loadOverviewCards();
-      await loadReportsSection();
-      await loadAgreementSection();
-    }
-
-    // Profile save
-    async function saveProfile(e) {
-      e.preventDefault();
-      const updates = {
-        full_name: document.getElementById('profileFullName').value,
-        phone: document.getElementById('profilePhone').value,
-        address: document.getElementById('profileAddress').value,
-        updated_at: new Date().toISOString()
-      };
-      const { error } = await supabase.from('parent_profiles').update(updates).eq('user_id', currentUser.id);
-      if (error) { 
-        alert('Failed to update profile.'); 
-        return; 
-      }
-      alert('Profile updated successfully!');
-      await loadProfile();
-      await loadAgreementSection();
-    }
-
-    // Search and export hooks
-    function hookSearch(inputId, rowsGetter, renderFn, keys) {
-      const input = document.getElementById(inputId);
-      if (!input) return;
-      input.addEventListener('input', () => {
-        const q = input.value.trim().toLowerCase();
-        const base = rowsGetter();
-        if (!q) { 
-          renderFn(base); 
-          return; 
-        }
-        const filtered = base.filter(row => {
-          return keys.some(k => {
-            const val = typeof k === 'function' ? k(row) : row[k];
-            return String(val || '').toLowerCase().includes(q);
-          });
-        });
-        renderFn(filtered);
-      });
-    }
-
-    function hookExport(btnId, filename, rowsGetter, columns) {
-      const btn = document.getElementById(btnId);
-      if (!btn) return;
-      btn.addEventListener('click', () => {
-        const rows = rowsGetter();
-        exportCSV(filename, rows, columns);
-      });
-    }
-
-    // Event listeners
-    document.getElementById('logoutLink')?.addEventListener('click', async (e) => {
-      e.preventDefault();
-      await supabase.auth.signOut();
-      location.href = '/index.html';
-    });
-
-    document.getElementById('childEditForm')?.addEventListener('submit', saveChild);
-    document.getElementById('profileForm')?.addEventListener('submit', saveProfile);
-    document.getElementById('refreshReports')?.addEventListener('click', loadReportsSection);
-
-    // PDF Download Event Listener
-    document.getElementById('downloadReportsPDF')?.addEventListener('click', generatePDFReport);
-
-    // Search + Export bindings
-    hookSearch('childrenSearch', () => cache.children, renderChildrenTable, ['name', 'grade_level', 'status', 'emergency_contact', 'class_type', r => r.supporting_tutors?.join(' ')]);
-    hookExport('childrenExport', 'children.csv', () => cache.children, [
-      { label: 'Name', key: 'name' },
-      { label: 'DOB', get: r => fmtDate(r.date_of_birth) },
-      { label: 'Age', get: r => yearsFrom(r.date_of_birth) },
-      { label: 'Grade', key: 'grade_level' },
-      { label: 'Class Type', key: 'class_type' },
-      { label: 'Status', key: 'status' },
-      { label: 'Enrolled', get: r => fmtDate(r.enrollment_date) },
-      { label: 'Emergency', key: 'emergency_contact' },
-      { label: 'Supporting Tutors', get: r => r.supporting_tutors?.join(', ') || '' }
-    ]);
-
-    hookSearch('lessonsSearch', () => cache.lessons, renderLessonsTable, [
-      'child_name', 'subject_name', 'tutor_name', 'status'
-    ]);
-    hookExport('lessonsExport', 'lessons.csv', () => cache.lessons, [
-      { label: 'Date', get: r => fmtDate(r.scheduled_at) },
-      { label: 'Time', get: r => fmtTime(r.scheduled_at) },
-      { label: 'Child', key: 'child_name' },
-      { label: 'Subject', key: 'subject_name' },
-      { label: 'Tutor', key: 'tutor_name' },
-      { label: 'Status', key: 'status' },
-      { label: 'Meeting URL', key: 'meeting_url' }
-    ]);
-
-    hookSearch('tutorsSearch', () => cache.tutors, renderTutorsTable, [
-      'tutor_name', 'child_name', 'subject_name', 'status'
-    ]);
-    hookExport('tutorsExport', 'tutors.csv', () => cache.tutors, [
-      { label: 'Tutor', key: 'tutor_name' },
-      { label: 'Child', key: 'child_name' },
-      { label: 'Subject', key: 'subject_name' },
-      { label: 'Status', key: 'status' }
-    ]);
-
-    hookSearch('assessmentsSearch', () => cache.assessments, renderAssessmentsTable, [
-      r => r.children?.name, r => r.subjects?.name, 'title', 'type', 'feedback'
-    ]);
-    hookExport('assessmentsExport', 'assessments.csv', () => cache.assessments, [
-      { label: 'Date', get: r => fmtDate(r.conducted_at) },
-      { label: 'Child', get: r => r.children?.name },
-      { label: 'Subject', get: r => r.subjects?.name },
-      { label: 'Title', key: 'title' },
-      { label: 'Type', key: 'type' },
-      { label: 'Grade', get: r => r.grade },
-      { label: 'Max Grade', get: r => r.max_grade },
-      { label: 'Feedback', key: 'feedback' }
-    ]);
-
-    hookSearch('progressSearch', () => cache.progress, renderProgressTable, [
-      'child_name', 'subject_name', 'strengths','notes', 'areas_of_improvement'
-    ]);
-    hookExport('progressExport', 'progress_records.csv', () => cache.progress, [
-      { label: 'Date', get: r => fmtDate(r.recorded_at) },
-      { label: 'Child', key: 'child_name' },
-      { label: 'Subject', key: 'subject_name' },
-      { label: 'Score', get: r => r.score },
-      { label: 'Strengths', get: r => r.strengths },
-      { label: 'notes', get: r => r.notes },
-      { label: 'Improvement', get: r => r.areas_of_improvement },
-      { label: 'Recorded By', key: 'tutor_name' }
-    ]);
-
-    hookSearch('billingSearch', () => cache.billing, renderBillingTable, [
-      'description', 'status', 'payment_method', 'transaction_id', 'currency'
-    ]);
-    hookExport('billingExport', 'billing.csv', () => cache.billing, [
-      { label: 'Created', get: r => fmtDate(r.created_at) },
-      { label: 'Description', key: 'description' },
-      { label: 'Amount', get: r => Number(r.amount || 0).toFixed(2) },
-      { label: 'Currency', key: 'currency' },
-      { label: 'Status', key: 'status' },
-      { label: 'Due Date', get: r => fmtDate(r.due_date) },
-      { label: 'Paid At', get: r => fmtDate(r.paid_at) },
-      { label: 'Payment Method', key: 'payment_method' },
-      { label: 'Transaction ID', key: 'transaction_id' }
-    ]);
-
-    // Global search
-    document.getElementById('globalSearch')?.addEventListener('input', (e) => {
-      const q = e.target.value.toLowerCase();
-      if (location.hash.replace('#', '') !== 'children') { 
-        location.hash = '#children'; 
-      }
-      const base = cache.children;
-      const filtered = q ? base.filter(r => 
-        [r.name, r.grade_level, r.status, r.emergency_contact, r.class_type].some(v => 
-          String(v || '').toLowerCase().includes(q)
-        )
-      ) : base;
-      renderChildrenTable(filtered);
-    });
-
-    // Notifications placeholder
-    document.getElementById('notificationBtn')?.addEventListener('click', () => {
-      alert('Notifications coming soon!');
-    });
-
-    // Auth listener
-    supabase.auth.onAuthStateChange((event, session) => {
-      if (event === 'SIGNED_OUT' || !session) { 
-        location.href = '/index.html'; 
-      }
-    });
-
-    // Make functions global for HTML onclick handlers
-    window.openChildEditModal = openChildEditModal;
-    window.closeChildEditModal = closeChildEditModal;
-
-// Boot
-    (async function init() {
-      const user = await ensureAuth(); 
-      if (!user) return;
-      
-      await loadProfile();
-      await loadChildren();
-      await loadSubjects();
-      await initializeFeesTable();
-
-      // Initial route
-      routeFromHash();
-
-      // Preload data for better UX
-      loadDashboardStats();
-      loadOverviewCards();
-      loadLessonsSection();
-      loadTutorsSection();
-      loadReportsSection();
-      loadBillingSection();
-      loadAgreementSection();
-    })();
     
-})(); // End of IIFE
-</script>
+    document.getElementById('parentForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const payload = {
+        full_name: document.getElementById('parentName').value,
+        phone: document.getElementById('parentPhone').value,
+        emergency_contact: document.getElementById('parentEmergency').value
+      };
+      await supabaseClient.from('parent_profiles').update(payload).eq('id', myProfile.id);
+      closeModal('parentModal');
+      loadAllData();
+    });
+
+    // Student (Child) Add/Edit
+    window.editChild = (id) => {
+      const c = appData.children.find(x => x.id === id);
+      if(c) {
+        document.getElementById('childId').value = c.id;
+        document.getElementById('childName').value = c.name;
+        document.getElementById('childDob').value = c.date_of_birth || '';
+        document.getElementById('childGrade').value = c.grade_level || '';
+        openModal('childModal');
+      }
+    }
+
+    document.getElementById('childForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const payload = {
+        parent_id: myProfile.id,
+        name: document.getElementById('childName').value,
+        date_of_birth: document.getElementById('childDob').value || null,
+        grade_level: document.getElementById('childGrade').value
+      };
+      const id = document.getElementById('childId').value;
+      
+      if(id) {
+        await supabaseClient.from('children').update(payload).eq('id', id);
+      } else {
+        await supabaseClient.from('children').insert([payload]);
+      }
+      closeModal('childModal');
+      loadAllData();
+    });
+
+    window.logout = async () => { 
+      await supabaseClient.auth.signOut(); 
+      window.location.href = '/index.html'; 
+    }
+    
+    // Boot Up
+    loadAllData();
+  </script>
 </body>
 </html>
